@@ -1,16 +1,8 @@
 import { component$, useStore, $ } from "@builder.io/qwik";
 import { Button } from "~/components//button/button";
 import { Input } from "~/components/input-field/input.field";
-// import { useNavigate } from "@builder.io/qwik-city";
-// import { server$ } from "@builder.io/qwik-city";
-// import { login_service } from "~/express/services/user.service";
-// import { connect } from "~/express/db.connection";
-
-// const login_server = server$(async (object) => {
-//   await connect();
-//   const result = await login_service(object);
-//   return result;
-// });
+import { useNavigate } from "@builder.io/qwik-city";
+import { postRequest } from "~/utils/fetch.utils";
 
 export default component$(() => {
   const fields = useStore<any>(
@@ -24,27 +16,19 @@ export default component$(() => {
     },
     { deep: true }
   );
-  // const nav = useNavigate();
+  const nav = useNavigate();
 
   const login = $(async () => {
     const data = {
       email: fields.email,
       password: fields.password,
     };
-    const result = fetch("/api/login", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    // const login_result = await login_server(data);
-    console.log(result);
-    // if (login_result.status === "success") {
-    //   document.cookie = `token=${login_result.token}`;
-    //   nav("/admin/dashboard");
-    // }
+    const result = await postRequest("/api/login", data);
+    const resultJson = await result.json();
+    if (resultJson?.status === "success") {
+      document.cookie = `token=${resultJson?.token}`;
+      nav("/admin/dashboard");
+    }
   });
 
   return (
