@@ -17,6 +17,14 @@ import render from "./entry.ssr";
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
+import Server from "quickbooks-js";
+import qbXMLHandler from "./qbXMLHandler";
+import dotenv from "dotenv";
+
+dotenv.config();
+const soapServer = new Server.Server();
+soapServer.setQBXMLHandler(qbXMLHandler);
+soapServer.run();
 
 declare global {
   interface QwikCityPlatform extends PlatformNode {}
