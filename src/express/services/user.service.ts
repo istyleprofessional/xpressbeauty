@@ -3,7 +3,6 @@ import { User } from "../schemas/user.schema";
 import jwt from "jsonwebtoken";
 export const login_service = async (userObject: any) => {
   const cryptr = new Cryptr("myTotallySecretKey");
-
   try {
     const result = await User.findOne({ email: userObject.email.value });
     if (userObject.password.value === cryptr.decrypt(result?.password ?? "")) {
