@@ -47,38 +47,38 @@ function buildRequests(callback: any) {
   });
   requests.push(fetch_product);
 
-  const add_customer = convert("QBXML", {
-    QBXMLMsgsRq: {
-      _attr: { onError: "stopOnError" },
-      CustomerAddRq: {
-        CustomerAdd: {
-          Name: "Nick Medonca",
-          FirstName: "Nick",
-          LastName: "Medonca",
-        },
-      },
-    },
-  });
-  requests.push(add_customer);
-  const buy_product = convert("QBXML", {
-    QBXMLMsgsRq: {
-      _attr: { onError: "stopOnError" },
-      InvoiceAddRq: {
-        'InvoiceAdd defMacro="MACROTYPE"': {
-          CustomerRef: {
-            FullName: "Nick Medonca",
-          },
-          InventorySiteRef: { FullName: "INVENTORY" },
-          Quantity: "2",
-          ItemRef: { FullName: "DCFX787B" },
-          Desc: "Item description",
-          UnitOfMeasure: "",
-        },
-      },
-    },
-  });
+  // const add_customer = convert("QBXML", {
+  //   QBXMLMsgsRq: {
+  //     _attr: { onError: "stopOnError" },
+  //     CustomerAddRq: {
+  //       CustomerAdd: {
+  //         Name: "Nick Medonca",
+  //         FirstName: "Nick",
+  //         LastName: "Medonca",
+  //       },
+  //     },
+  //   },
+  // });
+  // requests.push(add_customer);
+  // const buy_product = convert("QBXML", {
+  //   QBXMLMsgsRq: {
+  //     _attr: { onError: "stopOnError" },
+  //     InvoiceAddRq: {
+  //       'InvoiceAdd defMacro="MACROTYPE"': {
+  //         CustomerRef: {
+  //           FullName: "Nick Medonca",
+  //         },
+  //         InventorySiteRef: { FullName: "INVENTORY" },
+  //         Quantity: "2",
+  //         ItemRef: { FullName: "DCFX787B" },
+  //         Desc: "Item description",
+  //         UnitOfMeasure: "",
+  //       },
+  //     },
+  //   },
+  // });
   // var buy_product = `<?xml version="1.0" encoding="utf-8"?>\n<?qbxml version="13.0"?>\n<QBXML><QBXMLMsgsRq onError="stopOnError"><InvoiceAddRq><InvoiceAdd defMacro="MACROTYPE"><CustomerRef><FullName>Nick Medonca</FullName></CustomerRef><TxnDate>2023-03-31</TxnDate><BillAddress><Addr1>105 hansen road north</Addr1><City>Brampton</City><State>Ontario</State><PostalCode>L6V3c9</PostalCode><Country>Canada</Country></BillAddress><ShipAddress><Addr1>105 hansen road north</Addr1><City>Brampton</City><State>Ontario</State><PostalCode>L6V3c9</PostalCode><Country>Canada</Country></ShipAddress><InvoiceLineAdd><ItemRef><FullName>DCFX787B</FullName></ItemRef><Quantity>2</Quantity><Rate>2</Rate></InvoiceLineAdd></InvoiceAdd></InvoiceAddRq></QBXMLMsgsRq></QBXML>`;
-  console.log(buy_product);
-  requests.push(buy_product);
+  // console.log(buy_product);
+  // requests.push(buy_product);
   return callback(null, requests);
 }
