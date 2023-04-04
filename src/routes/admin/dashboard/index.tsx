@@ -10,12 +10,12 @@ import { connect } from "~/express/db.connection";
 import {
   get_products_count_service,
   get_products_service,
-  update_product_service,
 } from "~/express/services/product.service";
 import { Table } from "~/components/table/table";
 import { Alert } from "~/components/alert/alert";
 import { Pagination } from "~/components/pagination/pagination";
-import { server$ } from "@builder.io/qwik-city";
+import { putRequest } from "~/utils/fetch.utils";
+// import { server$ } from "@builder.io/qwik-city";
 
 export const useProductData = routeLoader$(async (ev) => {
   const token = ev.cookie.get("token")?.value;
@@ -26,11 +26,11 @@ export const useProductData = routeLoader$(async (ev) => {
   return JSON.stringify({ products: products, count: count });
 });
 
-const updateProduct = server$(async (product, token) => {
-  await connect();
-  const result = await update_product_service(product, token);
-  return JSON.stringify(result);
-});
+// const updateProduct = server$(async (product, token) => {
+//   await connect();
+//   const result = await update_product_service(product, token);
+//   return JSON.stringify(result);
+// });
 
 export default component$(() => {
   const isEdit = useSignal<boolean>(false);
@@ -51,7 +51,7 @@ export default component$(() => {
     if (index.value || index.value === 0) {
       if (index.value !== i) {
         const token = document?.cookie.split("=")[1];
-        await updateProduct(products.value[index.value], token);
+        await putRequest("/api/product", products.value[index.value], token);
       }
     }
     isEdit.value = true;
@@ -60,7 +60,7 @@ export default component$(() => {
 
   const handleDoneClick = $(async (i: number) => {
     const token = document?.cookie.split("=")[1];
-    await updateProduct(products.value[i], token);
+    await putRequest("/api/product", products.value[i], token);
     isEdit.value = false;
     index.value = i;
   });

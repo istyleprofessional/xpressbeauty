@@ -8,3 +8,15 @@ export const postRequest = async (url: string, data: any) => {
     body: JSON.stringify(data),
   });
 };
+
+export const putRequest = async (url: string, data: any, token: string) => {
+  return await fetch(url, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+    body: JSON.stringify(data),
+  });
+};
