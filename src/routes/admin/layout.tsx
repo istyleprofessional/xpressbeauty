@@ -1,9 +1,11 @@
 import { component$, Slot } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
+import { verifyTokenAdmin } from "~/utils/token.utils";
 
 export const useProfileLoader = routeLoader$(async ({ cookie, redirect }) => {
   const token = cookie.get("token")?.value;
-  if (!token) {
+  const validateToken = verifyTokenAdmin(token ?? "");
+  if (!validateToken) {
     throw redirect(302, "/admin");
   }
 });
