@@ -14,6 +14,7 @@ const productsSchema = new mongoose.Schema(
     wholesale_price: { type: String },
     wholesale_sale_price: { type: String },
     quantity_on_hand: { type: String },
+    sku: { type: String },
   },
   { timestamps: true }
 );

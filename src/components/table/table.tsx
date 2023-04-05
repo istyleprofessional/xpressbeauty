@@ -38,6 +38,12 @@ export const Table = component$((props: TableProps) => {
               Item No
             </th>
             <th scope="col" class="px-6 py-3 whitespace-nowrap">
+              SKU
+            </th>
+            <th scope="col" class="px-6 py-3 whitespace-nowrap">
+              Quantity on hand
+            </th>
+            <th scope="col" class="px-6 py-3 whitespace-nowrap">
               Image
             </th>
             <th scope="col" class="px-6 py-3 whitespace-nowrap w-10">
@@ -100,6 +106,12 @@ export const Table = component$((props: TableProps) => {
                 ) : (
                   <p>{product.item_no}</p>
                 )}
+              </td>
+              <td class={`px-6 py-4 w-10`}>
+                <p>{product.sku}</p>
+              </td>
+              <td class={`px-6 py-4 w-10`}>
+                <p>{product.quantity_on_hand}</p>
               </td>
               <td class={`px-6 py-4 w-10`}>
                 <a href={product.image} target="_blank">
