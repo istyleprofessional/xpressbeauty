@@ -96,7 +96,7 @@ async function buildRequests(callback: any) {
   return callback(null, requests);
 }
 function getResponses(response: any) {
-  xml2js.parseString(response, async (err, jsonData) => {
+  xml2js.parseString(response, async (err: any, jsonData: any) => {
     if (err) {
       console.log(err);
     } else {
