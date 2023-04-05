@@ -49,3 +49,29 @@ export const update_product_service = async (product: any, token: string) => {
     return { e: "not authorized" };
   }
 };
+
+export const get_all_products_with_item_no = async () => {
+  try {
+    const result = await Product.find({ item_no: { $ne: "" } });
+    const products: any[] = result;
+    return products;
+  } catch (err) {
+    return { err: err };
+  }
+};
+
+export const update_on_hand_quantity = async (
+  item_no: string,
+  quantity: string
+) => {
+  try {
+    const result = await Product.findOneAndUpdate(
+      { item_no: item_no },
+      { quantity_on_hand: quantity }
+    );
+
+    return result;
+  } catch (err) {
+    return { err: err };
+  }
+};

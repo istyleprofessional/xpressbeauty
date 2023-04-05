@@ -1,5 +1,11 @@
 import data2xml from "data2xml";
-// const data2xml = require("data2xml");
+import {
+  get_all_products_with_item_no,
+  update_on_hand_quantity,
+} from "./express/services/product.service";
+import { connect } from "./express/db.connection";
+import xml2js from "xml2js";
+
 const convert = data2xml({
   xmlHeader:
     '<?xml version="1.0" encoding="utf-8"?>\n<?qbxml version="13.0"?>\n',
@@ -16,7 +22,7 @@ function fetchRequests(callback: any) {
  * @param response - qbXML response
  */
 function handleResponse(response: any) {
-  console.log(response);
+  getResponses(response);
 }
 
 /**
@@ -35,17 +41,24 @@ export default {
   didReceiveError,
 };
 
-function buildRequests(callback: any) {
-  const requests = [];
-  const fetch_product = convert("QBXML", {
-    QBXMLMsgsRq: {
-      _attr: { onError: "stopOnError" },
-      ItemInventoryQueryRq: {
-        FullName: "DCFX787B",
+async function buildRequests(callback: any) {
+  await connect();
+  const result = await get_all_products_with_item_no();
+  const requests: any[] = [];
+  if (typeof result === "object" && result !== null && "err" in result) {
+    return callback(null, requests);
+  }
+  result.forEach((object: any) => {
+    const fetch_product = convert("QBXML", {
+      QBXMLMsgsRq: {
+        _attr: { onError: "stopOnError" },
+        ItemInventoryQueryRq: {
+          FullName: object.item_no,
+        },
       },
-    },
+    });
+    requests.push(fetch_product);
   });
-  requests.push(fetch_product);
 
   // const add_customer = convert("QBXML", {
   //   QBXMLMsgsRq: {
@@ -81,4 +94,19 @@ function buildRequests(callback: any) {
   // console.log(buy_product);
   // requests.push(buy_product);
   return callback(null, requests);
+}
+function getResponses(response: any) {
+  xml2js.parseString(response, async (err, jsonData) => {
+    if (err) {
+      console.log(err);
+    } else {
+      const name =
+        jsonData.QBXML.QBXMLMsgsRs[0].ItemInventoryQueryRs[0]
+          .ItemInventoryRet[0].Name[0];
+      const quantity =
+        jsonData.QBXML.QBXMLMsgsRs[0].ItemInventoryQueryRs[0]
+          .ItemInventoryRet[0].QuantityOnHand[0];
+      await update_on_hand_quantity(name, quantity);
+    }
+  });
 }
