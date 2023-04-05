@@ -1,7 +1,6 @@
 import { component$, useStore, $ } from "@builder.io/qwik";
 import { Button } from "~/components//button/button";
 import { Input } from "~/components/input-field/input.field";
-import { useNavigate } from "@builder.io/qwik-city";
 import { postRequest } from "~/utils/fetch.utils";
 
 export default component$(() => {
@@ -16,7 +15,6 @@ export default component$(() => {
     },
     { deep: true }
   );
-  const nav = useNavigate();
 
   const login = $(async () => {
     const data = {
@@ -27,7 +25,7 @@ export default component$(() => {
     const resultJson = await result.json();
     if (resultJson?.status === "success") {
       document.cookie = `token=${resultJson?.token}`;
-      nav("dashboard");
+      window.location.href = "dashboard";
     }
   });
 
