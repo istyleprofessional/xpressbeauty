@@ -7,7 +7,6 @@ export const connect = () => {
       mongoose.connection.readyState === 1 ||
       mongoose.connection.readyState === 2
     ) {
-      console.log("already connected");
       resolve(undefined);
     } else {
       const mongoUrl = process.env.QWIK_APP_MONGO_CONNECTION || "";
@@ -15,13 +14,10 @@ export const connect = () => {
       mongoose
         .connect(mongoUrl)
         .then(() => {
-          console.log("Connected to Database");
           resolve(undefined);
         })
-        .catch((err) => {
-          console.log(mongoUrl);
+        .catch(() => {
           reject();
-          console.log("Not Connected to Database ERROR! ", err);
         });
     }
   });

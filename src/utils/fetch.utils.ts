@@ -20,3 +20,15 @@ export const putRequest = async (url: string, data: any, token: string) => {
     body: JSON.stringify(data),
   });
 };
+
+export const deleteRequest = async (url: string, data: any, token: string) => {
+  return await fetch(url, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+    body: JSON.stringify(data),
+  });
+};

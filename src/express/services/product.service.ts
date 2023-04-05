@@ -8,7 +8,9 @@ export const get_products_service = async (token: string, page: number) => {
       const perPage = 100;
       const pageNumber = page;
       const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 100 : 0;
-      const result = await Product.find({}).skip(skip).limit(perPage);
+      const result = await Product.find({ isDeleted: { $ne: true } })
+        .skip(skip)
+        .limit(perPage);
       return result;
     } catch (e) {
       return { e: e };
@@ -52,7 +54,10 @@ export const update_product_service = async (product: any, token: string) => {
 
 export const get_all_products_with_item_no = async () => {
   try {
-    const result = await Product.find({ item_no: { $ne: "" } });
+    const result = await Product.find({ item_no: { $ne: "" } }).select({
+      item_no: 1,
+      _id: 0,
+    });
     const products: any[] = result;
     return products;
   } catch (err) {
@@ -62,16 +67,57 @@ export const get_all_products_with_item_no = async () => {
 
 export const update_on_hand_quantity = async (
   item_no: string,
-  quantity: string
+  quantity: string,
+  manufacturerPartNumber: string,
+  barCodeValue: string
 ) => {
   try {
     const result = await Product.findOneAndUpdate(
       { item_no: item_no },
-      { quantity_on_hand: quantity }
+      {
+        quantity_on_hand: quantity,
+        manufacturer_part_number: manufacturerPartNumber,
+        bar_code_value: barCodeValue,
+      }
     );
 
     return result;
   } catch (err) {
     return { err: err };
+  }
+};
+
+export const delete_item_service = async (product: any, token: string) => {
+  const isAdmin = verifyTokenAdmin(token);
+  if (isAdmin) {
+    try {
+      const result = await Product.findOneAndUpdate(
+        { _id: product._id },
+        { isDeleted: !product.isDeleted }
+      );
+      return result;
+    } catch (err) {
+      return { err: err };
+    }
+  } else {
+    return { e: "not authorized" };
+  }
+};
+
+export const hide_product_service = async (product: any, token: string) => {
+  const isAdmin = verifyTokenAdmin(token);
+  if (isAdmin) {
+    try {
+      const result = await Product.findOneAndUpdate(
+        { _id: product._id },
+        { isHidden: !product.isHidden },
+        { new: true }
+      );
+      return result;
+    } catch (err) {
+      return { err: err };
+    }
+  } else {
+    return { e: "not authorized" };
   }
 };

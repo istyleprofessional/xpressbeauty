@@ -13,6 +13,10 @@ const productsSchema = new Schema(
     wholesale_sale_price: { type: String },
     quantity_on_hand: { type: String },
     sku: { type: String },
+    manufacturer_part_number: { type: String },
+    bar_code_value: { type: String },
+    isDeleted: { type: Boolean, defaults: false },
+    isHidden: { type: Boolean, defaults: false },
   },
   { timestamps: true }
 );
