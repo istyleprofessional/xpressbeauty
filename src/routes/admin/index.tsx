@@ -27,7 +27,7 @@ export default component$(() => {
     const resultJson = await result.json();
     if (resultJson?.status === "success") {
       document.cookie = `token=${resultJson?.token}`;
-      nav("/admin/dashboard");
+      nav("dashboard");
     }
   });
 
