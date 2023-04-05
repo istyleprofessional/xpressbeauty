@@ -30,16 +30,7 @@ export const TableBody = component$((props: TableProps) => {
   return (
     <>
       <th scope="row" class={"px-6 py-4 w-10"}>
-        {isEdit === true && index === i ? (
-          <input
-            type="text"
-            value={product.product_name}
-            class="input input-bordered w-full max-w-lg text-sm"
-            onChange$={(e) => handleOnChange(e, i, "product_name")}
-          />
-        ) : (
-          <p>{product.product_name}</p>
-        )}
+        <p>{product.product_name}</p>
       </th>
       <td class={`px-6 py-4 w-10`}>
         {isEdit === true && index === i ? (
