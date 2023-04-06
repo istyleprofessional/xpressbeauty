@@ -1,6 +1,6 @@
 import { component$, useStore, $ } from "@builder.io/qwik";
-import { Button } from "~/components//button/button";
-import { Input } from "~/components/input-field/input.field";
+import { Button } from "~/components/admin/button/button";
+import { Input } from "~/components/admin/input-field/input.field";
 import { postRequest } from "~/utils/fetch.utils";
 
 export default component$(() => {

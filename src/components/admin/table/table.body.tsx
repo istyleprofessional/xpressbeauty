@@ -29,10 +29,10 @@ export const TableBody = component$((props: TableProps) => {
 
   return (
     <>
-      <th scope="row" class={"px-6 py-4 w-10"}>
+      <th class="whitespace-normal">
         <p>{product.product_name}</p>
       </th>
-      <td class={`px-6 py-4 w-10`}>
+      <td>
         {isEdit === true && index === i ? (
           <input
             type="text"
@@ -44,7 +44,7 @@ export const TableBody = component$((props: TableProps) => {
           <p>{product.regular_price}</p>
         )}
       </td>
-      <td class={`px-6 py-4 w-10`}>
+      <td>
         {isEdit === true && index === i ? (
           <input
             type="text"
@@ -56,7 +56,7 @@ export const TableBody = component$((props: TableProps) => {
           <p>{product.category}</p>
         )}
       </td>
-      <td class={`px-6 py-4 w-10`}>
+      <td>
         {isEdit === true && index === i ? (
           <input
             type="text"
@@ -68,7 +68,7 @@ export const TableBody = component$((props: TableProps) => {
           <p>{product.item_no}</p>
         )}
       </td>
-      <td class={`px-6 py-4 w-10`}>
+      <td>
         {isEdit === true && index === i ? (
           <input
             type="text"
@@ -80,25 +80,25 @@ export const TableBody = component$((props: TableProps) => {
           <p>{product.sku}</p>
         )}
       </td>
-      <td class={`px-6 py-4 w-10`}>
+      <td>
         <p>{product.quantity_on_hand}</p>
       </td>
-      <td class={`px-6 py-4 w-10`}>
+      <td>
         <p>{product.manufacturer_part_number}</p>
       </td>
-      <td class={`px-6 py-4 w-10`}>
+      <td>
         <p>{product.bar_code_value}</p>
       </td>
-      <td class={`px-6 py-4 w-10`}>
+      <td>
         <p>{product.isHidden ? "hide" : "active"}</p>
       </td>
-      <td class={`px-6 py-4 w-10`}>
+      <td>
         <a href={product.image} target="_blank">
           <img src={product.image} class="w-12 object-contain" />
         </a>
       </td>
-      <td class={`px-6 py-4 w-10`}>
-        <div class="flex flex-row gap-3">
+      <td>
+        <div class="flex flex-col gap-3">
           {isEdit === true && index === i ? (
             <button onClick$={() => handleDoneClick(i)}>
               <DoneIcon />
