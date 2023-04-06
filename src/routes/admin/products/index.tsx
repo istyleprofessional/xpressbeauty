@@ -129,7 +129,7 @@ export default component$(() => {
   });
 
   return (
-    <div class="flex flex-col w-[85%]">
+    <div class="flex flex-col w-[83%]">
       <div class="relative overflow-x-auto h-[90vh] w-full mt-9">
         <table class="table table-compact w-[50%] overflow-scroll">
           <TableHeader />

@@ -2,7 +2,7 @@ import { component$ } from "@builder.io/qwik";
 
 export const TableHeader = component$(() => {
   return (
-    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0 z-20">
       <tr>
         <th scope="col" class="px-6 py-3 whitespace-nowrap">
           Product name

@@ -58,7 +58,7 @@ export const TableBody = component$((props: TableProps) => {
         <div class="flex justify-center items-center">
           {isEdit === true && index === i ? (
             <textarea
-              class="textarea textarea-xs textarea-bordered"
+              class="textarea textarea-xs textarea-bordered w-full"
               placeholder={product.category}
               onChange$={(e) => handleOnChange(e, i, "category")}
             ></textarea>
@@ -71,8 +71,8 @@ export const TableBody = component$((props: TableProps) => {
         <div class="flex justify-center items-center">
           {isEdit === true && index === i ? (
             <textarea
-              class="textarea textarea-xs textarea-bordered"
-              placeholder={product.item_no}
+              class="textarea textarea-xs textarea-bordered w-full"
+              placeholder={product.item_no ? product.item_no : "Item number"}
               onChange$={(e) => handleOnChange(e, i, "item_no")}
             ></textarea>
           ) : (
@@ -84,8 +84,8 @@ export const TableBody = component$((props: TableProps) => {
         <div class="flex justify-center items-center">
           {isEdit === true && index === i ? (
             <textarea
-              class="textarea textarea-xs textarea-bordered"
-              placeholder={product.sku}
+              class="textarea textarea-xs textarea-bordered w-full"
+              placeholder={product.sku ? product.sku : "SKU"}
               onChange$={(e) => handleOnChange(e, i, "sku")}
             ></textarea>
           ) : (
