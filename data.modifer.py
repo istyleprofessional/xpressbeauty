@@ -61,4 +61,19 @@ def add_sku():
         json.dump(data, f, ensure_ascii=False)
 
 
-add_sku()
+def create_images_responsive():
+    max_widths = [1200, 800, 500]
+    for file_name in os.listdir('./public/images'):
+        image_path = f'''./public/images/{file_name}'''
+        with Image.open(image_path) as image:
+            original_width, original_height = image.size
+            file_name = file_name.split('.')[0] 
+            for max_width in max_widths:
+                if original_width > max_width:
+                    width_percent = max_width / original_width
+                    new_width = int(original_width * width_percent)
+                    new_height = int(original_height * width_percent)
+                    resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
+                    resized_image.save(f'''./public/images/{file_name}-{max_width}.webp''')
+
+create_images_responsive()

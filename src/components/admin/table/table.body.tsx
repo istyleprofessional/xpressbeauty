@@ -1,4 +1,4 @@
-import type { PropFunction } from "@builder.io/qwik";
+import { PropFunction, useSignal, useTask$ } from "@builder.io/qwik";
 import { component$ } from "@builder.io/qwik";
 import {
   DeleteIcon,
@@ -32,6 +32,11 @@ export const TableBody = component$((props: TableProps) => {
     handleDeleteClick,
     handleHideClick,
   } = props;
+  const smallProjectImage = useSignal<string>("");
+
+  useTask$(() => {
+    smallProjectImage.value = product.image.split(".")[0];
+  });
 
   return (
     <>
@@ -114,11 +119,21 @@ export const TableBody = component$((props: TableProps) => {
       <td class="border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center">
           <a href={product.image} target="_blank">
-            <img
-              src={product.image}
-              class="w-12 object-contain"
-              alt={product.product_name}
-            />
+            <picture>
+              <source srcSet={product.image} media="(min-width: 768px)" />
+              <source
+                srcSet={`${smallProjectImage.value}-500.webp`}
+                media="(min-width: 0px)"
+              />
+              <img
+                src={`${smallProjectImage.value}-500.webp`}
+                height="300"
+                width="500"
+                class="img-responsive"
+                loading="eager"
+                alt={product.product_name}
+              />
+            </picture>
           </a>
         </div>
       </td>
