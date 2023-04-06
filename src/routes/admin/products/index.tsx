@@ -1,4 +1,11 @@
-import { component$, $, useSignal, useTask$ } from "@builder.io/qwik";
+import {
+  component$,
+  $,
+  useSignal,
+  useTask$,
+  useVisibleTask$,
+  useStore,
+} from "@builder.io/qwik";
 import { routeLoader$, useLocation } from "@builder.io/qwik-city";
 import { connect } from "~/express/db.connection";
 import {
@@ -9,6 +16,7 @@ import { TableBody } from "~/components/admin/table/table.body";
 import { Pagination } from "~/components/admin/pagination/pagination";
 import { deleteRequest, putRequest } from "~/utils/fetch.utils";
 import { TableHeader } from "~/components/admin/table/table.header";
+import { Toast } from "~/components/admin/toast/toast";
 
 export const useProductData = routeLoader$(async (ev) => {
   const token = ev.cookie.get("token")?.value;
@@ -28,6 +36,7 @@ export default component$(() => {
   const totalPages = Math.floor(count);
   const loc = useLocation();
   const currentPage = loc.url.searchParams.get("page") ?? "1";
+  const messages = useStore<string[]>([], { deep: true });
 
   useTask$(() => {
     products.value = productData;
@@ -37,11 +46,15 @@ export default component$(() => {
     if (index.value || index.value === 0) {
       if (index.value !== i) {
         const token = document?.cookie.split("=")[1];
-        await putRequest(
+        const result = await putRequest(
           "/api/admin/product/update",
           products.value[index.value],
           token
         );
+        const resultJson = await result.json();
+        if (!resultJson.err) {
+          messages.push("Item updated successfully");
+        }
       }
     }
     isEdit.value = true;
@@ -50,7 +63,15 @@ export default component$(() => {
 
   const handleDoneClick = $(async (i: number) => {
     const token = document?.cookie.split("=")[1];
-    await putRequest("/api/admin/product/update", products.value[i], token);
+    const result = await putRequest(
+      "/api/admin/product/update",
+      products.value[i],
+      token
+    );
+    const resultJson = await result.json();
+    if (!resultJson.err) {
+      messages.push("Item updated successfully");
+    }
     isEdit.value = false;
     index.value = i;
   });
@@ -75,6 +96,7 @@ export default component$(() => {
         products.value = products.value.filter((item: any) => {
           return item !== products.value[i];
         });
+        messages.push("Item Deleted successfully");
       }
     }
   });
@@ -87,18 +109,29 @@ export default component$(() => {
       token
     );
     const resultJson = await result.json();
-    products.value = products.value.map((item: any, index: number) => {
-      if (i === index) {
-        item = resultJson;
-      }
-      return item;
-    });
+    if (!resultJson.err) {
+      products.value = products.value.map((item: any, index: number) => {
+        if (i === index) {
+          item = resultJson;
+        }
+        return item;
+      });
+      messages.push("Item Hidden successfully");
+    }
+  });
+
+  useVisibleTask$(({ track, cleanup }) => {
+    track(() => messages);
+    const interval = setInterval(() => {
+      messages.shift();
+    }, 8000);
+    cleanup(() => clearInterval(interval));
   });
 
   return (
     <div class="flex flex-col w-[85%]">
       <div class="relative overflow-x-auto h-[90vh] w-full mt-9">
-        <table class="table w-[50%] overflow-scroll">
+        <table class="table table-compact w-[50%] overflow-scroll">
           <TableHeader />
           <tbody>
             {products.value.map((product: any, i: number) => (
@@ -118,6 +151,15 @@ export default component$(() => {
             ))}
           </tbody>
         </table>
+      </div>
+      <div class="flex flex-col gap-4">
+        {messages.length !== 0 && (
+          <div class="toast toast-end z-100">
+            {messages.map((message: string, index: number) => (
+              <Toast message={message} key={index} />
+            ))}
+          </div>
+        )}
       </div>
       <Pagination currentPage={currentPage || ""} totalPages={totalPages} />
     </div>

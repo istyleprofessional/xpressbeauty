@@ -23,9 +23,6 @@ export const TableHeader = component$(() => {
           Quantity on hand
         </th>
         <th scope="col" class="px-6 py-3 whitespace-nowrap">
-          Manufacturer Part Number
-        </th>
-        <th scope="col" class="px-6 py-3 whitespace-nowrap">
           Bar Code Value
         </th>
         <th scope="col" class="px-6 py-3 whitespace-nowrap">
