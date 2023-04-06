@@ -67,7 +67,7 @@ export const TableBody = component$((props: TableProps) => {
           )}
         </div>
       </td>
-      <td class="text-sm">
+      <td class="text-sm whitespace-normal">
         <div class="flex justify-center items-center">
           {isEdit === true && index === i ? (
             <textarea
