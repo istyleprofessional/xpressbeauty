@@ -18,6 +18,7 @@ export const SideNav = component$((props: any) => {
           location === "/admin/dashboard/" ? "text-[#2A4178]" : "text-[#A7B7DD]"
         }`}
         href="/admin/dashboard"
+        aria-label="Dashboard"
       >
         <span>
           <DashboardIcon
@@ -33,6 +34,7 @@ export const SideNav = component$((props: any) => {
           location === "/admin/order/" ? "text-[#2A4178]" : "text-[#A7B7DD]"
         }`}
         href="/admin/order/"
+        aria-label="Orders"
       >
         <span>
           <ShoppingCartIcon
@@ -46,6 +48,7 @@ export const SideNav = component$((props: any) => {
           location === "/admin/products/" ? "text-[#2A4178]" : "text-[#A7B7DD]"
         }`}
         href="/admin/products/"
+        aria-label="Products"
       >
         <span>
           <ProductBagIcon
@@ -59,6 +62,7 @@ export const SideNav = component$((props: any) => {
           location === "/admin/shipping/" ? "text-[#2A4178]" : "text-[#A7B7DD]"
         }`}
         href="/admin/shipping/"
+        aria-label="Shippings"
       >
         <span>
           <TruckIcon
@@ -72,6 +76,7 @@ export const SideNav = component$((props: any) => {
           location === "/admin/payments/" ? "text-[#2A4178]" : "text-[#A7B7DD]"
         }`}
         href="/admin/payments/"
+        aria-label="Payments"
       >
         <span>
           <CreditCardIcon
@@ -85,6 +90,7 @@ export const SideNav = component$((props: any) => {
           location === "/admin/settings/" ? "text-[#2A4178]" : "text-[#A7B7DD]"
         }`}
         href="/admin/settings/"
+        aria-label="Settings"
       >
         <span>
           <SettingIcon

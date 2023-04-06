@@ -14,7 +14,10 @@ export const Toast = component$((props: ToastProps) => {
     <div class="alert alert-success">
       <div>
         <span>{message}</span>
-        <button onClick$={() => handleClose(index)}>
+        <button
+          onClick$={() => handleClose(index)}
+          aria-label="Close notification"
+        >
           <CloseIcon />
         </button>
       </div>

@@ -57,7 +57,11 @@ export const Input = component$((props: InputProps) => {
         }}
       />
       {placeHolder === "Password" && (
-        <button class="absolute left-[57%]" onClick$={handleShowPassword}>
+        <button
+          class="absolute left-[57%]"
+          onClick$={handleShowPassword}
+          aria-label="Show password"
+        >
           <i class="fa fa-eye"></i>
         </button>
       )}

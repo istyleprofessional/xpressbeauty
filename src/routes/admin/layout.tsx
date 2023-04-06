@@ -1,5 +1,5 @@
 import { component$, Slot } from "@builder.io/qwik";
-import { routeLoader$, useLocation } from "@builder.io/qwik-city";
+import { DocumentHead, routeLoader$, useLocation } from "@builder.io/qwik-city";
 import { SideNav } from "~/components/admin/side-nav/side.nav";
 import { verifyTokenAdmin } from "~/utils/token.utils";
 
@@ -32,3 +32,7 @@ export default component$(() => {
     </main>
   );
 });
+
+export const head: DocumentHead = {
+  title: `Admin dashboard for xpress beauty`,
+};

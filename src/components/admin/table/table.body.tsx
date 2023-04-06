@@ -114,25 +114,38 @@ export const TableBody = component$((props: TableProps) => {
       <td class="border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center">
           <a href={product.image} target="_blank">
-            <img src={product.image} class="w-12 object-contain" />
+            <img
+              src={product.image}
+              class="w-12 object-contain"
+              alt={product.product_name}
+            />
           </a>
         </div>
       </td>
       <td class="text-sm border-solid border-[1px] border-slate-500">
         <div class="flex flex-col gap-3 justify-center items-center">
           {isEdit === true && index === i ? (
-            <button onClick$={() => handleDoneClick(i)}>
+            <button
+              onClick$={() => handleDoneClick(i)}
+              aria-label="Done edit product"
+            >
               <DoneIcon />
             </button>
           ) : (
-            <button onClick$={() => handleEditClick(i)}>
+            <button
+              onClick$={() => handleEditClick(i)}
+              aria-label="edit product"
+            >
               <EditIcon />
             </button>
           )}
-          <button onClick$={() => handleDeleteClick(i)}>
+          <button
+            onClick$={() => handleDeleteClick(i)}
+            aria-label="Delete product"
+          >
             <DeleteIcon />
           </button>
-          <button onClick$={() => handleHideClick(i)}>
+          <button onClick$={() => handleHideClick(i)} aria-label="Hide product">
             {product.isHidden ? <UnHideIcon /> : <HideIcon />}
           </button>
         </div>

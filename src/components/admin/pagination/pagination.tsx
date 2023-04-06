@@ -15,6 +15,7 @@ export const Pagination = component$((props: PaginationProps) => {
         role="button"
         class={`inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700
           ${parseInt(currentPage ?? "1") === 1 ? "pointer-events-none" : ""}`}
+        aria-label="Pervious Page"
       >
         <BackArrowIcon />
         Previous
@@ -27,6 +28,7 @@ export const Pagination = component$((props: PaginationProps) => {
               ? "pointer-events-none"
               : ""
           }`}
+        aria-label="Next Page"
       >
         Next
         <NextArrowIcon />
