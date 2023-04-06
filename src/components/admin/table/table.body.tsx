@@ -93,7 +93,7 @@ export const TableBody = component$((props: TableProps) => {
           )}
         </div>
       </td>
-      <td class="text-sm">
+      <td class="text-sm whitespace-normal">
         <div class="flex justify-center items-center">
           <p>{product.quantity_on_hand}</p>
         </div>

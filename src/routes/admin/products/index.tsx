@@ -128,6 +128,9 @@ export default component$(() => {
     cleanup(() => clearInterval(interval));
   });
 
+  const handleToastClose = $((index: number) => {
+    messages.splice(index, 1);
+  });
   return (
     <div class="flex flex-col w-[83%]">
       <div class="relative overflow-x-auto h-[90vh] w-full mt-9">
@@ -156,7 +159,12 @@ export default component$(() => {
         {messages.length !== 0 && (
           <div class="toast toast-end z-100">
             {messages.map((message: string, index: number) => (
-              <Toast message={message} key={index} />
+              <Toast
+                message={message}
+                key={index}
+                index={index}
+                handleClose={handleToastClose}
+              />
             ))}
           </div>
         )}
