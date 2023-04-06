@@ -41,7 +41,7 @@ export const TableBody = component$((props: TableProps) => {
         </div>
       </th>
       <td class="text-sm">
-        <div class="flex justify-center items-center">
+        <div class="flex justify-center items-center whitespace-normal">
           {isEdit === true && index === i ? (
             <input
               type="text"
