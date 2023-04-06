@@ -138,7 +138,10 @@ export default component$(() => {
           <TableHeader />
           <tbody>
             {products.value.map((product: any, i: number) => (
-              <tr class="bg-white border-b" key={i}>
+              <tr
+                class="bg-white border-solid border-2 border-slate-500"
+                key={i}
+              >
                 <TableBody
                   product={product}
                   isEdit={isEdit.value}

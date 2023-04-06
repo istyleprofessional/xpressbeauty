@@ -35,12 +35,12 @@ export const TableBody = component$((props: TableProps) => {
 
   return (
     <>
-      <th class="whitespace-normal text-base z-10">
+      <th class="whitespace-normal text-base z-10 border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center">
           <p>{product.product_name}</p>
         </div>
       </th>
-      <td class="text-sm">
+      <td class="text-sm border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center whitespace-normal">
           {isEdit === true && index === i ? (
             <input
@@ -54,12 +54,13 @@ export const TableBody = component$((props: TableProps) => {
           )}
         </div>
       </td>
-      <td class="text-sm">
+      <td class="text-sm border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center">
           {isEdit === true && index === i ? (
             <textarea
               class="textarea textarea-xs textarea-bordered w-full"
               placeholder={product.category}
+              value={product.category}
               onChange$={(e) => handleOnChange(e, i, "category")}
             ></textarea>
           ) : (
@@ -67,12 +68,13 @@ export const TableBody = component$((props: TableProps) => {
           )}
         </div>
       </td>
-      <td class="text-sm whitespace-normal">
+      <td class="text-sm whitespace-normal border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center">
           {isEdit === true && index === i ? (
             <textarea
               class="textarea textarea-xs textarea-bordered w-full"
               placeholder={product.item_no ? product.item_no : "Item number"}
+              value={product.item_no}
               onChange$={(e) => handleOnChange(e, i, "item_no")}
             ></textarea>
           ) : (
@@ -80,12 +82,13 @@ export const TableBody = component$((props: TableProps) => {
           )}
         </div>
       </td>
-      <td class="text-sm">
+      <td class="text-sm border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center">
           {isEdit === true && index === i ? (
             <textarea
               class="textarea textarea-xs textarea-bordered w-full"
               placeholder={product.sku ? product.sku : "SKU"}
+              value={product.sku}
               onChange$={(e) => handleOnChange(e, i, "sku")}
             ></textarea>
           ) : (
@@ -93,29 +96,29 @@ export const TableBody = component$((props: TableProps) => {
           )}
         </div>
       </td>
-      <td class="text-sm whitespace-normal">
+      <td class="text-sm whitespace-normal border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center">
           <p>{product.quantity_on_hand}</p>
         </div>
       </td>
-      <td class="text-sm">
+      <td class="text-sm border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center">
           <p>{product.bar_code_value}</p>
         </div>
       </td>
-      <td class="text-sm">
+      <td class="text-sm border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center">
           <p>{product.isHidden ? "hide" : "active"}</p>
         </div>
       </td>
-      <td>
+      <td class="border-solid border-[1px] border-slate-500">
         <div class="flex justify-center items-center">
           <a href={product.image} target="_blank">
             <img src={product.image} class="w-12 object-contain" />
           </a>
         </div>
       </td>
-      <td class="text-sm">
+      <td class="text-sm border-solid border-[1px] border-slate-500">
         <div class="flex flex-col gap-3 justify-center items-center">
           {isEdit === true && index === i ? (
             <button onClick$={() => handleDoneClick(i)}>
