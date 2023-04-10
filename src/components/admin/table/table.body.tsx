@@ -40,12 +40,12 @@ export const TableBody = component$((props: TableProps) => {
 
   return (
     <>
-      <th class="whitespace-normal text-base z-10 border-solid border-[1px] border-slate-500">
+      <th class="whitespace-normal text-base z-10">
         <div class="flex justify-center items-center">
           <p>{product.product_name}</p>
         </div>
       </th>
-      <td class="text-sm border-solid border-[1px] border-slate-500">
+      <td class="text-sm">
         <div class="flex justify-center items-center whitespace-normal">
           {isEdit === true && index === i ? (
             <input
@@ -59,7 +59,7 @@ export const TableBody = component$((props: TableProps) => {
           )}
         </div>
       </td>
-      <td class="text-sm border-solid border-[1px] border-slate-500">
+      <td class="text-sm">
         <div class="flex justify-center items-center">
           {isEdit === true && index === i ? (
             <textarea
@@ -73,7 +73,7 @@ export const TableBody = component$((props: TableProps) => {
           )}
         </div>
       </td>
-      <td class="text-sm whitespace-normal border-solid border-[1px] border-slate-500">
+      <td class="text-sm whitespace-normal">
         <div class="flex justify-center items-center">
           {isEdit === true && index === i ? (
             <textarea
@@ -87,7 +87,7 @@ export const TableBody = component$((props: TableProps) => {
           )}
         </div>
       </td>
-      <td class="text-sm border-solid border-[1px] border-slate-500">
+      <td class="text-sm">
         <div class="flex justify-center items-center">
           {isEdit === true && index === i ? (
             <textarea
@@ -101,22 +101,22 @@ export const TableBody = component$((props: TableProps) => {
           )}
         </div>
       </td>
-      <td class="text-sm whitespace-normal border-solid border-[1px] border-slate-500">
+      <td class="text-sm whitespace-normal">
         <div class="flex justify-center items-center">
           <p>{product.quantity_on_hand}</p>
         </div>
       </td>
-      <td class="text-sm border-solid border-[1px] border-slate-500">
+      <td class="text-sm">
         <div class="flex justify-center items-center">
           <p>{product.bar_code_value}</p>
         </div>
       </td>
-      <td class="text-sm border-solid border-[1px] border-slate-500">
+      <td class="text-sm">
         <div class="flex justify-center items-center">
           <p>{product.isHidden ? "hide" : "active"}</p>
         </div>
       </td>
-      <td class="border-solid border-[1px] border-slate-500">
+      <td>
         <div class="flex justify-center items-center">
           <a href={product.image} target="_blank">
             <picture>
@@ -137,7 +137,7 @@ export const TableBody = component$((props: TableProps) => {
           </a>
         </div>
       </td>
-      <td class="text-sm border-solid border-[1px] border-slate-500">
+      <td class="text-sm">
         <div class="flex flex-col gap-3 justify-center items-center">
           {isEdit === true && index === i ? (
             <button
