@@ -116,26 +116,24 @@ export const TableBody = component$((props: TableProps) => {
           <p>{product.isHidden ? "hide" : "active"}</p>
         </div>
       </td>
-      <td>
-        <div class="flex justify-center items-center">
-          <a href={product.image} target="_blank">
-            <picture>
-              <source srcSet={product.image} media="(min-width: 768px)" />
-              <source
-                srcSet={`${smallProjectImage.value}-500.webp`}
-                media="(min-width: 0px)"
-              />
-              <img
-                src={`${smallProjectImage.value}-500.webp`}
-                height="300"
-                width="500"
-                class="img-responsive"
-                loading="eager"
-                alt={product.product_name}
-              />
-            </picture>
-          </a>
-        </div>
+      <td class="flex justify-center items-center">
+        <a href={product.image} target="_blank">
+          <picture class="flex justify-center items-center">
+            <source srcSet={product.image} media="(min-width: 768px)" />
+            <source
+              srcSet={`${smallProjectImage.value}-500.webp`}
+              media="(min-width: 0px)"
+            />
+            <img
+              src={`${smallProjectImage.value}-500.webp`}
+              height="100%"
+              width="50%"
+              class="img-responsive"
+              loading="eager"
+              alt={product.product_name}
+            />
+          </picture>
+        </a>
       </td>
       <td class="text-sm">
         <div class="flex flex-col gap-3 justify-center items-center">
