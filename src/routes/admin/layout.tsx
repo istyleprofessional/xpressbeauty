@@ -1,5 +1,6 @@
 import { component$, Slot } from "@builder.io/qwik";
-import { DocumentHead, routeLoader$, useLocation } from "@builder.io/qwik-city";
+import type { DocumentHead } from "@builder.io/qwik-city";
+import { routeLoader$, useLocation } from "@builder.io/qwik-city";
 import { SideNav } from "~/components/admin/side-nav/side.nav";
 import { verifyTokenAdmin } from "~/utils/token.utils";
 
@@ -21,15 +22,22 @@ export const useProfileLoader = routeLoader$(
 
 export default component$(() => {
   const loc = useLocation();
+  const status = process.env.STATUS;
   return (
-    <main style={{ minHeight: "100vh" }}>
-      <div class="flex flex-row gap-10">
-        {loc.url.pathname !== "/admin/" && (
-          <SideNav location={loc.url.pathname} />
-        )}
-        <Slot />
-      </div>
-    </main>
+    <>
+      {status === "1" && (
+        <main>
+          <>
+            {/* {loc.url.pathname !== "/admin/" && (
+    
+            )} */}
+            <SideNav location={loc.url.pathname}>
+              <Slot />
+            </SideNav>
+          </>
+        </main>
+      )}
+    </>
   );
 });
 

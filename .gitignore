@@ -27,7 +27,8 @@ lerna-debug.log*
 !.vscode/extensions.json
 .idea
 .DS_Store
-.env
+.data.modifer.py
+*.env
 *.suo
 *.ntvs*
 *.njsproj
@@ -37,3 +38,10 @@ lerna-debug.log*
 # Yarn
 .yarn/*
 !.yarn/releases
+
+# Secret file
+.env
+.data.modifer.py
+
+# Netlify
+.netlify

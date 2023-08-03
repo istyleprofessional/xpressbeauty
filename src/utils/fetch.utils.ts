@@ -9,25 +9,33 @@ export const postRequest = async (url: string, data: any) => {
   });
 };
 
-export const putRequest = async (url: string, data: any, token: string) => {
+export const getRequest = async (url: string) => {
+  return await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+export const putRequest = async (url: string, data: any) => {
   return await fetch(url, {
     method: "PUT",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
-      Authorization: token,
     },
     body: JSON.stringify(data),
   });
 };
 
-export const deleteRequest = async (url: string, data: any, token: string) => {
+export const deleteRequest = async (url: string, data: any) => {
   return await fetch(url, {
     method: "DELETE",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
-      Authorization: token,
     },
     body: JSON.stringify(data),
   });

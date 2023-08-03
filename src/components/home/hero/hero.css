@@ -1,0 +1,7 @@
+button {
+  background: rgba(24, 24, 27, 0.7);
+}
+.carousel {
+  margin-left: 50%;
+  transform: translateX(-50%);
+}

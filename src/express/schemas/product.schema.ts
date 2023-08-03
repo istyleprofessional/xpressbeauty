@@ -6,19 +6,24 @@ const productsSchema = new Schema(
     description: { type: String, default: null },
     item_no: { type: String },
     sale_price: { type: String, default: null },
-    regular_price: { type: String },
+    price: { type: String },
     category: { type: String },
-    image: { type: String },
-    wholesale_price: { type: String },
-    wholesale_sale_price: { type: String },
+    imgs: { type: Array },
     quantity_on_hand: { type: String },
     sku: { type: String },
     manufacturer_part_number: { type: String },
     bar_code_value: { type: String },
     isDeleted: { type: Boolean, defaults: false },
     isHidden: { type: Boolean, defaults: false },
+    status: { type: String, default: "NORMAL" },
+    rating: { type: Number, default: 0 },
+    variation_type: { type: String, default: null },
+    variations: { type: Array, default: null },
+    lineName: { type: String, default: null },
+    companyName: { type: String, default: null },
+    perfix: { type: String, default: null },
   },
   { timestamps: true }
 );
 
-export const Product = model("products", productsSchema);
+export default model("products", productsSchema);

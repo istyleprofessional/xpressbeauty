@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export const verifyTokenAdmin = (token: string) => {
+  // console.log("token " + token);
   let isAuthorized = false;
   try {
     jwt.verify(
@@ -8,6 +9,7 @@ export const verifyTokenAdmin = (token: string) => {
       process.env.QWIK_APP_TOKEN_SECRET ?? "",
       async (err: any, decoded: any) => {
         if (err) {
+          console.log(err);
           return false;
         }
         const jsonDecoded = JSON.parse(JSON.stringify(decoded));
@@ -16,6 +18,7 @@ export const verifyTokenAdmin = (token: string) => {
         }
       }
     );
+
     return isAuthorized;
   } catch {
     return false;

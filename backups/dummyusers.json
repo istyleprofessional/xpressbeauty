@@ -1,0 +1,541 @@
+[{
+	"_id": {
+		"$oid": "644c25cd71c2ee751414238d"
+	},
+	"browserId": "1fa96057-66ed-46ed-9da9-1b26d433c6a1",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-28T20:00:13.403Z"
+	},
+	"ip": {
+		"range": [
+			1096785920,
+			1096786943
+		],
+		"country": "CA",
+		"region": "ON",
+		"eu": "0",
+		"timezone": "America/Toronto",
+		"city": "Toronto",
+		"ll": [
+			43.6694,
+			-79.4018
+		],
+		"metro": 0,
+		"area": 1
+	},
+	"updatedAt": {
+		"$date": "2023-04-28T20:00:13.403Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644c265571c2ee75141423ee"
+	},
+	"browserId": "602536fd-7635-4e4d-8149-63128c14a1de",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-28T20:02:29.871Z"
+	},
+	"ip": {
+		"range": [
+			1096785920,
+			1096786943
+		],
+		"country": "CA",
+		"region": "ON",
+		"eu": "0",
+		"timezone": "America/Toronto",
+		"city": "Toronto",
+		"ll": [
+			43.6694,
+			-79.4018
+		],
+		"metro": 0,
+		"area": 1
+	},
+	"updatedAt": {
+		"$date": "2023-04-28T20:02:29.871Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644c380d71c2ee7514143272"
+	},
+	"browserId": "5b03a8b1-091c-431e-900a-311135e5e42d",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-28T21:18:05.077Z"
+	},
+	"ip": {
+		"range": [
+			3.337295872E+09,
+			3.337296127E+09
+		],
+		"country": "CA",
+		"region": "ON",
+		"eu": "0",
+		"timezone": "America/Toronto",
+		"city": "Ingersoll",
+		"ll": [
+			43.0334,
+			-80.883
+		],
+		"metro": 0,
+		"area": 20
+	},
+	"updatedAt": {
+		"$date": "2023-04-28T21:18:05.077Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644d54c171c2ee751414a7d1"
+	},
+	"browserId": "42ff65c8-d5b1-43e5-97e9-53d627a97cfb",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-29T17:32:49.965Z"
+	},
+	"ip": {
+		"range": [
+			2.818080768E+09,
+			2.818113535E+09
+		],
+		"country": "US",
+		"region": "",
+		"eu": "0",
+		"timezone": "America/Chicago",
+		"city": "",
+		"ll": [
+			37.751,
+			-97.822
+		],
+		"metro": 0,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-04-29T17:32:49.965Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644d54c271c2ee751414a7d4"
+	},
+	"browserId": "0dc010ad-72c8-412c-a9ef-49920402f98c",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-29T17:32:50.212Z"
+	},
+	"ip": {
+		"range": [
+			2.818080768E+09,
+			2.818113535E+09
+		],
+		"country": "US",
+		"region": "",
+		"eu": "0",
+		"timezone": "America/Chicago",
+		"city": "",
+		"ll": [
+			37.751,
+			-97.822
+		],
+		"metro": 0,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-04-29T17:32:50.212Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644d77ba71c2ee751414b63f"
+	},
+	"browserId": "025ef1da-8fd4-4ccb-923b-76d0cccd1b19",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-29T20:02:02.421Z"
+	},
+	"ip": {
+		"range": [
+			2.807988224E+09,
+			2.808020991E+09
+		],
+		"country": "US",
+		"region": "",
+		"eu": "0",
+		"timezone": "America/Chicago",
+		"city": "",
+		"ll": [
+			37.751,
+			-97.822
+		],
+		"metro": 0,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-04-29T20:02:02.421Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644d77ba71c2ee751414b644"
+	},
+	"browserId": "0da5646f-e0dd-40a5-bc50-f729337b5936",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-29T20:02:02.727Z"
+	},
+	"ip": {
+		"range": [
+			2.807988224E+09,
+			2.808020991E+09
+		],
+		"country": "US",
+		"region": "",
+		"eu": "0",
+		"timezone": "America/Chicago",
+		"city": "",
+		"ll": [
+			37.751,
+			-97.822
+		],
+		"metro": 0,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-04-29T20:02:02.727Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644da8c071c2ee751414ca70"
+	},
+	"browserId": "4c20cc0f-5269-49e0-8c17-518a4732c2f1",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-29T23:31:12.593Z"
+	},
+	"ip": {
+		"range": [
+			1676347392,
+			1676349439
+		],
+		"country": "CA",
+		"region": "ON",
+		"eu": "0",
+		"timezone": "America/Toronto",
+		"city": "Brampton",
+		"ll": [
+			43.7196,
+			-79.6854
+		],
+		"metro": 0,
+		"area": 5
+	},
+	"updatedAt": {
+		"$date": "2023-04-29T23:31:12.593Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644dad7c71c2ee751414cc66"
+	},
+	"browserId": "d902c305-fa03-43de-9a05-48926d4caabd",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-29T23:51:24.514Z"
+	},
+	"ip": {
+		"range": [
+			592445440,
+			593494015
+		],
+		"country": "US",
+		"region": "WA",
+		"eu": "0",
+		"timezone": "America/Los_Angeles",
+		"city": "Seattle",
+		"ll": [
+			47.6348,
+			-122.3451
+		],
+		"metro": 819,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-04-29T23:51:24.514Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644dd29571c2ee751414dba3"
+	},
+	"browserId": "5534f868-2fbc-44aa-8183-a24030efd589",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-30T02:29:41.698Z"
+	},
+	"ip": {
+		"range": [
+			2.918989824E+09,
+			2.919006207E+09
+		],
+		"country": "US",
+		"region": "",
+		"eu": "0",
+		"timezone": "America/Chicago",
+		"city": "",
+		"ll": [
+			37.751,
+			-97.822
+		],
+		"metro": 0,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-04-30T02:29:41.698Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644dd29671c2ee751414dba6"
+	},
+	"browserId": "7c47e483-48a9-44ff-8017-901c45c79049",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-30T02:29:42.132Z"
+	},
+	"ip": {
+		"range": [
+			2.918989824E+09,
+			2.919006207E+09
+		],
+		"country": "US",
+		"region": "",
+		"eu": "0",
+		"timezone": "America/Chicago",
+		"city": "",
+		"ll": [
+			37.751,
+			-97.822
+		],
+		"metro": 0,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-04-30T02:29:42.132Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644e58ed71c2ee75141512fc"
+	},
+	"browserId": "c7a089f6-ec1b-4c84-9079-17799f80c66d",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-04-30T12:02:53.898Z"
+	},
+	"ip": {
+		"range": [
+			3.253439488E+09,
+			3.253440511E+09
+		],
+		"country": "SE",
+		"region": "AB",
+		"eu": "1",
+		"timezone": "Europe/Stockholm",
+		"city": "Upplands Vasby",
+		"ll": [
+			59.5204,
+			17.9083
+		],
+		"metro": 0,
+		"area": 200
+	},
+	"updatedAt": {
+		"$date": "2023-04-30T12:02:53.898Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644f9d6c71c2ee7514159885"
+	},
+	"browserId": "02aee549-ac4d-4ff6-a115-b310272841cb",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-05-01T11:07:24.834Z"
+	},
+	"ip": {
+		"range": [
+			592445440,
+			593494015
+		],
+		"country": "US",
+		"region": "WA",
+		"eu": "0",
+		"timezone": "America/Los_Angeles",
+		"city": "Seattle",
+		"ll": [
+			47.6348,
+			-122.3451
+		],
+		"metro": 819,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-05-01T11:07:24.834Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644f9d7071c2ee7514159889"
+	},
+	"browserId": "0915b322-2010-44d9-99b3-5d8bdde4b743",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-05-01T11:07:28.244Z"
+	},
+	"ip": {
+		"range": [
+			592445440,
+			593494015
+		],
+		"country": "US",
+		"region": "WA",
+		"eu": "0",
+		"timezone": "America/Los_Angeles",
+		"city": "Seattle",
+		"ll": [
+			47.6348,
+			-122.3451
+		],
+		"metro": 819,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-05-01T11:07:28.244Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644f9d8b71c2ee7514159898"
+	},
+	"browserId": "e84ac0a2-4271-4fed-95ef-f0910192cb60",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-05-01T11:07:55.462Z"
+	},
+	"ip": {
+		"range": [
+			873988096,
+			874250239
+		],
+		"country": "US",
+		"region": "OR",
+		"eu": "0",
+		"timezone": "America/Los_Angeles",
+		"city": "Boardman",
+		"ll": [
+			45.8491,
+			-119.7143
+		],
+		"metro": 810,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-05-01T11:07:55.462Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644f9d8d71c2ee751415989a"
+	},
+	"browserId": "7976f701-df5c-450f-b757-f84e04dec21a",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-05-01T11:07:57.488Z"
+	},
+	"ip": {
+		"range": [
+			873988096,
+			874250239
+		],
+		"country": "US",
+		"region": "OR",
+		"eu": "0",
+		"timezone": "America/Los_Angeles",
+		"city": "Boardman",
+		"ll": [
+			45.8491,
+			-119.7143
+		],
+		"metro": 810,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-05-01T11:07:57.488Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644f9d9571c2ee75141598a1"
+	},
+	"browserId": "dec416a8-180e-4739-8f9c-7c04d13b1544",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-05-01T11:08:05.609Z"
+	},
+	"ip": {
+		"range": [
+			584581120,
+			585105407
+		],
+		"country": "US",
+		"region": "OR",
+		"eu": "0",
+		"timezone": "America/Los_Angeles",
+		"city": "Boardman",
+		"ll": [
+			45.8491,
+			-119.7143
+		],
+		"metro": 810,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-05-01T11:08:05.609Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "644f9d9671c2ee75141598a3"
+	},
+	"browserId": "e7d373b0-87bf-46c7-aebb-75b39b14f1d0",
+	"__v": 0,
+	"createdAt": {
+		"$date": "2023-05-01T11:08:06.723Z"
+	},
+	"ip": {
+		"range": [
+			584581120,
+			585105407
+		],
+		"country": "US",
+		"region": "OR",
+		"eu": "0",
+		"timezone": "America/Los_Angeles",
+		"city": "Boardman",
+		"ll": [
+			45.8491,
+			-119.7143
+		],
+		"metro": 810,
+		"area": 1000
+	},
+	"updatedAt": {
+		"$date": "2023-05-01T11:08:06.723Z"
+	}
+}]
+

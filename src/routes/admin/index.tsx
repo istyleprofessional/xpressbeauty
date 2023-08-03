@@ -22,6 +22,7 @@ export default component$(() => {
       password: fields.password,
     };
     const result = await postRequest("/api/admin/login", data);
+    console.log(result);
     const resultJson = await result.json();
     if (resultJson?.status === "success") {
       document.cookie = `token=${resultJson?.token}`;

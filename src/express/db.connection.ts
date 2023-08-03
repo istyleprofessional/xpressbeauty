@@ -12,11 +12,16 @@ export const connect = () => {
       const mongoUrl = process.env.QWIK_APP_MONGO_CONNECTION || "";
       mongoose.set("strictQuery", false);
       mongoose
-        .connect(mongoUrl)
+        .connect(mongoUrl, {
+          user: process.env.QWIK_APP_MONGO_USERNAME,
+          pass: process.env.QWIK_APP_MONGO_PWD,
+        })
         .then(() => {
+          console.log("Connected to MongoDB");
           resolve(undefined);
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           reject();
         });
     }
