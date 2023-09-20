@@ -1,43 +1,27 @@
 import { component$, Slot } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { routeLoader$, useLocation } from "@builder.io/qwik-city";
+import { routeLoader$ } from "@builder.io/qwik-city";
+import { NavBar } from "~/components/admin/nav-bar/nav-bar";
 import { SideNav } from "~/components/admin/side-nav/side.nav";
 import { verifyTokenAdmin } from "~/utils/token.utils";
 
-export const useProfileLoader = routeLoader$(
-  async ({ cookie, redirect, url }) => {
-    if (url.pathname !== "/admin/") {
-      try {
-        const token = cookie.get("token")?.value;
-        const validateToken = verifyTokenAdmin(token ?? "");
-        if (!validateToken) {
-          throw redirect(302, "/admin");
-        }
-      } catch {
-        throw redirect(302, "/admin");
-      }
-    }
+export const useProfileLoader = routeLoader$(async ({ cookie, redirect }) => {
+  const token = cookie.get("token")?.value;
+  const validateToken = verifyTokenAdmin(token ?? "");
+  if (!validateToken) {
+    throw redirect(301, "/admin-login/");
   }
-);
+});
 
 export default component$(() => {
-  const loc = useLocation();
-  const status = process.env.STATUS;
   return (
-    <>
-      {status === "1" && (
-        <main>
-          <>
-            {/* {loc.url.pathname !== "/admin/" && (
-    
-            )} */}
-            <SideNav location={loc.url.pathname}>
-              <Slot />
-            </SideNav>
-          </>
-        </main>
-      )}
-    </>
+    <main class="flex flex-col gap-3">
+      <NavBar />
+      <div class="flex flex-row gap-3 h-full">
+        <SideNav />
+        <Slot />
+      </div>
+    </main>
   );
 });
 

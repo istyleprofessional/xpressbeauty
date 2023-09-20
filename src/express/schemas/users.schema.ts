@@ -6,13 +6,12 @@ const userSchema = new Schema(
     password: { type: String },
     firstName: { type: String, default: null },
     lastName: { type: String, default: null },
-    phoneNumber: { type: String, default: null },
-    generalIPInfo: { type: Object },
+    phoneNumber: { type: String, unique: true, required: true },
+    generalInfo: { type: Object, default: null },
     EmailVerifyToken: { type: String },
-    userInfo: { type: Object },
+    PhoneVerifyToken: { type: String },
     isEmailVerified: { type: Boolean, default: false },
     isPhoneVerified: { type: Boolean, default: false },
-    browserId: { type: String },
   },
   { timestamps: true }
 );

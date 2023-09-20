@@ -1,227 +1,209 @@
-import { component$, useSignal, $, useStore } from "@builder.io/qwik";
+import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
 import { InputField } from "~/components/shared/input-field/input-field";
-import { postRequest } from "~/utils/fetch.utils";
-import { validate } from "~/utils/validate.utils";
-import { useNavigate } from "@builder.io/qwik-city";
 import { Toast } from "~/components/admin/toast/toast";
+import { Form, routeAction$ } from "@builder.io/qwik-city";
+import { generateUniqueInteger } from "~/utils/generateOTP";
+import { userRegistration } from "~/express/services/user.service";
+import { connect } from "~/express/db.connection";
+import jwt from "jsonwebtoken";
+import { sendVerficationMail } from "~/utils/sendVerficationMail";
+import { validate } from "~/utils/validate.utils";
+
+export const useRegisterForm = routeAction$(async (data, requestEvent) => {
+  await connect();
+  const newData: any = { ...data };
+  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${newData.recaptcha}`;
+  const recaptcha = await fetch(url, { method: "post" });
+  const recaptchaText = await recaptcha.text();
+  const google_response = JSON.parse(recaptchaText);
+  if (!google_response.success) {
+    return {
+      status: "failed",
+      err: "Boot detected",
+    };
+  }
+  newData.phoneNumber = newData?.phoneNumber?.toString()?.startsWith("1")
+    ? `+${newData?.phoneNumber}`
+    : `+1${newData?.phoneNumber}`;
+  const validationObject = {
+    email: validate(newData?.email, "email"),
+    password:
+      validate(newData?.password, "password") && newData?.password?.length >= 8,
+    confirmPassword: newData?.confirmPassword === newData?.password,
+    lastName: validate(newData?.lastName, "lastName"),
+    firstName: validate(newData?.firstName, "firstName"),
+    phoneNumber:
+      validate(newData?.phoneNumber, "phoneNumber") &&
+      newData?.phoneNumber?.length === 12,
+  };
+  const isValid = Object.values(validationObject).every(
+    (item) => item === true
+  );
+  if (!isValid) {
+    return {
+      status: "failed",
+      err: "Invalid data",
+      validation: validationObject,
+    };
+  }
+  newData.EmailVerifyToken = generateUniqueInteger();
+  const saveNewUser = await userRegistration(newData);
+  const token = jwt.sign(
+    { user_id: saveNewUser?.result?._id, isDummy: false },
+    process?.env?.JWTSECRET ?? "",
+    { expiresIn: "2h" }
+  );
+  requestEvent.cookie.set("token", token, {
+    httpOnly: true,
+    path: "/",
+    secure: true,
+  });
+  sendVerficationMail(
+    newData?.email ?? "",
+    `${data?.firstName ?? ""} ${data?.lastName ?? ""}`,
+    token ?? "",
+    newData?.EmailVerifyToken ?? ""
+  );
+  return { status: "success", token: token ?? "" };
+});
 
 export default component$(() => {
-  const nav = useNavigate();
-  const password = useSignal<string>("");
-  const email = useSignal<string>("");
-  const phone = useSignal<string>("");
-  const firstName = useSignal<string>("");
-  const lastName = useSignal<string>("");
-  const confirmPassword = useSignal<string>("");
+  const action = useRegisterForm();
   const isLoading = useSignal<boolean>(false);
+  const isRecaptcha = useSignal<boolean>(false);
+  const recaptchaToken = useSignal<string>("");
   const message = useSignal<string>("");
-  const validation = useStore<any>(
-    {
-      email: true,
-      password: true,
-      confirmPassword: true,
-      lastName: true,
-      firstName: true,
-      phone: true,
-    },
-    { deep: true }
-  );
-
-  const handleSubmitClick = $(async () => {
-    isLoading.value = true;
-    const isValidEmail = validate(email.value, "Email");
-    const isValidPassword = validate(password.value, "Password");
-    const isValidPhone = validate(phone.value, "Phone");
-    const isValidFirstName = validate(firstName.value, "Name");
-    const isValidLastName = validate(lastName.value, "Name");
-
-    if (!isValidFirstName) {
-      validation.firstName = false;
-      isLoading.value = false;
-      return;
-    } else {
-      validation.firstName = true;
-    }
-    if (!isValidLastName) {
-      validation.lastName = false;
-      isLoading.value = false;
-      return;
-    } else {
-      validation.lastName = true;
-    }
-    if (!isValidPhone) {
-      validation.phone = false;
-      isLoading.value = false;
-      return;
-    } else {
-      validation.phone = true;
-    }
-    if (!isValidEmail) {
-      validation.email = false;
-      isLoading.value = false;
-      return;
-    } else {
-      validation.email = true;
-    }
-    if (!isValidPassword) {
-      validation.password = false;
-      isLoading.value = false;
-      return;
-    } else {
-      validation.password = true;
-    }
-    if (password.value !== confirmPassword.value) {
-      validation.confirmPassword = false;
-      isLoading.value = false;
-      return;
-    } else {
-      validation.confirmPassword = true;
-    }
-    const data = {
-      email: email.value,
-      password: password.value,
-      confirmPassword: confirmPassword.value,
-      firstName: firstName.value,
-      lastName: lastName.value,
-      phone: phone.value,
-    };
-    const request = await postRequest("/api/user-register", data);
-    const response = await request.json();
-    // debugger;
-    if (response.status === "success") {
-      isLoading.value = false;
-      nav("/");
-    } else {
-      isLoading.value = false;
-      if (response.err.code === 11000) {
-        message.value = "Email already exists";
-        return;
-      }
-      message.value = response.err.message;
-    }
-  });
-
-  const handleInput = $((e: any, identifier: string) => {
-    if (identifier === "email") {
-      email.value = e.target.value;
-    }
-    if (identifier === "password") {
-      password.value = e.target.value;
-    }
-    if (identifier === "confirmPassword") {
-      confirmPassword.value = e.target.value;
-    }
-    if (identifier === "firstName") {
-      firstName.value = e.target.value;
-    }
-    if (identifier === "lastName") {
-      lastName.value = e.target.value;
-    }
-    if (identifier === "phone") {
-      phone.value = e.target.value;
-    }
-  });
-
   const handleAlertClose = $(() => {
     message.value = "";
   });
 
+  useVisibleTask$(
+    () => {
+      if (isRecaptcha.value === false) {
+        isRecaptcha.value = true;
+        setTimeout(() => {
+          (window as any).grecaptcha.ready(async () => {
+            const token = await (window as any).grecaptcha.execute(
+              process.env.RECAPTCHA_SITE_KEY ?? "",
+              { action: "submit" }
+            );
+            recaptchaToken.value = token;
+          });
+        }, 1000);
+      }
+    },
+    { strategy: "document-idle" }
+  );
+
+  useVisibleTask$(({ track }) => {
+    track(() => action?.value?.status);
+    if (action?.value?.status === "failed") {
+      message.value = action?.value?.err
+        ? action?.value?.err
+        : "Something went wrong";
+      isLoading.value = false;
+    }
+    if (action?.value?.status === "success") {
+      isLoading.value = false;
+      location.href = `/emailVerify/?token=${action?.value?.token ?? ""}`;
+    }
+  });
+
   return (
     <>
-      <div
-        class="flex bg-[url('/Registration.webp')] h-screen w-full bg-no-repeat lg:bg-left bg-center overscroll-y-none 
-    justify-end items-center pr-14 overflow-hidden no-scrollbar"
-      >
-        <div
-          class="card w-[35rem] h-fit shadow-xl bg-[#F4F4F5] flex flex-col justify-center
-       items-center gap-5 p-5"
-        >
-          {message.value && (
-            <div class="w-96">
-              <Toast
-                status="e"
-                handleClose={handleAlertClose}
-                message={message.value}
-                index={1}
+      <div class="flex flex-col md:flex-row md:bg-[url('/Registration.webp')] md:bg-contain h-full w-full bg-no-repeat lg:bg-left bg-center justify-end items-center md:pr-14">
+        <div class="w-full h-96 bg-no-repeat md:hidden bg-[url('/Registration.webp')] bg-contain bg-center">
+          {" "}
+        </div>
+        {isRecaptcha.value === true && (
+          <script
+            src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+          ></script>
+        )}
+        <Form action={action} reloadDocument={true}>
+          <div class="card w-[90%] md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
+            {message.value && (
+              <div class="w-full">
+                <Toast
+                  status="e"
+                  handleClose={handleAlertClose}
+                  message={message.value}
+                  index={1}
+                />
+              </div>
+            )}
+            <div class="flex flex-col gap-6 justify-center items-center p-5">
+              <h1 class="text-black text-lg font-bold">
+                Sign up now and receive 20% off on your order
+              </h1>
+              <p class="text-black font-light text-base">
+                If you don't yet have an online account on xpressbeauty.ca ,
+                Create one now to shop online, access special promotions,
+                register for education and events, leave product reviews as well
+                as view and track all orders.
+              </p>
+            </div>
+            <div class="flex flex-row gap-5">
+              <InputField
+                label="First Name"
+                placeholder="John"
+                validation={action?.value?.validation?.firstName}
+                type="text"
+                identifier="firstName"
+              />
+              <InputField
+                label="Last Name"
+                placeholder="Doe"
+                validation={action?.value?.validation?.lastName}
+                type="text"
+                identifier="lastName"
               />
             </div>
-          )}
-          <div class="flex flex-col gap-6">
-            <h1 class="text-black text-lg font-bold">
-              Sign up now and receive 20% off on your order
-            </h1>
-            <p class="text-black font-light text-base">
-              If you don't yet have an online account on xpressbeauty.ca ,
-              Create one now to shop online, access special promotions, register
-              for education and events, leave product reviews as well as view
-              and track all orders.
-            </p>
-          </div>
-          <div class="flex flex-row gap-5">
             <InputField
-              label="First Name"
-              placeholder="John"
-              validation={validation.firstName}
+              label="Email"
+              placeholder="example@gmail.com"
+              validation={action?.value?.validation?.email}
               type="text"
-              value={firstName.value}
-              identifier="firstName"
-              handleInput={handleInput}
+              identifier="email"
             />
             <InputField
-              label="Last Name"
-              placeholder="Doe"
-              validation={validation.lastName}
+              label="Phone Number (start with country code)"
+              placeholder="6666666666"
+              validation={action?.value?.validation?.phoneNumber}
               type="text"
-              value={lastName.value}
-              identifier="lastName"
-              handleInput={handleInput}
+              identifier="phoneNumber"
             />
+            <InputField
+              label="Password"
+              placeholder="**********"
+              validation={action?.value?.validation?.password}
+              type="password"
+              identifier="password"
+            />
+            <InputField
+              label="Confirm Password"
+              placeholder="**********"
+              validation={action?.value?.validation?.confirmPassword}
+              type="password"
+              identifier="confirmPassword"
+            />
+            <input
+              type="hidden"
+              name="recaptcha"
+              id="recaptcha"
+              value={recaptchaToken.value}
+            />
+            <button
+              class={`btn w-full bg-black text-white text-lg`}
+              type="submit"
+              disabled={recaptchaToken.value.length === 0}
+            >
+              {isLoading.value && <span class="loading loading-spinner"></span>}
+              Sign up
+            </button>
           </div>
-          <InputField
-            label="Email"
-            placeholder="example@gmail.com"
-            validation={validation.email}
-            type="text"
-            value={email.value}
-            identifier="email"
-            handleInput={handleInput}
-          />
-          <InputField
-            label="Phone Number"
-            placeholder="1234567890"
-            validation={validation.phone}
-            type="text"
-            value={phone.value}
-            identifier="phone"
-            handleInput={handleInput}
-          />
-          <InputField
-            label="Password"
-            placeholder="**********"
-            validation={validation.password}
-            type="password"
-            value={password.value}
-            identifier="password"
-            handleInput={handleInput}
-          />
-          <InputField
-            label="Confirm Password"
-            placeholder="**********"
-            validation={validation.confirmPassword}
-            type="password"
-            value={confirmPassword.value}
-            identifier="confirmPassword"
-            handleInput={handleInput}
-          />
-          <button
-            class={`btn w-full bg-black text-white text-lg ${
-              isLoading.value ? "opacity-50 disabled loading" : ""
-            }`}
-            onClick$={handleSubmitClick}
-          >
-            Sign up
-          </button>
-        </div>
+        </Form>
       </div>
     </>
   );

@@ -20,13 +20,19 @@ import { join } from "node:path";
 import Server from "quickbooks-js";
 import qbXMLHandler from "./qbXMLHandler";
 import dotenv from "dotenv";
-import geoip from "geoip-lite";
-import { uuid } from "./utils/uuid";
 import cookieParser from "cookie-parser";
-import { addDummyCustomer } from "./express/services/dummy.user.service";
+import type { EnumChangefreq } from "sitemap";
+import { SitemapStream, streamToPromise } from "sitemap";
+import productSchema from "./express/schemas/product.schema";
+import { Readable } from "stream";
+import { static_urls } from "./utils/static_urls";
 import { connect } from "./express/db.connection";
+import compression from "compression";
+import categorySchema from "./express/schemas/category.schema";
+import brandSchema from "./express/schemas/brand.schema";
 
 dotenv.config();
+let sitemap: any;
 const soapServer = new Server.Server();
 soapServer.setQBXMLHandler(qbXMLHandler);
 soapServer.run();
@@ -53,24 +59,67 @@ const app = express();
 app.set("trust proxy", true);
 app.use(cookieParser());
 
-app.use(async (req, res, next) => {
-  if (/^(?!.*\.(webp|json|svg|js)$).*$/i.test(req.url)) {
-    await connect();
-    let id = req.cookies["browserId"];
-    if (!id) {
-      id = uuid();
-      res.cookie("browserId", id, { httpOnly: true });
-      res.cookie("verified", false, { httpOnly: true });
-      const ip = req.ip;
-      const geo = geoip.lookup(ip);
-      await addDummyCustomer(id, geo);
-    }
+app.get("/sitemap.xml", async (req, res) => {
+  await connect();
+  res.header("Content-Type", "application/xml");
+  // if we have a cached entry send it
+  if (sitemap) {
+    res.send(sitemap);
+    return;
   }
-  next();
+
+  try {
+    const pages = await productSchema.find({});
+    const dynamic_urls = pages.map((project: any) => {
+      return {
+        url: `products/${project.perfix}/`,
+        changefreq: "hourly" as EnumChangefreq,
+        lastmod: new Date(project.updatedAt).toISOString(),
+        priority: 1.0,
+      };
+    });
+    const categories = await categorySchema.find({});
+    const dynamic_urls2 = categories.map((category: any) => {
+      const cat = category.name;
+      return {
+        url: `products/filterCategories/${cat.replace(/ /g, "-")}/`,
+        changefreq: "hourly" as EnumChangefreq,
+        lastmod: new Date().toISOString(),
+        priority: 1.0,
+      };
+    });
+    const brands = await brandSchema.find({});
+    const dynamic_urls3 = brands.map((brand: any) => {
+      return {
+        url: `products/filterBrands/${brand.name.replace(/ /g, "-")}/`,
+        changefreq: "hourly" as EnumChangefreq,
+        lastmod: new Date().toISOString(),
+        priority: 1.0,
+      };
+    });
+    dynamic_urls.push(...dynamic_urls2);
+    dynamic_urls.push(...dynamic_urls3);
+    const stream = new SitemapStream({
+      hostname: "https://xpressbeauty.ca/",
+      lastmodDateOnly: false,
+      xmlns: { news: true, xhtml: false, image: true, video: false },
+    });
+    return streamToPromise(
+      Readable.from([...static_urls, ...dynamic_urls]).pipe(stream)
+    ).then((data) => {
+      sitemap = data.toString();
+      // console.log(sitemap);
+      stream.end();
+      return res.status(200).send(sitemap);
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).end();
+  }
 });
 
 // Enable gzip compression
-// app.use(compression());
+app.use(compression());
 
 // Static asset handlers
 // https://expressjs.com/en/starter/static-files.html

@@ -10,37 +10,26 @@ export const NavBar = component$(() => {
           </a>
         </li>
         <li>
-          <a class="lg:text-lg" href="/products-page" aria-label="Hair" onClick$={() => {
-            const filter = localStorage.getItem('filter')
-            if (filter !== 'Hair') {
-              localStorage.setItem('filterCategories', '[]')
-              localStorage.setItem('filterBrands', '[]')
-            }
-            localStorage.setItem('filter', 'Hair')
-          }}>
+          <a class="lg:text-lg" href="/products/filter/Hair/" aria-label="Hair">
             Hair
           </a>
         </li>
         <li>
-          <a class="lg:text-lg" href="/products-page" aria-label="Tools" onClick$={() => {
-            const filter = localStorage.getItem('filter')
-            if (filter !== 'Tools') {
-              localStorage.setItem('filterCategories', '[]')
-              localStorage.setItem('filterBrands', '[]')
-            }
-            localStorage.setItem('filter', 'Tools')
-          }}>
+          <a
+            class="lg:text-lg"
+            href="/products/filter/Tools/"
+            aria-label="Tools"
+          >
             Tools
           </a>
         </li>
         <li>
-          <a class="lg:text-lg" href="/products-page" aria-label="Brands" onClick$={() => localStorage.setItem('filter', 'Brands')}>
+          <a
+            class="lg:text-lg"
+            href="/products/filter/Brands"
+            aria-label="Brands"
+          >
             Brands
-          </a>
-        </li>
-        <li>
-          <a class="lg:text-lg" href="#" aria-label="Catalog">
-            Catalog
           </a>
         </li>
       </ul>

@@ -1,4 +1,3 @@
-import type { PropFunction } from "@builder.io/qwik";
 import { component$ } from "@builder.io/qwik";
 
 interface InputFieldProps {
@@ -7,9 +6,6 @@ interface InputFieldProps {
   validation?: boolean;
   value?: string;
   type: string;
-  handleInput: PropFunction<
-    (e: any, identifier: string, isMandatory?: boolean) => void
-  >;
   identifier?: string;
   isMandatory?: boolean;
 }
@@ -21,7 +17,6 @@ export const InputField = component$((props: InputFieldProps) => {
     validation,
     type,
     value,
-    handleInput,
     identifier,
     isMandatory,
   } = props;
@@ -33,10 +28,11 @@ export const InputField = component$((props: InputFieldProps) => {
           {label} <span class=" text-error">{isMandatory ? "*" : ""}</span>
         </span>
       </label>
+
       <input
         type={type}
         value={value}
-        onChange$={(e) => handleInput(e, identifier ?? "", isMandatory)}
+        name={identifier}
         placeholder={placeholder}
         class={`input input-bordered w-full text-black ${
           validation === false ? "input-error" : ""

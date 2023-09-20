@@ -2,75 +2,42 @@ import Cart from "../schemas/cart.schema";
 
 export const updateUserCart = async (data: any) => {
   try {
-    const cart = await Cart.findOne({ browserId: data.browserId });
-    if (cart) {
-      cart?.products?.push(data.product);
-      const unique: any = {};
-      cart?.products?.forEach((product: any) => {
-        if (!unique[product?._id]) {
-          unique[product?._id] = product;
+    const result = await Cart.findOne({ userId: data.userId });
+    if (result) {
+      result.products.push(...data.products);
+      const massageData = result.products.reduce((acc: any, curr: any) => {
+        const found = acc.find((item: any) => item.id === curr.id);
+        if (found) {
+          found.quantity += curr.quantity;
+          return acc;
         } else {
-          if (product.cartVariations.length === 0) {
-            unique[product?._id].cartQuantity += product.cartQuantity;
-          } else {
-            unique[product?._id].cartVariations = [
-              ...unique[product?._id].cartVariations,
-              ...product.cartVariations,
-            ];
-          }
+          acc.push(curr);
+          return acc;
         }
-      });
-      const finalUnique: any[] = Object.values(unique);
-      // loop and check if cartVariations is not empty and if it is not empty then remove duplicates and increment the variation.quantity
-      finalUnique.forEach((product: any) => {
-        if ((product?.cartVariations?.length ?? 0) > 0) {
-          const uniqueVariations: any = {};
-          product?.cartVariations?.forEach((variation: any) => {
-            if (
-              !uniqueVariations[
-                variation?.variation_id || variation?.variation_id
-              ]
-            ) {
-              uniqueVariations[
-                variation?.variation_id || variation?.variation_id
-              ] = variation;
-            } else {
-              uniqueVariations[
-                variation?.variation_id || variation?.variation_id
-              ].quantity += variation.quantity;
-            }
-          });
-          product.cartVariations = Object.values(uniqueVariations);
-        }
-      });
-      cart.products = finalUnique;
-      // console.log("cart", cart.products);
-      const result = await Cart.findOneAndUpdate(
-        { browserId: data.browserId },
-        cart,
-        { upsert: true, new: true }
+      }, []);
+      result.products = massageData;
+      result.totalQuantity = result.products.reduce(
+        (acc: any, curr: any) => acc + curr.quantity,
+        0
       );
-      // console.log("result", result);
+      await result.save();
       return result;
     } else {
-      const newCart = new Cart({
-        browserId: data.browserId,
+      const result = await Cart.create({
         userId: data.userId,
-        $push: { products: data.product },
+        products: data.products,
+        totalQuantity: data.totalQuantity,
       });
-      const result = await newCart.save();
-      console.log("result", result);
       return result;
     }
   } catch (err) {
-    console.log("err", err);
     return { status: "failed", err: err };
   }
 };
 
-export const getCartByBrowserId = async (browserId: string) => {
+export const getCartByUserId = async (userId: string) => {
   try {
-    const result = await Cart.findOne({ browserId: browserId });
+    const result = await Cart.findOne({ userId: userId });
     return result;
   } catch (err) {
     return { status: "failed", err: err };
@@ -79,32 +46,16 @@ export const getCartByBrowserId = async (browserId: string) => {
 
 export const deleteProductCart = async (product: any) => {
   try {
-    if (product?.cartVariations?.length > 0) {
-      const filter = {
-        "products._id": product._id, // Search for the product with the given _id inside the products array
-      };
-
-      const update = {
-        $set: {
-          "products.$.cartVariations": product.cartVariations, // Update the description of the matched product
-        },
-      };
-      const result = await Cart.updateOne(filter, update);
-      return result;
-    }
     const result = await Cart.findOneAndUpdate(
-      { browserId: product.browserId },
+      { userId: product.userId },
       {
-        $pull: {
-          products: {
-            _id: product._id,
-          },
-        },
+        $pull: { products: { id: product.id } },
+        $inc: { totalQuantity: -product.quantity },
       },
-      { upsert: true, new: true }
+      { new: true, upsert: true }
     );
-    if (result?.products?.length === 0) {
-      await Cart.deleteOne({ browserId: product.browserId });
+    if (result.products.length === 0) {
+      await Cart.deleteOne({ userId: product.userId });
     }
     return result;
   } catch (err) {
@@ -112,36 +63,31 @@ export const deleteProductCart = async (product: any) => {
   }
 };
 
+export const deleteCart = async (userId: string) => {
+  try {
+    const request = await Cart.deleteOne({ userId: userId });
+    return request;
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
+
 export const handleDecIncVariationProducts = async (data: any) => {
   try {
-    if (data.isVariation) {
-      const filter = {
-        browserId: data.browserId,
-        "products._id": data.productId, // Search for the product with the given _id inside the products array
-      };
-      const update = {
-        $inc: {
-          [`products.$.cartVariations.${data.variationIndex}.quantity`]:
-            data.quantity, // Update the description of the matched product
-        },
-      };
-      const result = await Cart.updateOne(filter, update);
-      return result;
-    } else {
-      const filter = {
-        browserId: data.browserId,
-        "products._id": data.productId, // Search for the product with the given _id inside the products array
-      };
-      const update = {
-        $inc: {
-          "products.$.cartQuantity": data.quantity, // Update the description of the matched product
-        },
-      };
-      const result = await Cart.updateOne(filter, update);
-      return result;
-    }
+    const filter = {
+      userId: data.userId,
+      "products.id": data.product.id, // Search for the product with the given _id inside the products array
+    };
+    const update = {
+      [`products.$.quantity`]: data.product.quantity,
+      totalQuantity: data.totalQuantity,
+    };
+    const result = await Cart.findOneAndUpdate(filter, update, {
+      new: true,
+      upsert: true,
+    });
+    return result;
   } catch (err) {
-    console.log("err", err);
     return { status: "failed", err: err };
   }
 };

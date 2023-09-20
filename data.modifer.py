@@ -9,18 +9,24 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import requests
-import math
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 
 def run_chrome():
 
     chrome_options = Options()
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9223")
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument(
         "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36")
-    driver = webdriver.Chrome(options=chrome_options)
+    service = Service(ChromeDriverManager(
+        version='117.0.5938.88',
+    ).install())
+    driver = webdriver.Chrome(service=service,options=chrome_options)
     return driver
 
 
@@ -407,6 +413,165 @@ def adjust_variation_prices():
         print(d)
         print(e)
 
+def updateQuantity():
+    with open('./backups/file-7.json', encoding='utf-8') as f:
+        data = json.load(f)
+        print(len(data))
+        path = r"C:\chromedriver-win64\chromedriver.exe"
+        chrome_options = Options()
+        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument(
+            "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36")
+        driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+        for d in data:
+            try:
+                if "Hair" in ','.join(d['categories']):
+                    url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-AvailabilityJson?pids={d['id']}&page=pdp'''
+                    driver.get(url)
+                    soup = BeautifulSoup(driver.page_source, 'html.parser')
+                    json_element = soup.find('pre')
+                    json_data = json_element.get_text()
+                    parsed_json = json.loads(json_data)
+                    if len(parsed_json['productVariant']) > 0:
+                        for variant in parsed_json['productVariant']:
+                            if "estimatedQty" in variant['availability']:
+                                new_quantity = variant['availability']['estimatedQty']
+                                data = {
+                                    "secret": "myTotallySecretKey",
+                                    "id": d['perfix'],
+                                    "variation_id": variant['id'],
+                                    "quantity": new_quantity,
+                                    "isVariation": True,
+                                }
+                                headers = {
+                                    "Content-Type": "application/json",
+                                    # Add any other headers required by the API
+                                }
+                                requests.put(
+                                    'https://xpressbeauty.ca/api/products/update/', json=data, headers=headers)
+                                print(variant['id'])
+                            else:
+                                data = {
+                                    "secret": "myTotallySecretKey",
+                                    "id": d['perfix'],
+                                    "variation_id": variant['id'],
+                                    "quantity": 0,
+                                    "isVariation": True,
+                                }
+                                headers = {
+                                    "Content-Type": "application/json",
+                                    # Add any other headers required by the API
+                                }
+                                requests.put(
+                                    'https://xpressbeauty.ca/api/products/update/', json=data, headers=headers)
+                                print(variant['id'])
+                    else:
+                        if "estimatedQty" in parsed_json['products'][0]['availability']:
+                            new_quantity = parsed_json['products'][0]['availability']['estimatedQty']
+                            data = {
+                                    "secret": "myTotallySecretKey",
+                                    "id": d['perfix'],
+                                    "variation_id": parsed_json['products'][0]['id'],
+                                    "quantity": new_quantity,
+                                    "isVariation": False,
+                                }
+                            headers = {
+                                    "Content-Type": "application/json",
+                                    # Add any other headers required by the API
+                                }
+                            requests.put(
+                                'https://xpressbeauty.ca/api/products/update/', json=data, headers=headers)
+                        else:
+                            data = {
+                                    "secret": "myTotallySecretKey",
+                                    "id": d['perfix'],
+                                    "variation_id": parsed_json['products'][0]['id'],
+                                    "quantity": 0,
+                                    "isVariation": False,
+                                }
+                            headers = {
+                                    "Content-Type": "application/json",
+                                    # Add any other headers required by the API
+                                }
+                            requests.put(
+                                'https://xpressbeauty.ca/api/products/update/', json=data, headers=headers)
+            except Exception as e:
+                print(e)
+                driver.quit()
+                driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+                driver.delete_all_cookies()
+                delete_cache(driver)
+                if "Hair" in ','.join(d['categories']):
+                    url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-AvailabilityJson?pids={d['id']}&page=pdp'''
+                    driver.get(url)
+                    soup = BeautifulSoup(driver.page_source, 'html.parser')
+                    json_element = soup.find('pre')
+                    json_data = json_element.get_text()
+                    parsed_json = json.loads(json_data)
+                    if len(parsed_json['productVariant']) > 0:
+                        for variant in parsed_json['productVariant']:
+                            if "estimatedQty" in variant['availability']:
+                                new_quantity = variant['availability']['estimatedQty']
+                                data = {
+                                    "secret": "myTotallySecretKey",
+                                    "id": d['perfix'],
+                                    "variation_id": variant['id'],
+                                    "quantity": new_quantity,
+                                    "isVariation": True,
+                                }
+                                requests.put(
+                                    'https://xpressbeauty.ca/api/products/update/', data=data)
+                            else:
+                                data = {
+                                    "secret": "myTotallySecretKey",
+                                    "id": d['perfix'],
+                                    "variation_id": variant['id'],
+                                    "quantity": 0,
+                                    "isVariation": True,
+                                }
+                                requests.put(
+                                    'https://xpressbeauty.ca/api/products/update/', data=data)
+                    else:
+                        if "estimatedQty" in parsed_json['products'][0]['availability']:
+                            new_quantity = parsed_json['products'][0]['availability']['estimatedQty']
+                            data = {
+                                    "secret": "myTotallySecretKey",
+                                    "id": d['perfix'],
+                                    "variation_id": variant['id'],
+                                    "quantity": new_quantity,
+                                    "isVariation": True,
+                                }
+                            requests.put(
+                                'https://xpressbeauty.ca/api/products/update/', data=data)
+                        else:
+                            data = {
+                                    "secret": "myTotallySecretKey",
+                                    "id": d['perfix'],
+                                    "variation_id": variant['id'],
+                                    "quantity": 0,
+                                    "isVariation": True,
+                                }
+                            requests.put(
+                                'https://xpressbeauty.ca/api/products/update/', data=data)
+                continue
+        
+def delete_cache(driver):
+    driver.execute_script("window.open('');")
+    time.sleep(2)
+    driver.switch_to.window(driver.window_handles[-1])
+    time.sleep(2)
+    driver.get('chrome://settings/clearBrowserData') # for old chromedriver versions use cleardriverData
+    time.sleep(2)
+    actions = ActionChains(driver) 
+    actions.send_keys(Keys.TAB * 3 + Keys.DOWN * 3) # send right combination
+    actions.perform()
+    time.sleep(2)
+    actions = ActionChains(driver) 
+    actions.send_keys(Keys.TAB * 4 + Keys.ENTER) # confirm
+    actions.perform()
+    time.sleep(5) # wait some time to finish
 
-get_all_unique_brands_from_product_file()
+updateQuantity()
 # 6446da122dcb930801f43cd9

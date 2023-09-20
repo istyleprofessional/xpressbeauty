@@ -6,7 +6,6 @@ export const onPut: RequestHandler = async ({ json, parseBody, cookie }) => {
   await connect();
   const body = await parseBody();
   const token = cookie.get("token")?.value;
-  console.log("token" + token);
   const result = await update_product_service(body, token ?? "");
   json(200, result);
 };

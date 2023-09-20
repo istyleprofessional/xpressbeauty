@@ -1,45 +1,25 @@
-import {
-  component$,
-  useContext,
-  useSignal,
-  useVisibleTask$,
-} from "@builder.io/qwik";
-import { loadScript } from "@paypal/paypal-js";
+import { component$, useContext, useSignal, useTask$ } from "@builder.io/qwik";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 import { CartContext } from "~/context/cart.context";
-import { setupPaypal } from "~/utils/paypal-capture-payment";
 
-interface CartDetailsProps {
-  isLoading: any;
-}
-
-export const CartDetails = component$((props: CartDetailsProps) => {
-  const { isLoading } = props;
+export const CartDetails = component$(() => {
   const cartContext: any = useContext(CartContext);
   const subTotal = useSignal<number>(0);
   const hst = useSignal<number>(0);
   const total = useSignal<number>(0);
+  const shipping = useSignal<number>(0);
 
-  useVisibleTask$(({ track }) => {
+  useTask$(({ track }) => {
     track(() => cartContext?.cart?.totalPrice);
     subTotal.value = cartContext?.cart?.totalPrice ?? 0;
     hst.value = (cartContext?.cart?.totalPrice ?? 0) * 0.13;
-    total.value = (cartContext?.cart?.totalPrice ?? 0) + hst.value;
-  });
-
-  useVisibleTask$(async () => {
-    const paypalMode = process.env.PAYPAL_MODE ?? "sandbox";
-    let paypalClientId: string;
-    if (paypalMode === "sandbox") {
-      paypalClientId = process.env.PAYPAL_SANDBOX_CLIENT_ID ?? "";
+    if (subTotal.value > 150) {
+      shipping.value = 0;
     } else {
-      paypalClientId = process.env.PAYPAL_LIVE_CLIENT_ID ?? "";
+      shipping.value = 15;
     }
-    const paypal = await loadScript({
-      "client-id": paypalClientId,
-      currency: "CAD",
-    });
-    await setupPaypal(paypal, isLoading, cartContext, total);
+    total.value =
+      (cartContext?.cart?.totalPrice ?? 0) + hst.value + shipping.value;
   });
 
   return (
@@ -52,7 +32,7 @@ export const CartDetails = component$((props: CartDetailsProps) => {
       <div class="flex flex-row gap-3 justify-center items-end">
         <div class="form-control w-[50%]">
           <label class="label">
-            <span class="label-text">Coupon Code</span>
+            <span class="label-text text-white">Coupon Code</span>
           </label>
           <input
             type="text"
@@ -85,6 +65,15 @@ export const CartDetails = component$((props: CartDetailsProps) => {
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
+          <p class="text-white text-xs font-light">Shipping</p>
+          <p class="justify-self-end text-white text-sm font-light">
+            {shipping.value?.toLocaleString("en-US", {
+              style: "currency",
+              currency: "CAD",
+            })}
+          </p>
+        </div>
+        <div class="grid grid-cols-2 w-full">
           <p class="text-white text-xs font-light">Total (Tax incl.)</p>
           <p class="justify-self-end text-white text-sm font-light">
             {total.value?.toLocaleString("en-US", {
@@ -94,7 +83,15 @@ export const CartDetails = component$((props: CartDetailsProps) => {
           </p>
         </div>
       </div>
-      <a class="btn text-black" href="/checkout">
+      <a
+        class={`btn text-black ${
+          cartContext?.cart?.products &&
+          cartContext?.cart?.products.length === 0
+            ? "disabled"
+            : ""
+        }`}
+        href="/checkout"
+      >
         <div class="flex flex-row w-full items-center">
           <p class="text-sm">
             {total.value?.toLocaleString("en-US", {
@@ -107,8 +104,6 @@ export const CartDetails = component$((props: CartDetailsProps) => {
           </div>
         </div>
       </a>
-      <div class="divider">OR</div>
-      <div id="paypalButton"></div>
     </>
   );
 });

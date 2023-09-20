@@ -1,6 +1,14 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, $ } from "@builder.io/qwik";
+import { useNavigate } from "@builder.io/qwik-city";
 
 export const ShopByBrand = component$(() => {
+  const nav = useNavigate();
+
+  const onShopBrandsClick = $(() => {
+    localStorage.setItem("filter", "Brands");
+    nav("/products");
+  });
+
   return (
     <div class="flex flex-col justify-center items-center pt-7 lg:pt-20">
       <h1 class="font-bold text-4xl text-black">Shop By Brand</h1>
@@ -16,7 +24,7 @@ export const ShopByBrand = component$(() => {
           class="lg:w-60 w-28 h-full"
         />
         <img
-          src="brands-images/3VERSINCE-logo.webp"
+          src="/brands-images/3VERSINCE-logo.webp"
           alt="3VERSINCE logo"
           class="lg:w-60 w-28 h-full"
         />
@@ -47,10 +55,11 @@ export const ShopByBrand = component$(() => {
         />
       </div>
       <button
-        class="btn btn-primary text-white font-['Inter'] w-40 rounded-sm mt-8"
+        class="btn btn-primary btn-lg text-white font-['Inter'] w-fit rounded-sm mt-8"
         aria-label="See More Products"
+        onClick$={onShopBrandsClick}
       >
-        See More
+        Shop By Brands
       </button>
     </div>
   );

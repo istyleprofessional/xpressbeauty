@@ -7,6 +7,7 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 import { CartContext } from "~/context/cart.context";
+import { UserContext } from "~/context/user.context";
 import { postRequest } from "~/utils/fetch.utils";
 
 interface OrderDetailsProps {
@@ -15,21 +16,32 @@ interface OrderDetailsProps {
 
 export const OrderDetails = component$((props: OrderDetailsProps) => {
   const { isLoading } = props;
-  // console.log(isLoading);
   const cartContext: any = useContext(CartContext);
+  const userContext: any = useContext(UserContext);
   const subTotal = useSignal<number>(0);
   const hst = useSignal<number>(0);
   const total = useSignal<number>(0);
+  const shipping = useSignal<number>(0);
 
   useVisibleTask$(({ track }) => {
     track(() => cartContext?.cart?.totalPrice);
     subTotal.value = cartContext?.cart?.totalPrice ?? 0;
     hst.value = (cartContext?.cart?.totalPrice ?? 0) * 0.13;
-    total.value = (cartContext?.cart?.totalPrice ?? 0) + hst.value;
+    if (subTotal.value > 150) {
+      shipping.value = 0;
+    } else {
+      shipping.value = 15;
+    }
+    total.value =
+      (cartContext?.cart?.totalPrice ?? 0) + hst.value + shipping.value;
   });
 
   useVisibleTask$(
-    async () => {
+    async ({ track }) => {
+      track(() => total.value);
+      if (total.value === 0) {
+        return;
+      }
       const stripe: any = await loadStripe(
         process.env.STRIPE_TEST_PUBLISHABLE_KEY ?? ""
       );
@@ -41,23 +53,26 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
       const options = {
         clientSecret: secret.clientSecret,
         appearance: {
-          theme: "stripe",
-          variables: {
-            colorPrimary: "#0570de",
-            colorDanger: "#df1b41",
-            fontFamily: "Ideal Sans, system-ui, sans-serif",
-            spacingUnit: "2px",
-            borderRadius: "4px",
-          },
+          theme: "night",
         },
       };
       const elements = stripe.elements(options);
-      const paymentElement = elements.create("payment");
+      const paymentElement = elements.create("payment", {
+        defaultValues: {
+          billingDetails: {
+            address: {
+              postal_code: userContext?.user?.generalInfo?.address?.postalCode,
+              country: userContext?.user?.generalInfo?.address?.country,
+            },
+          },
+        },
+      });
       paymentElement.mount("#payment-element");
       const form = document.getElementById("payment-form");
       form?.addEventListener("submit", async (e) => {
         e.preventDefault();
         isLoading.value = true;
+
         const pay = await stripe.confirmPayment({
           elements,
           confirmParams: {
@@ -67,10 +82,27 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
         });
         if (pay.paymentIntent.status === "succeeded") {
           isLoading.value = false;
-          const data = cartContext?.cart;
-          const emailReq = await postRequest("/api/paymentConfirmiation", data);
-          console.log(emailReq);
-          // location.href = "/payment/success";
+          const dataToBeSent = cartContext?.cart;
+          dataToBeSent.order_amount = parseFloat(
+            total.value.toString()
+          ).toFixed(2);
+          dataToBeSent.payment_status = pay.paymentIntent.status;
+          dataToBeSent.payment_method = "stripe";
+          dataToBeSent.payment_id = pay.paymentIntent.id;
+
+          const emailReq = await postRequest(
+            "/api/paymentConfirmiation",
+            dataToBeSent
+          );
+          const emailRes = await emailReq.json();
+          if (emailRes.status === "success") {
+            window.location.href = "/payment/success";
+            isLoading.value = false;
+          } else {
+            isLoading.value = false;
+          }
+        } else {
+          isLoading.value = false;
         }
       });
     },
@@ -81,10 +113,10 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     <>
       <h2 class="text-white text-xl font-semibold">Card Details</h2>
       <div class="flex flex-row gap-3 justify-center items-end"></div>
-      <div class="flex flex-col gap-6 justify-center">
-        <form id="payment-form">
-          <div id="payment-element"></div>
-          <div id="error-message"></div>
+      <form id="payment-form">
+        <div id="payment-element"></div>
+        <div id="error-message"></div>
+        <div class="flex flex-col gap-2 justify-center p-3">
           <div class="grid grid-cols-2 w-full">
             <p class="text-white text-xs font-light">Subtotal</p>
             <p class="justify-self-end text-white text-sm font-light">
@@ -104,6 +136,15 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
             </p>
           </div>
           <div class="grid grid-cols-2 w-full">
+            <p class="text-white text-xs font-light">Shipping</p>
+            <p class="justify-self-end text-white text-sm font-light">
+              {shipping.value?.toLocaleString("en-US", {
+                style: "currency",
+                currency: "CAD",
+              })}
+            </p>
+          </div>
+          <div class="grid grid-cols-2 w-full">
             <p class="text-white text-xs font-light">Total (Tax incl.)</p>
             <p class="justify-self-end text-white text-sm font-light">
               {total.value?.toLocaleString("en-US", {
@@ -112,21 +153,22 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
               })}
             </p>
           </div>
-          <button type="submit" class="btn text-black">
-            <div class="flex flex-row w-full items-center">
-              <p class="text-sm">
-                {total.value?.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "CAD",
-                })}
-              </p>
-              <div class="flex flex-row gap-1 items-center w-full justify-end">
-                Checkout <NextArrowIconNoStick color="black" width="10%" />
-              </div>
+        </div>
+
+        <button type="submit" class="btn text-black w-full">
+          <div class="flex flex-row w-full items-center text-xs">
+            <p class="text-sm">
+              {total.value?.toLocaleString("en-US", {
+                style: "currency",
+                currency: "CAD",
+              })}
+            </p>
+            <div class="flex flex-row gap-1 items-center w-full justify-center text-sm">
+              Checkout <NextArrowIconNoStick color="black" />
             </div>
-          </button>
-        </form>
-      </div>
+          </div>
+        </button>
+      </form>
       <div class="divider text-white"></div>
     </>
   );

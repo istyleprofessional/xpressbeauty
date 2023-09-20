@@ -14,19 +14,19 @@ export const Hero = component$(() => {
   useStylesScoped$(styles);
 
   const handleNextSlideClick = $(() => {
-    const carousel = document.querySelector<HTMLElement>(".carousel")!;
+    const carousel = document.querySelector<HTMLElement>(".carousels")!;
     const scrollAmount = carousel.offsetWidth / 2; // Scroll half the width of the carousel
     carousel.scrollBy({ left: scrollAmount, behavior: "smooth" });
   });
 
   const handlePerviousSlideClick = $(() => {
-    const carousel = document.querySelector<HTMLElement>(".carousel")!;
+    const carousel = document.querySelector<HTMLElement>(".carousels")!;
     const scrollAmount = -carousel.offsetWidth / 2; // Scroll half the width of the carousel
     carousel.scrollBy({ left: scrollAmount, behavior: "smooth" });
   });
 
   useVisibleTask$(({ cleanup }) => {
-    const carousel = document.querySelector<HTMLElement>(".carousel")!;
+    const carousel = document.querySelector<HTMLElement>(".carousels")!;
     carousel.scrollLeft = 0;
     const interval = setInterval(() => {
       if (
@@ -43,28 +43,21 @@ export const Hero = component$(() => {
   });
 
   return (
-    <>
+    <div class="flex flex-row justify-center items-center">
       <button
-        class="btn absolute right-2 lg:bottom-[45%] bottom-1/3 btn-circle w-12 z-10 flex items-center justifty-center"
-        onClick$={handleNextSlideClick}
-        aria-label="scroll next"
-      >
-        <NextArrowIconNoStick />
-      </button>
-      <button
-        class="btn absolute left-2 lg:bottom-[45%] bottom-1/3 btn-circle w-12 z-10 flex items-center justifty-center"
+        class=" btn btn-circle w-fit z-10 absolute left-0"
         onClick$={handlePerviousSlideClick}
         aria-label="scroll prev"
       >
-        <PerviousArrowIconNoStick />
+        <PerviousArrowIconNoStick color="white" />
       </button>
-      <div class="carousel carousel-center w-full p-4 space-x-4 bg-white rounded-box">
-        <div class="carousel-item">
+      <div class="carousels flex felx-row gap-5 overflow-x-hidden">
+        <a href="/products/" class="carousel-item w-fit">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Barbering-Products.webp"
               alt="barber products"
-              class="rounded-box w-full h-full"
+              class="rounded-box w-96 h-96"
             />
             <h2 class="font-bold text-lg pl-3 text-black">
               Barbering Products
@@ -72,24 +65,23 @@ export const Hero = component$(() => {
             <p class="font-normal text-xs pl-3 text-black">
               Shop now for premium barbering products.
             </p>
-            <a
+            <p
               aria-label="barbering link"
-              class="pl-3 flex flex-row items-center font-bold text-black"
-              href="#"
+              class="pl-3 flex flex-row items-center font-bold text-black underline"
             >
               <span>SHOP NOW </span>{" "}
               <span>
                 <NextArrowIconNoStick color="black" width="8%" />
               </span>
-            </a>
+            </p>
           </div>
-        </div>
-        <div class="carousel-item">
+        </a>
+        <a href="/products/" class="carousel-item">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Hair-Care-Products.webp"
               alt="hair care products"
-              class="rounded-box w-full h-full"
+              class="rounded-box w-96 h-96"
             />
             <h2 class="font-bold text-lg pl-3 text-black">
               Hair Care Products
@@ -97,24 +89,23 @@ export const Hero = component$(() => {
             <p class="font-normal text-xs pl-3 text-black">
               Discover the Ultimate Hair Care Experience.
             </p>
-            <a
+            <p
               aria-label="barbering link"
-              class="pl-3 flex flex-row items-center font-bold text-black"
-              href="#"
+              class="pl-3 flex flex-row items-center font-bold text-black underline"
             >
               <span>SHOP NOW </span>{" "}
               <span>
                 <NextArrowIconNoStick color="black" width="8%" />
               </span>
-            </a>
+            </p>
           </div>
-        </div>
-        <div class="carousel-item">
+        </a>
+        <a href="/products/" class="carousel-item">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Hair-Color-Products.webp"
               alt="hair color products"
-              class="rounded-box w-full h-full"
+              class="rounded-box w-96 h-96"
             />
             <h2 class="font-bold text-lg pl-3 text-black">
               Hair Color Products
@@ -122,24 +113,23 @@ export const Hero = component$(() => {
             <p class="font-normal text-xs pl-3 text-black">
               Transform your look with our hair colors.
             </p>
-            <a
+            <p
               aria-label="barbering link"
-              class="pl-3 flex flex-row items-center font-bold text-black"
-              href="#"
+              class="pl-3 flex flex-row items-center font-bold text-black underline"
             >
               <span>SHOP NOW </span>{" "}
               <span>
                 <NextArrowIconNoStick color="black" width="8%" />
               </span>
-            </a>
+            </p>
           </div>
-        </div>
-        <div class="carousel-item">
+        </a>
+        <a href="/products/" class="carousel-item">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Hair-tools-Brushes.webp"
               alt="hair tools brushes"
-              class="rounded-box w-full h-full"
+              class="rounded-box w-96 h-96"
             />
             <h2 class="font-bold text-lg pl-3 text-black">
               Hair tools & Brushes Products
@@ -147,19 +137,18 @@ export const Hero = component$(() => {
             <p class="font-normal text-xs pl-3 text-black">
               Unlock your hair's potential with hair tools.
             </p>
-            <a
+            <p
               aria-label="barbering link"
-              class="pl-3 flex flex-row items-center font-bold text-black"
-              href="#"
+              class="pl-3 flex flex-row items-center font-bold text-black underline"
             >
               <span>SHOP NOW </span>{" "}
               <span>
                 <NextArrowIconNoStick color="black" width="8%" />
               </span>
-            </a>
+            </p>
           </div>
-        </div>
-        <div class="carousel-item">
+        </a>
+        <a href="/products/" class="carousel-item">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Men's-Grooming-Products.webp"
@@ -172,19 +161,18 @@ export const Hero = component$(() => {
             <p class="font-normal text-xs pl-3 text-black">
               Refine your grooming routine with us.
             </p>
-            <a
+            <p
               aria-label="barbering link"
-              class="pl-3 flex flex-row items-center font-bold text-black"
-              href="#"
+              class="pl-3 flex flex-row items-center font-bold text-black underline"
             >
               <span>SHOP NOW </span>{" "}
               <span>
                 <NextArrowIconNoStick color="black" width="8%" />
               </span>
-            </a>
+            </p>
           </div>
-        </div>
-        <div class="carousel-item">
+        </a>
+        <a href="/products/" class="carousel-item">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Textured-Hair-Products.webp"
@@ -197,19 +185,25 @@ export const Hero = component$(() => {
             <p class="font-normal text-xs pl-3 text-black">
               Pick Textured Hair Products to nourish and style your hair.
             </p>
-            <a
+            <p
               aria-label="barbering link"
-              class="pl-3 flex flex-row items-center font-bold text-black"
-              href="#"
+              class="pl-3 flex flex-row items-center font-bold text-black underline"
             >
               <span>SHOP NOW </span>{" "}
               <span>
                 <NextArrowIconNoStick color="black" width="8%" />
               </span>
-            </a>
+            </p>
           </div>
-        </div>
+        </a>
       </div>
-    </>
+      <button
+        class=" btn btn-circle w-fit z-10 absolute right-0"
+        onClick$={handleNextSlideClick}
+        aria-label="scroll next"
+      >
+        <NextArrowIconNoStick color="white" />
+      </button>
+    </div>
   );
 });

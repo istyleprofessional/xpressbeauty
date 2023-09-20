@@ -1,7 +1,6 @@
 import type { RequestHandler } from "@builder.io/qwik-city";
 
 export const onGet: RequestHandler = async ({ cookie, json }) => {
-  //   console.log(request);
   try {
     cookie.set("verified", "false", { httpOnly: true, path: "/" });
     cookie.set("token", "", { httpOnly: true, path: "/" });

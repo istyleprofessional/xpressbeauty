@@ -4,20 +4,24 @@ import { BackArrowIcon, NextArrowIcon } from "../icons/icons";
 interface PaginationProps {
   page: any;
   totalProductsNo: number;
+  perPage?: number;
 }
 
 export const Pagination = component$((props: PaginationProps) => {
-  const { page, totalProductsNo } = props;
+  const { page, totalProductsNo, perPage } = props;
   const pages = useSignal<number>(0);
   const totalCols = useSignal<number[]>([]);
   const totalPages = useSignal<number>(0);
 
-  useVisibleTask$(({ track }) => {
-    track(() => {
-      totalProductsNo;
-    });
-    pages.value = totalProductsNo;
-  });
+  useVisibleTask$(
+    ({ track }) => {
+      track(() => {
+        totalProductsNo;
+      });
+      pages.value = totalProductsNo;
+    },
+    { strategy: "document-idle" }
+  );
 
   useVisibleTask$(({ track }) => {
     track(() => {
@@ -25,7 +29,7 @@ export const Pagination = component$((props: PaginationProps) => {
       pages.value;
     });
     totalCols.value = [];
-    const floatPages = pages.value / 100;
+    const floatPages = pages.value / (perPage ?? 12);
     totalPages.value = Math.floor(floatPages + 1);
     const start = (parseInt(page) ?? 1) - 1;
     const end = (parseInt(page) ?? 1) + 1;
@@ -38,76 +42,96 @@ export const Pagination = component$((props: PaginationProps) => {
 
   return (
     <>
-      <div class="flex justify-center items-center gap-2">
-        <a
-          href={`?page=${parseInt(page) - 1}`}
+      <div class="btn-group justify-center items-center m-5">
+        <button
+          onClick$={() => {
+            const url = new URL(window.location.href);
+            url.searchParams.set("page", (parseInt(page) - 1).toString());
+            location.href = url.toString();
+          }}
           role="button"
-          class={`text-black btn inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700
+          class={`text-black btn btn-sm md:btn-md inline-flex items-center px-4 py-2 text-xs md:text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700
           ${parseInt(page ?? "1") === 1 ? "pointer-events-none" : ""}`}
           aria-label="Pervious Page"
         >
           <BackArrowIcon />
-          Previous
-        </a>
-        <div class="btn-group">
-          {page > 2 && (
-            <>
-              <a
-                href={`?page=${1}`}
-                class={`btn ${
-                  parseInt(page ?? "1") === 1 ? "btn-active" : ""
-                } `}
-                aria-label="page 1"
-              >
-                1
-              </a>
-              {parseInt(page ?? "1") > 3 && (
-                <p class="btn btn-disabled text-black">...</p>
-              )}
-            </>
-          )}
-          {totalCols.value.map((col: any, i: number) => (
-            <a
-              key={i}
-              class={`btn ${
-                parseInt(page ?? "1") === col ? "btn-active" : ""
+          <span class="hidden md:block">Previous</span>
+        </button>
+        {page > 2 && (
+          <>
+            <button
+              class={`btn btn-sm md:btn-md ${
+                parseInt(page ?? "1") === 1 ? "btn-active" : ""
               } `}
-              href={`?page=${col}`}
-              aria-label={`page ${col}`}
+              aria-label="page 1"
+              onClick$={() => {
+                const url = new URL(window.location.href);
+                url.searchParams.set("page", "1");
+                location.href = url.toString();
+              }}
             >
-              {col}
-            </a>
-          ))}
-          {page <= totalPages.value - 2 && (
-            <>
-              {page < totalPages.value - 2 && (
-                <p class="btn btn-disabled text-black">...</p>
-              )}
-              <a
-                class={`btn ${
-                  parseInt(page ?? "1") === totalPages.value ? "btn-active" : ""
-                } `}
-                href={`?page=${totalPages.value}`}
-              >
-                {totalPages.value}
-              </a>
-            </>
-          )}
-        </div>
-        <a
-          href={`?page=${parseInt(page ?? "1") + 1}`}
-          class={`text-black btn inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700
+              1
+            </button>
+            {parseInt(page ?? "1") > 3 && (
+              <p class="btn btn-disabled text-black btn-xs">...</p>
+            )}
+          </>
+        )}
+        {totalCols.value.map((col: any, i: number) => (
+          <button
+            key={i}
+            class={`btn btn-sm md:btn-md ${
+              parseInt(page ?? "1") === col ? "btn-active" : ""
+            } `}
+            onClick$={() => {
+              const url = new URL(window.location.href);
+              url.searchParams.set("page", col.toString());
+              location.href = url.toString();
+            }}
+            aria-label={`page ${col}`}
+          >
+            {col}
+          </button>
+        ))}
+        {page <= totalPages.value - 2 && (
+          <>
+            {page < totalPages.value - 2 && (
+              <p class="btn btn-disabled text-black btn-xs">...</p>
+            )}
+            <button
+              class={`btn btn-sm md:btn-md ${
+                parseInt(page ?? "1") === totalPages.value ? "btn-active" : ""
+              } `}
+              onClick$={() => {
+                const url = new URL(window.location.href);
+                url.searchParams.set("page", totalPages.value.toString());
+                location.href = url.toString();
+              }}
+            >
+              {totalPages.value}
+            </button>
+          </>
+        )}
+        <button
+          onClick$={() => {
+            const url = new URL(window.location.href);
+            url.searchParams.set("page", (parseInt(page) + 1).toString());
+            location.href = url.toString();
+          }}
+          class={`text-black btn btn-sm md:btn-md w-fit inline-flex items-center px-4 py-2 text-xs md:text-sm font-medium text-gray-500
+           bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700
           ${
-            parseInt(page ?? "1") === totalPages.value + 1
+            parseInt(page ?? "1") === totalPages.value
               ? "pointer-events-none"
               : ""
           }`}
           aria-label="Next Page"
         >
-          Next
+          <span class="hidden md:block">Next</span>
           <NextArrowIcon />
-        </a>
+        </button>
       </div>
+      {/* </div> */}
     </>
   );
 });

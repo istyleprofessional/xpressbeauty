@@ -5,7 +5,7 @@ export const Footer = component$(() => {
     <div class="bg-black flex flex-col gap-10 lg:pl-20 lg:pr-20">
       <div class="flex flex-col gap-10 lg:flex-row flex-wrap lg:gap-[20%] items-center">
         <div class="flex flex-col gap-4 p-5">
-          <img src="/Logo.svg" alt="Logo" class="w-40 h-full" />
+          <img alt="Logo" src="/new logo 1.jpg" width="271" height="25" />
           <p class="text-white font-light text-sm">
             Copyright © 2023 XPress Beauty
             <br /> | All Rights Reserved
@@ -15,42 +15,42 @@ export const Footer = component$(() => {
           <div class="flex flex-col gap-10">
             <h3 class="text-white font-bold text-lg">Direct Links</h3>
             <div class="flex flex-col gap-4">
-              <a href="#" class="text-white font-light text-base">
+              <a href="/" class="text-white font-light text-base">
                 Home
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/about-us" class="text-white font-light text-base">
                 About Us
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/contact-us" class="text-white font-light text-base">
                 Contact Us
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a
+                href="/terms-and-conditions"
+                class="text-white font-light text-base"
+              >
                 Terms & Conditions
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/privacy-policy" class="text-white font-light text-base">
                 Privacy Policy
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/return-policy" class="text-white font-light text-base">
                 Return Policy
-              </a>
-              <a href="#" class="text-white font-light text-base">
-                Tracking Quick Link
               </a>
             </div>
           </div>
           <div class="flex flex-col gap-10">
             <h3 class="text-white font-bold text-lg">Products</h3>
             <div class="flex flex-col gap-4">
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Latest
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Featured
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Popular
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Rating
               </a>
             </div>
@@ -58,22 +58,22 @@ export const Footer = component$(() => {
           <div class="flex flex-col gap-10">
             <h3 class="text-white font-bold text-lg">Categories</h3>
             <div class="flex flex-col gap-4">
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Hair care
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Barbering
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Textured Hair
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Men’s Grooming
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Hair Colour
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Hair Tools
               </a>
             </div>
@@ -111,26 +111,26 @@ export const Footer = component$(() => {
               Direct Links
             </h3>
             <div class="flex flex-col gap-4">
-              <a href="#" class="text-white font-light text-base">
+              <a href="/" class="text-white font-light text-base">
                 Home
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/about-us" class="text-white font-light text-base">
                 About Us
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/contact-us" class="text-white font-light text-base">
                 Contact Us
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a
+                href="terms-and-conditions"
+                class="text-white font-light text-base"
+              >
                 Terms & Conditions
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/privacy-policy" class="text-white font-light text-base">
                 Privacy Policy
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/return-policy" class="text-white font-light text-base">
                 Return Policy
-              </a>
-              <a href="#" class="text-white font-light text-base">
-                Tracking Quick Link
               </a>
             </div>
           </div>
@@ -139,22 +139,22 @@ export const Footer = component$(() => {
               Categories
             </h3>
             <div class="flex flex-col gap-4">
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Hair care
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Barbering
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Textured Hair
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Men’s Grooming
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Hair Colour
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Hair Tools
               </a>
             </div>
@@ -162,16 +162,16 @@ export const Footer = component$(() => {
           <div class="flex flex-col gap-4">
             <h3 class="text-white font-bold text-base lg:text-lg">Products</h3>
             <div class="flex flex-col gap-4">
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Latest
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Featured
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Popular
               </a>
-              <a href="#" class="text-white font-light text-base">
+              <a href="/products/" class="text-white font-light text-base">
                 Rating
               </a>
             </div>

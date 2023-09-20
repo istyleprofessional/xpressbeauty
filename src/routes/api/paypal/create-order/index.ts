@@ -14,12 +14,12 @@ export const onPost: RequestHandler = async ({ parseBody, json }) => {
   const accessToken = await generateAccessToken(baseURL);
   const url = `${baseURL}/v2/checkout/orders`;
   let item_total = 0;
-  jsonBody.items.forEach((item: any) => {
+  jsonBody?.items?.forEach((item: any) => {
     item_total +=
       parseFloat(item.unit_amount.value) * parseFloat(item.quantity);
   });
   let tax_total: number = 0;
-  jsonBody.items.forEach((item: any) => {
+  jsonBody?.items?.forEach((item: any) => {
     tax_total += parseFloat(item.tax.value) * parseFloat(item.quantity);
   });
   const purchase_units = [

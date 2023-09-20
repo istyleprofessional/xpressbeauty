@@ -88,12 +88,12 @@ export const TableBody = component$((props: TableProps) => {
         {isEdit === true && index === i ? (
           <input
             type="text"
-            value={product.regular_price ?? ""}
+            value={product.price ?? ""}
             onChange$={(e) => handleOnChange(e, i, "regular_price")}
             class="input input-bordered w-full max-w-lg text-xs"
           />
         ) : (
-          product.regular_price ?? ""
+          product.price ?? ""
         )}
       </td>
       <td
@@ -103,12 +103,12 @@ export const TableBody = component$((props: TableProps) => {
         {isEdit === true && index === i ? (
           <textarea
             class="textarea textarea-xs textarea-bordered w-full"
-            placeholder={product.category ?? ""}
-            value={product.category ?? ""}
+            placeholder={(product?.categories as string[])[0].toString() ?? ""}
+            value={product.categories ?? ""}
             onChange$={(e) => handleOnChange(e, i, "category")}
           ></textarea>
         ) : (
-          product.category ?? ""
+          product.categories ?? ""
         )}
       </td>
       <td

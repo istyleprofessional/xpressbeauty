@@ -22,11 +22,9 @@ export const onGet: RequestHandler = async ({ url, json }) => {
       } else {
         response.quantity_on_hand = "100";
       }
-      // console.log(response);
       result = response;
     } catch (error) {
       result.quantity_on_hand = "100";
-      console.log("An error occurred:", error);
     }
   }
   json(200, { result: result });

@@ -110,7 +110,11 @@ export default component$(() => {
           return item;
         }
       );
-      messages.push(`Item ${products.value[i].isHidden === true ? 'Hide' : 'Unhide'} successfully`);
+      messages.push(
+        `Item ${
+          products.value[i].isHidden === true ? "Hide" : "Unhide"
+        } successfully`
+      );
     }
   });
 
@@ -156,7 +160,7 @@ export default component$(() => {
                   handleEditClick={handleEditClick}
                   handleOnChange={handleOnChange}
                   handleDeleteClick={handleDeleteClick}
-                  data_widths={product.data_widths}
+                  // data_widths={product.data_widths}
                   handleHideClick={handleHideClick}
                   handleRowClick={handleRowClick}
                   i={i}
@@ -181,7 +185,7 @@ export default component$(() => {
           </div>
         )}
       </div>
-      <Pagination page={currentPage || ''} totalProductsNo={count} />
+      <Pagination page={currentPage || ""} totalProductsNo={count} />
     </div>
   );
 });

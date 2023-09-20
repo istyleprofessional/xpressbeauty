@@ -25,50 +25,61 @@ export const Variations = component$((props: VariationsProps) => {
   } = props;
 
   return (
-    <div class="flex flex-row w-full justify-center">
-      <label class="input-group w-96">
-        <span
-          class={`btn text-xl text-black bg-[#F4F4F5] ${
-            variationQuantity[index] === 0 ? "btn-disabled" : ""
-          }`}
-          onClick$={() => {
-            value[index]--;
-            if (value[index] === 0) {
-              delete finalVariationToAdd.value[index];
-            } else {
-              variation.quantity = value[index];
-              variation.productId = productId;
-              finalVariationToAdd.value[index] = variation;
-            }
-          }}
-        >
-          -
-        </span>
-        <input
-          type="number"
-          value={value[index]}
-          onChange$={(e: any) => {
-            value[index] = e.target.value;
-          }}
-          min="0"
-          max={variationQuantity}
-          readOnly
-          class="input input-bordered w-20 text-black"
-        />
-        <span
-          class={`btn text-xl text-black bg-[#F4F4F5] ${
-            variationQuantity[index] === 0 ? "btn-disabled" : ""
-          }`}
-          onClick$={async () => {
-            value[index]++;
-            variation.quantity = value[index];
-            variation.productId = productId;
-            finalVariationToAdd.value[index] = variation;
-          }}
-        >
-          +
-        </span>
-      </label>
+    <div class="flex flex-row w-full justify-center items-center">
+      {variationQuantity !== 0 && (
+        <>
+          <label class="input-group md:w-96">
+            <span
+              class={`btn text-sm md:text-xl text-black bg-[#F4F4F5] ${
+                value[index] === 0 ? "btn-disabled" : ""
+              }`}
+              onClick$={() => {
+                value[index]--;
+                if (value[index] === 0) {
+                  delete finalVariationToAdd.value[index];
+                } else {
+                  variation.quantity = value[index];
+                  variation.productId = productId;
+                  finalVariationToAdd.value[index] = variation;
+                }
+              }}
+            >
+              -
+            </span>
+            <input
+              type="number"
+              value={value[index]}
+              onChange$={(e: any) => {
+                value[index] = e.target.value;
+              }}
+              min="0"
+              max={variationQuantity.toString()}
+              readOnly
+              class="input input-bordered w-12 md:w-20 text-black text-xs lg:text-lg"
+            />
+            <span
+              class={`btn text-sm md:text-xl text-black bg-[#F4F4F5] ${
+                variationQuantity === 0 ? "btn-disabled" : ""
+              }`}
+              onClick$={async () => {
+                if (value[index] === variationQuantity) return;
+                value[index]++;
+                variation.quantity = value[index];
+                variation.productId = productId;
+                finalVariationToAdd.value[index] = variation;
+              }}
+            >
+              +
+            </span>
+          </label>
+        </>
+      )}
+
+      {variationQuantity === 0 && (
+        <p class="text-error w-full text-xs md:text-lg text-center">
+          Out of Stock
+        </p>
+      )}
 
       <div class="flex flex-row gap-5 w-full items-center">
         {variationType === "Color" && (
@@ -76,11 +87,13 @@ export const Variations = component$((props: VariationsProps) => {
             src={folder}
             class="rounded-full"
             alt={variation.variation_name}
+            width="60"
+            height="60"
           />
         )}
-        <h1 class="text-black w-full justify-self-end">
+        <p class="text-black w-full justify-self-end text-xs md:text-lg">
           {variation.variation_name}
-        </h1>
+        </p>
       </div>
     </div>
   );

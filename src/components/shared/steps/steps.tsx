@@ -9,42 +9,42 @@ export const Steps = component$((props: StepsProps) => {
   // const nav = useNavigate();
 
   return (
-    <ul class="steps pt-10 w-3/5">
+    <ul class="steps pt-10 w-full lg:w-3/5">
       <li
         data-content=""
-        // onClick$={() => nav("/cart")}
-        class={`step ${
+        onClick$={() => (location.href = "/cart")}
+        class={`step cursor-pointer ${
           pageType === "cart" ||
           pageType === "address" ||
           pageType === "payment" ||
           pageType === "confirmation"
             ? "step-success"
             : ""
-        } step-accent text-black`}
+        } step-accent text-black text-xs lg:text-base`}
       >
         My Cart
       </li>
       <li
         data-content=""
-        // onClick$={() => nav("/checkout")}
-        class={`step ${
+        onClick$={() => (location.href = "/checkout")}
+        class={`step cursor-pointer ${
           pageType === "address" ||
           pageType === "payment" ||
           pageType === "confirmation"
             ? "step-success"
             : ""
-        } step-accent text-black`}
+        } step-accent text-black text-xs lg:text-base`}
       >
         Address
       </li>
       <li
         data-content=""
-        // onClick$={() => nav("/payment")}
-        class={`step ${
+        onClick$={() => (location.href = "/payment")}
+        class={`step cursor-pointer ${
           pageType === "payment" || pageType === "confirmation"
             ? "step-success"
             : ""
-        } step-accent text-black`}
+        } step-accent text-black text-xs lg:text-base`}
       >
         Payment
       </li>
@@ -52,7 +52,7 @@ export const Steps = component$((props: StepsProps) => {
         data-content=""
         class={`step ${
           pageType === "confirmation" ? "step-success" : ""
-        } step-accent text-black`}
+        } step-accent text-black text-xs lg:text-base`}
       >
         Confirmation
       </li>

@@ -1,5 +1,9 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
 const FileSystem = require("fs");
+const axios = require("axios");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+
+puppeteer.use(StealthPlugin());
 
 function sleepFor(sleepDuration) {
   var now = new Date().getTime();
@@ -10,114 +14,197 @@ function sleepFor(sleepDuration) {
 
 const cookies = [
   {
-    name: "secure_customer_sig",
-    value: "",
-    domain: "www.shopempire.ca",
+    name: "dwanonymous_60557644c23bbf654391d7a2f0c3d5b5",
+    value: "bcQe0KaBAeKZyszvA1MjGdsAUm",
+    domain: "www.cosmoprofbeauty.ca",
     path: "/",
-    expires: 1722180192.319418,
+    expires: 1700669166.466825,
+    httpOnly: false,
+    secure: true,
+  },
+  {
+    name: "_pxvid",
+    value: "380c6fe5-fbdf-11ed-925b-fc6cdad18ee1",
+    domain: ".cosmoprofbeauty.ca",
+    path: "/",
+    expires: 1716653169,
+    httpOnly: false,
+    secure: false,
+    sameSite: "Lax",
+  },
+  {
+    name: "__cq_uuid",
+    value: "bcQe0KaBAeKZyszvA1MjGdsAUm",
+    domain: ".cosmoprofbeauty.ca",
+    path: "/",
+    expires: 1728580803.452635,
+    httpOnly: false,
+    secure: false,
+  },
+  {
+    name: "QuantumMetricUserID",
+    value: "0aaa61307e1087c52e33b58690ee9f7b",
+    domain: ".cosmoprofbeauty.ca",
+    path: "/",
+    expires: 1716664139,
+    httpOnly: false,
+    secure: true,
+  },
+  {
+    name: "loginRememberMe",
+    value: "false",
+    domain: "www.cosmoprofbeauty.ca",
+    path: "/",
+    expires: 1716232071.315845,
+    httpOnly: false,
+    secure: true,
+  },
+  {
+    name: "_pxhd",
+    value:
+      "fd93a41b5747683b9d1a57b093792ccfaeaf93f042c6f5b70e82c5646e7eb695:380c6fe5-fbdf-11ed-925b-fad5dd3c59e8",
+    domain: "www.cosmoprofbeauty.ca",
+    path: "/",
+    expires: 1726009753.460751,
+    httpOnly: false,
+    secure: true,
+  },
+  {
+    name: "dwac_ba948fb989cc8c4ca46cbdd013",
+    value:
+      "aYrxQe6SZ6auYkOiNyArHuHBFgunZCMMMKI%3D|dw-only|||CAD|false|US%2FCentral|true",
+    domain: "www.cosmoprofbeauty.ca",
+    path: "/",
+    expires: -1,
+    httpOnly: false,
+    secure: true,
+  },
+  {
+    name: "cqcid",
+    value: "bcQe0KaBAeKZyszvA1MjGdsAUm",
+    domain: "www.cosmoprofbeauty.ca",
+    path: "/",
+    expires: -1,
+    httpOnly: false,
+    secure: true,
+  },
+  {
+    name: "cquid",
+    value: "||",
+    domain: "www.cosmoprofbeauty.ca",
+    path: "/",
+    expires: -1,
+    httpOnly: false,
+    secure: true,
+  },
+  {
+    name: "sid",
+    value: "aYrxQe6SZ6auYkOiNyArHuHBFgunZCMMMKI",
+    domain: "www.cosmoprofbeauty.ca",
+    path: "/",
+    expires: -1,
+    httpOnly: false,
+    secure: true,
+  },
+  {
+    name: "__cq_dnt",
+    value: "0",
+    domain: "www.cosmoprofbeauty.ca",
+    path: "/",
+    expires: -1,
+    httpOnly: false,
+    secure: true,
+  },
+  {
+    name: "dw_dnt",
+    value: "0",
+    domain: "www.cosmoprofbeauty.ca",
+    path: "/",
+    expires: -1,
+    httpOnly: false,
+    secure: true,
+  },
+  {
+    name: "dwsid",
+    value:
+      "mrqiulWC677NXpatXQIl9RLxRfAcdK8UU55mPeC0Ne1NkQe1OCVp2VHnVAkw4CKJk6YnAQwY1wAbKrswdg4JzQ==",
+    domain: "www.cosmoprofbeauty.ca",
+    path: "/",
+    expires: -1,
     httpOnly: true,
     secure: true,
+  },
+  {
+    name: "pxcts",
+    value: "71aaf378-50c7-11ee-84c5-5ebe3e911f85",
+    domain: ".cosmoprofbeauty.ca",
+    path: "/",
+    expires: -1,
+    httpOnly: false,
+    secure: false,
     sameSite: "Lax",
   },
   {
-    name: "localization",
-    value: "CA",
-    domain: "www.shopempire.ca",
-    path: "/",
-    expires: 1722180192.174716,
-    httpOnly: false,
-    secure: false,
-  },
-  {
-    name: "cart_currency",
-    value: "CAD",
-    domain: "www.shopempire.ca",
-    path: "/",
-    expires: 1691767392.319439,
-    httpOnly: false,
-    secure: false,
-  },
-  {
-    name: "_cmp_a",
+    name: "OptanonConsent",
     value:
-      "%7B%22purposes%22%3A%7B%22a%22%3Atrue%2C%22p%22%3Atrue%2C%22m%22%3Atrue%2C%22t%22%3Atrue%7D%2C%22display_banner%22%3Afalse%2C%22merchant_geo%22%3A%22CA%22%2C%22sale_of_data_region%22%3Afalse%7D",
-    domain: ".shopempire.ca",
+      "isGpcEnabled=0&datestamp=Mon+Sep+11+2023+13%3A20%3A03+GMT-0400+(Eastern+Daylight+Time)&version=202306.2.0&browserGpcFlag=0&isIABGlobal=false&hosts=&landingPath=https%3A%2F%2Fwww.cosmoprofbeauty.ca%2F&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A0%2CC0004%3A0",
+    domain: "www.cosmoprofbeauty.ca",
     path: "/",
-    expires: 1690644192.319457,
+    expires: 1725988803,
     httpOnly: false,
     secure: false,
     sameSite: "Lax",
   },
   {
-    name: "_y",
-    value: "ef081904-9005-47f8-9bf8-05df63d50ea9",
-    domain: ".shopempire.ca",
+    name: "_ga_KRX40SQC5X",
+    value: "GS1.1.1694452803.4.0.1694452803.0.0.0",
+    domain: ".cosmoprofbeauty.ca",
     path: "/",
-    expires: 1722093792.319479,
+    expires: 1729012803.289163,
     httpOnly: false,
     secure: false,
-    sameSite: "Lax",
-  },
-  {
-    name: "_shopify_y",
-    value: "ef081904-9005-47f8-9bf8-05df63d50ea9",
-    domain: ".shopempire.ca",
-    path: "/",
-    expires: 1722093792.319514,
-    httpOnly: false,
-    secure: false,
-    sameSite: "Lax",
-  },
-  {
-    name: "_orig_referrer",
-    value: "",
-    domain: ".shopempire.ca",
-    path: "/",
-    expires: 1691767390.072767,
-    httpOnly: true,
-    secure: false,
-    sameSite: "Lax",
-  },
-  {
-    name: "_landing_page",
-    value: "%2Fproducts%2Ffx787g%3F_pos%3D1%26_sid%3Dc29519d2d%26_ss%3Dr",
-    domain: ".shopempire.ca",
-    path: "/",
-    expires: 1691767390.072797,
-    httpOnly: true,
-    secure: false,
-    sameSite: "Lax",
   },
   {
     name: "_ga",
-    value: "GA1.1.980364397.1690557791",
-    domain: ".shopempire.ca",
+    value: "GA1.2.464516814.1685117169",
+    domain: ".cosmoprofbeauty.ca",
     path: "/",
-    expires: 1725117790.679639,
+    expires: 1729012803.314306,
     httpOnly: false,
     secure: false,
   },
   {
-    name: "_ga_THRL3ZL2BG",
-    value: "GS1.1.1690557790.1.0.1690557790.0.0.0",
-    domain: ".shopempire.ca",
+    name: "_gid",
+    value: "GA1.2.2123198582.1694452803",
+    domain: ".cosmoprofbeauty.ca",
     path: "/",
-    expires: 1725117790.683715,
+    expires: 1694539203,
     httpOnly: false,
     secure: false,
   },
   {
-    name: "_fbp",
-    value: "fb.1.1690557790813.322284330",
-    domain: ".shopempire.ca",
+    name: "_px3",
+    value:
+      "18e62ac4de022ab18d6661cc13cd3e4c0771b46fc71fb1560cd5626ede3530e1:AovXVG90OGTgEYJ+qt+MLvmEY92F9LjQXe5AGZJ2Hr+RobCluEbmUFL9njKnmnwEn5u8TsG5TQ2xmfIlsjCCjw==:1000:DhQj3H8eF2KuqqnmPZSPwJl/IECUjJ93uA8CPMiST1H1YaF2zWMQI7bHrz8ckmLAgSeKACDng3uCVCCOHoZR/3rkxTe80U9taNLasmJt46lb+vUQj4spycgk+Q5GNW0+lwKCj5owr18JfoiTak7GYhpTXFL3MDXqp1hfMsqOt2GKtkNxMfu0w1J2nyI2Y+95t4j7h2QxCiJkf6w0tCY2WQ==",
+    domain: ".cosmoprofbeauty.ca",
     path: "/",
-    expires: 1698333791,
+    expires: 1694453133,
     httpOnly: false,
     secure: false,
     sameSite: "Lax",
   },
+  {
+    name: "__cq_seg",
+    value:
+      "0~0.00!1~0.00!2~0.00!3~0.00!4~0.00!5~0.00!6~0.00!7~0.00!8~0.00!9~0.00",
+    domain: ".cosmoprofbeauty.ca",
+    path: "/",
+    expires: 1697044803.452758,
+    httpOnly: false,
+    secure: false,
+  },
 ];
-const browserURL = "http://127.0.0.1:9222";
+// const browserURL = "http://127.0.0.1:9222";
 async function prices() {
   const json = require("F:/xpress_beauty/xpress_beauty/file.json");
   try {
@@ -412,4 +499,113 @@ function createUrlForEachProductByProductNameWithRegex() {
   });
 }
 
-createUrlForEachProductByProductNameWithRegex();
+function generateRandomNumber() {
+  // Generate a random number between 0 and 1
+  const randomFraction = Math.random();
+
+  // Scale the random fraction to the desired range (10,000 to 50,000)
+  const min = 10000;
+  const max = 30000;
+  const randomNumber = Math.floor(randomFraction * (max - min + 1)) + min;
+
+  return randomNumber;
+}
+
+async function getQuantityonHand() {
+  const json = require("./backups/file-7.json");
+
+  for (let i = 0; i < json.length; i++) {
+    if (json[i].categories.join(",").includes("Hair")) {
+      if (
+        json[i].hasOwnProperty("variations") &&
+        json[i].variations.length > 0
+      ) {
+        // let url = `https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-AvailabilityJson?pids=${json[i].id}&page=pdp`;
+        let url = "https://www.cosmoprofbeauty.ca/";
+        // will do axios request to that url and get the cookie from the response
+
+        try {
+          const reqCookie = await axios.get(url, {
+            headers: {
+              
+          });
+          const cookie = reqCookie.headers["set-cookie"];
+
+          console.log(cookie);
+          const newCookie = [];
+          for (const cookieItem of cookie) {
+            if (!cookieItem.includes("comment")) {
+              newCookie.push(cookieItem);
+            }
+          }
+          // console.log(cookie.join(";"));
+          // will set the cookie array to the next axios request
+          const responseAxios = await axios.get(
+            `https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-AvailabilityJson?pids=${json[i].id}&page=pdp`,
+            {
+              headers: {
+                accept: "application/json",
+                "access-control-allow-credentials": "true",
+                "access-control-allow-origin": "https://www.cosmoprofbeauty.ca",
+                "Accept-Encoding": "gzip, compress, deflate, br",
+                "Content-Length": "0",
+                "Content-Type": "application/json",
+                "User-Agent":
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.69",
+                "Sec-Ch-Ua":
+                  '"Chromium";v="94", "Microsoft Edge";v="94", ";Not A Brand";v="99"',
+                "Sec-Ch-Ua-Mobile": "?0",
+                "Sec-Ch-Ua-Platform": "Windows",
+                "Sec-Fetch-Dest": "document",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "none",
+                "Sec-Fetch-User": "?1",
+                "Upgrade-Insecure-Requests": "1",
+                Cookie: newCookie.join(";"),
+              },
+            }
+          );
+          console.log(responseAxios.data);
+          // if (
+          //   responseAxios.data.productVariant &&
+          //   responseAxios.data.productVariant.length > 0
+          // ) {
+          //   for (product of responseAxios.data.productVariant) {
+          //     const quantity = product.availability.estimatedQty;
+          //     const data = {
+          //       secret: "myTotallySecretKey",
+          //       id: json[i].perfix,
+          //       variation_id: product.id,
+          //       quantity: quantity,
+          //       isVariation: true,
+          //     };
+          //     await axios.put(
+          //       "https://xpressbeauty.ca/api/products/update/",
+          //       data
+          //     );
+          //   }
+          //   sleepFor(generateRandomNumber());
+          // } else {
+          //   const data = {
+          //     secret: "myTotallySecretKey",
+          //     id: json[i].perfix,
+          //     quantity:
+          //       responseAxios.data.products[0].availability.estimatedQty,
+          //     isVariation: false,
+          //   };
+          //   await axios.put(
+          //     "https://xpressbeauty.ca/api/products/update/",
+          //     data
+          //   );
+          // }
+          // sleepFor(generateRandomNumber());
+          // console.log(responseAxios.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  }
+}
+
+getQuantityonHand();

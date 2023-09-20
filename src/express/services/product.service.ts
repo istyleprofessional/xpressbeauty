@@ -44,7 +44,6 @@ export const update_product_service = async (product: any, token: string) => {
         product,
         { upsert: true, new: true, runValidators: true }
       );
-      console.log(result);
       return result as unknown as ProductModel;
     } catch (err) {
       return { err: err };
@@ -82,7 +81,6 @@ export const update_on_hand_quantity = async (
         bar_code_value: barCodeValue,
       }
     );
-
     return result;
   } catch (err) {
     return { err: err };
@@ -124,11 +122,11 @@ export const hide_product_service = async (product: any, token: string) => {
   }
 };
 
-export const get_new_arrivals_products = async () => {
+export const get_new_arrivals_products = async (filter: string) => {
   try {
     const result = await Product.find({
-      item_no: { $ne: "" },
       isHidden: { $ne: true },
+      categories: { $regex: filter, $options: "i" },
     }).limit(20);
     return result as ProductModel;
   } catch (err) {
@@ -138,28 +136,24 @@ export const get_new_arrivals_products = async () => {
 
 export const get_product_by_name = async (name: string) => {
   try {
-    console.log(name);
     const result = await Product.findOne({ perfix: name });
-    console.log(result);
     return result;
   } catch (err) {
-    console.log(err);
     return { err: err };
   }
 };
 
 export const getRelatedProducts = async (
-  category: string,
+  category: any,
   productName: string
 ) => {
   try {
     const result = await Product.find({
-      category: { $regex: category },
+      categories: { $in: category },
       product_name: { $ne: productName },
     }).limit(10);
     return result as ProductModel;
   } catch (err) {
-    console.log(err);
     return { err: err };
   }
 };
@@ -185,31 +179,113 @@ export const get_random_data = async () => {
   }
 };
 
-export const get_products_data = async (filter: string, page: number) => {
+export const get_products_data = async (
+  filterByBrand: any[],
+  filterByCategory: any[],
+  filterPrices: any[],
+  filter: string,
+  page: number,
+  query?: string,
+  sort?: string
+) => {
   try {
-    const perPage = 100;
+    const perPage = 20;
     const pageNumber = page;
-    const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 100 : 0;
-    if (filter === "Brands") {
-      const result = await Product.find({ companyName: { $ne: "" } })
-        .skip(skip)
-        .limit(perPage);
-      const total = await Product.count({ companyName: { $ne: "" } });
-      return { result: result, total: total };
+    const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
+    const buildQuery: any = {};
+    if (filterByBrand.length > 0) {
+      buildQuery["companyName"] = { $in: filterByBrand };
     }
-    const result = await Product.find({
-      category: { $regex: filter, $options: "i" },
-      isHidden: { $ne: true },
-    })
+    if (filterByCategory.length > 0) {
+      buildQuery["categories"] = {
+        $regex: filterByCategory.join("|"),
+        $options: "i",
+      };
+    }
+    // debugger;
+
+    buildQuery["$or"] = [];
+    if (filter && filter !== "") {
+      buildQuery["$or"].push(
+        ...[
+          { categories: { $regex: filter, $options: "i" } },
+          { product_name: { $regex: filter, $options: "i" } },
+        ]
+      );
+    }
+    if (filterPrices.length > 0) {
+      for (let i = 0; i < filterPrices.length; i++) {
+        if (filterPrices[i].includes(">")) {
+          const vars = filterPrices[i].split(">");
+          buildQuery["$or"].push({
+            "price.regular": { $gte: parseFloat(vars[1]) },
+          });
+          buildQuery["$or"].push({
+            "price.max": { $gte: parseFloat(vars[1]) },
+          });
+          buildQuery["$or"].push({
+            "price.min": { $gte: parseFloat(vars[1]) },
+          });
+        } else if (filterPrices[i].includes("<")) {
+          const vars = filterPrices[i].split("<");
+          buildQuery["$or"].push({
+            "price.regular": { $lte: parseFloat(vars[1]) },
+          });
+          buildQuery["$or"].push({
+            "price.max": { $lte: parseFloat(vars[1]) },
+          });
+          buildQuery["$or"].push({
+            "price.min": { $lte: parseFloat(vars[1]) },
+          });
+        } else if (filterPrices[i].includes("-")) {
+          const vars = filterPrices[i].split("-");
+          buildQuery["$or"].push({
+            "price.regular": {
+              $gte: parseFloat(vars[0]),
+              $lte: parseFloat(vars[1]),
+            },
+          });
+          buildQuery["$or"].push({
+            "price.max": {
+              $gte: parseFloat(vars[0]),
+              $lte: parseFloat(vars[1]),
+            },
+          });
+          buildQuery["$or"].push({
+            "price.min": {
+              $gte: parseFloat(vars[0]),
+              $lte: parseFloat(vars[1]),
+            },
+          });
+        }
+      }
+    }
+    if (query && query !== "") {
+      buildQuery["$or"].push(
+        ...[
+          { categories: { $regex: query, $options: "i" } },
+          { product_name: { $regex: query, $options: "i" } },
+          { companyName: { $regex: query, $options: "i" } },
+          { lineName: { $regex: query, $options: "i" } },
+          { description: { $regex: query, $options: "i" } },
+        ]
+      );
+    }
+    if (buildQuery["$or"].length === 0) {
+      delete buildQuery["$or"];
+    }
+    buildQuery["isHidden"] = { $ne: true };
+
+    const request = await Product.find(buildQuery)
+      .sort(
+        sort && sort !== "" ? { product_name: sort === "ASC" ? 1 : -1 } : {}
+      )
       .skip(skip)
       .limit(perPage);
-    const total = await Product.count({
-      category: { $regex: filter, $options: "i" },
-      isHidden: { $ne: true },
-    });
-    return { result: result, total: total };
+    const total = await Product.count(buildQuery);
+    return JSON.stringify({ status: "success", result: request, total: total });
   } catch (err) {
-    return { status: "failed" };
+    return JSON.stringify({ status: "failed", err: err });
   }
 };
 
@@ -218,35 +294,22 @@ export const get_products_on_filter_service = async (
   page: number
 ) => {
   try {
-    const perPage = 100;
+    const perPage = 40;
     const pageNumber = page;
-    const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 100 : 0;
-    let result: any[];
-    if (filter.categories.length > 0 && filter.brands.length > 0) {
-      result = await Product.find({
-        $and: [{ companyName: filter.brands }, { category: filter.categories }],
-      })
-        .skip(skip)
-        .limit(perPage);
-      const total = await Product.count({
-        $and: [{ companyName: filter.brands }, { category: filter.categories }],
-      });
-      return { result: result, total: total };
+    const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 40 : 0;
+    const query: any = {};
+    if (filter.categories.length > 0) {
+      query["category"] = { $in: filter.categories };
     }
-    if (filter.categories.length > 0 && filter.brands.length === 0) {
-      result = await Product.find({ category: filter.categories })
-        .skip(skip)
-        .limit(perPage);
-      const total = await Product.count({ category: filter.categories });
-      return { result: result, total: total };
+    if (filter.brands.length > 0) {
+      query["companyName"] = { $in: filter.brands };
     }
-    if (filter.categories.length === 0 && filter.brands.length > 0) {
-      result = await Product.find({ companyName: filter.brands })
-        .skip(skip)
-        .limit(perPage);
-      const total = await Product.count({ companyName: filter.brands });
-      return { result: result, total: total };
-    }
+    const request = await Product.find(query)
+      .skip(skip)
+      .limit(perPage)
+      .sort({ product_name: filter.sort && filter.sort === "ASC" ? 1 : -1 });
+    const total = await Product.count(query);
+    return { result: request, total: total };
   } catch (err) {
     return { status: "failed", err: err };
   }
@@ -254,15 +317,98 @@ export const get_products_on_filter_service = async (
 
 export const getSearchResults = async (search: string) => {
   try {
-    const result = await Product.find({
-      $or: [
-        { product_name: { $regex: search, $options: "i" } },
-        { category: { $regex: search, $options: "i" } },
-        // Add more attributes as needed
-      ],
-    }).limit(20);
+    const result = await Product.find(
+      {
+        $or: [
+          { product_name: { $regex: search, $options: "i" } },
+          { category: { $regex: search, $options: "i" } },
+          // Add more attributes as needed
+        ],
+      },
+      { product_name: 1, perfix: 1, _id: 0, imgs: 1 }
+    ).limit(20);
     return result;
   } catch (err) {
     return { err: err };
+  }
+};
+
+export const getProductBySearch = async (search: string, page: number) => {
+  // get all products that match the search string in description or product name or the company name or the line name
+  try {
+    const perPage = 40;
+    const pageNumber = page;
+    const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 40 : 0;
+    const result = await Product.find({
+      $or: [
+        { product_name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { companyName: { $regex: search, $options: "i" } },
+        { lineName: { $regex: search, $options: "i" } },
+      ],
+    })
+      .skip(skip)
+      .limit(perPage);
+    const total = await Product.count({
+      $or: [
+        { product_name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { companyName: { $regex: search, $options: "i" } },
+        { lineName: { $regex: search, $options: "i" } },
+      ],
+    });
+    return { result: result, total: total };
+  } catch (err) {
+    return { err: err };
+  }
+};
+
+export const updateProductRating = async (body: any) => {
+  try {
+    const request = await Product.findOneAndUpdate(
+      { _id: body.product_id },
+      { $push: { ratings: body.rating } },
+      { new: true }
+    );
+    return { status: "success", result: request };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
+
+export const update_hair_product_service = async (
+  id: string,
+  quantity: string,
+  variation_id?: string,
+  isVariation?: boolean
+) => {
+  try {
+    if (isVariation) {
+      const result = await Product.findOne({ perfix: id });
+      const variations = result?.variations;
+      const newVariations = variations?.map((variation: any) => {
+        if (variation.variation_id === variation_id) {
+          console.log(
+            `variation_id: ${variation_id} --- newQuantity: ${quantity} --- oldQuantity: ${variation.quantity_on_hand}`
+          );
+          variation.quantity_on_hand = quantity;
+        }
+        return variation;
+      });
+      const updated = await Product.findOneAndUpdate(
+        { perfix: id },
+        { variations: newVariations }
+      );
+      return { status: "success", result: updated };
+    } else {
+      const result = await Product.findOneAndUpdate(
+        { perfix: id },
+        { quantity_on_hand: quantity }
+      );
+      console.log(result);
+      return { status: "success", result: result };
+    }
+  } catch (err) {
+    return { status: "failed", result: err };
   }
 };

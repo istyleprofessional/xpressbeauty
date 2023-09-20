@@ -1,15 +1,13 @@
 import jwt from "jsonwebtoken";
 
 export const verifyTokenAdmin = (token: string) => {
-  // console.log("token " + token);
   let isAuthorized = false;
   try {
     jwt.verify(
       token,
-      process.env.QWIK_APP_TOKEN_SECRET ?? "",
+      process.env.JWTSECRET ?? "",
       async (err: any, decoded: any) => {
         if (err) {
-          console.log(err);
           return false;
         }
         const jsonDecoded = JSON.parse(JSON.stringify(decoded));

@@ -9,113 +9,170 @@ import { NavBar } from "~/components/shared/navbar/navbar";
 import { ToolBar } from "~/components/shared/toolbar/toolbar";
 import { CartContext } from "~/context/cart.context";
 import { connect } from "~/express/db.connection";
-import { getCartByBrowserId } from "~/express/services/cart.service";
+import { getCartByUserId } from "~/express/services/cart.service";
 import {
   addDummyCustomer,
   getDummyCustomer,
 } from "~/express/services/dummy.user.service";
-import { findUserByBrowserId } from "~/express/services/user.service";
+import { findUserByUserId } from "~/express/services/user.service";
 import type { UserModel } from "~/models/user.model";
-import { uuid } from "~/utils/uuid";
+import jwt from "jsonwebtoken";
+import { UserContext } from "~/context/user.context";
+import { getWishList } from "~/express/services/wishList.service";
+import { WishListContext } from "~/context/wishList.context";
 
-export const useUserData = routeLoader$(
-  async ({ cookie }) => {
-    await connect();
-    let browserId = cookie.get("browserId")?.value;
-    let verified = cookie.get("verified")?.value;
-    if (!browserId) {
-      browserId = uuid();
-      verified = "false";
-      cookie.set("browserId", browserId, { httpOnly: true, path: "/" });
-      cookie.set("verified", verified, { httpOnly: true, path: "/" });
-      await addDummyCustomer(browserId, null);
-    }
-    const cart: any = await getCartByBrowserId(browserId ?? "");
-    if (verified && verified === "true") {
-      const request: any = await findUserByBrowserId(browserId ?? "");
-      return JSON.stringify({
-        request: request,
+export const useUserData = routeLoader$(async ({ cookie }) => {
+  await connect();
+  const token = cookie.get("token")?.value ?? "";
+  if (!token) {
+    const request: any = await addDummyCustomer("", null);
+    if (request.status === "success") {
+      const token = jwt.sign(
+        {
+          user_id: request?.result?._id?.toString() ?? "",
+          isDummy: true,
+        },
+        process.env.JWTSECRET ?? "",
+        { expiresIn: "1h" }
+      );
+      cookie.set("token", token, {
+        httpOnly: true,
+        path: "/",
+      });
+      const cart: any = await getCartByUserId(
+        request?.result?._id?.toString() ?? ""
+      );
+      const cartContextObject = {
+        userId: request?.result?._id?.toString() ?? "",
         cart: cart,
-        browserId: browserId ?? "",
-        cartNo: cart?.totalQuantity ?? "0",
-        verified: true,
+        quantity: cart?.totalQuantity ?? "0",
+        verified: false,
+      };
+      const wishList = await getWishList(
+        request?.result?._id?.toString() ?? ""
+      );
+
+      return JSON.stringify({
+        cart: cartContextObject,
+        user: null,
+        wishList: wishList,
       });
     } else {
-      const request: any = await getDummyCustomer(browserId ?? "");
-      return JSON.stringify({
-        request: request,
-        cart: cart,
-        browserId: browserId ?? "",
-        cartNo: cart?.totalQuantity ?? "0",
+      const cartContextObject = {
+        userId: "",
+        cart: {},
+        quantity: "0",
         verified: false,
+      };
+      return JSON.stringify({
+        cart: cartContextObject,
+        user: null,
+        wishList: [],
       });
     }
-  },
-  { id: uuid() }
-);
+  }
+  try {
+    const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+    let user: any;
+    if (verify.isDummy) {
+      user = await getDummyCustomer(verify?.user_id ?? "");
+    } else {
+      user = await findUserByUserId(verify?.user_id ?? "");
+    }
+    const cart: any = await getCartByUserId(user?.result?._id ?? "");
+    const cartContextObject = {
+      userId: user?.result?._id ?? "",
+      cart: cart,
+      quantity: cart?.totalQuantity ?? "0",
+      verified:
+        user?.result?.isEmailVerified && user?.result?.isPhoneVerified
+          ? true
+          : false,
+    };
+    const wishList = await getWishList(user?.result?._id ?? "");
+
+    return JSON.stringify({
+      cart: cartContextObject,
+      user: verify.isDummy ? null : user?.result,
+      wishList: wishList,
+    });
+  } catch (error: any) {
+    if (error.message === "jwt expired") {
+      const decode: any = jwt.decode(token);
+      const newToken = jwt.sign(
+        {
+          user_id: decode.user_id,
+          isDummy: decode.isDummy,
+        },
+        process.env.JWTSECRET ?? "",
+        { expiresIn: "1h" }
+      );
+      cookie.set("token", newToken, {
+        httpOnly: true,
+        path: "/",
+      });
+      let user: any;
+      if (decode.isDummy) {
+        user = await getDummyCustomer(decode.user_id);
+      } else {
+        user = await findUserByUserId(decode.user_id);
+      }
+      const cart: any = await getCartByUserId(user?.result?._id ?? "");
+      const cartContextObject = {
+        userId: user?.result?._id ?? "",
+        cart: cart,
+        quantity: cart?.totalQuantity ?? "0",
+        verified:
+          user?.result?.isEmailVerified && user?.result?.isPhoneVerified
+            ? true
+            : false,
+      };
+      const wishList = await getWishList(user?.result?._id ?? "");
+      return JSON.stringify({
+        cart: cartContextObject,
+        user: decode.isDummy ? null : user?.result,
+        wishList: wishList,
+      });
+    }
+  }
+  const cartContextObject = {
+    userId: "",
+    cart: {},
+    quantity: "0",
+    verified: false,
+  };
+  return JSON.stringify({ cart: cartContextObject, user: null, wishList: [] });
+});
 
 export default component$(() => {
   const user = useUserData().value;
   const userData = JSON.parse(user ?? "{}");
   const nav = useNavigate();
-  const contextObject = useStore<any>({
-    browserId: userData?.browserId,
-    cart: userData?.cart,
-    isVerified: userData?.verified,
+  const cartContextObject = useStore<any>({
+    userId: userData?.cart?.userId,
+    cart: userData?.cart?.cart,
+    isVerified: userData?.cart?.verified,
   });
+  const wishListContextObject = useStore<any>({
+    wishList: userData?.wishList,
+  });
+  const userContextObject = useStore<any>(
+    {
+      user: userData?.user,
+    },
+    { deep: true }
+  );
   const userValue = useSignal<UserModel | null>();
   const loc = useLocation();
   const url = loc?.url?.pathname;
 
   useTask$(() => {
-    if (contextObject?.cart?.products?.length > 0) {
-      let totalQuantity = 0;
+    if (cartContextObject?.cart?.products?.length > 0) {
       let totalPrice = 0;
-      contextObject.cart.products.forEach((product: any) => {
-        if (product?.cartVariations?.length > 0) {
-          product.cartVariations.forEach((variation: any) => {
-            totalQuantity += variation.quantity;
-            if (contextObject.isVerified) {
-              totalPrice +=
-                variation.quantity *
-                (parseFloat(variation.price?.toString().replace("$", "")) -
-                  parseFloat(variation.price?.toString().replace("$", "")) *
-                    0.2);
-            } else {
-              totalPrice +=
-                variation.quantity *
-                parseFloat(variation.price?.toString().replace("$", ""));
-            }
-          });
-        } else {
-          totalQuantity += product.cartQuantity;
-          if (product.sale_price) {
-            if (contextObject.isVerified) {
-              totalPrice +=
-                product.cartQuantity *
-                (parseFloat(product.sale_price?.replace("$", "")) -
-                  parseFloat(product.sale_price?.replace("$", "")) * 0.2);
-            } else {
-              totalPrice +=
-                product.cartQuantity *
-                parseFloat(product.sale_price?.replace("$", ""));
-            }
-          } else {
-            if (contextObject.isVerified) {
-              totalPrice +=
-                product.cartQuantity *
-                (parseFloat(product.price?.replace("$", "")) -
-                  parseFloat(product.price?.replace("$", "")) * 0.2);
-            } else {
-              totalPrice +=
-                product.cartQuantity *
-                parseFloat(product.price?.replace("$", ""));
-            }
-          }
-        }
+      cartContextObject.cart.products.forEach((element: any) => {
+        totalPrice += element.price * element.quantity;
       });
-      contextObject.cart.totalQuantity = totalQuantity;
-      contextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
+      cartContextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
     }
   });
 
@@ -126,7 +183,9 @@ export default component$(() => {
     }
   });
 
-  useContextProvider(CartContext, contextObject);
+  useContextProvider(CartContext, cartContextObject);
+  useContextProvider(UserContext, userContextObject);
+  useContextProvider(WishListContext, wishListContextObject);
 
   const handleOnCartClick = $(() => {
     nav("/cart");
@@ -137,11 +196,12 @@ export default component$(() => {
       <main>
         {url !== "/login/" &&
           url !== "/register/" &&
-          !url.includes("admin") && (
+          !url.includes("admin") &&
+          !url.includes("Verify") && (
             <>
               <Header />
               <ToolBar
-                user={userData?.request}
+                user={userData?.cart}
                 handleOnCartClick={handleOnCartClick}
               />
               <NavBar />
@@ -150,7 +210,8 @@ export default component$(() => {
         <Slot />
         {url !== "/login/" &&
           url !== "/register/" &&
-          !url.includes("admin") && <Footer />}
+          !url.includes("admin") &&
+          !url.includes("Verify") && <Footer />}
       </main>
       <div class="section dark">
         <div class="container"></div>

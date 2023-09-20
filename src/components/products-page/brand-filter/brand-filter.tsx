@@ -1,37 +1,61 @@
-import type { QwikChangeEvent } from "@builder.io/qwik";
-import { component$, $, useVisibleTask$ } from "@builder.io/qwik";
+import type { PropFunction, QwikChangeEvent } from "@builder.io/qwik";
+import { component$, useTask$ } from "@builder.io/qwik";
+import { useLocation } from "@builder.io/qwik-city";
 
 export interface BrandFilterProps {
-    brandName: string;
-    filterBrandsArray: any;
+  filterBrandsArray: any;
+  filterBrands: any[];
+  handleBrandCheckBoxChange: PropFunction<
+    (e: QwikChangeEvent<HTMLInputElement>, brandName: string) => void
+  >;
 }
 
 export const BrandFilter = component$((props: BrandFilterProps) => {
-    const { brandName, filterBrandsArray } = props;
+  const { filterBrandsArray, filterBrands, handleBrandCheckBoxChange } = props;
+  const loc = useLocation();
 
-    useVisibleTask$(() => {
-        const prevFilter = localStorage.getItem('filterBrands') ?? '[]'
-        filterBrandsArray.value = JSON.parse(prevFilter)
-    });
-
-    const handleBrandCheckBoxChange = $((e: QwikChangeEvent<HTMLInputElement>, brandName: string) => {
-        const value = e.target.checked;
-        if (value) {
-            filterBrandsArray.value.push(brandName)
-            localStorage.setItem('filterBrands', JSON.stringify(filterBrandsArray.value))
-            window.location.href = '?page=1'
-        } else {
-            filterBrandsArray.value = filterBrandsArray.value.filter((brand: any) => brand !== brandName)
-            localStorage.setItem('filterBrands', JSON.stringify(filterBrandsArray.value))
-            window.location.href = '?page=1'
+  useTask$(
+    () => {
+      const args = loc.params.args;
+      const filters = args.split("/");
+      const filterBrands = () => {
+        const index = filters.findIndex((filter) => filter === "filterBrands");
+        if (index !== -1) {
+          return filters[index + 1];
         }
-    });
+        return "";
+      };
+      const brandsFilters = filterBrands();
+      if (brandsFilters !== "") {
+        filterBrandsArray.value = brandsFilters
+          .split("+")
+          .map((brand: string) => brand.replace(/-/g, " "));
+      }
+    },
+    { eagerness: "idle" }
+  );
 
-    return (
-        <div class="flex flex-row gap-2">
-            <input type="checkbox" checked={filterBrandsArray.value.includes(brandName) ? true : false} class="checkbox checkbox-primary checkbox-sm" onChange$={(e: QwikChangeEvent<HTMLInputElement>) => handleBrandCheckBoxChange(e, brandName)} />
-            <p class="text-black text-sm font-semibold">{brandName}</p>
-        </div>
-
-    )
+  return (
+    <ul class="rounded-box flex flex-col gap-3">
+      {filterBrands
+        ?.sort(function (a: any, b: any) {
+          return a.name.localeCompare(b.name);
+        })
+        .map((brand: any, index: number) => (
+          <div class="flex flex-row gap-2" key={index}>
+            <input
+              type="checkbox"
+              checked={
+                filterBrandsArray.value.includes(brand.name) ? true : false
+              }
+              class="checkbox checkbox-primary checkbox-sm"
+              onChange$={(e: QwikChangeEvent<HTMLInputElement>) =>
+                handleBrandCheckBoxChange(e, brand.name)
+              }
+            />
+            <p class="text-black text-sm font-semibold">{brand.name}</p>
+          </div>
+        ))}
+    </ul>
+  );
 });

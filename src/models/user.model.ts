@@ -4,7 +4,19 @@ export interface UserModel {
   cart?: string;
   orders?: string;
   wishlist?: string;
-  generalIPInfo?: any;
-  userInfo?: any;
-  browserId: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  generalInfo?: {
+    address?: {
+      addressLine1?: string;
+      city?: string;
+      state?: string;
+      country?: string;
+      postalCode?: string;
+    };
+    comapny?: {
+      name: string;
+    };
+  };
 }

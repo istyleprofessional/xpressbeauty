@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const final = require("./backups/product-data-4.json");
+const final = require("./backups/file-7.json");
 const { connect, connection, set } = require("mongoose");
 const models = require("./model");
 const Product = models.Product;
 const Brand = models.Brand;
+const Cart = models.Cart;
 const Category = models.Category;
 const categories = require("./backups/categories.json");
 const brand_data = require("./backups/brands.json");
@@ -35,6 +36,8 @@ connect(mongoUrl, {
           return { ...item };
         })
       );
+      await connection.db.dropCollection("carts");
+      await connection.db.dropCollection("users");
       await Brand.deleteMany({});
       await Brand.insertMany(
         brand_data.map((item) => {
@@ -52,8 +55,6 @@ connect(mongoUrl, {
           };
         })
       );
-      // await User.deleteMany({});
-      // Creating a unique salt for a particular user
       const password = "Xpressbeauty@23";
       const password_1 = "Xpressbeauty@21";
       const password_2 = "Xpressbeauty@22";

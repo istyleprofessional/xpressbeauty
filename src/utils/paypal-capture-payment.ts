@@ -22,10 +22,10 @@ export const setupPaypal = async (
   cartContext: any,
   total: any
 ) => {
+  if (cartContext?.cart?.products?.length === 0) return;
   return paypal
     .Buttons({
       createOrder: async function () {
-        // debugger
         isLoading.value = true;
         const createPayPalOrderBody = cartContext?.cart?.products?.map(
           (product: ProductModel) => {
@@ -35,20 +35,16 @@ export const setupPaypal = async (
                 currency_code: "CAD",
                 value: product?.sale_price
                   ? product?.sale_price?.replace("$", "")
-                  : product?.price
-                  ? product?.price?.replace("$", "")
-                  : product?.regular_price?.replace("$", ""),
+                  : product?.price?.replace("$", ""),
               },
-              quantity: product.cartQuantity,
+              quantity: product.quantity,
               tax: {
                 currency_code: "CAD",
                 value: (
                   parseFloat(
                     product.sale_price
-                      ? product.sale_price
-                      : product.price
-                      ? product.price
-                      : product.regular_price ?? "0"
+                      ? product.sale_price.replace("$", "")
+                      : product?.price?.replace("$", "") ?? "0"
                   ) * 0.13
                 )
                   .toFixed(2)
@@ -61,23 +57,22 @@ export const setupPaypal = async (
           "/api/paypal/create-order/",
           JSON.stringify({ items: createPayPalOrderBody, amount: total.value })
         );
+        const json = await res.json();
         isLoading.value = false;
-        return res.json();
+        return json.id;
       },
       onApprove: async function (data: any) {
-        console.log(data);
-        // const res = await postRequest(
-        //   "/api/paypal/capture-order/",
-        //   JSON.stringify({ orderID: data.orderID })
-        // );
-        // if (res.status === 200) {
-        //   cartContext.clearCart();
-        // }
-        // return res.json();
+        const res = await postRequest(
+          "/api/paypal/capture-paypal-order/",
+          JSON.stringify({ orderID: data.orderID, cartContext: cartContext })
+        );
+        location.href = "/order-confirmation";
+        const json = await res.json();
+        return json;
       },
-      onError: function (err: any) {
-        console.log(err);
-      },
+      // onError: function (err: any) {
+      //   console.log(err);
+      // },
     })
     .render("#paypalButton");
 };

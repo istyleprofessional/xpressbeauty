@@ -1,14 +1,13 @@
 export interface ProductModel {
   id?: string;
-  cartVariations?: any[];
-  cartQuantity?: number;
+  quantity?: number;
   _id?: string;
-  price?: string;
+  price?: any;
   product_name?: string;
   description?: string;
   item_no?: string;
-  sale_price?: string;
-  category?: string;
+  sale_price?: any;
+  categories?: string[];
   imgs?: string[];
   quantity_on_hand?: string;
   sku?: string;
@@ -20,8 +19,9 @@ export interface ProductModel {
   variation_type?: string;
   variations?: any[];
   cleanproductname?: string;
-  productsVariation?: any[];
+  // productsVariation?: any[];
   companyName?: string;
   lineName?: string;
-  prefix?: string;
+  perfix?: string;
+  priceType?: string;
 }

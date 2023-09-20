@@ -1,42 +1,73 @@
-import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
+import type { PropFunction } from "@builder.io/qwik";
+import { component$, useTask$ } from "@builder.io/qwik";
+import { useLocation } from "@builder.io/qwik-city";
+import { uuid } from "~/utils/uuid";
 
 export interface CategoryFilterProps {
-    category: any;
-    filterCategoriessArray: any;
-    main: string;
+  filterCategoriessArray: any;
+  categoriesSetObject: any;
+  handleCategoryCheckBoxChange: PropFunction<
+    (e: any, category: string) => void
+  >;
 }
 
 export const CategoryFilter = component$((props: CategoryFilterProps) => {
-    const { category, filterCategoriessArray, main } = props;
-    const isChecked = useSignal(false);
+  const {
+    filterCategoriessArray,
+    categoriesSetObject,
+    handleCategoryCheckBoxChange,
+  } = props;
+  const loc = useLocation();
 
-    useVisibleTask$(() => {
-        const prevFilter = localStorage.getItem('filterCategories') ?? '[]'
-        filterCategoriessArray.value = JSON.parse(prevFilter)
-        const filter = localStorage.getItem('filter') ?? 'Tools';
-        if (filter === "Tools") {
-            isChecked.value = true;
+  useTask$(
+    () => {
+      const args = loc.params.args;
+      const filters = args.split("/");
+      const filterCategories = () => {
+        const index = filters.findIndex(
+          (filter) => filter === "filterCategories"
+        );
+        if (index !== -1) {
+          return filters[index + 1];
         }
-    });
+        return "";
+      };
+      const categoriesFilters = filterCategories();
+      if (categoriesFilters !== "") {
+        filterCategoriessArray.value = categoriesFilters
+          .split("+")
+          .map((category: string) => category.replace(/-/g, " "));
+      }
+    },
+    { eagerness: "idle" }
+  );
 
-    const handleCategoryCheckBoxChange = $((event: any, name: string, mainName: string) => {
-        const value = event.target.checked;
-        if (value) {
-            filterCategoriessArray.value.push(`${mainName},${name}`)
-            localStorage.setItem('filterCategories', JSON.stringify(filterCategoriessArray.value))
-            window.location.href = '?page=1'
-        } else {
-            filterCategoriessArray.value = filterCategoriessArray.value.filter((category: any) => category !== `${mainName},${name}`)
-            localStorage.setItem('filterCategories', JSON.stringify(filterCategoriessArray.value))
-            window.location.href = '?page=1'
-        }
-    });
-
-    return (
-
-        <div class="flex flex-row gap-2">
-            <input type="checkbox" checked={filterCategoriessArray.value.includes(`${main},${category}`) ? true : false} class="checkbox checkbox-primary checkbox-sm" onChange$={(e) => handleCategoryCheckBoxChange(e, category, main)} />
-            <p class="text-black text-sm font-semibold">{category}</p>
-        </div>
-    )
+  return (
+    <>
+      {Object.keys(categoriesSetObject).map((key: any, index: number) => (
+        <ul class="w-56 pl-2 rounded-box" key={index}>
+          <li class="text-base text-black p-3 font-bold ">
+            <span>{key}</span>
+          </li>
+          {categoriesSetObject[key].map((category: any) => (
+            <li key={uuid()} class="pl-5 pb-4 text-black">
+              <div class="flex flex-row gap-2">
+                <input
+                  type="checkbox"
+                  checked={
+                    filterCategoriessArray.value.includes(category)
+                      ? true
+                      : false
+                  }
+                  class="checkbox checkbox-primary checkbox-sm"
+                  onChange$={(e) => handleCategoryCheckBoxChange(e, category)}
+                />
+                <p class="text-black text-sm font-semibold">{category}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ))}
+    </>
+  );
 });

@@ -9,14 +9,15 @@ export const Gallery = component$((props: GalleryProps) => {
   const { product_name, imgs } = props;
 
   return (
-    <div class="w-96 h-96">
+    <div class="w-96 h-96 self-center">
       <img
+        itemProp="image"
         src={imgs[0] ?? ""}
         onError$={(e: any) => {
           e.target.src = "/placeholder.webp";
         }}
         alt={product_name}
-        class="w-full h-full object-contain"
+        class="object-contain w-96 h-96"
       />
     </div>
   );

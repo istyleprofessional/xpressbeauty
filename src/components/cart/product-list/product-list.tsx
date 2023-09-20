@@ -19,8 +19,15 @@ export const ProductList = component$(() => {
   const totalQuantity = useSignal<number>(0);
 
   const handleDeleteItemClick = $(async (product: any) => {
-    await deleteRequest(`/api/cart/`, JSON.stringify(product));
-    location.reload();
+    const request = await deleteRequest(`/api/cart/`, JSON.stringify(product));
+    const response = await request.json();
+    context.cart.products = response.products;
+    context.cart.totalQuantity = response.totalQuantity;
+    const totalPrice = response?.products?.reduce(
+      (acc: number, curr: any) => acc + curr.price * curr.quantity,
+      0
+    );
+    context.cart.totalPrice = totalPrice;
   });
 
   useVisibleTask$(({ track }) => {
@@ -39,153 +46,59 @@ export const ProductList = component$(() => {
   return (
     <>
       <div class="pl-6 flex flex-col gap-4">
-        <p class="text-black font-semibold">Shopping cart</p>
-        <p class="text-black">
+        <p class="text-black font-semibold text-sm md:text-base">
+          Shopping cart
+        </p>
+        <p class="text-black text-xs md:text-base">
           {context?.cart && context?.cart?.totalQuantity > 0
             ? `You have ${context?.cart?.totalQuantity} item in your cart`
             : "You have 0 item in your cart"}
         </p>
       </div>
-      {context?.cart ? (
+      {context?.cart && (
         <>
-          {context?.cart?.products?.map((product: any) => {
-            const productPrice = product?.sale_price
-              ? product.sale_price.replace("$", "")
-              : product?.price.replace("$", "");
-            let productSalePrice: string | undefined = undefined;
-            if (context?.isVerified) {
-              productSalePrice = (
-                parseFloat(productPrice) -
-                parseFloat(productPrice) * 0.2
-              ).toString();
-            }
-            return (
-              <>
-                {"cartVariations" in product && (
-                  <>
-                    {product?.cartVariations?.map(
-                      (variation: any, index: number) => {
-                        const price = variation?.price
-                          ?.toString()
-                          .replace("$", "");
-                        let sale_price: string | undefined = undefined;
-                        if (context?.isVerified) {
-                          sale_price = (price - price * 0.2).toString();
-                        }
-                        return (
-                          <>
-                            <div
-                              class="flex flex-row gap-5 justify-start items-center h-32 w-[50rem] bg-white border-2
+          {context?.cart?.products?.map((product: any) => (
+            <>
+              <div
+                class="flex flex-row gap-1 md:gap-5 justify-start items-center h-fit w-fit lg:w-[50%] bg-white border-2
                                 border-solid border-[#E0E0E0] rounded-lg"
-                              key={uuid()}
-                            >
-                              <img
-                                src={product?.imgs[0]}
-                                alt={product?.product_name}
-                                class="w-32 h-32 object-contain p-5"
-                              />
-                              <div class="flex flex-col">
-                                <h2 class="text-black w-44">
-                                  {product?.product_name}
-                                </h2>
-                                <p class="text-black text-xs">
-                                  {variation.variation_name}
-                                </p>
-                              </div>
+                key={uuid()}
+              >
+                <img
+                  src={product?.product_img}
+                  alt={product?.product_name}
+                  class="w-12 h-12 md:w-32 md:h-32 object-contain lg:p-5"
+                />
+                <div class="flex flex-col">
+                  <h2 class="text-black text-xs md:text-sm w-24 md:w-fit">
+                    {product?.product_name}
+                  </h2>
+                  <p class="text-black text-xs">
+                    {product?.variation_name ?? ""}
+                  </p>
+                </div>
 
-                              <ItemQuantity
-                                productQuantity={variation.quantity}
-                                productId={product._id}
-                                isVariation={true}
-                                variationIndex={index}
-                              />
-                              <p class="text-black">
-                                {sale_price ? (
-                                  <>
-                                    <span class="text-black line-through">
-                                      C$ {parseFloat(price).toFixed(2)}
-                                    </span>{" "}
-                                    <span class="text-error">
-                                      C$ {parseFloat(sale_price).toFixed(2)}
-                                    </span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <span>
-                                      {" "}
-                                      C$ {parseFloat(price).toFixed(2)}
-                                    </span>
-                                  </>
-                                )}
-                              </p>
-                              <button
-                                class="btn text-[#CC0000]"
-                                onClick$={() => {
-                                  product.cartVariations.splice(index, 1);
-                                  handleDeleteItemClick(product);
-                                }}
-                              >
-                                <TrashIcon />
-                              </button>
-                            </div>
-                          </>
-                        );
-                      }
-                    )}
-                  </>
+                <ItemQuantity product={product} />
+                <p class="text-black md:text-sm text-xs">
+                  CA$ {parseFloat(product?.price.replace("$", "")).toFixed(2)}
+                </p>
+                {context.isVerified && (
+                  <p class="text-xs md:text-sm font-bold text-[red]">
+                    +20% off
+                  </p>
                 )}
-                {!("cartVariations" in product) && (
-                  <>
-                    <div
-                      class="flex flex-row gap-5 justify-start items-center h-32 w-[50rem] bg-white border-2
-                              border-solid border-[#E0E0E0] rounded-lg"
-                      key={uuid()}
-                    >
-                      <img
-                        src={product?.imgs[0]}
-                        alt={product?.product_name}
-                        class="w-32 h-32 object-contain p-5"
-                      />
-                      <h2 class="text-black w-44">{product?.product_name}</h2>
-                      <ItemQuantity
-                        productQuantity={product?.cartQuantity}
-                        productId={product?._id}
-                        isVariation={false}
-                        variationIndex={undefined}
-                      />
-                      <p class="text-black">
-                        {productSalePrice ? (
-                          <>
-                            <span class="line-through">
-                              C$ {parseFloat(productPrice ?? "").toFixed(2)}
-                            </span>{" "}
-                            <span class="text-error">
-                              C$ {parseFloat(productSalePrice ?? "").toFixed(2)}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <span>
-                              C$ {parseFloat(productPrice ?? "").toFixed(2)}
-                            </span>
-                          </>
-                        )}
-                      </p>
-                      <button
-                        class="btn text-[#CC0000]"
-                        onClick$={() => handleDeleteItemClick(product)}
-                      >
-                        <TrashIcon />
-                      </button>
-                    </div>
-                  </>
-                )}
-              </>
-            );
-          })}
+                <button
+                  class="btn text-[#CC0000]"
+                  onClick$={() => {
+                    handleDeleteItemClick(product);
+                  }}
+                >
+                  <TrashIcon classes="md:w-5 md:h-5 w-4 h-4" />
+                </button>
+              </div>
+            </>
+          ))}
         </>
-      ) : (
-        <></>
       )}
     </>
   );

@@ -6,10 +6,17 @@ interface ProductActionsProps {
   qunatity: number;
   isVariation: boolean;
   variationValue?: any;
+  handleAddToFav: PropFunction<() => void>;
 }
 
 export const ProductActions = component$((props: ProductActionsProps) => {
-  const { handleAddToCart, qunatity, isVariation, variationValue } = props;
+  const {
+    handleAddToCart,
+    qunatity,
+    isVariation,
+    variationValue,
+    handleAddToFav,
+  } = props;
   const isButtonDisabled = useSignal<boolean>(true);
 
   useVisibleTask$(({ track }) => {
@@ -77,10 +84,10 @@ export const ProductActions = component$((props: ProductActionsProps) => {
           </>
         )}
       </div>
-      <div class="flex flex-row gap-10">
+      <div class="flex flex-row gap-3 lg:gap-10">
         {qunatity > 0 && (
           <button
-            class={`btn text-white w-96 font-bold font-inter text-xl ${
+            class={`btn text-white md:w-96 font-bold font-inter text-sm w-fit md:text-xl ${
               isButtonDisabled.value
                 ? " bg-neutral-300 btn-disabled"
                 : "bg-black"
@@ -91,21 +98,22 @@ export const ProductActions = component$((props: ProductActionsProps) => {
           </button>
         )}
 
-        <button class="btn btn-outline border-0 w-96 flex flex-row gap-3 text-black">
-          <span>
-            <svg
-              width="26"
-              height="23"
-              viewBox="0 0 26 23"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M22.5753 1.98832C19.2753 -0.261682 15.2003 0.788318 13.0003 3.36332C10.8003 0.788318 6.72527 -0.274182 3.42527 1.98832C1.67527 3.18832 0.575267 5.21332 0.500267 7.35082C0.325267 12.2008 4.62527 16.0883 11.1878 22.0508L11.3128 22.1633C12.2628 23.0258 13.7253 23.0258 14.6753 22.1508L14.8128 22.0258C21.3753 16.0758 25.6628 12.1883 25.5003 7.33832C25.4253 5.21332 24.3253 3.18832 22.5753 1.98832ZM13.1253 20.1883L13.0003 20.3133L12.8753 20.1883C6.92527 14.8008 3.00027 11.2383 3.00027 7.62582C3.00027 5.12582 4.87527 3.25082 7.37527 3.25082C9.30027 3.25082 11.1753 4.48832 11.8378 6.20082H14.1753C14.8253 4.48832 16.7003 3.25082 18.6253 3.25082C21.1253 3.25082 23.0003 5.12582 23.0003 7.62582C23.0003 11.2383 19.0753 14.8008 13.1253 20.1883Z"
-                fill="black"
-              />
-            </svg>
-          </span>
+        <button
+          class="btn btn-outline border-0 md:w-96 w-git flex text-sm md:text-xl flex-row gap-3 text-black"
+          onClick$={handleAddToFav}
+        >
+          <svg
+            class="w-5 h-5"
+            viewBox="0 0 26 23"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M22.5753 1.98832C19.2753 -0.261682 15.2003 0.788318 13.0003 3.36332C10.8003 0.788318 6.72527 -0.274182 3.42527 1.98832C1.67527 3.18832 0.575267 5.21332 0.500267 7.35082C0.325267 12.2008 4.62527 16.0883 11.1878 22.0508L11.3128 22.1633C12.2628 23.0258 13.7253 23.0258 14.6753 22.1508L14.8128 22.0258C21.3753 16.0758 25.6628 12.1883 25.5003 7.33832C25.4253 5.21332 24.3253 3.18832 22.5753 1.98832ZM13.1253 20.1883L13.0003 20.3133L12.8753 20.1883C6.92527 14.8008 3.00027 11.2383 3.00027 7.62582C3.00027 5.12582 4.87527 3.25082 7.37527 3.25082C9.30027 3.25082 11.1753 4.48832 11.8378 6.20082H14.1753C14.8253 4.48832 16.7003 3.25082 18.6253 3.25082C21.1253 3.25082 23.0003 5.12582 23.0003 7.62582C23.0003 11.2383 19.0753 14.8008 13.1253 20.1883Z"
+              fill="black"
+            />
+          </svg>
+
           <span>Add To Favorites</span>
         </button>
       </div>

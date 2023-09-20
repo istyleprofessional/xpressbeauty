@@ -5,11 +5,14 @@ import jwt from "jsonwebtoken";
 export const login_service = async (userObject: any) => {
   const cryptr = new Cryptr(process.env.SECRET ?? "");
   try {
-    const result = await Admin.findOne({ email: userObject.email.value });
-    if (userObject.password.value === cryptr.decrypt(result?.password ?? "")) {
+    const result = await Admin.findOne({ email: userObject.email });
+    if (!result) {
+      return { status: "failed", err: "User not found" };
+    }
+    if (userObject.password === cryptr.decrypt(result?.password ?? "")) {
       const token = jwt.sign(
         { user_id: result?._id, role: result?.role },
-        process.env.QWIK_APP_TOKEN_SECRET ?? "",
+        process.env.JWTSECRET ?? "",
         {
           expiresIn: "2h",
         }
@@ -18,7 +21,7 @@ export const login_service = async (userObject: any) => {
     } else {
       return { status: "failed" };
     }
-  } catch (err) {
-    return { err: err };
+  } catch (err: any) {
+    return { status: "failed", err: err.message };
   }
 };

@@ -10,13 +10,17 @@ export const postRequest = async (url: string, data: any) => {
 };
 
 export const getRequest = async (url: string) => {
-  return await fetch(url, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    return await fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
 };
 
 export const putRequest = async (url: string, data: any) => {

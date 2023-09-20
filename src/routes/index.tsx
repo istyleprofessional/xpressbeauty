@@ -1,73 +1,83 @@
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
-import { BestSeller } from "~/components/home/best-seller/best-seller";
+import { ToolsProducts } from "~/components/home/tools-products/tools-products";
 import { Hero } from "~/components/home/hero/hero";
-import { NewArrival } from "~/components/home/new-arrival/new-arrival";
-import { NewsLetters } from "~/components/home/news-letters/news-letters";
+import { HairProducts } from "~/components/home/hair-products/hair-products";
+// import { NewsLetters } from "~/components/home/news-letters/news-letters";
 import { ShopByBrand } from "~/components/home/shop-by-brand/shop-by-brand";
-import { ShopNow } from "~/components/home/shop-now/shop-now";
 import { WhyChooseUs } from "~/components/home/why-choose-us/why-choose-us";
 import { connect } from "~/express/db.connection";
 import { get_new_arrivals_products } from "~/express/services/product.service";
 import type { ProductModel } from "~/models/product.model";
 
-export const useNewArrivalProducts = routeLoader$(async () => {
+export const useHairProducts = routeLoader$(async () => {
   await connect();
-  const newArrivalsProducts =
-    (await get_new_arrivals_products()) as ProductModel[];
+  const newArrivalsProducts = (await get_new_arrivals_products(
+    "Hair"
+  )) as ProductModel[];
+  return JSON.stringify(newArrivalsProducts as ProductModel[]);
+});
+
+export const useToolsProducts = routeLoader$(async () => {
+  await connect();
+  const newArrivalsProducts = (await get_new_arrivals_products(
+    "Tools"
+  )) as ProductModel[];
   return JSON.stringify(newArrivalsProducts as ProductModel[]);
 });
 
 export default component$(() => {
   const status = process.env.STATUS;
   const newArrivalProducts: ProductModel[] = JSON.parse(
-    useNewArrivalProducts().value
+    useHairProducts().value
+  );
+  const bestSellerProducts: ProductModel[] = JSON.parse(
+    useToolsProducts().value
   );
 
   return (
     <>
       {status === "1" && (
-        <>
+        <div class="flex flex-col gap-10">
           <Hero />
           <ShopByBrand />
-          <ShopNow />
-          <NewArrival newArrivalProducts={newArrivalProducts} />
+          <HairProducts newArrivalProducts={newArrivalProducts} />
           <div class="flex justify-center items-center">
-            <button
-              class="btn btn-primary text-white font-['Inter'] w-40 rounded-sm mt-8"
+            <a
+              class="btn btn-primary text-white font-['Inter'] w-fit rounded-sm mt-8"
               aria-label="See More Products"
+              href="/products/"
             >
-              See More
-            </button>
+              See More Products
+            </a>
           </div>
-          <BestSeller bestSellerProducts={newArrivalProducts} />
+          <ToolsProducts bestSellerProducts={bestSellerProducts} />
           <div class="flex justify-center items-center">
-            <button
-              class="btn btn-primary text-white font-['Inter'] w-40 rounded-sm mt-8"
+            <a
+              class="btn btn-primary text-white font-['Inter'] w-fit  rounded-sm mt-8"
               aria-label="See More Products"
+              href="/products/"
             >
-              See More
-            </button>
+              See More Products
+            </a>
           </div>
-          <div class="pt-20 flex flex-col gap-20 items-center justify-center">
+          <div class="p-20 flex flex-col gap-20 items-center justify-center">
             <WhyChooseUs />
           </div>
-          <div class="pt-20">
-            <NewsLetters />
-          </div>
-        </>
+        </div>
       )}
     </>
   );
 });
 
 export const head: DocumentHead = {
-  title: "Welcome to Qwik",
+  title: "Xpress Beauty | Home",
   meta: [
     {
       name: "description",
-      content: "Qwik site description",
+      content:
+        "Discover the epitome of luxury beauty at XpressBeauty – your premier destination for exquisite haircare, trimmers, and precision tools. Elevate your grooming routine with our curated selection of premium products with the cheapest price, meticulously crafted to meet the needs of the modern connoisseur. Explore the art of refinement with XpressBeauty today.",
     },
   ],
 };

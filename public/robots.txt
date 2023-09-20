@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /demo/
+
+Sitemap: https://xpressbeauty.com/sitemap.xml

@@ -2,12 +2,11 @@ import { Schema, model } from "mongoose";
 
 const dummyUsersSchema = new Schema(
   {
-    browserId: { type: String, unique: true },
-    generalIPInfo: { type: Object, default: {} },
-    cart: { type: Object, default: null },
-    wishlist: { type: Object, default: null },
-    orders: { type: Object, default: null },
     generalInfo: { type: Object, default: null },
+    firstName: { type: String, default: null },
+    lastName: { type: String, default: null },
+    email: { type: String, default: null },
+    phoneNumber: { type: String, default: null },
   },
   { timestamps: true }
 );

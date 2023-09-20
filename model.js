@@ -6,22 +6,24 @@ const productsSchema = new mongoose.Schema(
     product_name: { type: String },
     description: { type: String, default: null },
     item_no: { type: String },
-    sale_price: { type: String, default: null },
-    price: { type: String },
-    id: { type: String, default: null },
-    category: { type: String },
+    sale_price: { type: Object, default: null },
+    price: { type: Object },
+    categories: { type: Array },
+    imgs: { type: Array },
     quantity_on_hand: { type: String },
     sku: { type: String },
     manufacturer_part_number: { type: String },
-    imgs: { type: Array },
     bar_code_value: { type: String },
     isDeleted: { type: Boolean, defaults: false },
     isHidden: { type: Boolean, defaults: false },
+    status: { type: String, default: "NORMAL" },
+    rating: { type: Number, default: 0 },
     variation_type: { type: String, default: null },
     variations: { type: Array, default: null },
     lineName: { type: String, default: null },
     companyName: { type: String, default: null },
     perfix: { type: String, default: null },
+    priceType: { type: String, default: null },
   },
   { timestamps: true }
 );
@@ -41,12 +43,15 @@ const userSchema = new mongoose.Schema(
   {
     email: { type: String, unique: true, required: true },
     password: { type: String },
-    cart: { type: String, default: null },
-    orders: { type: String, default: null },
-    wishlist: { type: String, default: null },
+    firstName: { type: String, default: null },
+    lastName: { type: String, default: null },
+    phoneNumber: { type: String },
     generalIPInfo: { type: Object },
+    EmailVerifyToken: { type: String },
+    PhoneVerifyToken: { type: String },
     userInfo: { type: Object },
-    browserId: { type: String },
+    isEmailVerified: { type: Boolean, default: false },
+    isPhoneVerified: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -78,6 +83,17 @@ const categorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const cartSchema = new mongoose.Schema(
+  {
+    userId: { type: String, default: null },
+    products: {
+      type: Array,
+    },
+    totalQuantity: { type: Number, default: 0 },
+  },
+  { timestamps: true }
+);
+
 module.exports = {
   Product: mongoose.model("products", productsSchema),
   Admin: mongoose.model("admins", adminSchema),
@@ -85,4 +101,5 @@ module.exports = {
   DummyUser: mongoose.model("dummyUsers", dummyUserSchema),
   Brand: mongoose.model("brands", brandSchema),
   Category: mongoose.model("categories", categorySchema),
+  Cart: mongoose.model("carts", cartSchema),
 };

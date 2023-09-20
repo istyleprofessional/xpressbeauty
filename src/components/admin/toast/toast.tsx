@@ -14,30 +14,28 @@ export const Toast = component$((props: ToastProps) => {
   return (
     <>
       {status === "s" && (
-        <div class="alert alert-success">
-          <div>
-            <span>{message}</span>
-            <button
-              onClick$={() => handleClose(index)}
-              aria-label="Close notification"
-            >
-              <CloseIcon />
-            </button>
-          </div>
+        <div class="alert alert-success flex justify-between">
+          <span>{message}</span>
+          <button
+            type="button"
+            onClick$={() => handleClose(index)}
+            aria-label="Close notification"
+          >
+            <CloseIcon />
+          </button>
         </div>
       )}
       {status === "e" && (
-        <div class="alert alert-error">
-          <div class="flex flex-row gap-10 w-full">
-            <span>{message}</span>
-            <button
-              onClick$={() => handleClose(index)}
-              aria-label="Close notification"
-              class="m-auto"
-            >
-              <CloseIcon />
-            </button>
-          </div>
+        <div class="alert alert-error flex justify-between">
+          <span>{message}</span>
+          <button
+            onClick$={() => handleClose(index)}
+            aria-label="Close notification"
+            class="ml-auto"
+            type="button"
+          >
+            <CloseIcon />
+          </button>
         </div>
       )}
     </>

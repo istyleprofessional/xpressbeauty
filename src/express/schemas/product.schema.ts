@@ -5,9 +5,9 @@ const productsSchema = new Schema(
     product_name: { type: String },
     description: { type: String, default: null },
     item_no: { type: String },
-    sale_price: { type: String, default: null },
-    price: { type: String },
-    category: { type: String },
+    sale_price: { type: Object, default: null },
+    price: { type: Object },
+    categories: { type: Array },
     imgs: { type: Array },
     quantity_on_hand: { type: String },
     sku: { type: String },
@@ -22,6 +22,7 @@ const productsSchema = new Schema(
     lineName: { type: String, default: null },
     companyName: { type: String, default: null },
     perfix: { type: String, default: null },
+    priceType: { type: String, default: null },
   },
   { timestamps: true }
 );

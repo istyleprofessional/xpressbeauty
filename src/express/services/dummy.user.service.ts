@@ -1,15 +1,28 @@
 import DummyUser from "../schemas/dummy.user.schema";
 
-export const addDummyCustomer = async (id: string, geo: any) => {
+export const addDummyCustomer = async (id: string, data: any) => {
   try {
-    const result = await DummyUser.findOneAndUpdate(
-      { browserId: id },
-      { location: geo },
-      { upsert: true, new: true, runValidators: true }
-    );
-    return result;
+    if (!id) {
+      const result = await DummyUser.create({});
+      return { status: "success", result: result };
+    } else {
+      const result = await DummyUser.findOneAndUpdate(
+        { _id: id },
+        {
+          $set: {
+            generalInfo: data?.generalInfo,
+            firstName: data?.firstName,
+            lastName: data?.lastName,
+            email: data?.email,
+            phoneNumber: data?.phoneNumber,
+          },
+        },
+        { upsert: true, new: true, runValidators: true }
+      );
+      return { status: "success", result: result };
+    }
   } catch (err) {
-    return { err: err };
+    return { status: "failed", err: err };
   }
 };
 
@@ -24,19 +37,19 @@ export const checkDummy = async (id: string) => {
 
 export const getDummyCustomer = async (id: string) => {
   try {
-    const result = await DummyUser.findOne({ browserId: id });
-    return result;
+    const result = await DummyUser.findOne({ _id: id }, { password: 0 });
+    return { status: "success", result: result };
   } catch (err) {
-    return { err: err };
+    return { status: "failed", err: err };
   }
 };
 
-export const update_dummy_user = async (body: any, browserId: string) => {
+export const update_dummy_user = async (body: any, id: string) => {
   try {
     const result = await DummyUser.findOneAndUpdate(
-      { browserId: browserId },
-      { generalInfo: body },
-      { upsert: true, new: true, runValidators: true }
+      { _id: id },
+      { ...body },
+      { new: true }
     );
     return result;
   } catch (err) {

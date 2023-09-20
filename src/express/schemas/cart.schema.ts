@@ -2,11 +2,11 @@ import { Schema, model } from "mongoose";
 
 const cartSchema = new Schema(
   {
-    browserId: { type: String, unique: true },
     userId: { type: String, default: null },
     products: {
       type: Array,
     },
+    totalQuantity: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

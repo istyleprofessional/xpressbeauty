@@ -7,9 +7,7 @@ export const TableHeader = component$(() => {
         <th scope="col" class="text-center w-20">
           Action
         </th>
-        <th class="text-center w-56">
-          Product name
-        </th>
+        <th class="text-center w-56">Product name</th>
 
         <th scope="col" class="text-center w-56">
           Price
@@ -41,7 +39,6 @@ export const TableHeader = component$(() => {
         <th scope="col" class="text-center w-56">
           Image
         </th>
-
       </tr>
     </thead>
   );

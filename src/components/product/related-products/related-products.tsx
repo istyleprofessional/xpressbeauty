@@ -27,16 +27,14 @@ export const RelatedProducts = component$((props: RelatedProductsProps) => {
   return (
     <div class="flex flex-col justify-center items-center">
       <h2 class="text-black p-3 text-3xl font-bold">Related Products</h2>
-      <div class="flex flex-row items-center justify-center flex-wrap w-full">
-        <div class="w-fit">
-          <button
-            class="btn btn-circle w-12 z-10 flex items-center justifty-center justify-self-start m-2 bg-black"
-            onClick$={handlePerviousSlideClick}
-            aria-label="scroll prev"
-          >
-            <PerviousArrowIconNoStick />
-          </button>
-        </div>
+      <div class="flex flex-row items-center justify-center w-full">
+        <button
+          class="btn btn-circle w-fit md:w-12 z-10 flex items-center justifty-center justify-self-start  bg-black absolute left-0"
+          onClick$={handlePerviousSlideClick}
+          aria-label="scroll prev"
+        >
+          <PerviousArrowIconNoStick color="white" />
+        </button>
         <div class="flex flex-col gap-8 items-center w-[90vw] z-0">
           <div class="carousel carousel-center w-full p-4 space-x-4 bg-white rounded-box">
             {relatedProducts?.map((item: any, i: number) => (
@@ -46,15 +44,13 @@ export const RelatedProducts = component$((props: RelatedProductsProps) => {
             ))}
           </div>
         </div>
-        <div class="w-fit">
-          <button
-            class="btn btn-circle w-12 z-10 flex items-center justifty-center justify-self-end m-2 bg-black"
-            onClick$={handleNextSlideClick}
-            aria-label="scroll next"
-          >
-            <NextArrowIconNoStick />
-          </button>
-        </div>
+        <button
+          class="btn btn-circle w-fit md:w-12 z-10 flex items-center justifty-center justify-self-end  bg-black absolute right-0"
+          onClick$={handleNextSlideClick}
+          aria-label="scroll next"
+        >
+          <NextArrowIconNoStick color="white" />
+        </button>
       </div>
     </div>
   );
