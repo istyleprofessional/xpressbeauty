@@ -1,5 +1,4 @@
 import { component$ } from "@builder.io/qwik";
-import { Card } from "~/components/admin/card/card";
 
 export default component$(() => {
   return (
