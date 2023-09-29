@@ -1,4 +1,4 @@
-import { component$, useContext, $, useSignal } from "@builder.io/qwik";
+import { component$, useContext, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { UserContext } from "~/context/user.context";
 import { Form, routeAction$ } from "@builder.io/qwik-city";
 import { InputField } from "~/components/shared/input-field/input-field";
@@ -14,18 +14,18 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
     throw requestEvent.redirect(301, "/login");
   }
   const validationObject = {
-    firstName: validate(formData?.firstName ?? "", "name"),
-    lastName: validate(formData?.lastName ?? "", "name"),
-    email: validate(formData?.email ?? "", "email"),
-    phoneNumber: validate(formData?.phoneNumber ?? "", "phone"),
-    country: validate(formData?.generalInfo?.address?.country ?? "", "country"),
-    addressLine1: validate(
+    firstName: formData?.firstName !== "" && validate(formData?.firstName ?? "", "name"),
+    lastName: formData?.lastName !== "" && validate(formData?.lastName ?? "", "name"),
+    email: formData?.email !== "" && validate(formData?.email ?? "", "email"),
+    phoneNumber: formData?.phoneNumber !== "" && validate(formData?.phoneNumber ?? "", "phone"),
+    country: formData?.generalInfo?.address?.country !== "" && validate(formData?.generalInfo?.address?.country ?? "", "country"),
+    addressLine1: formData?.generalInfo?.address?.addressLine1 !== "" && validate(
       formData?.generalInfo?.address?.addressLine1 ?? "",
       "address"
     ),
-    city: validate(formData?.generalInfo?.address?.city ?? "", "city"),
-    state: validate(formData?.generalInfo?.address?.state ?? "", "state"),
-    postalCode: validate(
+    city: formData?.generalInfo?.address?.city !== "" && validate(formData?.generalInfo?.address?.city ?? "", "city"),
+    state: formData?.generalInfo?.address?.state !== "" && validate(formData?.generalInfo?.address?.state ?? "", "state"),
+    postalCode: formData?.generalInfo?.address?.postalCode !== "" && validate(
       formData?.generalInfo?.address?.postalCode ?? "",
       "postalCode"
     ),
@@ -33,12 +33,14 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
   const isValid = Object.values(validationObject).every(
     (item) => item === true
   );
+
   if (!isValid) {
     return {
       status: "failed",
       message: "Please enter valid details",
       validationObject: validationObject,
     };
+
   }
   try {
     const verified = jwt.verify(token, process.env.JWTSECRET ?? "");
@@ -46,10 +48,11 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
       throw requestEvent.redirect(301, "/login");
     }
     const updateReq = await updateExistingUser(data, formData?.id ?? "");
-    if (updateReq.status === "failed") {
-      return { status: "failed", message: updateReq.err };
+    if (updateReq?.status === "failed") {
+      return { status: "failed", message: JSON.stringify(updateReq.err) };
+
     }
-    return { status: "success", message: "User updated successfully" };
+    return { status: "success", message: "User updated successfully", user: JSON.stringify(updateReq) };
   } catch (error: any) {
     if (error.message === "jwt expired") {
       throw requestEvent.redirect(301, "/login");
@@ -66,22 +69,24 @@ export default component$(() => {
     toast.value?.remove();
   });
 
+  useVisibleTask$(({ track }) => {
+    track(() => action.value?.user)
+   // console.log(action.value?.user)
+    if (action.value?.user) {
+      const updatedUser = JSON.parse(action.value?.user)
+      user.isEmailVerified = updatedUser.result.isEmailVerified
+      user.isPhoneVerified = updatedUser.result.isPhoneVerified
+    }
+  })
+
+
+
   return (
     <>
       <div class="flex flex-col gap-10 p-4">
         <div class="flex flex-col justify-center items-center gap-3 bg-[#F4F4F5]">
-          {action?.value?.status && (
-            <div ref={toast} class="w-full">
-              <Toast
-                status="s"
-                handleClose={handleAlertClose}
-                message={(action?.value?.message as string) ?? ""}
-                index={1}
-              />
-            </div>
-          )}
 
-          <Form action={action}>
+          {/* <Form action={action}>
             <div class="w-full p-10">
               <div class="flex flex-row w-full gap-5">
                 <InputField
@@ -188,16 +193,198 @@ export default component$(() => {
             <button
               class="btn btn-primary w-full text-base m-2"
               type="submit"
-              // onClick$={() => (isLoading.value = true)}
+            // onClick$={() => (isLoading.value = true)}
             >
               {action.isRunning && (
                 <span class="loading loading-spinner"></span>
               )}
               Save
             </button>
-          </Form>
+          </Form> */}
         </div>
       </div>
+      <div class="gird">
+        <Form action={action} >
+          <div class="px-9 gap-4">
+
+            <div><span class="font-bold"></span>Personal Information <img class="inline" src="/public/pencil-alt.png"></img></div>
+            <div class="mt-6 border-b-2">
+              <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
+                <div class="md:pt-6"><span>First Name <span class=" text-error">*</span></span></div>
+                {/* <div><input type="text" value={user?.firstName ?? ""} placeholder="Type here" class="input input-bordered text-black w-full max-w-xs" /></div> */}
+                <div> <InputField
+                  type="text"
+                  placeholder="Marry"
+                  value={user?.firstName ?? ""}
+                  identifier="firstName"
+                  validation={
+                    action?.value?.validationObject?.firstName ?? true
+                  }
+
+                /></div>
+
+              </div>
+              <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
+                <div class="md:pt-6"><span >Last Name <span class=" text-error">*</span></span></div>
+                <div><InputField
+                  type="text"
+                  placeholder="George"
+                  value={user?.lastName ?? ""}
+                  identifier="lastName"
+                  validation={action?.value?.validationObject?.lastName ?? true}
+
+                /></div>
+
+              </div>
+              <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
+                <div class="md:pt-6"><span >Email Address <span class=" text-error">*</span></span></div>
+                <div class="inline">
+                  {user?.isEmailVerified ? <h1 style="color:green">Email Verified</h1> : <h1 style="color:red">Email not-verified</h1>}
+                  <InputField
+
+                    type="email"
+                    value={user?.email ?? ""}
+                    placeholder="example@gmail.com"
+                    identifier="email"
+                    validation={action?.value?.validationObject?.email ?? true}
+
+                  />
+                </div>
+
+
+              </div>
+              <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
+                <div class="md:pt-6"><span >Phone Number <span class=" text-error">*</span></span></div>
+                <div>
+                {user?.isPhoneVerified ? <h1 style="color:green">Phone Number Verified</h1> : <h1 style="color:red">Phone Number not-verified</h1>}
+                   <InputField
+                  type="text"
+                  value={user?.phoneNumber ?? ""}
+                  placeholder="2222222222"
+                  identifier="phoneNumber"
+                  validation={
+                    action?.value?.validationObject?.phoneNumber ?? true
+                  }
+
+                /></div>
+
+              </div>
+              <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
+                <div class="md:pt-6"><span >Company Name ( Optional )</span></div>
+                <div><InputField
+                  type="text"
+                  value={user?.generalInfo?.company?.name ?? ""}
+                  placeholder="Xpress"
+                  identifier="generalInfo.comapny.name"
+                  validation={true}
+                /></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-9 gap-4 mt-12">
+            <div><span class="font-bold"></span>Shipping Information <img class="inline" src="/public/pencil-alt.png"></img></div>
+            <div class="mt-6">
+              <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
+                <div class="md:pt-6"><span>Country / Region <span class=" text-error">*</span></span></div>
+                <div><InputField
+                  type="text"
+                  placeholder="Canada"
+                  identifier="generalInfo.address.country"
+                  value={user?.generalInfo?.address?.country ?? ""}
+                  validation={action?.value?.validationObject?.country ?? true}
+
+                /></div>
+
+              </div>
+              <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
+                <div class="md:pt-6"><span>Street Address <span class=" text-error">*</span></span></div>
+                <div><InputField
+                  type="text"
+                  placeholder="1234"
+                  identifier="generalInfo.address.addressLine1"
+                  value={user?.generalInfo?.address?.addressLine1 ?? ""}
+                  validation={
+                    action?.value?.validationObject?.addressLine1 ?? true
+                  }
+                /></div>
+
+              </div>
+              <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
+                <div class="md:pt-6"><span>Town / City <span class=" text-error">*</span></span></div>
+                <div><InputField
+                  type="text"
+                  placeholder="Toronto"
+                  identifier="generalInfo.address.city"
+                  value={user?.generalInfo?.address?.city ?? ""}
+                  validation={action?.value?.validationObject?.city ?? true}
+                /></div>
+
+              </div>
+              <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
+                <div class="md:pt-6"><span>Province <span class=" text-error">*</span></span></div>
+                <div><InputField
+                  type="text"
+                  placeholder="Ontario"
+                  identifier="generalInfo.address.state"
+                  value={user?.generalInfo?.address?.state ?? ""}
+                  validation={action?.value?.validationObject?.state ?? true}
+
+                /></div>
+
+              </div>
+              <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
+                <div class="md:pt-6"><span>Postal Code <span class=" text-error">*</span></span></div>
+                <div> <InputField
+                  type="text"
+                  placeholder="12344"
+                  identifier="generalInfo.address.postalCode"
+                  value={user?.generalInfo?.address?.postalCode ?? ""}
+                  validation={action?.value?.validationObject?.postalCode ?? true}
+
+                /></div>
+              </div>
+              <input type="hidden" name="id" value={user?._id ?? ""} />
+              <div class="grid md:grid-cols-4 gap-3 p-6">
+              
+                <div>
+                  <button
+                    class="btn btn-primary"
+                    type="submit"
+                  // onClick$={() => (isLoading.value = true)}
+                  >
+                    {action.isRunning && (
+                      <span class="loading loading-spinner"></span>
+                    )}
+                    Save
+                  </button>
+                  </div>
+                  <div class="flex flex-col items-center gap-3 bg-[#F4F4F5]">
+                  {action?.value?.status && (
+                    <div ref={toast} class="w-full">
+                      <Toast
+                        status="s"
+                        handleClose={handleAlertClose}
+                        message={(action?.value?.message as string) ?? ""}
+                        index={1}
+                      />
+                    </div>
+                  )}
+
+                </div>
+                
+
+              </div>
+            </div>
+
+
+          </div>
+        </Form>
+
+
+
+      </div>
+
     </>
   );
 });
