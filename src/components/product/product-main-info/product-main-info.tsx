@@ -190,7 +190,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         )}
 
         {!isVerified && (
-          <div class="card shadow-lg w-96 hover:card-base-300">
+          <div class="card shadow-lg w-96 hover:bg-base-300">
             <label class="card-header bg-warning text-center">
               <span class="text-md text-gray-500 text-center font-bold">
                 Saver Club
