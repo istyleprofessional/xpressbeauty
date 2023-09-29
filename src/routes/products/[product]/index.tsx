@@ -213,7 +213,7 @@ export default component$(() => {
       {isLoading.value && (
         <>
           <div class="w-full backdrop-blur-lg drop-shadow-lg fixed z-20 m-auto inset-x-0 inset-y-0 ">
-            <progress class="progress progress-white w-56 fixed z-20 m-auto inset-x-0 inset-y-0"></progress>
+            <progress class="progress progress-secondary  w-56 fixed z-20 m-auto inset-x-0 inset-y-0"></progress>
           </div>
         </>
       )}

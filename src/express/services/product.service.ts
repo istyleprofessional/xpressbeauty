@@ -113,12 +113,12 @@ export const hide_product_service = async (product: any, token: string) => {
         { isHidden: !product.isHidden },
         { new: true }
       );
-      return result;
+      return { status: "success", result: result };
     } catch (err) {
-      return { err: err };
+      return { status: "failed", err: err };
     }
   } else {
-    return { e: "not authorized" };
+    return { status: "failed", err: "not authorized" };
   }
 };
 
@@ -153,6 +153,15 @@ export const getRelatedProducts = async (
       product_name: { $ne: productName },
     }).limit(10);
     return result as ProductModel;
+  } catch (err) {
+    return { err: err };
+  }
+};
+
+export const getProductByIdForAdmin = async (id: string) => {
+  try {
+    const result = await Product.findOne({ _id: id });
+    return result;
   } catch (err) {
     return { err: err };
   }

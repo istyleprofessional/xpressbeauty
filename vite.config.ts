@@ -34,6 +34,9 @@ export default defineConfig(() => {
         "RECAPTCHA_SITE_KEY",
         "RECAPTCHA_SECRET_KEY",
         "ORIGIN",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_KEY",
+        "AWS_BUCKET_NAME"
       ]),
       qwikCity(),
       qwikVite(),
