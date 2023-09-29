@@ -433,6 +433,7 @@ export default component$(() => {
               for="my-drawer"
               class="btn btn-primary drawer-button md:hidden"
             >
+              Filter By
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

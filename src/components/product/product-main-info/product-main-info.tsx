@@ -190,13 +190,13 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         )}
 
         {!isVerified && (
-          <div class="card shadow-lg w-96">
+          <div class="card shadow-lg w-96 hover:card-base-300">
             <label class="card-header bg-warning text-center">
               <span class="text-md text-gray-500 text-center font-bold">
                 Saver Club
               </span>
             </label>
-            <a class="hover:bg-base-300 cursor-pointer" href="/login">
+            <a class="cursor-pointer" href="/login">
               <div class="card-body">
                 <div class="flex flex-row gap-2">
                   <div class="flex flex-col gap-1">
