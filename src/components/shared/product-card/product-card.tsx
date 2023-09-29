@@ -39,7 +39,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
       />
       <div class="p-0 m-0 flex flex-col items-left gap-3 w-full">
         <h2
-          class={`whitespace-normal ${
+          class={`overflow-hidden truncate ${
             cardSize === "sm" ? "lg:text-xs" : "lg:text-lg"
           } text-sm text-black`}
           itemProp="name"
@@ -124,6 +124,129 @@ export const ProductCard = component$((props: ProductCardProps) => {
           </p>
           {context.isVerified && (
             <span class="text-xs text-error">+20% off</span>
+          )}
+          {!context.isVerified && (
+            <>
+              <label class="bg-warning w-full text-center">
+                <span class="text-sm text-gray-500 text-center font-bold">
+                  Saver Club
+                </span>
+              </label>
+
+              <div class="flex flex-row gap-2 justify-center">
+                <div class="flex flex-col gap-1">
+                  <h2 class="flex flex-row gap-2 text-xs">
+                    {product.priceType === "single" &&
+                      product?.sale_price?.sale !== "" && (
+                        <>
+                          <span
+                            class="text-gray-400 line-through"
+                            itemProp="price"
+                          >
+                            {(
+                              parseFloat(product?.price?.regular ?? "") -
+                              parseFloat(product?.price?.regular ?? "") * 0.2
+                            ).toLocaleString("en-US", {
+                              style: "currency",
+                              currency: "CAD",
+                            })}
+                          </span>
+                          <span class="text-error ml-2" itemProp="price">
+                            {(
+                              parseFloat(
+                                product?.sale_price?.sale?.toString()
+                              ) -
+                              parseFloat(
+                                product?.sale_price?.sale?.toString()
+                              ) *
+                                0.2
+                            ).toLocaleString("en-US", {
+                              style: "currency",
+                              currency: "CAD",
+                            })}
+                          </span>
+                        </>
+                      )}
+                    {product?.priceType === "single" &&
+                      product?.sale_price?.sale === "" && (
+                        <span class="text-black" itemProp="price">
+                          {(
+                            product?.price?.regular -
+                            product?.price?.regular * 0.2
+                          ).toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "CAD",
+                          })}
+                        </span>
+                      )}
+                    {product?.priceType === "range" &&
+                      product?.sale_price?.min === "" &&
+                      product?.sale_price?.max === "" && (
+                        <span class="text-black" itemProp="price">
+                          {(
+                            product?.price?.min -
+                            product?.price?.min * 0.2
+                          ).toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "CAD",
+                          })}{" "}
+                          -{" "}
+                          {(
+                            product?.price?.max -
+                            product?.price?.max * 0.2
+                          ).toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "CAD",
+                          })}
+                        </span>
+                      )}
+                    {product?.priceType === "range" &&
+                      product?.sale_price?.min !== "" &&
+                      product?.sale_price?.max !== "" && (
+                        <div class="flex flex-col gap-2">
+                          <span
+                            class="text-gray-400 line-through"
+                            itemProp="price"
+                          >
+                            {(
+                              product?.price?.min -
+                              product?.price?.min * 0.2
+                            ).toLocaleString("en-US", {
+                              style: "currency",
+                              currency: "CAD",
+                            })}{" "}
+                            -{" "}
+                            {(
+                              product?.price?.max -
+                              product?.price?.max * 0.2
+                            ).toLocaleString("en-US", {
+                              style: "currency",
+                              currency: "CAD",
+                            })}
+                          </span>
+                          <span class="text-error" itemProp="price">
+                            {(
+                              product?.sale_price?.min -
+                              product?.sale_price?.min * 0.2
+                            ).toLocaleString("en-US", {
+                              style: "currency",
+                              currency: "CAD",
+                            })}{" "}
+                            -{" "}
+                            {(
+                              product?.sale_price?.max -
+                              product?.sale_price?.max * 0.2
+                            ).toLocaleString("en-US", {
+                              style: "currency",
+                              currency: "CAD",
+                            })}
+                          </span>
+                        </div>
+                      )}
+                  </h2>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
