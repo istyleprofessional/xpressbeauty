@@ -61,7 +61,7 @@ const { router, notFound } = createQwikCity({ render, qwikCityPlan, manifest });
 // Create the express server
 // https://expressjs.com/
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
 app.set("trust proxy", true);
 app.use(cookieParser());
