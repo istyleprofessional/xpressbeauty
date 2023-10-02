@@ -55,9 +55,7 @@ export const useAction = routeAction$(async (data, requestEvent) => {
       path: "/",
       secure: true,
     });
-    return {
-      status: "success",
-    };
+    throw requestEvent.redirect(301, "/");
   } else {
     return {
       status: "failed",
