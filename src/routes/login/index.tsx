@@ -7,6 +7,7 @@ import { validate } from "~/utils/validate.utils";
 import jwt from "jsonwebtoken";
 
 export const useAction = routeAction$(async (data, requestEvent) => {
+  console.log(data);
   const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${data.recaptcha}`;
   console.log(url);
