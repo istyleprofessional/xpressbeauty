@@ -11,7 +11,9 @@ export const useAction = routeAction$(async (data, requestEvent) => {
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${data.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
   const recaptchaText = await recaptcha.text();
+  console.log(recaptchaText);
   const google_response = JSON.parse(recaptchaText);
+  console.log(google_response);
   if (!google_response.success) {
     return {
       status: "failed",
