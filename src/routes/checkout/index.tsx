@@ -177,6 +177,12 @@ export default component$(() => {
   const action = useAddUser();
   const verifyCardRef = useSignal<Element>();
   const messageToast = useSignal<string>("");
+  const placesPredictions = useSignal<any[]>([]);
+  const country = useSignal<string>("");
+  const addressLine1 = useSignal<string>("");
+  const city = useSignal<string>("");
+  const state = useSignal<string>("");
+  const postalCode = useSignal<string>("");
 
   useVisibleTask$(({ track }) => {
     track(() => action.value);
@@ -196,6 +202,14 @@ export default component$(() => {
   const handleSkip = $(() => {
     verifyCardRef.value?.classList.add("hidden");
     location.href = `/payment`;
+  });
+
+  const handlePlacesFetch = $(async (e: any) => {
+    const input = e.target.value;
+    const url = "/api/places/?input=" + input;
+    const req = await fetch(url);
+    const data = await req.json();
+    placesPredictions.value = data.predictions;
   });
 
   return (
@@ -276,50 +290,130 @@ export default component$(() => {
               identifier="generalInfo.company.companyName"
               validation={true}
             />
-            <InputField
-              label="Country/ Region"
-              type="text"
-              placeholder="Canada"
-              value={info?.generalInfo?.address?.country ?? ""}
-              identifier="generalInfo.address.country"
-              validation={action?.value?.validation?.country}
-              isMandatory={true}
-            />
-            <InputField
-              label="Street Address"
-              type="text"
-              placeholder="1234"
-              value={info?.generalInfo?.address?.addressLine1 ?? ""}
-              identifier="generalInfo.address.addressLine1"
-              validation={action?.value?.validation?.addressLine1}
-              isMandatory={true}
-            />
+            <div class="flex flex-col gap-2 w-full">
+              <InputField
+                label="Street Address"
+                type="text"
+                placeholder="1234"
+                value={
+                  info?.generalInfo?.address?.addressLine1 ?? addressLine1.value
+                }
+                identifier="generalInfo.address.addressLine1"
+                validation={action?.value?.validation?.addressLine1}
+                isMandatory={true}
+                handleOnChange={handlePlacesFetch}
+              />
+              {placesPredictions.value.length > 0 && (
+                <div class="relative card shadow-lg bg-[fff]">
+                  <div class="card-body">
+                    <ul>
+                      {placesPredictions.value.map(
+                        (item: any, index: number) => (
+                          <li key={index}>
+                            <button
+                              class="btn btn-ghost"
+                              type="button"
+                              onClick$={async () => {
+                                console.log(item);
+                                const data = await fetch(
+                                  "/api/places/details?place_id=" +
+                                    item.place_id
+                                );
+                                const result = await data.json();
+                                console.log(result);
+                                const addressResult = result.result;
+                                country.value =
+                                  addressResult.address_components.find(
+                                    (comp: any) => {
+                                      return comp.types.includes("country");
+                                    }
+                                  )?.long_name;
+                                state.value =
+                                  addressResult.address_components.find(
+                                    (comp: any) => {
+                                      return comp.types.includes(
+                                        "administrative_area_level_1"
+                                      );
+                                    }
+                                  )?.long_name;
+                                city.value =
+                                  addressResult.address_components.find(
+                                    (comp: any) => {
+                                      return comp.types.includes("locality");
+                                    }
+                                  )?.long_name;
+                                postalCode.value =
+                                  addressResult.address_components.find(
+                                    (comp: any) => {
+                                      return comp.types.includes("postal_code");
+                                    }
+                                  )?.long_name;
+                                addressLine1.value =
+                                  addressResult.address_components.find(
+                                    (comp: any) => {
+                                      return comp.types.includes(
+                                        "street_number"
+                                      );
+                                    }
+                                  )?.long_name +
+                                  " " +
+                                  addressResult.address_components.find(
+                                    (comp: any) => {
+                                      return comp.types.includes("route");
+                                    }
+                                  )?.long_name;
+                                placesPredictions.value = [];
+                              }}
+                            >
+                              {item.description}
+                            </button>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
             <InputField
               label="Town / City"
               type="text"
               placeholder="Toronto"
-              value={info?.generalInfo?.address?.city ?? ""}
+              value={info?.generalInfo?.address?.city ?? city.value}
               identifier="generalInfo.address.city"
               validation={action?.value?.validation?.city}
               isMandatory={true}
+              disabled={true}
             />
             <InputField
               label="Province"
               type="text"
               placeholder="Ontario"
-              value={info?.generalInfo?.address?.state ?? ""}
+              value={info?.generalInfo?.address?.state ?? state.value}
               identifier="generalInfo.address.state"
               validation={action?.value?.validation?.state}
               isMandatory={true}
+              disabled={true}
             />
             <InputField
               label="Postal Code"
               type="text"
               placeholder="12344"
-              value={info?.generalInfo?.address?.postalCode ?? ""}
+              value={info?.generalInfo?.address?.postalCode ?? postalCode.value}
               identifier="generalInfo.address.postalCode"
               validation={action?.value?.validation?.postalCode}
               isMandatory={true}
+              disabled={true}
+            />
+            <InputField
+              label="Country/ Region"
+              type="text"
+              placeholder="Canada"
+              value={info?.generalInfo?.address?.country ?? country.value}
+              identifier="generalInfo.address.country"
+              validation={action?.value?.validation?.country}
+              isMandatory={true}
+              disabled={true}
             />
             <div class="form-control w-full">
               <label class="label">
