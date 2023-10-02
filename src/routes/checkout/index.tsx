@@ -66,6 +66,7 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
   }
   let user: any;
   let isDummy = false;
+  console.log(data);
   try {
     const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
     if (verify.isDummy) {
@@ -114,23 +115,23 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
     const validationObject = {
       country:
         validate(newData?.generalInfo?.address?.country ?? "", "country") &&
-        newData?.generalInfo?.address?.country.length > 0,
+        (newData?.generalInfo?.address?.country?.length ?? 0) > 0,
       addressLine1:
         validate(
           newData?.generalInfo?.address?.addressLine1 ?? "",
           "addressLine1"
-        ) && newData?.generalInfo?.address?.addressLine1.length > 0,
+        ) && (newData?.generalInfo?.address?.addressLine1?.length ?? 0) > 0,
       city:
         validate(newData?.generalInfo?.address?.city ?? "", "city") &&
-        newData?.generalInfo?.address?.city.length > 0,
+        (newData?.generalInfo?.address?.city?.length ?? 0) > 0,
       state:
         validate(newData?.generalInfo?.address?.state ?? "", "state") &&
-        newData?.generalInfo?.address?.state.length > 0,
+        (newData?.generalInfo?.address?.state?.length ?? 0) > 0,
       postalCode:
         validate(
           newData?.generalInfo?.address?.postalCode ?? "",
           "postalCode"
-        ) && newData?.generalInfo?.address?.postalCode.length > 0,
+        ) && (newData?.generalInfo?.address?.postalCode?.length ?? 0) > 0,
       firstName:
         validate(newData?.firstName ?? "", "firstName") &&
         newData?.firstName.length > 0,
@@ -193,6 +194,14 @@ export default component$(() => {
       location.href = `/payment`;
     }
     isLoading.value = false;
+  });
+
+  useVisibleTask$(() => {
+    country.value = info?.generalInfo?.address?.country ?? "";
+    addressLine1.value = info?.generalInfo?.address?.addressLine1 ?? "";
+    city.value = info?.generalInfo?.address?.city ?? "";
+    state.value = info?.generalInfo?.address?.state ?? "";
+    postalCode.value = info?.generalInfo?.address?.postalCode ?? "";
   });
 
   const handleSubmit = $(() => {
@@ -295,15 +304,13 @@ export default component$(() => {
                 label="Street Address"
                 type="text"
                 placeholder="1234"
-                value={
-                  info?.generalInfo?.address?.addressLine1 ?? addressLine1.value
-                }
+                value={addressLine1.value}
                 identifier="generalInfo.address.addressLine1"
                 validation={action?.value?.validation?.addressLine1}
                 isMandatory={true}
                 handleOnChange={handlePlacesFetch}
               />
-              {placesPredictions.value.length > 0 && (
+              {placesPredictions.value?.length > 0 && (
                 <div class="relative card shadow-lg bg-[fff]">
                   <div class="card-body">
                     <ul>
@@ -379,7 +386,7 @@ export default component$(() => {
               label="Town / City"
               type="text"
               placeholder="Toronto"
-              value={info?.generalInfo?.address?.city ?? city.value}
+              value={city.value}
               identifier="generalInfo.address.city"
               validation={action?.value?.validation?.city}
               isMandatory={true}
@@ -389,7 +396,7 @@ export default component$(() => {
               label="Province"
               type="text"
               placeholder="Ontario"
-              value={info?.generalInfo?.address?.state ?? state.value}
+              value={state.value}
               identifier="generalInfo.address.state"
               validation={action?.value?.validation?.state}
               isMandatory={true}
@@ -399,7 +406,7 @@ export default component$(() => {
               label="Postal Code"
               type="text"
               placeholder="12344"
-              value={info?.generalInfo?.address?.postalCode ?? postalCode.value}
+              value={postalCode.value}
               identifier="generalInfo.address.postalCode"
               validation={action?.value?.validation?.postalCode}
               isMandatory={true}
@@ -409,7 +416,7 @@ export default component$(() => {
               label="Country/ Region"
               type="text"
               placeholder="Canada"
-              value={info?.generalInfo?.address?.country ?? country.value}
+              value={country.value}
               identifier="generalInfo.address.country"
               validation={action?.value?.validation?.country}
               isMandatory={true}

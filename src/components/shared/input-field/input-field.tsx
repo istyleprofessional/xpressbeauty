@@ -44,7 +44,8 @@ export const InputField = component$((props: InputFieldProps) => {
         }`}
         style={{ color: "black" }}
         onInput$={(e) => handleOnChange?.(e) ?? null}
-        disabled={disabled}
+        // disabled={disabled}
+        readOnly={disabled}
       />
     </div>
   );

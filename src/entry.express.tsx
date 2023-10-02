@@ -31,7 +31,7 @@ import compression from "compression";
 import categorySchema from "./express/schemas/category.schema";
 import brandSchema from "./express/schemas/brand.schema";
 import VoiceResponse from "twilio/lib/twiml/VoiceResponse";
-// import bodyParser from "body-parser";
+import bodyParser from "body-parser";
 import axios from "axios";
 import fs from "fs";
 import { S3 } from "@aws-sdk/client-s3";
@@ -61,7 +61,7 @@ const { router, notFound } = createQwikCity({ render, qwikCityPlan, manifest });
 // Create the express server
 // https://expressjs.com/
 const app = express();
-// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
 app.set("trust proxy", true);
 app.use(cookieParser());
@@ -132,11 +132,9 @@ app.post("/api/twilioVoice", (req, res) => {
     `Hello and thank you for calling Xpress Beauty, your destination for all things beauty and wellness. We're delighted to assist you on your journey to looking and feeling your best.
      Our team of experienced professionals is dedicated to providing you with top-notch services that cater to your unique needs. Whether you're looking for a relaxing spa treatment, a stunning new hairstyle, or expert skincare advice, we've got you covered.`
   );
-  response.pause({ length: 5 });
   response.say(
     "For our current hours of operation and any special promotions, please visit our website at www.xpressbeauty.com. You can also book your appointment online for added convenience."
   );
-  response.pause({ length: 5 });
   response.say(
     "Due to high volume of calls we are unable to answer your call at this time. Please leave a message and we will get back to you as soon as possible."
   );
