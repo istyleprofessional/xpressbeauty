@@ -31,7 +31,7 @@ import compression from "compression";
 import categorySchema from "./express/schemas/category.schema";
 import brandSchema from "./express/schemas/brand.schema";
 import VoiceResponse from "twilio/lib/twiml/VoiceResponse";
-import bodyParser from "body-parser";
+// import bodyParser from "body-parser";
 import axios from "axios";
 import fs from "fs";
 import { S3 } from "@aws-sdk/client-s3";
