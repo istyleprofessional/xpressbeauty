@@ -65,7 +65,7 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
     token ?? "",
     newData?.EmailVerifyToken ?? ""
   );
-  return { status: "success", token: token ?? "" };
+  throw requestEvent.redirect(301, `/emailVerify/?token=${token ?? ""}`);
 });
 
 export default component$(() => {
@@ -103,10 +103,6 @@ export default component$(() => {
         ? action?.value?.err
         : "Something went wrong";
       isLoading.value = false;
-    }
-    if (action?.value?.status === "success") {
-      isLoading.value = false;
-      location.href = `/emailVerify/?token=${action?.value?.token ?? ""}`;
     }
   });
 
