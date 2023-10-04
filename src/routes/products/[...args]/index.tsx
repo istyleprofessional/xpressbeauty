@@ -644,14 +644,14 @@ export const head: DocumentHead = ({ resolveValue }) => {
     metaDescription += ` in all beauty categories and more at XpressBeauty`;
   }
   return {
-    title: `Explore all ${
+    title: `${
       mainFilter
         ? `${mainFilter} products`
         : categories
         ? `${categories} products`
         : brands
         ? `${brands} products`
-        : "products"
+        : "beauty products"
     } | XpressBeauty`,
     meta: [
       {
@@ -661,6 +661,30 @@ export const head: DocumentHead = ({ resolveValue }) => {
       {
         name: "keywords",
         content: `beauty, products, hair, tools, brands, prices, ${mainFilter}, ${categories}, ${brands}`,
+      },
+      {
+        name: "robots",
+        content: "index, follow",
+      },
+      {
+        name: "googlebot",
+        content: "index, follow",
+      },
+      {
+        name: "og:title",
+        content: `${
+          mainFilter
+            ? `${mainFilter} products`
+            : categories
+            ? `${categories} products`
+            : brands
+            ? `${brands} products`
+            : "beauty products"
+        } | XpressBeauty`,
+      },
+      {
+        name: "og:description",
+        content: metaDescription,
       },
     ],
   };
