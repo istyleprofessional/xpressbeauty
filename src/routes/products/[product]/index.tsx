@@ -285,7 +285,7 @@ export default component$(() => {
           <meta
             itemProp="availability"
             content={
-              parseInt(product?.quantity_on_hand ?? "") > 0
+              parseInt(product?.quantity_on_hand ?? "0") > 0
                 ? "https://schema.org/InStock"
                 : "https://schema.org/OutOfStock"
             }
