@@ -27,7 +27,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
     >
       <img
         key={i}
-        src={(product.imgs as string[])[0] ?? "/placeholder.webp"}
+        src={(product.imgs ?? [])[0]}
         onError$={(e: any) => {
           e.target.src = "/placeholder.webp";
         }}

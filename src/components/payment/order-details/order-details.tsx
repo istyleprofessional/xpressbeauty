@@ -82,7 +82,10 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
           },
           redirect: "if_required",
         });
-        if (pay.paymentIntent.status === "succeeded") {
+        if (
+          pay?.paymentIntent?.status &&
+          pay?.paymentIntent?.status === "succeeded"
+        ) {
           isLoading.value = false;
           const dataToBeSent = cartContext?.cart;
           dataToBeSent.order_amount = parseFloat(
@@ -99,13 +102,9 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
           const emailRes = await emailReq.json();
           if (emailRes.status === "success") {
             window.location.href = "/payment/success";
-            isLoading.value = false;
-          } else {
-            isLoading.value = false;
           }
-        } else {
-          isLoading.value = false;
         }
+        isLoading.value = false;
       });
     },
     { strategy: "document-idle" }
