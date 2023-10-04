@@ -282,10 +282,14 @@ export default component$(() => {
             }
           />
           <meta itemProp="priceCurrency" content="CAD" />
-          <link itemProp="availability" href="https://schema.org/InStock" />
-          {parseInt(product?.quantity_on_hand ?? "") > 0
-            ? "In stock"
-            : "Out of stock"}
+          <meta
+            itemprop="availability"
+            content={
+              parseInt(product?.quantity_on_hand ?? "") > 0
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock"
+            }
+          />
         </div>
 
         <div class="flex flex-col gap-5 lg:gap-20">
