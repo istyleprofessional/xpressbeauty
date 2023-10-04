@@ -37,7 +37,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
             id={`brand-${companyName.replace(/ /g, "-")}`}
           >
             <h2 class="text-black text-lg md:text-2xl" itemProp="name">
-              Brand: {companyName}
+              {companyName}
             </h2>
           </div>
         )}
