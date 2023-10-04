@@ -282,7 +282,12 @@ export default component$(() => {
             }
           />
           <meta itemProp="priceCurrency" content="CAD" />
+          <link itemProp="availability" href="https://schema.org/InStock" />
+          {parseInt(product?.quantity_on_hand ?? "") > 0
+            ? "In stock"
+            : "Out of stock"}
         </div>
+
         <div class="flex flex-col gap-5 lg:gap-20">
           <div class="flex flex-col lg:grid lg:grid-cols-3 lg:gap-10 p-3 lg:p-10">
             <Gallery
@@ -299,6 +304,7 @@ export default component$(() => {
                 priceType={product?.priceType ?? ""}
                 isVariant={true}
                 isVerified={cartContext.isVerified}
+                companyName={product?.companyName ?? ""}
               />
               <ProductActions
                 handleAddToCart={handleAddToCart}

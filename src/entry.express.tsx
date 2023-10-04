@@ -35,6 +35,7 @@ import VoiceResponse from "twilio/lib/twiml/VoiceResponse";
 import axios from "axios";
 import fs from "fs";
 import { S3 } from "@aws-sdk/client-s3";
+import MessagingResponse from "twilio/lib/twiml/MessagingResponse";
 
 dotenv.config();
 let sitemap: any;
@@ -123,6 +124,15 @@ app.get("/sitemap.xml", async (req, res) => {
     console.error(error);
     return res.status(500).end();
   }
+});
+
+app.post("/api/twilioSMS", async (req, res) => {
+  // forward the sms to 6479067973
+  const response = new MessagingResponse();
+  console.log("req.body: " + req.body);
+  response.message({ to: "+16479067973", from: "+12134014667" }, req.body);
+  res.set("Content-Type", "text/xml");
+  res.send(response.toString());
 });
 
 app.post("/api/twilioVoice", (req, res) => {

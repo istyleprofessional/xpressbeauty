@@ -9,17 +9,40 @@ interface ProductMainInfoProps {
   isVerified?: boolean;
   priceType?: string;
   ratings?: any;
+  companyName?: string;
 }
 
 export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
-  const { product_name, price, sale_price, isVerified, priceType, ratings } =
-    props;
+  const {
+    product_name,
+    price,
+    sale_price,
+    isVerified,
+    priceType,
+    ratings,
+    companyName,
+  } = props;
 
   return (
     <div class="flex flex-col gap-10">
-      <h1 class="text-xl md:text-4xl font-bold text-black" itemProp="name">
-        {product_name}
-      </h1>
+      <div class="flex flex-col gap-3">
+        <h1 class="text-xl md:text-4xl font-bold text-black" itemProp="name">
+          {product_name}
+        </h1>
+        {companyName && companyName !== "" && (
+          <div
+            itemProp="brand"
+            itemScope
+            itemType="http://schema.org/Brand"
+            id={`brand-${companyName.replace(/ /g, "-")}`}
+          >
+            <h2 class="text-black text-lg md:text-2xl" itemProp="name">
+              Brand: {companyName}
+            </h2>
+          </div>
+        )}
+      </div>
+
       <Rating ratings={ratings?.result?.ratings ?? []} />
       <div class="flex flex-col gap-3 ">
         {!isVerified && (
