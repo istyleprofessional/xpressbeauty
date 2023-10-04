@@ -283,7 +283,7 @@ export default component$(() => {
           />
           <meta itemProp="priceCurrency" content="CAD" />
           <meta
-            itemprop="availability"
+            itemProp="availability"
             content={
               parseInt(product?.quantity_on_hand ?? "") > 0
                 ? "https://schema.org/InStock"
