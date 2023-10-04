@@ -13,7 +13,18 @@ export const RouterHead = component$(() => {
   return (
     <>
       <title>{head.title}</title>
-
+      <script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=AW-11356703111"
+      ></script>
+      <script>
+        {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-11356703111');
+          `}
+      </script>
       <link rel="canonical" href={`https://xpressbeauty.ca${url}`} />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="icon" type="image/svg+xml" href="/new logo 1.jpg" />
