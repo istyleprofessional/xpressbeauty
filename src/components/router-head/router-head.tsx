@@ -10,6 +10,13 @@ export const RouterHead = component$(() => {
 
   const url = loc.url.href.split(".ca")[1];
 
+  const trackingCode = `
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-11356703111');
+  `;
+
   return (
     <>
       <title>{head.title}</title>
@@ -17,14 +24,7 @@ export const RouterHead = component$(() => {
         async
         src="https://www.googletagmanager.com/gtag/js?id=AW-11356703111"
       ></script>
-      <script>
-        {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-11356703111');
-          `}
-      </script>
+      <script dangerouslySetInnerHTML={trackingCode} />
       <link rel="canonical" href={`https://xpressbeauty.ca${url}`} />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="icon" type="image/svg+xml" href="/new logo 1.jpg" />
