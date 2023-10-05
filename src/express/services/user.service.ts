@@ -19,8 +19,8 @@ export const userRegistration = async (userObject: any) => {
       PhoneVerifyToken: phoneVerifyToken,
     });
     return { status: "success", result: result };
-  } catch (err) {
-    return { status: "failed", err: err };
+  } catch (err: any) {
+    return { status: "failed", err: err?.message };
   }
 };
 
@@ -160,51 +160,49 @@ export const getUserEmailOtp = async (data: any) => {
 
 export const updateExistingUser = async (data: any, id: string) => {
   try {
-    const userdata =await User.findOne({ _id: id })
-    if((data.email === userdata?.email?? "") && (data.phoneNumber === userdata?.phoneNumber?? "")){
+    const userdata = await User.findOne({ _id: id });
+    if (
+      (data.email === userdata?.email ?? "") &&
+      (data.phoneNumber === userdata?.phoneNumber ?? "")
+    ) {
       const result = await User.findOneAndUpdate(
         { _id: id },
         { ...data },
         { new: true }
-      )
-    
-      return { status: "success", result: result }   
-  }
-  else if((data.email !== userdata?.email?? "") && (data.phoneNumber !== userdata?.phoneNumber?? "")){
-    const result = await User.findOneAndUpdate(
-      { _id: id },
-      { ...data,isEmailVerified:false,isPhoneVerified:false },
-      { new: true }
-    )
-  
-    return { status: "success", result: result }   
+      );
 
-  }
-  else if((data.email === userdata?.email?? "")){
-    const result = await User.findOneAndUpdate(
-      { _id: id },
-      { ...data,isPhoneVerified:false },
-      { new: true }
-    )
-  
-    return { status: "success", result: result } 
+      return { status: "success", result: result };
+    } else if (
+      (data.email !== userdata?.email ?? "") &&
+      (data.phoneNumber !== userdata?.phoneNumber ?? "")
+    ) {
+      const result = await User.findOneAndUpdate(
+        { _id: id },
+        { ...data, isEmailVerified: false, isPhoneVerified: false },
+        { new: true }
+      );
 
-  }
-  else{
-    const result = await User.findOneAndUpdate(
-      { _id: id },
-      { ...data,isEmailVerified:false },
-      { new: true }
-    )
-  
-    return { status: "success", result: result } 
+      return { status: "success", result: result };
+    } else if (data.email === userdata?.email ?? "") {
+      const result = await User.findOneAndUpdate(
+        { _id: id },
+        { ...data, isPhoneVerified: false },
+        { new: true }
+      );
 
-  }
-  
+      return { status: "success", result: result };
+    } else {
+      const result = await User.findOneAndUpdate(
+        { _id: id },
+        { ...data, isEmailVerified: false },
+        { new: true }
+      );
+
+      return { status: "success", result: result };
+    }
   } catch (err) {
-  return { status: "failed", err: err };
-}
-
+    return { status: "failed", err: err };
+  }
 
   // try {
   //   const result = await User.findOneAndUpdate(

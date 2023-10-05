@@ -28,16 +28,21 @@ export const RouterHead = component$(() => {
   return (
     <>
       <title>{head.title}</title>
-      <script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=AW-11356703111"
-      ></script>
-      <script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-TNWNEYMDFJ"
-      ></script>
-      <script dangerouslySetInnerHTML={googletagmanager} />
-      <script dangerouslySetInnerHTML={trackingCode} />
+      {process.env.isLive && (
+        <>
+          <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=AW-11356703111"
+          ></script>
+          <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-TNWNEYMDFJ"
+          ></script>
+          <script dangerouslySetInnerHTML={googletagmanager} />
+          <script dangerouslySetInnerHTML={trackingCode} />
+        </>
+      )}
+
       <link rel="canonical" href={`https://xpressbeauty.ca${url}`} />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="icon" type="image/svg+xml" href="/new logo 1.jpg" />

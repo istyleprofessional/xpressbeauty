@@ -36,7 +36,8 @@ export default defineConfig(() => {
         "ORIGIN",
         "AWS_ACCESS_KEY_ID",
         "AWS_SECRET_KEY",
-        "AWS_BUCKET_NAME"
+        "AWS_BUCKET_NAME",
+        "isLive",
       ]),
       qwikCity(),
       qwikVite(),
