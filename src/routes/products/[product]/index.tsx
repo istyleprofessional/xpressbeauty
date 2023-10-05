@@ -28,6 +28,8 @@ import { getUserById } from "~/express/services/user.service";
 import { WishListContext } from "~/context/wishList.context";
 import { Toast } from "~/components/admin/toast/toast";
 import { getRatingByProductId } from "~/express/services/rating.reviews.service";
+// import productSchema from "~/express/schemas/product.schema";
+// import fs from "fs";
 
 export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
@@ -78,6 +80,78 @@ export const getAllRelatedProductsServer = server$(async (data) => {
   const req = await getRelatedProducts(data.category, data.name);
   return JSON.stringify(req);
 });
+
+// export const useExportProdutcDataCSV = routeLoader$(async () => {
+//   await connect();
+//   const products = await productSchema.find({});
+//   const productsData: any[] = [];
+//   for (const product of products) {
+//     if (product.variations.length === 0) {
+//       productsData.push({
+//         ID: product._id,
+//         Title: product.product_name,
+//         Description: product.description,
+//         Price: product.price.regular,
+//         Condition: "new",
+//         Link: `https://xpressbeauty.ca/products/${encodeURIComponent(
+//           product.product_name
+//             ?.replace(/[^a-zA-Z ]/g, "")
+//             .replace(/ /g, "-")
+//             .toLowerCase() ?? ""
+//         )}`,
+//         Availability:
+//           parseInt(product?.quantity_on_hand ?? "0") > 0
+//             ? "in_stock"
+//             : "out_of_stock",
+//         Image_link: product.imgs[0],
+//       });
+//     } else {
+//       for (const variation of product.variations) {
+//         productsData.push({
+//           ID: `${product._id}.${variation.variation_id}`,
+//           Title: product.product_name,
+//           Description: product.description,
+//           Price: variation.price,
+//           Condition: "new",
+//           Link: `https://xpressbeauty.ca/products/${encodeURIComponent(
+//             product.product_name
+//               ?.replace(/[^a-zA-Z ]/g, "")
+//               .replace(/ /g, "-")
+//               .toLowerCase() ?? ""
+//           )}`,
+//           Availability:
+//             parseInt(variation?.quantity_on_hand ?? "0") > 0
+//               ? "in_stock"
+//               : "out_of_stock",
+//           Image_link: variation.variation_image,
+//         });
+//       }
+//     }
+//     // add the header row names to the start of the array of rows
+//     productsData.unshift([
+//       "ID",
+//       "Title",
+//       "Description",
+//       "Price",
+//       "Condition",
+//       "Link",
+//       "Availability",
+//       "Image_link",
+//     ]);
+//     // create a string to write to a CSV file
+
+//     fs.writeFile(
+//       "./products.csv",
+//       JSON.stringify(productsData),
+//       function (err) {
+//         if (err) {
+//           return console.log(err);
+//         }
+//         console.log("The file was saved!");
+//       }
+//     );
+//   }
+// });
 
 export default component$(() => {
   const product: ProductModel = JSON.parse(useServerData().value)?._doc;

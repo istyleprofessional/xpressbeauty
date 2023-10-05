@@ -1,13 +1,14 @@
 import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
 import { InputField } from "~/components/shared/input-field/input-field";
 import { Toast } from "~/components/admin/toast/toast";
-import { Form, routeAction$ } from "@builder.io/qwik-city";
+import { Form, routeAction$, server$ } from "@builder.io/qwik-city";
 import { generateUniqueInteger } from "~/utils/generateOTP";
 import { userRegistration } from "~/express/services/user.service";
 import { connect } from "~/express/db.connection";
 import jwt from "jsonwebtoken";
 import { sendVerficationMail } from "~/utils/sendVerficationMail";
 import { validate } from "~/utils/validate.utils";
+import Twilio from "twilio";
 
 export const useRegisterForm = routeAction$(async (data, requestEvent) => {
   await connect();
@@ -68,6 +69,16 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
   return { status: "success", token: token ?? "" };
 });
 
+export const validatePhone = server$(async (data) => {
+  const client = new (Twilio as any).Twilio(
+    process?.env?.TWILIO_ACCOUNT_SID ?? "",
+    process?.env?.TWILIO_AUTH_TOKEN ?? ""
+  );
+  const req = await client.lookups.v2.phoneNumbers(`+1${data}`).fetch();
+
+  return { status: "success", res: JSON.stringify(req) };
+});
+
 export default component$(() => {
   const action = useRegisterForm();
   const isLoading = useSignal<boolean>(false);
@@ -108,6 +119,14 @@ export default component$(() => {
       isLoading.value = false;
       location.href = `/emailVerify/?token=${action?.value?.token ?? ""}`;
     }
+  });
+
+  const handleChange = $(async (e: any) => {
+    console.log(e.target.value);
+    const phone = e.target.value;
+    if (phone.length !== 10) return;
+    const req = await validatePhone(e.target.value);
+    console.log(req);
   });
 
   return (
@@ -173,6 +192,7 @@ export default component$(() => {
               validation={action?.value?.validation?.phoneNumber}
               type="text"
               identifier="phoneNumber"
+              handleOnChange={handleChange}
             />
             <InputField
               label="Password"

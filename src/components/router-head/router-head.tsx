@@ -17,6 +17,14 @@ export const RouterHead = component$(() => {
     gtag('config', 'AW-11356703111');
   `;
 
+  const googletagmanager = `
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TNWNEYMDFJ');
+  `;
+
   return (
     <>
       <title>{head.title}</title>
@@ -24,6 +32,11 @@ export const RouterHead = component$(() => {
         async
         src="https://www.googletagmanager.com/gtag/js?id=AW-11356703111"
       ></script>
+      <script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-TNWNEYMDFJ"
+      ></script>
+      <script dangerouslySetInnerHTML={googletagmanager} />
       <script dangerouslySetInnerHTML={trackingCode} />
       <link rel="canonical" href={`https://xpressbeauty.ca${url}`} />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
