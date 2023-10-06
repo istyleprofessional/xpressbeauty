@@ -80,7 +80,7 @@ try {
   const request = await getUserEmailById(decoded.user_id);
   const EmailVerifyToken = generateUniqueInteger();
   const saveNewUser = await updateEmailVerficationCode(request?.result?.id ?? "" ,EmailVerifyToken );
-  if (request?.status === "success") {
+if (request?.status === "success") {
     sendVerficationMail(
       request?.result?.email ?? "",
       `${request?.result?.firstName ?? ""} ${request?.result?.lastName ?? ""}`,

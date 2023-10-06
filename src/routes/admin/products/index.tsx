@@ -1,10 +1,7 @@
 import { component$, $, useSignal } from "@builder.io/qwik";
-import { routeLoader$, useLocation } from "@builder.io/qwik-city";
+import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import { connect } from "~/express/db.connection";
-import {
-  get_products_count_service,
-  get_products_service,
-} from "~/express/services/product.service";
+import { getProductBySearchAdmin } from "~/express/services/product.service";
 import {
   CheckOrderIcon,
   EditAdimnIcon,
@@ -14,21 +11,36 @@ import {
 import { putRequest } from "~/utils/fetch.utils";
 
 export const useProductData = routeLoader$(async (ev) => {
-  const token = ev.cookie.get("token")?.value;
   const pageNumber = parseInt(ev.url.searchParams.get("page") ?? "1");
+  console.log("page", pageNumber);
+  const search = ev.url.searchParams.get("search") ?? "";
   await connect();
-  const products = await get_products_service(token ?? "", pageNumber);
-  const count = await get_products_count_service(token ?? "");
-  return JSON.stringify({ products: products, count: count });
+  const products = await getProductBySearchAdmin(search, pageNumber);
+  // const products = await get_products_service(token ?? "", pageNumber);
+  // const count = await get_products_count_service(token ?? "");
+  return JSON.stringify(products);
+});
+
+export const getProductsServer = server$(async function (value: string) {
+  await connect();
+  // const token = this.cookie.get("token")?.value;
+  const page = this.url.searchParams.get("page") ?? "1";
+  console.log("page", page);
+  const products = await getProductBySearchAdmin(value, parseInt(page));
+  return JSON.stringify(products);
 });
 
 export default component$(() => {
-  const productData = useSignal(JSON.parse(useProductData().value)?.products);
-  const count = JSON.parse(useProductData().value).count;
+  // const productData = useSignal(JSON.parse(useProductData().value)?.);
+  const json = JSON.parse(useProductData().value);
+  const productData = useSignal(json.result);
+  const count = useSignal(json.total);
   const loc = useLocation();
   const currentPageNo = loc.url.searchParams.get("page") ?? "1";
-  const totalPages = Math.ceil(count / 20);
+  const totalPages = Math.ceil(count.value / 20);
+  console.log("totalPages", count.value);
   const currentProduct = useSignal<any>({});
+  const searchValue = loc.url.searchParams.get("search") ?? "";
 
   const handleVisibilityChange = $((product: any) => {
     (document?.getElementById("my_modal_1") as any)?.showModal();
@@ -53,9 +65,31 @@ export default component$(() => {
     currentProduct.value = {};
   });
 
+  const handleSearchProducts = $(async (e: any) => {
+    const value = e.target.value;
+    const getProducts = await getProductsServer(value);
+    const jsonRes = JSON.parse(getProducts);
+    productData.value = jsonRes.result;
+    count.value = jsonRes.total;
+    const url = new URL(window.location.href);
+    url.searchParams.set("page", "1");
+    url.searchParams.set("search", value);
+    history.pushState({}, "", url.toString());
+  });
+
   return (
     <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
-      <h1 class="text-2xl font-bold p-2">Orders</h1>
+      <div class="flex flex-row gap-5 items-center">
+        <h1 class="text-2xl font-bold p-2">Products</h1>
+        <input
+          type="text"
+          class="input input-bordered w-[20rem] m-2"
+          placeholder="Search For Products"
+          onInput$={handleSearchProducts}
+          value={searchValue}
+        />
+      </div>
+
       <div class="overflow-x-auto h-[80vh] bg-[#FFF]">
         <table class="table table-pin-rows h-full">
           <thead>
@@ -140,7 +174,7 @@ export default component$(() => {
             {productData.value.length === 0 && (
               <tr>
                 <td colSpan={8} class="text-center">
-                  No orders found
+                  No products found
                 </td>
               </tr>
             )}

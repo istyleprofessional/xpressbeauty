@@ -1,3 +1,4 @@
+import type { PropFunction } from "@builder.io/qwik";
 import { component$ } from "@builder.io/qwik";
 
 interface InputFieldProps {
@@ -8,6 +9,8 @@ interface InputFieldProps {
   type: string;
   identifier?: string;
   isMandatory?: boolean;
+  handleOnChange?: PropFunction<(e: any) => void>;
+  disabled?: boolean;
 }
 
 export const InputField = component$((props: InputFieldProps) => {
@@ -19,6 +22,8 @@ export const InputField = component$((props: InputFieldProps) => {
     value,
     identifier,
     isMandatory,
+    handleOnChange,
+    disabled,
   } = props;
 
   return (
@@ -37,6 +42,11 @@ export const InputField = component$((props: InputFieldProps) => {
         class={`input input-bordered w-full text-black ${
           validation === false ? "input-error" : ""
         }`}
+        style={{ color: "black" }}
+        onInput$={(e) => handleOnChange?.(e) ?? null}
+        autoComplete={"off"}
+        // disabled={disabled}
+        readOnly={disabled}
       />
     </div>
   );

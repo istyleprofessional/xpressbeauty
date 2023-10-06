@@ -30,6 +30,7 @@ export default component$(() => {
   const orderStatus = useSignal<string>("");
   const userEmail = useSignal<string>("");
   const orderId = useSignal<string>("");
+  const searchValue = loc.url.searchParams.get("search") ?? "";
 
   const handleStatusChanged = $((status: string, email: string, id: string) => {
     (document?.getElementById("my_modal_1") as any)?.showModal();
@@ -43,9 +44,23 @@ export default component$(() => {
     console.log(orderStatus.value, userEmail.value, orderId.value);
   });
 
+  // const handleSearchOrders = $(() => {
+  //   const
+  // });
+
   return (
     <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
-      <h1 class="text-2xl font-bold p-2">Orders</h1>
+      <div class="flex flex-row gap-5 items-center">
+        <h1 class="text-2xl font-bold p-2">Orders</h1>
+        <input
+          type="text"
+          class="input input-bordered w-[20rem] m-2"
+          placeholder="Search For Orders"
+          // onInput$={handleSearchOrders}
+          value={searchValue}
+        />
+      </div>
+
       <div class="overflow-x-auto h-[80vh] bg-[#FFF]">
         <table class="table table-pin-rows table-sm h-full">
           <thead>

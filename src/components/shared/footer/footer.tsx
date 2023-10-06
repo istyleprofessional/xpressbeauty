@@ -5,7 +5,7 @@ export const Footer = component$(() => {
     <div class="bg-black flex flex-col gap-10 lg:pl-20 lg:pr-20">
       <div class="flex flex-col gap-10 lg:flex-row flex-wrap lg:gap-[20%] items-center">
         <div class="flex flex-col gap-4 p-5">
-          <img alt="Logo" src="/new logo 1.jpg" width="271" height="25" />
+          <img alt="Logo" src="/logoX2.jpg" width="271" height="25" />
           <p class="text-white font-light text-sm">
             Copyright © 2023 XPress Beauty
             <br /> | All Rights Reserved
@@ -82,7 +82,7 @@ export const Footer = component$(() => {
             <h3 class="text-white font-bold text-lg">Follow us</h3>
             <div class="flex flex-col gap-4">
               <a
-                href="#"
+                href="https://www.facebook.com/xpressbeautypro/"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
                 <img src="/Facebook.webp" alt="facebook" class="w-6 h-full" />
@@ -180,7 +180,7 @@ export const Footer = component$(() => {
             <h3 class="text-white font-bold text-lg">Follow us</h3>
             <div class="flex flex-col gap-4">
               <a
-                href="#"
+                href="https://www.facebook.com/xpressbeautypro/"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
                 <img src="/Facebook.webp" alt="facebook" class="w-6 h-full" />

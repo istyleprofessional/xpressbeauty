@@ -7,11 +7,15 @@ import { validate } from "~/utils/validate.utils";
 import jwt from "jsonwebtoken";
 
 export const useAction = routeAction$(async (data, requestEvent) => {
+  console.log(data);
   const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${data.recaptcha}`;
+  console.log(url);
   const recaptcha = await fetch(url, { method: "post" });
   const recaptchaText = await recaptcha.text();
+  console.log(recaptchaText);
   const google_response = JSON.parse(recaptchaText);
+  console.log(google_response);
   if (!google_response.success) {
     return {
       status: "failed",
@@ -52,9 +56,7 @@ export const useAction = routeAction$(async (data, requestEvent) => {
       path: "/",
       secure: true,
     });
-    return {
-      status: "success",
-    };
+    throw requestEvent.redirect(301, "/");
   } else {
     return {
       status: "failed",

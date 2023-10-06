@@ -43,11 +43,13 @@ export const RatingAndDescription = component$(
       async () => {
         const request: any = await getRequest(`/api/rating/?id=${productId}`);
         const response = await request.json();
+        console.log(response);
         if (response.status === "success") {
           ratings.value = response?.result?.ratings || [];
+          console.log(ratings.value);
         }
       },
-      { strategy: "document-ready" }
+      { strategy: "document-idle" }
     );
     const handleDescription = $(() => {
       isDescriptionActive.value = true;
@@ -80,7 +82,7 @@ export const RatingAndDescription = component$(
       userRateObject.recaptcha = recaptchaToken.value;
       const request = await postRequest("/api/rating", userRateObject);
       const response = await request.json();
-      console.log(response);
+      // console.log(response);
       if (response.status !== "failed") {
         isReviewActive.value = false;
       } else {

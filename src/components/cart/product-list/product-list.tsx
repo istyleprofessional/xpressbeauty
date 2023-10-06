@@ -58,45 +58,41 @@ export const ProductList = component$(() => {
       {context?.cart && (
         <>
           {context?.cart?.products?.map((product: any) => (
-            <>
-              <div
-                class="flex flex-row gap-1 md:gap-5 justify-start items-center h-fit w-fit lg:w-[50%] bg-white border-2
+            <div
+              class="flex flex-row gap-1 md:gap-5 justify-start items-center h-fit w-fit lg:w-[50%] bg-white border-2
                                 border-solid border-[#E0E0E0] rounded-lg"
-                key={uuid()}
-              >
-                <img
-                  src={product?.product_img}
-                  alt={product?.product_name}
-                  class="w-12 h-12 md:w-32 md:h-32 object-contain lg:p-5"
-                />
-                <div class="flex flex-col">
-                  <h2 class="text-black text-xs md:text-sm w-24 md:w-fit">
-                    {product?.product_name}
-                  </h2>
-                  <p class="text-black text-xs">
-                    {product?.variation_name ?? ""}
-                  </p>
-                </div>
-
-                <ItemQuantity product={product} />
-                <p class="text-black md:text-sm text-xs">
-                  CA$ {parseFloat(product?.price.replace("$", "")).toFixed(2)}
+              key={uuid()}
+            >
+              <img
+                src={product?.product_img}
+                alt={product?.product_name}
+                class="w-12 h-12 md:w-32 md:h-32 object-contain lg:p-5"
+              />
+              <div class="flex flex-col">
+                <h2 class="text-black text-xs md:text-sm w-20 overflow-ellipsis whitespace-nowrap overflow-hidden">
+                  {product?.product_name}
+                </h2>
+                <p class="text-black text-xs">
+                  {product?.variation_name ?? ""}
                 </p>
-                {context.isVerified && (
-                  <p class="text-xs md:text-sm font-bold text-[red]">
-                    +20% off
-                  </p>
-                )}
-                <button
-                  class="btn text-[#CC0000]"
-                  onClick$={() => {
-                    handleDeleteItemClick(product);
-                  }}
-                >
-                  <TrashIcon classes="md:w-5 md:h-5 w-4 h-4" />
-                </button>
               </div>
-            </>
+
+              <ItemQuantity product={product} />
+              <p class="text-black md:text-sm text-xs">
+                CA$ {parseFloat(product?.price.replace("$", "")).toFixed(2)}
+              </p>
+              {context.isVerified && (
+                <p class="text-xs md:text-sm font-bold text-[red]">+20% off</p>
+              )}
+              <button
+                class="btn text-[#CC0000] p-2"
+                onClick$={() => {
+                  handleDeleteItemClick(product);
+                }}
+              >
+                <TrashIcon classes="md:w-5 md:h-5 w-4 h-4" />
+              </button>
+            </div>
           ))}
         </>
       )}

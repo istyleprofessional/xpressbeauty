@@ -1,13 +1,14 @@
 import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
 import { InputField } from "~/components/shared/input-field/input-field";
 import { Toast } from "~/components/admin/toast/toast";
-import { Form, routeAction$ } from "@builder.io/qwik-city";
+import { Form, routeAction$, server$ } from "@builder.io/qwik-city";
 import { generateUniqueInteger } from "~/utils/generateOTP";
 import { userRegistration } from "~/express/services/user.service";
 import { connect } from "~/express/db.connection";
 import jwt from "jsonwebtoken";
 import { sendVerficationMail } from "~/utils/sendVerficationMail";
 import { validate } from "~/utils/validate.utils";
+import Twilio from "twilio";
 
 export const useRegisterForm = routeAction$(async (data, requestEvent) => {
   await connect();
@@ -35,7 +36,8 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
     firstName: validate(newData?.firstName, "firstName"),
     phoneNumber:
       validate(newData?.phoneNumber, "phoneNumber") &&
-      newData?.phoneNumber?.length === 12,
+      newData?.phoneNumber?.length === 12 &&
+      newData.isPhoneValid === "true",
   };
   const isValid = Object.values(validationObject).every(
     (item) => item === true
@@ -49,6 +51,12 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
   }
   newData.EmailVerifyToken = generateUniqueInteger();
   const saveNewUser = await userRegistration(newData);
+  if (saveNewUser.status === "failed") {
+    return {
+      status: "failed",
+      err: saveNewUser.err,
+    };
+  }
   const token = jwt.sign(
     { user_id: saveNewUser?.result?._id, isDummy: false },
     process?.env?.JWTSECRET ?? "",
@@ -65,7 +73,17 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
     token ?? "",
     newData?.EmailVerifyToken ?? ""
   );
-  return { status: "success", token: token ?? "" };
+  throw requestEvent.redirect(301, `/emailVerify/?token=${token}`);
+});
+
+export const validatePhone = server$(async (data) => {
+  const client = new (Twilio as any).Twilio(
+    process?.env?.TWILIO_ACCOUNT_SID ?? "",
+    process?.env?.TWILIO_AUTH_TOKEN ?? ""
+  );
+  const req = await client.lookups.v2.phoneNumbers(`${data}`).fetch();
+
+  return { status: "success", res: JSON.stringify(req) };
 });
 
 export default component$(() => {
@@ -74,16 +92,18 @@ export default component$(() => {
   const isRecaptcha = useSignal<boolean>(false);
   const recaptchaToken = useSignal<string>("");
   const message = useSignal<string>("");
+
   const handleAlertClose = $(() => {
-    message.value = "";
+    document.querySelector(".alert")?.classList.add("hidden");
   });
+  const isPhoneValid = useSignal<boolean>(false);
 
   useVisibleTask$(
     () => {
       if (isRecaptcha.value === false) {
         isRecaptcha.value = true;
         setTimeout(() => {
-          (window as any).grecaptcha.ready(async () => {
+          (window as any).grecaptcha?.ready(async () => {
             const token = await (window as any).grecaptcha.execute(
               process.env.RECAPTCHA_SITE_KEY ?? "",
               { action: "submit" }
@@ -96,23 +116,30 @@ export default component$(() => {
     { strategy: "document-idle" }
   );
 
-  useVisibleTask$(({ track }) => {
-    track(() => action?.value?.status);
-    if (action?.value?.status === "failed") {
-      message.value = action?.value?.err
-        ? action?.value?.err
-        : "Something went wrong";
-      isLoading.value = false;
+  const handleChange = $(async (e: any) => {
+    isPhoneValid.value = false;
+    let phone = e.target.value;
+    if (phone.startsWith("1")) phone = e.target.value.slice(1);
+    if (phone.startsWith("+1")) phone = e.target.value.slice(2);
+
+    if (phone.length !== 10) {
+      message.value = "";
+      return;
     }
-    if (action?.value?.status === "success") {
-      isLoading.value = false;
-      location.href = `/emailVerify/?token=${action?.value?.token ?? ""}`;
+    const req = await validatePhone(e.target.value);
+    const result = JSON.parse(req?.res ?? "");
+    if (!(result.countryCode == "US" || result.countryCode == "CA")) {
+      isPhoneValid.value = false;
+      message.value = "Please enter a valid USA or Canada phone number";
+      return;
     }
+    message.value = "";
+    isPhoneValid.value = true;
   });
 
   return (
     <>
-      <div class="flex flex-col md:flex-row md:bg-[url('/Registration.webp')] md:bg-contain h-full w-full bg-no-repeat lg:bg-left bg-center justify-end items-center md:pr-14">
+      <div class="p-2 flex flex-col md:flex-row md:bg-[url('/Registration.webp')] md:bg-contain h-full w-full bg-no-repeat lg:bg-left bg-center justify-end items-center md:pr-14">
         <div class="w-full h-96 bg-no-repeat md:hidden bg-[url('/Registration.webp')] bg-contain bg-center">
           {" "}
         </div>
@@ -122,13 +149,13 @@ export default component$(() => {
           ></script>
         )}
         <Form action={action} reloadDocument={true}>
-          <div class="card w-[90%] md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
-            {message.value && (
+          <div class="card p-2 w-full md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
+            {action?.value?.status === "failed" && (
               <div class="w-full">
                 <Toast
                   status="e"
                   handleClose={handleAlertClose}
-                  message={message.value}
+                  message={action?.value?.err ?? ""}
                   index={1}
                 />
               </div>
@@ -160,20 +187,45 @@ export default component$(() => {
                 identifier="lastName"
               />
             </div>
-            <InputField
-              label="Email"
-              placeholder="example@gmail.com"
-              validation={action?.value?.validation?.email}
-              type="text"
-              identifier="email"
-            />
-            <InputField
-              label="Phone Number (start with country code)"
-              placeholder="6666666666"
-              validation={action?.value?.validation?.phoneNumber}
-              type="text"
-              identifier="phoneNumber"
-            />
+            <div class="flex flex-col gap-1 w-full justify-start">
+              <InputField
+                label="Email"
+                placeholder="example@gmail.com"
+                validation={action?.value?.validation?.email}
+                type="text"
+                identifier="email"
+              />
+              <p class="text-black text-sm font-light">
+                We will send you a confirmation email to verify your email
+                address.
+              </p>
+            </div>
+
+            <div class="flex flex-col gap-1 justify-start">
+              {message.value !== "" && (
+                <p class="text-error text-sm font-light">{message.value}</p>
+              )}
+              <InputField
+                label="Phone Number"
+                placeholder="6666666666"
+                validation={action?.value?.validation?.phoneNumber}
+                type="text"
+                identifier="phoneNumber"
+                handleOnChange={handleChange}
+              />
+              <input
+                type="hidden"
+                name="isPhoneValid"
+                id="isPhoneValid"
+                value={isPhoneValid.value.toString()}
+              />
+              <p class="text-black text-sm font-light">
+                We will send you a confirmation text to verify your phone
+                number. Please make sure you enter a USA or Canada phone number
+                without the country code.
+              </p>
+            </div>
+
             <InputField
               label="Password"
               placeholder="**********"
@@ -197,7 +249,7 @@ export default component$(() => {
             <button
               class={`btn w-full bg-black text-white text-lg`}
               type="submit"
-              disabled={recaptchaToken.value.length === 0}
+              disabled={!isRecaptcha.value}
             >
               {isLoading.value && <span class="loading loading-spinner"></span>}
               Sign up
