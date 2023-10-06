@@ -5,7 +5,7 @@ export const NavBar = component$(() => {
     <div class="navbar bg-base-100 grid grid-cols-3">
       <div class="flex-1">
         <a class="btn btn-ghost normal-case text-xl">
-          <img src="/new logo 1.jpg" class="w-full h-full object-contain" />
+          <img src="/logoX2.jpg" class="w-full h-full object-contain" />
         </a>
       </div>
       <div class="form-control">

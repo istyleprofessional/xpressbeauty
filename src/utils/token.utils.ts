@@ -1,23 +1,11 @@
 import jwt from "jsonwebtoken";
 
 export const verifyTokenAdmin = (token: string) => {
-  let isAuthorized = false;
   try {
-    jwt.verify(
-      token,
-      process.env.JWTSECRET ?? "",
-      async (err: any, decoded: any) => {
-        if (err) {
-          return false;
-        }
-        const jsonDecoded = JSON.parse(JSON.stringify(decoded));
-        if (jsonDecoded?.role === "a") {
-          isAuthorized = true;
-        }
-      }
-    );
-
-    return isAuthorized;
+    const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+    if (!verify) return false;
+    if (verify.role === "a") return true;
+    return false;
   } catch {
     return false;
   }

@@ -1,7 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 const colors = require("tailwindcss/colors");
 module.exports = {
-  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    // "./node_modules/flowbite/**/*.js",
+  ],
   theme: {
     colors: {
       black: "#18181B",
@@ -31,6 +34,7 @@ module.exports = {
           "base-100": "#FFFFFF",
           "base-200": "#F9FAFB",
           "base-300": "#D1D5DB",
+          white: "#fff",
         },
       },
     ],

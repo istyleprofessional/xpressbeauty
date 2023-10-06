@@ -3,29 +3,32 @@ import { routeLoader$ } from "@builder.io/qwik-city";
 import jwt from "jsonwebtoken";
 import { getOrdersService } from "~/express/services/order.service";
 
-export const useOrderTableData = routeLoader$(async ({ cookie, redirect }) => {
-  const token = cookie.get("token")?.value;
-  if (!token) {
-    throw redirect(301, "/admin");
-  }
-  try {
-    const verified: any = jwt.verify(token, process.env.JWTSECRET ?? "");
-    if (!verified) {
+export const useOrderTableData = routeLoader$(
+  async ({ cookie, redirect, url }) => {
+    const page = url.searchParams.get("page") ?? "1";
+    const token = cookie.get("token")?.value;
+    if (!token) {
       throw redirect(301, "/admin");
     }
-    if (verified.role !== "a") {
+    try {
+      const verified: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+      if (!verified) {
+        throw redirect(301, "/admin");
+      }
+      if (verified.role !== "a") {
+        throw redirect(301, "/admin");
+      }
+      const orders = await getOrdersService(parseInt(page));
+      if (orders.status === "success") {
+        return { status: orders.status, res: JSON.stringify(orders) };
+      } else {
+        return { status: orders.status };
+      }
+    } catch (err) {
       throw redirect(301, "/admin");
     }
-    const orders = await getOrdersService();
-    if (orders.status === "success") {
-      return { status: orders.status, res: JSON.stringify(orders) };
-    } else {
-      return { status: orders.status };
-    }
-  } catch (err) {
-    throw redirect(301, "/admin");
   }
-});
+);
 
 export default component$(() => {
   const orders = useOrderTableData();

@@ -39,10 +39,44 @@ export const getOrderByOrderIdService = async (orderId: string) => {
   }
 };
 
-export const getOrdersService = async () => {
+export const getOrdersService = async (page: number) => {
   try {
-    const request = await Order.find({});
-    return { status: "success", request: request };
+    const request = await Order.aggregate([
+      {
+        $addFields: {
+          userIdObj: { $toObjectId: "$userId" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userIdObj",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $project: {
+          _id: 1,
+          "user.email": 1,
+          "user.firstName": 1,
+          "user.lastName": 1,
+          shippingAddress: 1,
+          totalPrice: 1,
+          createdAt: 1,
+          orderStatus: 1,
+          order_number: 1,
+        },
+      },
+    ])
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * 20)
+      .limit(20);
+    const count = await Order.countDocuments();
+    return { status: "success", request: request, total: count };
   } catch (error: any) {
     return { status: "failed", err: error.message };
   }

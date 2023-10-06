@@ -7,6 +7,7 @@ import { login_service } from "~/express/services/admin.service";
 export const useAdminLoginAction = routeAction$(async (data, requestEvenet) => {
   const formData: any = { ...data };
   const result = await login_service(formData);
+  requestEvenet.cookie.delete("token");
   requestEvenet.cookie.set("token", result.token ?? "", {
     httpOnly: true,
     path: "/",

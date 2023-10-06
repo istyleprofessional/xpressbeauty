@@ -45,25 +45,28 @@ export const CategoryFilter = component$((props: CategoryFilterProps) => {
   return (
     <>
       {Object.keys(categoriesSetObject).map((key: any, index: number) => (
-        <ul class="w-56 pl-2 rounded-box" key={index}>
+        <ul class="w-full pl-2 rounded-box" key={index}>
           <li class="text-base text-black p-3 font-bold ">
             <span>{key}</span>
           </li>
           {categoriesSetObject[key].map((category: any) => (
-            <li key={uuid()} class="pl-5 pb-4 text-black">
-              <div class="flex flex-row gap-2">
-                <input
-                  type="checkbox"
-                  checked={
-                    filterCategoriessArray.value.includes(category)
-                      ? true
-                      : false
-                  }
-                  class="checkbox checkbox-primary checkbox-sm"
-                  onChange$={(e) => handleCategoryCheckBoxChange(e, category)}
-                />
-                <p class="text-black text-sm font-semibold">{category}</p>
-              </div>
+            <li
+              class="flex flex-row w-full gap-1 text-black items-center"
+              key={uuid()}
+            >
+              <input
+                type="checkbox"
+                checked={
+                  filterCategoriessArray.value.includes(category) ? true : false
+                }
+                class="checkbox checkbox-primary checkbox-sm"
+                onChange$={(e) => handleCategoryCheckBoxChange(e, category)}
+                name={category}
+                id={category}
+              />
+              <label for={category} class="text-black text-xs font-semibold">
+                {category}
+              </label>
             </li>
           ))}
         </ul>

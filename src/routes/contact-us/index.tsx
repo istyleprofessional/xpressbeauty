@@ -186,7 +186,7 @@ export default component$(() => {
               conversation.
             </div>
             <div class="text-zinc-600 text-lg font-normal leading-7">
-              xpressbeauty@gmail.com
+              xpressbeautysupplier@gmail.com
             </div>
           </div>
         </div>

@@ -7,8 +7,8 @@ import {
 
 export const onPost: RequestHandler = async ({ cookie, parseBody, json }) => {
   const token = cookie.get("token")?.value;
+  console.log("token", token);
   const body = await parseBody();
-  console.log(body);
   const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${
     (body as any)?.recaptcha
@@ -87,22 +87,16 @@ export const onGet: RequestHandler = async ({ cookie, url, json }) => {
     return;
   }
   try {
-    const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
-    if (verify && !verify?.isDummy) {
-      const request = await getRatingByProductId(productId ?? "");
-      if (request.status === "success") {
-        json(200, {
-          status: "success",
-          message: "Rating fetched successfully",
-          result: request.result,
-        });
-        return;
-      } else {
-        json(200, { status: "failed", message: "Something went wrong" });
-        return;
-      }
+    const request = await getRatingByProductId(productId ?? "");
+    if (request.status === "success") {
+      json(200, {
+        status: "success",
+        message: "Rating fetched successfully",
+        result: request.result,
+      });
+      return;
     } else {
-      json(200, { status: "failed", message: "Unauthorized" });
+      json(200, { status: "failed", message: "Something went wrong" });
       return;
     }
   } catch (err: any) {

@@ -28,6 +28,8 @@ import { getUserById } from "~/express/services/user.service";
 import { WishListContext } from "~/context/wishList.context";
 import { Toast } from "~/components/admin/toast/toast";
 import { getRatingByProductId } from "~/express/services/rating.reviews.service";
+// import productSchema from "~/express/schemas/product.schema";
+// import fs from "fs";
 
 export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
@@ -213,7 +215,7 @@ export default component$(() => {
       {isLoading.value && (
         <>
           <div class="w-full backdrop-blur-lg drop-shadow-lg fixed z-20 m-auto inset-x-0 inset-y-0 ">
-            <progress class="progress progress-white w-56 fixed z-20 m-auto inset-x-0 inset-y-0"></progress>
+            <progress class="progress progress-secondary  w-56 fixed z-20 m-auto inset-x-0 inset-y-0"></progress>
           </div>
         </>
       )}
@@ -282,7 +284,16 @@ export default component$(() => {
             }
           />
           <meta itemProp="priceCurrency" content="CAD" />
+          <meta
+            itemProp="availability"
+            content={
+              parseInt(product?.quantity_on_hand ?? "0") > 0
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock"
+            }
+          />
         </div>
+
         <div class="flex flex-col gap-5 lg:gap-20">
           <div class="flex flex-col lg:grid lg:grid-cols-3 lg:gap-10 p-3 lg:p-10">
             <Gallery
@@ -299,6 +310,7 @@ export default component$(() => {
                 priceType={product?.priceType ?? ""}
                 isVariant={true}
                 isVerified={cartContext.isVerified}
+                companyName={product?.companyName ?? ""}
               />
               <ProductActions
                 handleAddToCart={handleAddToCart}

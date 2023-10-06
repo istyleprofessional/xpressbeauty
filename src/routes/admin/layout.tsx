@@ -17,9 +17,13 @@ export default component$(() => {
   return (
     <main class="flex flex-col gap-3">
       <NavBar />
-      <div class="flex flex-row gap-3 h-full">
-        <SideNav />
-        <Slot />
+      <div class="grid grid-cols-7 gap-3 h-full w-full">
+        <div>
+          <SideNav />
+        </div>
+        <div class="col-start-2 col-end-8">
+          <Slot />
+        </div>
       </div>
     </main>
   );

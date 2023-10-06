@@ -113,12 +113,12 @@ export const hide_product_service = async (product: any, token: string) => {
         { isHidden: !product.isHidden },
         { new: true }
       );
-      return result;
+      return { status: "success", result: result };
     } catch (err) {
-      return { err: err };
+      return { status: "failed", err: err };
     }
   } else {
-    return { e: "not authorized" };
+    return { status: "failed", err: "not authorized" };
   }
 };
 
@@ -153,6 +153,15 @@ export const getRelatedProducts = async (
       product_name: { $ne: productName },
     }).limit(10);
     return result as ProductModel;
+  } catch (err) {
+    return { err: err };
+  }
+};
+
+export const getProductByIdForAdmin = async (id: string) => {
+  try {
+    const result = await Product.findOne({ _id: id });
+    return result;
   } catch (err) {
     return { err: err };
   }
@@ -339,6 +348,36 @@ export const getProductBySearch = async (search: string, page: number) => {
     const perPage = 40;
     const pageNumber = page;
     const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 40 : 0;
+    const result = await Product.find({
+      $or: [
+        { product_name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { companyName: { $regex: search, $options: "i" } },
+        { lineName: { $regex: search, $options: "i" } },
+      ],
+    })
+      .skip(skip)
+      .limit(perPage);
+    const total = await Product.count({
+      $or: [
+        { product_name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { companyName: { $regex: search, $options: "i" } },
+        { lineName: { $regex: search, $options: "i" } },
+      ],
+    });
+    return { result: result, total: total };
+  } catch (err) {
+    return { err: err };
+  }
+};
+
+export const getProductBySearchAdmin = async (search: string, page: number) => {
+  // get all products that match the search string in description or product name or the company name or the line name
+  try {
+    const perPage = 20;
+    const pageNumber = page;
+    const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
     const result = await Product.find({
       $or: [
         { product_name: { $regex: search, $options: "i" } },
