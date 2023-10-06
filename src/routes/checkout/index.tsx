@@ -284,7 +284,7 @@ export default component$(() => {
               <InputField
                 label="Phone Number"
                 type="text"
-                placeholder="+1 1234567890"
+                placeholder="1234567890"
                 value={info?.phoneNumber?.replace("+", "") ?? ""}
                 identifier="phoneNumber"
                 validation={action?.value?.validation?.phoneNumber}

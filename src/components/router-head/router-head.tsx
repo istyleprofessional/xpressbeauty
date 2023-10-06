@@ -10,19 +10,12 @@ export const RouterHead = component$(() => {
 
   const url = loc.url.href.split(".ca")[1];
 
-  const trackingCode = `
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'AW-11356703111');
-  `;
-
   const googletagmanager = `
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-TNWNEYMDFJ');
+  gtag('config', 'AW-11356703111');
   `;
 
   return (
@@ -32,14 +25,9 @@ export const RouterHead = component$(() => {
         <>
           <script
             async
-            src="https://www.googletagmanager.com/gtag/js?id=AW-11356703111"
-          ></script>
-          <script
-            async
             src="https://www.googletagmanager.com/gtag/js?id=G-TNWNEYMDFJ"
           ></script>
           <script dangerouslySetInnerHTML={googletagmanager} />
-          <script dangerouslySetInnerHTML={trackingCode} />
         </>
       )}
 
