@@ -671,7 +671,7 @@ export const head: DocumentHead = ({ resolveValue }) => {
         content: "index, follow",
       },
       {
-        name: "og:title",
+        property: "og:title",
         content: `${
           mainFilter
             ? `${mainFilter} products`
@@ -683,9 +683,10 @@ export const head: DocumentHead = ({ resolveValue }) => {
         } | XpressBeauty`,
       },
       {
-        name: "og:description",
+        property: "og:description",
         content: metaDescription,
       },
+      { property: "og:type", content: "website" },
     ],
   };
 };
