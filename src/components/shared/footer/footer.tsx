@@ -82,7 +82,7 @@ export const Footer = component$(() => {
             <h3 class="text-white font-bold text-lg">Follow us</h3>
             <div class="flex flex-col gap-4">
               <a
-                href="#"
+                href="https://www.facebook.com/xpressbeautypro/"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
                 <img src="/Facebook.webp" alt="facebook" class="w-6 h-full" />
@@ -180,7 +180,7 @@ export const Footer = component$(() => {
             <h3 class="text-white font-bold text-lg">Follow us</h3>
             <div class="flex flex-col gap-4">
               <a
-                href="#"
+                href="https://www.facebook.com/xpressbeautypro/"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
                 <img src="/Facebook.webp" alt="facebook" class="w-6 h-full" />
