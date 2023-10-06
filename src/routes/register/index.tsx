@@ -91,6 +91,7 @@ export default component$(() => {
   const isLoading = useSignal<boolean>(false);
   const isRecaptcha = useSignal<boolean>(false);
   const recaptchaToken = useSignal<string>("");
+  const message = useSignal<string>("");
 
   const handleAlertClose = $(() => {
     document.querySelector(".alert")?.classList.add("hidden");
@@ -117,30 +118,28 @@ export default component$(() => {
 
   const handleChange = $(async (e: any) => {
     isPhoneValid.value = false;
-    const phone = e.target.value;
-    if (phone.length !== 10) return;
-    if (phone.startsWith("1")) {
-      e.target.value = phone.slice(1);
-    }
-    if (phone.startsWith("+1")) {
-      e.target.value = phone.slice(2);
-    }
-    if (phone.startsWith("+")) {
-      e.target.value = phone.slice(1);
+    let phone = e.target.value;
+    if (phone.startsWith("1")) phone = e.target.value.slice(1);
+    if (phone.startsWith("+1")) phone = e.target.value.slice(2);
+
+    if (phone.length !== 10) {
+      message.value = "";
+      return;
     }
     const req = await validatePhone(e.target.value);
     const result = JSON.parse(req?.res ?? "");
     if (!(result.countryCode == "US" || result.countryCode == "CA")) {
       isPhoneValid.value = false;
-      e.target.value = "";
+      message.value = "Please enter a valid USA or Canada phone number";
       return;
     }
+    message.value = "";
     isPhoneValid.value = true;
   });
 
   return (
     <>
-      <div class="flex flex-col md:flex-row md:bg-[url('/Registration.webp')] md:bg-contain h-full w-full bg-no-repeat lg:bg-left bg-center justify-end items-center md:pr-14">
+      <div class="p-2 flex flex-col md:flex-row md:bg-[url('/Registration.webp')] md:bg-contain h-full w-full bg-no-repeat lg:bg-left bg-center justify-end items-center md:pr-14">
         <div class="w-full h-96 bg-no-repeat md:hidden bg-[url('/Registration.webp')] bg-contain bg-center">
           {" "}
         </div>
@@ -150,7 +149,7 @@ export default component$(() => {
           ></script>
         )}
         <Form action={action} reloadDocument={true}>
-          <div class="card w-[90%] md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
+          <div class="card p-2 w-full md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
             {action?.value?.status === "failed" && (
               <div class="w-full">
                 <Toast
@@ -188,36 +187,45 @@ export default component$(() => {
                 identifier="lastName"
               />
             </div>
-            <InputField
-              label="Email"
-              placeholder="example@gmail.com"
-              validation={action?.value?.validation?.email}
-              type="text"
-              identifier="email"
-            />
-            <p class="text-black text-sm font-light">
-              We will send you a confirmation email to verify your email
-              address.
-            </p>
-            <InputField
-              label="Phone Number"
-              placeholder="6666666666"
-              validation={action?.value?.validation?.phoneNumber}
-              type="text"
-              identifier="phoneNumber"
-              handleOnChange={handleChange}
-            />
-            <input
-              type="hidden"
-              name="isPhoneValid"
-              id="isPhoneValid"
-              value={isPhoneValid.value.toString()}
-            />
-            <p class="text-black text-sm font-light">
-              We will send you a confirmation text to verify your phone number.
-              Please make sure you enter a USA or Canada phone number without
-              the country code.
-            </p>
+            <div class="flex flex-col gap-1 w-full justify-start">
+              <InputField
+                label="Email"
+                placeholder="example@gmail.com"
+                validation={action?.value?.validation?.email}
+                type="text"
+                identifier="email"
+              />
+              <p class="text-black text-sm font-light">
+                We will send you a confirmation email to verify your email
+                address.
+              </p>
+            </div>
+
+            <div class="flex flex-col gap-1 justify-start">
+              {message.value !== "" && (
+                <p class="text-error text-sm font-light">{message.value}</p>
+              )}
+              <InputField
+                label="Phone Number"
+                placeholder="6666666666"
+                validation={action?.value?.validation?.phoneNumber}
+                type="text"
+                identifier="phoneNumber"
+                handleOnChange={handleChange}
+              />
+              <input
+                type="hidden"
+                name="isPhoneValid"
+                id="isPhoneValid"
+                value={isPhoneValid.value.toString()}
+              />
+              <p class="text-black text-sm font-light">
+                We will send you a confirmation text to verify your phone
+                number. Please make sure you enter a USA or Canada phone number
+                without the country code.
+              </p>
+            </div>
+
             <InputField
               label="Password"
               placeholder="**********"

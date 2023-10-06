@@ -14,6 +14,7 @@ import {
   update_dummy_user,
 } from "~/express/services/dummy.user.service";
 import { validate } from "~/utils/validate.utils";
+import { validatePhone } from "../register";
 
 export const useCheckoutData = routeLoader$(async ({ cookie }) => {
   const token = cookie.get("token")?.value;
@@ -184,6 +185,8 @@ export default component$(() => {
   const city = useSignal<string>("");
   const state = useSignal<string>("");
   const postalCode = useSignal<string>("");
+  const isPhoneValid = useSignal<boolean>(false);
+  const message = useSignal<string>("");
 
   useVisibleTask$(({ track }) => {
     track(() => action.value);
@@ -221,6 +224,27 @@ export default component$(() => {
     placesPredictions.value = data.predictions;
   });
 
+  const handlePhoneChange = $(async (e: any) => {
+    isPhoneValid.value = false;
+    let phone = e.target.value;
+    if (phone.startsWith("1")) phone = e.target.value.slice(1);
+    if (phone.startsWith("+1")) phone = e.target.value.slice(2);
+
+    if (phone.length !== 10) {
+      message.value = "";
+      return;
+    }
+    const req = await validatePhone(e.target.value);
+    const result = JSON.parse(req?.res ?? "");
+    if (!(result.countryCode == "US" || result.countryCode == "CA")) {
+      isPhoneValid.value = false;
+      message.value = "Please enter a valid USA or Canada phone number";
+      return;
+    }
+    message.value = "";
+    isPhoneValid.value = true;
+  });
+
   return (
     <div class="flex flex-col gap-10 p-4">
       <div
@@ -251,7 +275,7 @@ export default component$(() => {
       <div class="flex flex-col justify-center items-center gap-3 bg-[#F4F4F5]">
         <Form action={action} class="w-full justify-center">
           <div class="w-full p-10 flex flex-col justify-center items-center">
-            <div class="flex flex-row w-full gap-5">
+            <div class="flex flex-col lg:flex-row w-full lg:gap-5">
               <InputField
                 label="First Name"
                 type="text"
@@ -271,7 +295,7 @@ export default component$(() => {
                 isMandatory={true}
               />
             </div>
-            <div class="flex flex-row w-full gap-5">
+            <div class="flex flex-col lg:flex-row w-full lg:gap-5">
               <InputField
                 label="Email Address"
                 type="text"
@@ -281,15 +305,21 @@ export default component$(() => {
                 validation={action?.value?.validation?.email}
                 isMandatory={true}
               />
-              <InputField
-                label="Phone Number"
-                type="text"
-                placeholder="1234567890"
-                value={info?.phoneNumber?.replace("+", "") ?? ""}
-                identifier="phoneNumber"
-                validation={action?.value?.validation?.phoneNumber}
-                isMandatory={true}
-              />
+              <div class="flex flex-col w-full justify-start">
+                {message.value !== "" && (
+                  <p class="text-error text-sm font-light">{message.value}</p>
+                )}
+                <InputField
+                  label="Phone Number"
+                  type="text"
+                  placeholder="1234567890"
+                  value={info?.phoneNumber?.replace("+", "") ?? ""}
+                  identifier="phoneNumber"
+                  validation={action?.value?.validation?.phoneNumber}
+                  isMandatory={true}
+                  handleOnChange={handlePhoneChange}
+                />
+              </div>
             </div>
             <InputField
               label="Company Name ( Optional )"
@@ -299,7 +329,7 @@ export default component$(() => {
               identifier="generalInfo.company.companyName"
               validation={true}
             />
-            <div class="flex flex-col gap-2 w-full">
+            <div class=" w-full relative">
               <InputField
                 label="Street Address"
                 type="text"
@@ -311,75 +341,63 @@ export default component$(() => {
                 handleOnChange={handlePlacesFetch}
               />
               {placesPredictions.value?.length > 0 && (
-                <div class="relative card shadow-lg bg-[fff]">
-                  <div class="card-body">
-                    <ul>
-                      {placesPredictions.value.map(
-                        (item: any, index: number) => (
-                          <li key={index}>
-                            <button
-                              class="btn btn-ghost"
-                              type="button"
-                              onClick$={async () => {
-                                console.log(item);
-                                const data = await fetch(
-                                  "/api/places/details?place_id=" +
-                                    item.place_id
-                                );
-                                const result = await data.json();
-                                console.log(result);
-                                const addressResult = result.result;
-                                country.value =
-                                  addressResult.address_components.find(
-                                    (comp: any) => {
-                                      return comp.types.includes("country");
-                                    }
-                                  )?.long_name;
-                                state.value =
-                                  addressResult.address_components.find(
-                                    (comp: any) => {
-                                      return comp.types.includes(
-                                        "administrative_area_level_1"
-                                      );
-                                    }
-                                  )?.long_name;
-                                city.value =
-                                  addressResult.address_components.find(
-                                    (comp: any) => {
-                                      return comp.types.includes("locality");
-                                    }
-                                  )?.long_name;
-                                postalCode.value =
-                                  addressResult.address_components.find(
-                                    (comp: any) => {
-                                      return comp.types.includes("postal_code");
-                                    }
-                                  )?.long_name;
-                                addressLine1.value =
-                                  addressResult.address_components.find(
-                                    (comp: any) => {
-                                      return comp.types.includes(
-                                        "street_number"
-                                      );
-                                    }
-                                  )?.long_name +
-                                  " " +
-                                  addressResult.address_components.find(
-                                    (comp: any) => {
-                                      return comp.types.includes("route");
-                                    }
-                                  )?.long_name;
-                                placesPredictions.value = [];
-                              }}
-                            >
-                              {item.description}
-                            </button>
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  </div>
-                </div>
+                <ul class="menu bg-base-200 w-fit absolute rounded-box">
+                  {placesPredictions.value.map((item: any, index: number) => (
+                    <li key={index}>
+                      <button
+                        class="btn btn-ghost normal-case"
+                        type="button"
+                        onClick$={async () => {
+                          console.log(item);
+                          const data = await fetch(
+                            "/api/places/details?place_id=" + item.place_id
+                          );
+                          const result = await data.json();
+                          console.log(result);
+                          const addressResult = result.result;
+                          country.value = addressResult.address_components.find(
+                            (comp: any) => {
+                              return comp.types.includes("country");
+                            }
+                          )?.long_name;
+                          state.value = addressResult.address_components.find(
+                            (comp: any) => {
+                              return comp.types.includes(
+                                "administrative_area_level_1"
+                              );
+                            }
+                          )?.long_name;
+                          city.value = addressResult.address_components.find(
+                            (comp: any) => {
+                              return comp.types.includes("locality");
+                            }
+                          )?.long_name;
+                          postalCode.value =
+                            addressResult.address_components.find(
+                              (comp: any) => {
+                                return comp.types.includes("postal_code");
+                              }
+                            )?.long_name;
+                          addressLine1.value =
+                            addressResult.address_components.find(
+                              (comp: any) => {
+                                return comp.types.includes("street_number");
+                              }
+                            )?.long_name +
+                            " " +
+                            addressResult.address_components.find(
+                              (comp: any) => {
+                                return comp.types.includes("route");
+                              }
+                            )?.long_name;
+                          placesPredictions.value = [];
+                        }}
+                      >
+                        {item.description}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
             <InputField
