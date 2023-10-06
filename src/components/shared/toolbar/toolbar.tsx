@@ -73,7 +73,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
           <img
             alt="xpress beauty"
             class="object-contain"
-            src="/new logo 1.jpg"
+            src="/logoX2.jpg"
             width="130"
             height="90"
           />

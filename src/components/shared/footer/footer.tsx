@@ -5,7 +5,7 @@ export const Footer = component$(() => {
     <div class="bg-black flex flex-col gap-10 lg:pl-20 lg:pr-20">
       <div class="flex flex-col gap-10 lg:flex-row flex-wrap lg:gap-[20%] items-center">
         <div class="flex flex-col gap-4 p-5">
-          <img alt="Logo" src="/new logo 1.jpg" width="271" height="25" />
+          <img alt="Logo" src="/logoX2.jpg" width="271" height="25" />
           <p class="text-white font-light text-sm">
             Copyright © 2023 XPress Beauty
             <br /> | All Rights Reserved
