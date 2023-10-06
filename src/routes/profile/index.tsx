@@ -1,11 +1,18 @@
 import { component$, useContext, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { Form, routeAction$, useNavigate ,server$   } from "@builder.io/qwik-city";
 import { UserContext } from "~/context/user.context";
-import { Form, routeAction$ } from "@builder.io/qwik-city";
+import { generateUniqueInteger } from "~/utils/generateOTP";
+
 import { InputField } from "~/components/shared/input-field/input-field";
 import jwt from "jsonwebtoken";
-import { updateExistingUser } from "~/express/services/user.service";
+import { getUserEmailById, updateExistingUser ,updateEmailVerficationCode } from "~/express/services/user.service";
 import { validate } from "~/utils/validate.utils";
 import { Toast } from "~/components/admin/toast/toast";
+import { sendVerficationMail } from "~/utils/sendVerficationMail";
+
+
+
+
 
 export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
   const formData: any = data;
@@ -60,27 +67,97 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
   }
 });
 
+const getTheToken = server$(async function() {
+  
+  const token = this.cookie.get('token')?.value;
+  //console.log(cookieValue);
+if (!token) {
+  return {status: 'failed'}
+}
+try {
+  const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+  if(decoded){
+  const request = await getUserEmailById(decoded.user_id);
+  const EmailVerifyToken = generateUniqueInteger();
+  const saveNewUser = await updateEmailVerficationCode(request?.result?.id ?? "" ,EmailVerifyToken );
+  if (request?.status === "success") {
+    sendVerficationMail(
+      request?.result?.email ?? "",
+      `${request?.result?.firstName ?? ""} ${request?.result?.lastName ?? ""}`,
+      token ?? "",
+      EmailVerifyToken ?? ""
+    );
+    return {status: 'success', token: token}
+    // return JSON.stringify({ user: request.result, token: token });
+  } else {
+    return {status: 'failed'}
+  }
+}
+} catch (error) {
+  return {status: 'failed'}
+}
+return { status: "success", token: token ?? "" };
+})
+
 export default component$(() => {
   const { user }: any = useContext(UserContext);
   const action = useUpdateProfile();
   const toast = useSignal<HTMLElement>();
+  // const token = useSignal<string>("")
+  const nav = useNavigate();
+  
 
   const handleAlertClose = $(() => {
     toast.value?.remove();
   });
-
   useVisibleTask$(({ track }) => {
     track(() => action.value?.user)
-   // console.log(action.value?.user)
+    // console.log(action.value?.user)
     if (action.value?.user) {
       const updatedUser = JSON.parse(action.value?.user)
       user.isEmailVerified = updatedUser.result.isEmailVerified
       user.isPhoneVerified = updatedUser.result.isPhoneVerified
     }
-  })
+  }) 
 
+  // const useCheckoutData = server$(async ({ cookie ,redirect }) => {
+  //   const token = cookie.get("token")?.value;
+  //   const nav = useNavigate();
+  //   if (!token) {
+  //     throw redirect(301, "/");
+  //   }
+  //   try {
+  //     const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+  //     const request = await getUserEmailById(decoded.user_id);
+  //     if (request?.status === "success") {
+  //       sendVerficationMail(
+  //         user?.email ?? "",
+  //         `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
+  //         token ?? "",
+  //         user?.EmailVerifyToken ?? ""
+  //       );
+  //       await nav(`/emailVerify/?token=${token ?? ""}`);
+  //       console.log("hello");
+  //       // return JSON.stringify({ user: request.result, token: token });
+  //     } else {
+  //       throw redirect(301, "/login");
+  //     }
+  //   } catch (error) {
+  //     throw redirect(301, "/");
+  //   }
+    
+    
+  
+    
+  //   return { status: "success", token: token ?? "" };
+    
+    
+  
+    
+  // });
 
-
+ 
+  
   return (
     <>
       <div class="flex flex-col gap-10 p-4">
@@ -207,7 +284,7 @@ export default component$(() => {
         <Form action={action} >
           <div class="px-9 gap-4">
 
-            <div><span class="font-bold"></span>Personal Information <img class="inline" src="/public/pencil-alt.png"></img></div>
+            <div><span class="font-bold"></span>Personal Information <img class="inline" src="/pencil-alt.png"></img></div>
             <div class="mt-6 border-b-2">
               <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
                 <div class="md:pt-6"><span>First Name <span class=" text-error">*</span></span></div>
@@ -239,7 +316,14 @@ export default component$(() => {
               <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
                 <div class="md:pt-6"><span >Email Address <span class=" text-error">*</span></span></div>
                 <div class="inline">
-                  {user?.isEmailVerified ? <h1 style="color:green">Email Verified</h1> : <h1 style="color:red">Email not-verified</h1>}
+                  {user?.isEmailVerified ? <h1 style="color:green"> Email Verified</h1> : <h1 style="color:red"><button onClick$={async () => {
+                   const res =  await getTheToken()
+
+                   if(res?.status === "success"){
+                    await nav(`/emailVerify/?token=${res.token ?? ""}`);
+
+                   }
+                    }}  class="btn">Email not-verified</button></h1>}
                   <InputField
 
                     type="email"
@@ -256,17 +340,17 @@ export default component$(() => {
               <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
                 <div class="md:pt-6"><span >Phone Number <span class=" text-error">*</span></span></div>
                 <div>
-                {user?.isPhoneVerified ? <h1 style="color:green">Phone Number Verified</h1> : <h1 style="color:red">Phone Number not-verified</h1>}
-                   <InputField
-                  type="text"
-                  value={user?.phoneNumber ?? ""}
-                  placeholder="2222222222"
-                  identifier="phoneNumber"
-                  validation={
-                    action?.value?.validationObject?.phoneNumber ?? true
-                  }
+                  {user?.isPhoneVerified ? <h1 style="color:green">Phone Number Verified</h1> : <h1 style="color:red">Phone Number not-verified</h1>}
+                  <InputField
+                    type="text"
+                    value={user?.phoneNumber ?? ""}
+                    placeholder="2222222222"
+                    identifier="phoneNumber"
+                    validation={
+                      action?.value?.validationObject?.phoneNumber ?? true
+                    }
 
-                /></div>
+                  /></div>
 
               </div>
               <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
@@ -283,7 +367,7 @@ export default component$(() => {
           </div>
 
           <div class="px-9 gap-4 mt-12">
-            <div><span class="font-bold"></span>Shipping Information <img class="inline" src="/public/pencil-alt.png"></img></div>
+            <div><span class="font-bold"></span>Shipping Information <img class="inline" src="/pencil-alt.png"></img></div>
             <div class="mt-6">
               <div class="grid flex grid-flow-row-dense gap-3 p-6 md:grid-cols-4">
                 <div class="md:pt-6"><span>Country / Region <span class=" text-error">*</span></span></div>
@@ -346,7 +430,7 @@ export default component$(() => {
               </div>
               <input type="hidden" name="id" value={user?._id ?? ""} />
               <div class="grid md:grid-cols-4 gap-3 p-6">
-              
+
                 <div>
                   <button
                     class="btn btn-primary"
@@ -358,21 +442,21 @@ export default component$(() => {
                     )}
                     Save
                   </button>
-                  </div>
-                  <div class="flex flex-col items-center gap-3 bg-[#F4F4F5]">
+                </div>
+                <div class="flex flex-col items-center gap-3 bg-[#F4F4F5]">
                   {action?.value?.status && (
                     <div ref={toast} class="w-full">
                       <Toast
-                        status="s"
+                        
+                        status={action.value.status === "success" ? "s" : "e"}
                         handleClose={handleAlertClose}
                         message={(action?.value?.message as string) ?? ""}
                         index={1}
                       />
                     </div>
-                  )}
-
+                  )}                 
                 </div>
-                
+
 
               </div>
             </div>
