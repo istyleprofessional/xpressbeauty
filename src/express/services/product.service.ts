@@ -372,6 +372,36 @@ export const getProductBySearch = async (search: string, page: number) => {
   }
 };
 
+export const getProductBySearchAdmin = async (search: string, page: number) => {
+  // get all products that match the search string in description or product name or the company name or the line name
+  try {
+    const perPage = 20;
+    const pageNumber = page;
+    const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
+    const result = await Product.find({
+      $or: [
+        { product_name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { companyName: { $regex: search, $options: "i" } },
+        { lineName: { $regex: search, $options: "i" } },
+      ],
+    })
+      .skip(skip)
+      .limit(perPage);
+    const total = await Product.count({
+      $or: [
+        { product_name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { companyName: { $regex: search, $options: "i" } },
+        { lineName: { $regex: search, $options: "i" } },
+      ],
+    });
+    return { result: result, total: total };
+  } catch (err) {
+    return { err: err };
+  }
+};
+
 export const updateProductRating = async (body: any) => {
   try {
     const request = await Product.findOneAndUpdate(

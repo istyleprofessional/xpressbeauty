@@ -1,5 +1,6 @@
 import { component$, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { Form, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
+import { Toast } from "~/components/admin/toast/toast";
 import { get_all_brands } from "~/express/services/brand.service";
 import { get_all_categories } from "~/express/services/category.service";
 import {
@@ -20,6 +21,9 @@ export const useEditProductData = routeLoader$(async ({ params }) => {
 
 export const useFormAction = routeAction$(async function (data, event) {
   const token = event.cookie.get("token")?.value ?? "";
+  if (!token) {
+    throw event.redirect(301, "/admin-login");
+  }
   const formData: any = data;
   Object.keys(formData).forEach((key: string) => {
     if (key === "category") {
@@ -37,7 +41,7 @@ export const useFormAction = routeAction$(async function (data, event) {
   });
   const updateReq = await update_product_service(formData, token);
   console.log(updateReq);
-  return data;
+  return { status: "success" };
 });
 
 export default component$(() => {
@@ -105,6 +109,10 @@ export default component$(() => {
     )}/${file.name.split(".")[0]}.webp`;
   });
 
+  const handleAlertClose = $(() => {
+    document.querySelector(".alert")?.classList.add("hidden");
+  });
+
   return (
     <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
       <script
@@ -117,6 +125,15 @@ export default component$(() => {
             <progress class="progress progress-secondary bg-black w-56 fixed z-20 m-auto inset-x-0 inset-y-0"></progress>
           </div>
         </>
+      )}
+
+      {action.value?.status === "success" && (
+        <Toast
+          message="Product Updated Successfully"
+          index={1}
+          handleClose={handleAlertClose}
+          status="s"
+        />
       )}
 
       <Form action={action}>
