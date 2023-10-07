@@ -19,7 +19,7 @@ import jwt from "jsonwebtoken";
 import {
   getUserEmailById,
   updateExistingUser,
-  updateEmailVerficationCode,
+  // updateEmailVerficationCode,
 } from "~/express/services/user.service";
 import { validate } from "~/utils/validate.utils";
 import { Toast } from "~/components/admin/toast/toast";
