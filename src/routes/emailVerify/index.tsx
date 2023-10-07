@@ -33,7 +33,7 @@ export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
   }
 });
 
-export const useFormAction = routeAction$(async (data, requestEvent) => {
+export const useFormAction = routeAction$(async (data, requestEvent ) => {
   const newData = Object.values(data.otp);
   const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${data.recaptcha}`;
@@ -66,16 +66,24 @@ export const useFormAction = routeAction$(async (data, requestEvent) => {
   try {
     const verify: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
     if (verify) {
+      
       const request = await getUserEmailOtp(body);
-      if (request.status === "success") {
-        await sendPhoneOtp(
-          request?.result?.phoneNumber ?? "",
-          request?.result?.PhoneVerifyToken ?? ""
-        );
-        return {
-          status: "success",
-          token: token,
-        };
+      
+      if (request.status === "success") { 
+        if(!request?.result?.isPhoneVerified?? ""){
+          await sendPhoneOtp(
+            request?.result?.phoneNumber ?? "",
+            request?.result?.PhoneVerifyToken ?? ""
+          );
+          return {
+            status: "success",
+            token: token,
+          };
+        }
+        else{
+          throw requestEvent.redirect(301 , '/login')
+        }
+        
       } else {
         return {
           status: "failed",

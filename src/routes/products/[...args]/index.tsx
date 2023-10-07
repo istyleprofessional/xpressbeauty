@@ -512,7 +512,7 @@ export default component$(() => {
                   />
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-fit">
+              <li class="collapse collapse-arrow w-80">
                 <input
                   type="radio"
                   name="my-accordion-1"
@@ -537,7 +537,7 @@ export default component$(() => {
                   />
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-fit">
+              <li class="collapse collapse-arrow w-80">
                 <input
                   type="radio"
                   name="my-accordion-2"
@@ -564,7 +564,7 @@ export default component$(() => {
                   />
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-fit">
+              <li class="collapse collapse-arrow w-80">
                 <input
                   type="radio"
                   name="my-accordion-2"
@@ -584,7 +584,7 @@ export default component$(() => {
                   />
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-fit">
+              <li class="collapse collapse-arrow w-80">
                 <input
                   type="radio"
                   name="my-accordion-3"
