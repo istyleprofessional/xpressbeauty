@@ -21,7 +21,7 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
   if (!google_response.success) {
     return {
       status: "failed",
-      err: "Boot detected",
+      err: "Bot detected",
     };
   }
   newData.phoneNumber = newData?.phoneNumber?.toString()?.startsWith("1")
@@ -137,6 +137,20 @@ export default component$(() => {
     isPhoneValid.value = true;
   });
 
+  useVisibleTask$(
+    ({ track }) => {
+      track(() => action.isRunning);
+      (window as any).grecaptcha?.ready(async () => {
+        const token = await (window as any).grecaptcha.execute(
+          process.env.RECAPTCHA_SITE_KEY ?? "",
+          { action: "submit" }
+        );
+        recaptchaToken.value = token;
+      });
+    },
+    { strategy: "document-idle" }
+  );
+
   return (
     <>
       <div class="p-2 flex flex-col md:flex-row md:bg-[url('/Registration.webp')] md:bg-contain h-full w-full bg-no-repeat lg:bg-left bg-center justify-end items-center md:pr-14">
@@ -148,8 +162,8 @@ export default component$(() => {
             src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
           ></script>
         )}
-        <Form action={action} reloadDocument={true}>
-          <div class="card p-2 w-full md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
+        <Form action={action} reloadDocument={false}>
+          <div class="card w-full md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
             {action?.value?.status === "failed" && (
               <div class="w-full">
                 <Toast

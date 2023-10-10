@@ -23,13 +23,28 @@ import {
 import { validate } from "~/utils/validate.utils";
 import { Toast } from "~/components/admin/toast/toast";
 import { sendVerficationMail } from "~/utils/sendVerficationMail";
+import Twilio from "twilio";
 
 export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
   const formData: any = data;
+  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${formData.recaptcha}`;
+  const recaptcha = await fetch(url, { method: "post" });
+  const recaptchaText = await recaptcha.text();
+  const google_response = JSON.parse(recaptchaText);
+  if (!google_response.success) {
+    return {
+      status: "failed",
+      err: "Bot detected",
+    };
+  }
   const token = requestEvent.cookie.get("token")?.value;
   if (!token) {
     throw requestEvent.redirect(301, "/login");
   }
+  formData.phoneNumber = formData?.phoneNumber?.toString()?.startsWith("1")
+    ? `+${formData?.phoneNumber}`
+    : `+1${formData?.phoneNumber}`;
   const validationObject = {
     firstName:
       formData?.firstName !== "" && validate(formData?.firstName ?? "", "name"),
@@ -38,7 +53,8 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
     email: formData?.email !== "" && validate(formData?.email ?? "", "email"),
     phoneNumber:
       formData?.phoneNumber !== "" &&
-      validate(formData?.phoneNumber ?? "", "phone"),
+      validate(formData?.phoneNumber ?? "", "phoneNumber") &&
+      formData.isPhoneValid === "true",
     country:
       formData?.generalInfo?.address?.country !== "" &&
       validate(formData?.generalInfo?.address?.country ?? "", "country"),
@@ -55,6 +71,7 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
       formData?.generalInfo?.address?.postalCode !== "" &&
       validate(formData?.generalInfo?.address?.postalCode ?? "", "postalCode"),
   };
+  console.log(formData.isPhoneValid);
   const isValid = Object.values(validationObject).every(
     (item) => item === true
   );
@@ -120,6 +137,16 @@ const getTheToken = server$(async function () {
   return { status: "success", token: token ?? "" };
 });
 
+export const validatePhoneProfile = server$(async (data) => {
+  const client = new (Twilio as any).Twilio(
+    process?.env?.TWILIO_ACCOUNT_SID ?? "",
+    process?.env?.TWILIO_AUTH_TOKEN ?? ""
+  );
+  const req = await client.lookups.v2.phoneNumbers(`${data}`).fetch();
+
+  return { status: "success", res: JSON.stringify(req) };
+});
+
 export default component$(() => {
   const { user }: any = useContext(UserContext);
   const action = useUpdateProfile();
@@ -132,6 +159,10 @@ export default component$(() => {
   const city = useSignal<string>("");
   const state = useSignal<string>("");
   const postalCode = useSignal<string>("");
+  const isPhoneValid = useSignal<boolean>(true);
+  const message = useSignal<string>("");
+  const isRecaptcha = useSignal<boolean>(false);
+  const recaptchaToken = useSignal<string>("");
 
   const handleAlertClose = $(() => {
     toast.value?.remove();
@@ -183,10 +214,71 @@ export default component$(() => {
     placesPredictions.value = data.predictions;
   });
 
+  const handlePhoneVerify = $(async (e: any) => {
+    let phone = e.target.value;
+    if (phone.length !== 10) {
+      message.value = "";
+      return;
+    }
+    // debugger;
+    isPhoneValid.value = false;
+
+    if (phone.startsWith("1")) phone = e.target.value.slice(1);
+    if (phone.startsWith("+1")) phone = e.target.value.slice(2);
+
+    const req = await validatePhoneProfile(e.target.value);
+    console.log(req);
+    const result = JSON.parse(req?.res ?? "");
+    if (!(result.countryCode == "US" || result.countryCode == "CA")) {
+      isPhoneValid.value = false;
+      message.value = "Please enter a valid USA or Canada phone number";
+      return;
+    }
+    message.value = "";
+    isPhoneValid.value = true;
+  });
+
+  useVisibleTask$(
+    () => {
+      if (isRecaptcha.value === false) {
+        isRecaptcha.value = true;
+        setTimeout(() => {
+          (window as any).grecaptcha?.ready(async () => {
+            const token = await (window as any).grecaptcha.execute(
+              process.env.RECAPTCHA_SITE_KEY ?? "",
+              { action: "submit" }
+            );
+            recaptchaToken.value = token;
+          });
+        }, 1000);
+      }
+    },
+    { strategy: "document-idle" }
+  );
+
+  useVisibleTask$(
+    ({ track }) => {
+      track(() => action.isRunning);
+      (window as any).grecaptcha?.ready(async () => {
+        const token = await (window as any).grecaptcha.execute(
+          process.env.RECAPTCHA_SITE_KEY ?? "",
+          { action: "submit" }
+        );
+        recaptchaToken.value = token;
+      });
+    },
+    { strategy: "document-idle" }
+  );
+
   return (
     <>
       <div class="gird">
-        <Form action={action}>
+        {isRecaptcha.value === true && (
+          <script
+            src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+          ></script>
+        )}
+        <Form action={action} reloadDocument={false}>
           <div class="px-9 gap-4">
             <div>
               <span class="font-bold"></span>Personal Information{" "}
@@ -266,7 +358,7 @@ export default component$(() => {
                     Phone Number <span class=" text-error">*</span>
                   </span>
                 </div>
-                <div>
+                <div class="flex flex-col gap-1">
                   {user?.isPhoneVerified ? (
                     <h1 style="color:green">Phone Number Verified</h1>
                   ) : (
@@ -282,6 +374,9 @@ export default component$(() => {
                       Verify Phone
                     </button>
                   )}
+                  {message.value !== "" && (
+                    <p class="text-error text-sm font-light">{message.value}</p>
+                  )}
                   <InputField
                     type="text"
                     value={user?.phoneNumber ?? ""}
@@ -290,6 +385,13 @@ export default component$(() => {
                     validation={
                       action?.value?.validationObject?.phoneNumber ?? true
                     }
+                    handleOnChange={handlePhoneVerify}
+                  />
+                  <input
+                    type="hidden"
+                    name="isPhoneValid"
+                    id="isPhoneValid"
+                    value={isPhoneValid.value.toString()}
                   />
                 </div>
               </div>
@@ -492,20 +594,24 @@ export default component$(() => {
                 </div>
 
                 {action?.value?.status && (
-                  <div class="flex flex-col items-center gap-3 bg-[#F4F4F5]">
-                    <div ref={toast} class="w-full">
-                      <Toast
-                        status={action.value.status === "success" ? "s" : "e"}
-                        handleClose={handleAlertClose}
-                        message={(action?.value?.message as string) ?? ""}
-                        index={1}
-                      />
-                    </div>
+                  <div ref={toast} class="w-full">
+                    <Toast
+                      status={action.value.status === "success" ? "s" : "e"}
+                      handleClose={handleAlertClose}
+                      message={(action?.value?.message as string) ?? ""}
+                      index={1}
+                    />
                   </div>
                 )}
               </div>
             </div>
           </div>
+          <input
+            type="hidden"
+            name="recaptcha"
+            id="recaptcha"
+            value={recaptchaToken.value}
+          />
         </Form>
       </div>
     </>
