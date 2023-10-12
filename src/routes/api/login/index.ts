@@ -11,7 +11,7 @@ export const onPost: RequestHandler = async ({ parseBody, json, cookie }) => {
       process.env.JWTSECRET ?? "",
       { expiresIn: "2h" }
     );
-    cookie.set("token", token, { httpOnly: true, path: "/", secure: true });
+    cookie.set("token", token, { httpOnly: true, secure: true });
     json(200, { status: "success" });
   } else {
     json(200, { status: "failed" });

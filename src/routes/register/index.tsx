@@ -64,7 +64,6 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
   );
   requestEvent.cookie.set("token", token, {
     httpOnly: true,
-    path: "/",
     secure: true,
   });
   sendVerficationMail(

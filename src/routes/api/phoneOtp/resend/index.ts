@@ -49,7 +49,6 @@ export const onGet: RequestHandler = async ({ url, json, cookie }) => {
       );
       cookie.set("token", newJwtToken, {
         httpOnly: true,
-        path: "/",
         secure: true,
       });
       const newToken = generateUniqueInteger();

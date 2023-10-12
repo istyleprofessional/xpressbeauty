@@ -58,7 +58,6 @@ export const onPost: RequestHandler = async ({ parseBody, json, cookie }) => {
         );
         cookie.set("token", newJwtToken, {
           httpOnly: true,
-          path: "/",
           secure: true,
         });
         let baseURL: string;

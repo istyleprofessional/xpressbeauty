@@ -37,7 +37,7 @@ export const useUserData = routeLoader$(async ({ cookie }) => {
       );
       cookie.set("token", token, {
         httpOnly: true,
-        path: "/",
+        secure: true,
       });
       const cart: any = await getCartByUserId(
         request?.result?._id?.toString() ?? ""
@@ -109,7 +109,7 @@ export const useUserData = routeLoader$(async ({ cookie }) => {
       );
       cookie.set("token", newToken, {
         httpOnly: true,
-        path: "/",
+        secure: true,
       });
       let user: any;
       if (decode.isDummy) {

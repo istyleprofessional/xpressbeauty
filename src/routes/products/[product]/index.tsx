@@ -69,7 +69,7 @@ export const useAuth = routeLoader$(async ({ cookie }) => {
       );
       cookie.set("token", newToken, {
         httpOnly: true,
-        path: "/",
+        secure: true,
       });
     }
     return JSON.stringify({});

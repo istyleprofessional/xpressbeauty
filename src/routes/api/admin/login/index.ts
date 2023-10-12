@@ -7,6 +7,6 @@ export const onPost: RequestHandler = async ({ json, parseBody, cookie }) => {
   await connect();
   const body = await parseBody();
   const result = await login_service(body);
-  cookie.set("token", result.token ?? "", { httpOnly: true, path: "/" });
+  cookie.set("token", result.token ?? "", { httpOnly: true, secure: true });
   json(200, result);
 };

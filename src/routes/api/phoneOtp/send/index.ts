@@ -38,7 +38,6 @@ export const onPost: RequestHandler = async ({ cookie, json, parseBody }) => {
       });
       cookie.set("token", newToken, {
         httpOnly: true,
-        sameSite: "strict",
         secure: true,
       });
       const user = await getUserById((decoded as any).id);

@@ -87,7 +87,6 @@ export const useFormAction = routeAction$(async (data, requestEvent) => {
       );
       requestEvent.cookie.set("token", newJwtToken, {
         httpOnly: true,
-        path: "/",
         secure: true,
       });
       const request = await getUserPhoneOtp(body);

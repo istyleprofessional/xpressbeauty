@@ -86,7 +86,6 @@ export const onPost: RequestHandler = async ({ json, parseBody, cookie }) => {
       cookie.set("token", newToken, {
         httpOnly: true,
         secure: true,
-        path: "/",
       });
       if (decoded.isDummy) {
         const request: any = await getDummyCustomer(decoded.user_id);
