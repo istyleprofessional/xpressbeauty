@@ -381,12 +381,10 @@ export const head: DocumentHead = ({ resolveValue }) => {
   const jsonData = JSON.parse(doc)._doc;
   return {
     title: `${jsonData?.product_name ?? ""} | ${
-      jsonData.companyName && jsonData.companyName !== ""
-        ? `${jsonData.companyName} |`
+      jsonData.companyName.name && jsonData.companyName.name !== ""
+        ? `${jsonData.companyName.name} |`
         : ""
-    } ${`${jsonData.categories[0].main ?? ""} | ${
-      jsonData.categories[1].name
-    }`}`,
+    } ${`${jsonData?.categories[0]?.main ?? ""}`}`,
     meta: [
       {
         name: "description",
