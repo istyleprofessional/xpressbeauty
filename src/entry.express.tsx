@@ -82,6 +82,7 @@ app.get("/api/uploadProducts", async (_, res: any) => {
   });
   await doc.loadInfo();
   const allSheets = doc.sheetsByIndex[0];
+  const rows: any[] = [];
   for (const productD of productsD) {
     // const merchantId = "5292055509";
     const product = {
@@ -105,25 +106,26 @@ app.get("/api/uploadProducts", async (_, res: any) => {
       brand: productD.companyName.name,
       condition: "new",
     };
-    try {
-      await allSheets.addRow({
-        id: product.id,
-        title: product.title ?? "",
-        description: product.description,
-        availability: product.availability,
-        link: product.link,
-        "image link": product.imageLink,
-        price: product.price.value,
-        "identifier exists": product["identifier exists"],
-        brand: product.brand,
-        condition: product.condition,
-      });
-    } catch (error: any) {
-      console.log(error);
-      if (error.response && error.response.status === 429) {
-        console.log("Rate limit exceeded. Waiting for a minute...");
-        await delay(60000); // Wait for a minute (60,000 milliseconds) before continuing.
-      }
+    rows.push({
+      id: product.id,
+      title: product.title ?? "",
+      description: product.description,
+      availability: product.availability,
+      link: product.link,
+      "image link": product.imageLink,
+      price: product.price.value,
+      "identifier exists": product["identifier exists"],
+      brand: product.brand,
+      condition: product.condition,
+    });
+  }
+  try {
+    await allSheets.addRows(rows);
+  } catch (error: any) {
+    console.log(error);
+    if (error.response && error.response.status === 429) {
+      console.log("Rate limit exceeded. Waiting for a minute...");
+      await delay(60000); // Wait for a minute (60,000 milliseconds) before continuing.
     }
   }
   res.send("done");
