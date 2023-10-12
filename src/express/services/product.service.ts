@@ -148,10 +148,20 @@ export const getRelatedProducts = async (
   productName: string
 ) => {
   try {
-    const result = await Product.find({
-      categories: { $in: category },
-      product_name: { $ne: productName },
-    }).limit(10);
+    console.log(category);
+    const query: any = {};
+    if (category.length > 0) {
+      query["categories"] = {
+        $elemMatch: {
+          $or: category.map((cat: any) => {
+            return { name: { $regex: cat.name, $options: "i" } };
+          }),
+        },
+      };
+    }
+    query["product_name"] = { $ne: productName };
+    const result = await Product.find(query).limit(10);
+
     return result as ProductModel;
   } catch (err) {
     return { err: err };
@@ -203,12 +213,16 @@ export const get_products_data = async (
     const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
     const buildQuery: any = {};
     if (filterByBrand.length > 0) {
-      buildQuery["companyName"] = { $in: filterByBrand };
+      buildQuery["companyName.name"] = { $in: filterByBrand };
     }
+    console.log(filterByCategory);
     if (filterByCategory.length > 0) {
       buildQuery["categories"] = {
-        $regex: filterByCategory.join("|"),
-        $options: "i",
+        $elemMatch: {
+          $or: filterByCategory.map((cat) => {
+            return { name: { $regex: cat, $options: "i" } };
+          }),
+        },
       };
     }
     // debugger;
@@ -217,7 +231,13 @@ export const get_products_data = async (
     if (filter && filter !== "") {
       buildQuery["$or"].push(
         ...[
-          { categories: { $regex: filter, $options: "i" } },
+          {
+            categories: {
+              $elemMatch: {
+                main: { $regex: filter },
+              },
+            },
+          },
           { product_name: { $regex: filter, $options: "i" } },
         ]
       );
@@ -272,9 +292,17 @@ export const get_products_data = async (
     if (query && query !== "") {
       buildQuery["$or"].push(
         ...[
-          { categories: { $regex: query, $options: "i" } },
+          {
+            categories: {
+              $elemMatch: {
+                $or: filterByCategory.map((cat) => {
+                  return { name: { $regex: cat, $options: "i" } };
+                }),
+              },
+            },
+          },
           { product_name: { $regex: query, $options: "i" } },
-          { companyName: { $regex: query, $options: "i" } },
+          { "companyName.name": { $regex: query, $options: "i" } },
           { lineName: { $regex: query, $options: "i" } },
           { description: { $regex: query, $options: "i" } },
         ]

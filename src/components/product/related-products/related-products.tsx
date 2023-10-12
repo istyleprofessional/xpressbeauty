@@ -37,11 +37,15 @@ export const RelatedProducts = component$((props: RelatedProductsProps) => {
         </button>
         <div class="flex flex-col gap-8 items-center w-[90vw] z-0">
           <div class="carousel carousel-center w-full p-4 space-x-4 bg-white rounded-box">
-            {relatedProducts?.map((item: any, i: number) => (
-              <div class="carousel-item" key={i}>
-                <ProductCard product={item} i={i} cardSize="sm" />
-              </div>
-            ))}
+            {relatedProducts && (
+              <>
+                {relatedProducts?.map((item: any, i: number) => (
+                  <div class="carousel-item" key={i}>
+                    <ProductCard product={item} i={i} cardSize="sm" />
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
         <button

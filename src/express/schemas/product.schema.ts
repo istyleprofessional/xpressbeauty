@@ -20,7 +20,7 @@ const productsSchema = new Schema(
     variation_type: { type: String, default: null },
     variations: { type: Array, default: null },
     lineName: { type: String, default: null },
-    companyName: { type: String, default: null },
+    companyName: { type: Object, default: null },
     perfix: { type: String, default: null },
     priceType: { type: String, default: null },
   },

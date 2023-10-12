@@ -36,6 +36,7 @@ import axios from "axios";
 import fs from "fs";
 import { S3 } from "@aws-sdk/client-s3";
 import MessagingResponse from "twilio/lib/twiml/MessagingResponse";
+import { GoogleSpreadsheet } from "google-spreadsheet";
 
 dotenv.config();
 let sitemap: any;
@@ -66,6 +67,67 @@ const app = express();
 // app.use(bodyParser.json());
 app.set("trust proxy", true);
 app.use(cookieParser());
+const delay = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
+
+app.get("/api/uploadProducts", async (_, res: any) => {
+  await connect();
+  const productsD = await productSchema.find({});
+
+  const doc = new GoogleSpreadsheet(
+    "1fUjNGVBRLh8bb6hS0wEJlnfAju5Iqd7_F6dhtrv64Jc"
+  );
+  await doc.useServiceAccountAuth({
+    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "",
+    private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") || "",
+  });
+  await doc.loadInfo();
+  const allSheets = doc.sheetsByIndex[0];
+  for (const productD of productsD) {
+    // const merchantId = "5292055509";
+    const product = {
+      id: productD._id.toString(),
+      title: productD.product_name,
+      description: productD?.description?.replace(/<[^>]*>?/gm, "") ?? "",
+      availability:
+        (parseInt(productD?.quantity_on_hand ?? "0") || 0) > 0
+          ? "in_stock"
+          : "out_of_stock",
+      link: `https://xpressbeauty.ca/products/${productD.perfix}`,
+      imageLink: productD.imgs[0],
+      price: {
+        currency: "CAD",
+        value:
+          productD.priceType === "range"
+            ? `${productD.price.max}-${productD.price.min}`
+            : productD.price.regular,
+      },
+      "identifier exists": "no",
+      brand: productD.companyName.name,
+      condition: "new",
+    };
+    try {
+      await allSheets.addRow({
+        id: product.id,
+        title: product.title ?? "",
+        description: product.description,
+        availability: product.availability,
+        link: product.link,
+        "image link": product.imageLink,
+        price: product.price.value,
+        "identifier exists": product["identifier exists"],
+        brand: product.brand,
+        condition: product.condition,
+      });
+    } catch (error: any) {
+      console.log(error);
+      if (error.response && error.response.status === 429) {
+        console.log("Rate limit exceeded. Waiting for a minute...");
+        await delay(60000); // Wait for a minute (60,000 milliseconds) before continuing.
+      }
+    }
+  }
+  res.send("done");
+});
 
 app.get("/sitemap.xml", async (req, res) => {
   await connect();

@@ -52,7 +52,7 @@ export const Hero = component$(() => {
         <PerviousArrowIconNoStick color="white" />
       </button>
       <div class="carousels flex felx-row gap-5 overflow-x-hidden">
-        <a href="/products/" class="carousel-item w-fit">
+        <a href="/products/filter/Tools" class="carousel-item w-fit">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Barbering-Products.webp"
@@ -76,7 +76,7 @@ export const Hero = component$(() => {
             </p>
           </div>
         </a>
-        <a href="/products/" class="carousel-item">
+        <a href="/products/filter/Hair" class="carousel-item">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Hair-Care-Products.webp"
@@ -100,7 +100,7 @@ export const Hero = component$(() => {
             </p>
           </div>
         </a>
-        <a href="/products/" class="carousel-item">
+        <a href="/products/filter/Hair" class="carousel-item">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Hair-Color-Products.webp"
@@ -124,7 +124,7 @@ export const Hero = component$(() => {
             </p>
           </div>
         </a>
-        <a href="/products/" class="carousel-item">
+        <a href="/products/filter/Tools" class="carousel-item">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Hair-tools-Brushes.webp"
@@ -148,7 +148,7 @@ export const Hero = component$(() => {
             </p>
           </div>
         </a>
-        <a href="/products/" class="carousel-item">
+        <a href="/products/filter/Hair" class="carousel-item">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Men's-Grooming-Products.webp"
@@ -172,7 +172,7 @@ export const Hero = component$(() => {
             </p>
           </div>
         </a>
-        <a href="/products/" class="carousel-item">
+        <a href="/products/filter/Hair" class="carousel-item">
           <div class="flex flex-col gap-2">
             <img
               src="/hero-images/Textured-Hair-Products.webp"

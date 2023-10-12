@@ -353,7 +353,6 @@ export default component$(() => {
                             "/api/places/details?place_id=" + item.place_id
                           );
                           const result = await data.json();
-                          console.log(result);
                           const addressResult = result.result;
                           country.value = addressResult.address_components.find(
                             (comp: any) => {

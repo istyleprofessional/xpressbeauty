@@ -38,6 +38,8 @@ export default defineConfig(() => {
         "AWS_SECRET_KEY",
         "AWS_BUCKET_NAME",
         "isLive",
+        "GOOGLE_SERVICE_ACCOUNT_EMAIL",
+        "GOOGLE_PRIVATE_KEY",
       ]),
       qwikCity(),
       qwikVite(),

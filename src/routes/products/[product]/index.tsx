@@ -180,6 +180,7 @@ export default component$(() => {
       category: product.categories,
       name: product.product_name,
     };
+    console.log(data);
     const req = await getAllRelatedProductsServer(data);
     relatedProducts.value = JSON.parse(req);
   });
@@ -367,7 +368,7 @@ export default component$(() => {
             user={user.email ? user : null}
             productId={product._id ?? ""}
           />
-          <RelatedProducts relatedProducts={relatedProducts.value} />
+          <RelatedProducts relatedProducts={relatedProducts.value || null} />
         </div>
       </div>
     </>
@@ -383,7 +384,9 @@ export const head: DocumentHead = ({ resolveValue }) => {
       jsonData.companyName && jsonData.companyName !== ""
         ? `${jsonData.companyName} |`
         : ""
-    } ${jsonData.categories[0].replace(",", " | ")}`,
+    } ${`${jsonData.categories[0].main ?? ""} | ${
+      jsonData.categories[1].name
+    }`}`,
     meta: [
       {
         name: "description",
@@ -399,7 +402,11 @@ export const head: DocumentHead = ({ resolveValue }) => {
           jsonData.priceType === "range"
             ? `$${jsonData.price.min}-$${jsonData.price.max}`
             : `$${jsonData.price.regular}`
-        } in our ${jsonData.categories.join(", ") ?? ""} category.`,
+        } in our ${
+          jsonData.categories
+            .map((cat: any) => `${cat.main}, ${cat.name}`)
+            .join(", ") ?? ""
+        } category.`,
       },
       {
         name: "keywords",

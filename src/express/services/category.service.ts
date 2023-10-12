@@ -8,3 +8,57 @@ export const get_all_categories = async () => {
     return { status: "failed", message: err.message };
   }
 };
+
+export const get_all_categories_per_page = async (
+  page: number,
+  search?: string
+) => {
+  try {
+    const perPage = 20;
+    const pageNumber = page;
+    const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
+    console.log(search);
+    const aggregationPipeline = [
+      {
+        $group: {
+          _id: "$main",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 }, // Count the number of unique values
+          categories: { $push: "$_id" }, // Store unique values in an array
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Exclude the _id field
+          total: 1,
+          categories: {
+            $slice: ["$categories", skip, perPage], // Apply pagination to the unique values
+          },
+        },
+      },
+    ];
+    const categories = await Category.aggregate(aggregationPipeline);
+    console.log(categories);
+    return { status: "success", result: categories };
+  } catch (err: any) {
+    console.log(err);
+    return { status: "failed", message: err.message };
+  }
+};
+
+export const updateVisibility = async (id: string, isHidden: boolean) => {
+  try {
+    const result = await Category.findByIdAndUpdate(
+      id,
+      { isHidden: isHidden },
+      { new: true }
+    );
+    return { status: "success", result: result };
+  } catch (err: any) {
+    return { status: "failed", message: err.message };
+  }
+};

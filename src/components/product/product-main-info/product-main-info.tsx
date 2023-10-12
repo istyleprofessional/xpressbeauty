@@ -9,7 +9,7 @@ interface ProductMainInfoProps {
   isVerified?: boolean;
   priceType?: string;
   ratings?: any;
-  companyName?: string;
+  companyName?: any;
 }
 
 export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
@@ -29,15 +29,15 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         <h1 class="text-xl md:text-4xl font-bold text-black" itemProp="name">
           {product_name}
         </h1>
-        {companyName && companyName !== "" && (
+        {companyName.name && companyName.name !== "" && (
           <div
             itemProp="brand"
             itemScope
             itemType="http://schema.org/Brand"
-            id={`brand-${companyName.replace(/ /g, "-")}`}
+            id={`brand-${companyName.name.replace(/ /g, "-")}`}
           >
             <h2 class="text-black text-lg md:text-2xl" itemProp="name">
-              {companyName}
+              {companyName.name}
             </h2>
           </div>
         )}

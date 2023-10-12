@@ -4,6 +4,7 @@ const categorySchema = new Schema(
   {
     name: { type: String, unique: true },
     main: { type: String },
+    isHidden: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

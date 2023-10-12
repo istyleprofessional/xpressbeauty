@@ -9,48 +9,52 @@ export const onGet: RequestHandler = async ({ json }) => {
     if ((product?.variations?.length ?? 0) > 0) {
       product?.variations?.forEach((variation: any) => {
         finalProductArray.push({
-          ID: `${product._id}-${variation.variation_id}`,
-          Title: `${product.product_name}-${variation.variation_name}`,
-          Description: product.description?.replace(/<[^>]*>?/gm, ""),
-          Price: variation.price,
-          Condition: "new",
-          Link: `https://xpressbeauty/products/${encodeURIComponent(
+          id: `${product._id}-${variation.variation_id}`,
+          title: `${product.product_name}-${variation.variation_name}`,
+          description: product.description?.replace(/<[^>]*>?/gm, ""),
+          availability:
+            parseInt(variation?.quantity_on_hand?.toString() ?? "0") > 0
+              ? "in_stock"
+              : "out_of_stock",
+          link: `https://xpressbeauty/products/${encodeURIComponent(
             product.product_name
               ?.replace(/[^a-zA-Z ]/g, "")
               .replace(/ /g, "-")
               .toLowerCase() ?? ""
           )}`,
-          Availability:
-            parseInt(variation?.quantity_on_hand?.toString() ?? "0") > 0
-              ? "in_stock"
-              : "out_of_stock",
-          image: product.imgs[0],
+          image_link: product.imgs[0],
+          price: variation.price,
+          identifier_exists: "no",
+          brand: product.companyName,
+          condition: "new",
         });
       });
     } else {
       finalProductArray.push({
-        ID: product._id,
-        Title: product.product_name,
-        Description: product.description?.replace(/<[^>]*>?/gm, ""),
-        Price: product.price.regular,
-        Condition: "new",
-        Link: `https://xpressbeauty/products/${encodeURIComponent(
+        id: product._id,
+        title: product.product_name,
+        description: product.description?.replace(/<[^>]*>?/gm, ""),
+        availability:
+          parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
+            ? "in_stock"
+            : "out_of_stock",
+        link: `https://xpressbeauty/products/${encodeURIComponent(
           product.product_name
             ?.replace(/[^a-zA-Z ]/g, "")
             .replace(/ /g, "-")
             .toLowerCase() ?? ""
         )}`,
-        Availability:
-          parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
-            ? "in_stock"
-            : "out_of_stock",
-        image: product.imgs[0],
+        image_link: product.imgs[0],
+        price: product.price.regular,
+        identifier_exists: "no",
+        brand: product.companyName,
+        condition: "new",
       });
     }
   });
 
   const headers =
-    "ID, Title, Description, Price, Condition, Link, Availability, Image link";
+    "id, title, description, availability, link, image_link, price, identifier_exists, brand, condition ";
   const csv = finalProductArray.map((row) =>
     Object.values(row)
       .map((val) => `"${val}"`)

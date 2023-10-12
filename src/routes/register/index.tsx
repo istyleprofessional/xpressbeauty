@@ -92,6 +92,7 @@ export default component$(() => {
   const isRecaptcha = useSignal<boolean>(false);
   const recaptchaToken = useSignal<string>("");
   const message = useSignal<string>("");
+  const passwordValidation = useSignal<boolean>(true);
 
   const handleAlertClose = $(() => {
     document.querySelector(".alert")?.classList.add("hidden");
@@ -221,7 +222,7 @@ export default component$(() => {
               )}
               <InputField
                 label="Phone Number"
-                placeholder="6666666666"
+                placeholder="1234567891"
                 validation={action?.value?.validation?.phoneNumber}
                 type="text"
                 identifier="phoneNumber"
@@ -239,14 +240,32 @@ export default component$(() => {
                 without the country code.
               </p>
             </div>
-
-            <InputField
-              label="Password"
-              placeholder="**********"
-              validation={action?.value?.validation?.password}
-              type="password"
-              identifier="password"
-            />
+            <div class="flex flex-col">
+              <p class="text-black text-sm font-light">
+                Password must be at least 8 characters long and contain at least
+                one uppercase letter, one lowercase letter, one number and one
+                special character.
+              </p>
+              <InputField
+                label="Password"
+                placeholder="**********"
+                validation={
+                  passwordValidation.value ??
+                  action?.value?.validation?.password
+                }
+                type="password"
+                identifier="password"
+                handleOnChange={$((e: any) => {
+                  const value = e.target.value;
+                  if (value.length < 8) {
+                    passwordValidation.value = true;
+                    return;
+                  }
+                  const validation = validate(value, "password");
+                  passwordValidation.value = validation ?? true;
+                })}
+              />
+            </div>
             <InputField
               label="Confirm Password"
               placeholder="**********"

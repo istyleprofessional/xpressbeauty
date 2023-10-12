@@ -38,7 +38,6 @@ export default component$(() => {
   const loc = useLocation();
   const currentPageNo = loc.url.searchParams.get("page") ?? "1";
   const totalPages = Math.ceil(count.value / 20);
-  console.log("totalPages", count.value);
   const currentProduct = useSignal<any>({});
   const searchValue = loc.url.searchParams.get("search") ?? "";
 
