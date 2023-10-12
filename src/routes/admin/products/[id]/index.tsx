@@ -31,6 +31,9 @@ export const useFormAction = routeAction$(async function (data, event) {
       delete formData[key];
       delete formData["sub-category"];
     }
+    if (key === "price.regular") {
+      formData[key] = parseFloat(formData[key]);
+    }
     if (key === "product_image") {
       formData.imgs = [formData[key]];
       delete formData[key];
