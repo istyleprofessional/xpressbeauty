@@ -65,7 +65,6 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
   requestEvent.cookie.set("token", token, {
     httpOnly: true,
     path: "/",
-    secure: true,
   });
   sendVerficationMail(
     newData?.email ?? "",
@@ -73,7 +72,8 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
     token ?? "",
     newData?.EmailVerifyToken ?? ""
   );
-  throw requestEvent.redirect(301, `/emailVerify/?token=${token}`);
+  requestEvent.headers.set("Location", `/emailVerify/?token=${token}`);
+  requestEvent.send(302, "Redirecting");
 });
 
 export const validatePhone = server$(async (data) => {

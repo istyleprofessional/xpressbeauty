@@ -36,7 +36,6 @@ export const onPost: RequestHandler = async ({ json, cookie, parseBody }) => {
       );
       cookie.set("token", newToken, {
         httpOnly: true,
-        secure: true,
         path: "/",
       });
       const data = {

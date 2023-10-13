@@ -38,8 +38,7 @@ export const onPost: RequestHandler = async ({ cookie, json, parseBody }) => {
       });
       cookie.set("token", newToken, {
         httpOnly: true,
-        sameSite: "strict",
-        secure: true,
+        path: "/",
       });
       const user = await getUserById((decoded as any).id);
       if (!user) {

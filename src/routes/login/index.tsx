@@ -54,7 +54,6 @@ export const useAction = routeAction$(async (data, requestEvent) => {
     requestEvent.cookie.set("token", token, {
       httpOnly: true,
       path: "/",
-      secure: true,
     });
     throw requestEvent.redirect(301, "/");
   } else {

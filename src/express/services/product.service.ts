@@ -148,14 +148,11 @@ export const getRelatedProducts = async (
   productName: string
 ) => {
   try {
-    console.log(category);
     const query: any = {};
     if (category.length > 0) {
       query["categories"] = {
         $elemMatch: {
-          $or: category.map((cat: any) => {
-            return { name: { $regex: cat.name, $options: "i" } };
-          }),
+          name: category[0].name,
         },
       };
     }

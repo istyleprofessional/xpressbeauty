@@ -96,7 +96,7 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
         process.env.JWTSECRET ?? "",
         { expiresIn: "1d" }
       );
-      requestEvent.cookie.set("token", newToken);
+      requestEvent.cookie.set("token", newToken, { httpOnly: true, path: "/" });
       if (decoded.isDummy) {
         isDummy = true;
         user = await getDummyCustomer(decoded?.user_id ?? "");

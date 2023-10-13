@@ -86,7 +86,6 @@ export const useFormActions = routeAction$(async (data, requestEvent) => {
       requestEvent.cookie.set("token", newToken, {
         httpOnly: true,
         path: "/",
-        expires: new Date(Date.now() + 3600000),
       });
       const sendMailToClient = await sendContactUsEmailToClient(emailData);
       if (sendMailToClient.status === "failed") {
