@@ -135,7 +135,11 @@ export default component$(() => {
                     />
                   </th>
                   <th>{product.product_name}</th>
-                  <th>{product.categories.join(" - ")}</th>
+                  <th>
+                    {product.categories
+                      .map((cat: any) => `${cat.main} - ${cat.name}`)
+                      .join(" & ")}
+                  </th>
                   <th>{product.item_no}</th>
                   <th>{product.sku}</th>
                   <th>

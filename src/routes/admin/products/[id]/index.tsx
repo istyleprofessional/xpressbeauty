@@ -274,8 +274,8 @@ export default component$(() => {
                   <option
                     key={index}
                     value={category.main}
-                    selected={product.categories.some((prodCat: any) =>
-                      prodCat.includes(category.main)
+                    selected={product.categories.some(
+                      (prodCat: any) => prodCat.main === category.main
                     )}
                   >
                     {category.main}
@@ -302,8 +302,8 @@ export default component$(() => {
                   <option
                     key={index}
                     value={category.name}
-                    selected={product.categories.some((cate: any) =>
-                      cate.includes(category.name)
+                    selected={product.categories.some(
+                      (cate: any) => cate.name === category.name
                     )}
                   >
                     {category.name}
