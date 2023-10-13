@@ -93,7 +93,6 @@ export const validatePhone = server$(async (data) => {
 export default component$(() => {
   const action = useRegisterForm();
   const isLoading = useSignal<boolean>(false);
-  const isRecaptcha = useSignal<boolean>(false);
   const recaptchaToken = useSignal<string>("");
   const message = useSignal<string>("");
   const passwordValidation = useSignal<boolean>(true);
