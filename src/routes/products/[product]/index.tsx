@@ -69,7 +69,7 @@ export const useAuth = routeLoader$(async ({ cookie }) => {
       );
       cookie.set("token", newToken, {
         httpOnly: true,
-        path: "/",
+        secure: true,
       });
     }
     return JSON.stringify({});
@@ -381,10 +381,12 @@ export const head: DocumentHead = ({ resolveValue }) => {
   const jsonData = JSON.parse(doc)._doc;
   return {
     title: `${jsonData?.product_name ?? ""} | ${
-      jsonData.companyName && jsonData.companyName !== ""
-        ? `${jsonData.companyName} |`
+      jsonData.companyName.name && jsonData.companyName.name !== ""
+        ? `${jsonData.companyName.name} |`
         : ""
-    } ${`${jsonData.categories[0].main ?? ""}`}`,
+    } ${`${jsonData.categories[0].main ?? ""} | ${
+      jsonData.categories[1].name
+    }`}`,
     meta: [
       {
         name: "description",

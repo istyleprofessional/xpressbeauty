@@ -30,7 +30,8 @@ export const Pagination = component$((props: PaginationProps) => {
     });
     totalCols.value = [];
     const floatPages = pages.value / (perPage ?? 12);
-    totalPages.value = Math.floor(floatPages + 1);
+    // totalPages.value = Math.floor(floatPages + 1);
+    totalPages.value = Math.ceil(floatPages);
     const start = (parseInt(page) ?? 1) - 1;
     const end = (parseInt(page) ?? 1) + 1;
     for (let i = start; i <= end; i++) {

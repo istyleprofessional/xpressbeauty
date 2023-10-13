@@ -10,7 +10,7 @@ export const useAdminLoginAction = routeAction$(async (data, requestEvenet) => {
   requestEvenet.cookie.delete("token");
   requestEvenet.cookie.set("token", result.token ?? "", {
     httpOnly: true,
-    path: "/",
+    secure: true,
   });
   if (result.status === "success") {
     throw requestEvenet.redirect(301, "/admin");

@@ -65,6 +65,7 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
   requestEvent.cookie.set("token", token, {
     httpOnly: true,
     path: "/",
+    secure: true,
   });
   sendVerficationMail(
     newData?.email ?? "",
@@ -72,8 +73,7 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
     token ?? "",
     newData?.EmailVerifyToken ?? ""
   );
-  requestEvent.headers.set("Location", `/emailVerify/?token=${token}`);
-  requestEvent.send(302, "Redirecting");
+  throw requestEvent.redirect(301, `/emailVerify/?token=${token}`);
 });
 
 export const validatePhone = server$(async (data) => {
@@ -112,6 +112,17 @@ export default component$(() => {
             recaptchaToken.value = token;
           });
         }, 1000);
+      }
+    },
+    { strategy: "document-idle" }
+  );
+
+  useVisibleTask$(
+    ({ track }) => {
+      track(() => action.value?.status);
+      if (action.value?.status === "success") {
+        isLoading.value = false;
+        location.href = "/emailVerify/?token=" + action.value?.token;
       }
     },
     { strategy: "document-idle" }
