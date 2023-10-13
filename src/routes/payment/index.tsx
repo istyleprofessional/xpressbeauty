@@ -33,7 +33,7 @@ export const usePaymentRoute = routeLoader$(async ({ cookie }) => {
         process.env.JWTSECRET ?? "",
         { expiresIn: "1h" }
       );
-      cookie.set("token", newToken, { httpOnly: true, secure: true });
+      cookie.set("token", newToken, { httpOnly: true, path: "/" });
       const getCart: any = await getCartByUserId(decoded.user_id);
       if (!getCart) {
         return JSON.stringify({ status: "failed" });

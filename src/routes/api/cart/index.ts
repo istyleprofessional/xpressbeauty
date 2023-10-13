@@ -37,7 +37,7 @@ export const onPost: RequestHandler = async ({ parseBody, cookie, json }) => {
           process.env.JWTSECRET ?? "",
           { expiresIn: "2h" }
         );
-        cookie.set("token", newToken, { httpOnly: true, secure: true });
+        cookie.set("token", newToken, { httpOnly: true, path: "/" });
         if (decode?.isDummy) {
           user = await getDummyCustomer(decode.user_id);
           jsonData.userId = user?.result?._id.toString();
@@ -86,7 +86,7 @@ export const onDelete: RequestHandler = async ({ parseBody, cookie, json }) => {
           process.env.JWTSECRET ?? "",
           { expiresIn: "2h" }
         );
-        cookie.set("token", newToken, { httpOnly: true, secure: true });
+        cookie.set("token", newToken, { httpOnly: true, path: "/" });
         if (decode?.isDummy) {
           user = await getDummyCustomer(decode.user_id);
           jsonData.userId = user?.result?._id.toString();
@@ -135,7 +135,7 @@ export const onPut: RequestHandler = async ({ parseBody, cookie, json }) => {
           process.env.JWTSECRET ?? "",
           { expiresIn: "2h" }
         );
-        cookie.set("token", newToken, { httpOnly: true, secure: true });
+        cookie.set("token", newToken, { httpOnly: true, path: "/" });
         if (decode?.isDummy) {
           user = await getDummyCustomer(decode.user_id);
           jsonData.userId = user?.result?._id.toString();

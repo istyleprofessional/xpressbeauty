@@ -56,7 +56,6 @@ export const onPost: RequestHandler = async ({ cookie, parseBody, json }) => {
         cookie.set("token", newToken, {
           httpOnly: true,
           path: "/",
-          secure: true,
         });
         const request = await updateProductReviews(body);
         if (request.status === "success") {

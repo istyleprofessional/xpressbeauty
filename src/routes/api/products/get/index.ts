@@ -39,7 +39,7 @@ export const onPost: RequestHandler = async ({ parseBody, json, cookie }) => {
         },
         process.env.JWTSECRET ?? ""
       );
-      cookie.set("token", newToken, { httpOnly: true, secure: true });
+      cookie.set("token", newToken, { httpOnly: true, path: "/" });
       const request = await get_products_data(
         body.filterBrands,
         body.filterCategories,
