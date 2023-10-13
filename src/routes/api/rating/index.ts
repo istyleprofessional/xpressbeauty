@@ -111,7 +111,6 @@ export const onGet: RequestHandler = async ({ cookie, url, json }) => {
         cookie.set("token", newToken, {
           httpOnly: true,
           path: "/",
-          secure: true,
         });
         const request = await getRatingByProductId(productId ?? "");
         if (request.status === "success") {
