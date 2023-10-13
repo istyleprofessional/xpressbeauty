@@ -13,8 +13,7 @@ import {
   getUserEmailById,
   getUserEmailOtp,
 } from "~/express/services/user.service";
-// import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
-import { sendVerficationMail } from "~/utils/sendVerficationMail";
+import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
 
 export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
   const token = url.searchParams.get("token");
@@ -25,14 +24,6 @@ export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
     const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
     const request = await getUserEmailById(decoded.user_id);
     if (request?.status === "success") {
-      sendVerficationMail(
-        request?.result?.email ?? "",
-        `${request?.result?.firstName ?? ""} ${
-          request?.result?.lastName ?? ""
-        }`,
-        token ?? "",
-        request?.result?.EmailVerifyToken ?? ""
-      );
       return JSON.stringify({ user: request.result, token: token });
     } else {
       throw redirect(301, "/");
@@ -77,9 +68,18 @@ export const useFormAction = routeAction$(async (data, { cookie }) => {
     if (verify) {
       const request = await getUserEmailOtp(body);
       if (request.status === "success") {
+        if (!request.result?.isPhoneVerified) {
+          await sendPhoneOtp(
+            request.result?.phoneNumber ?? "",
+            request.result?.PhoneVerifyToken ?? ""
+          );
+          return {
+            status: "success",
+            token: token,
+          };
+        }
         return {
           status: "success",
-          token: token,
         };
       }
       return {
@@ -106,9 +106,18 @@ export const useFormAction = routeAction$(async (data, { cookie }) => {
       });
       const request = await getUserEmailOtp(body);
       if (request.status === "success") {
+        if (!request.result?.isPhoneVerified) {
+          await sendPhoneOtp(
+            request.result?.phoneNumber ?? "",
+            request.result?.PhoneVerifyToken ?? ""
+          );
+          return {
+            status: "success",
+            token: token,
+          };
+        }
         return {
           status: "success",
-          token: token,
         };
       } else {
         return {
@@ -139,7 +148,12 @@ export default component$(() => {
     ({ track }) => {
       track(() => action.value?.status);
       if (action.value?.status === "success") {
-        window.location.href = "/phoneVerify/?token=" + jsonUser.token;
+        if (action.value?.token) {
+          window.location.href = "/phoneVerify/?token=" + jsonUser.token;
+          return;
+        }
+        window.location.href = "/login";
+        return;
       } else {
         setTimeout(() => {
           (window as any).grecaptcha.ready(async () => {

@@ -5,25 +5,23 @@ import {
   useSignal,
   useVisibleTask$,
 } from "@builder.io/qwik";
-import {
-  Form,
-  routeAction$,
-  useNavigate,
-  server$,
-} from "@builder.io/qwik-city";
+import { Form, routeAction$, server$ } from "@builder.io/qwik-city";
 import { UserContext } from "~/context/user.context";
 import { generateUniqueInteger } from "~/utils/generateOTP";
 
 import { InputField } from "~/components/shared/input-field/input-field";
 import jwt from "jsonwebtoken";
 import {
+  emailUpdateToken,
   getUserEmailById,
+  phoneUpdateToken,
   updateExistingUser,
 } from "~/express/services/user.service";
 import { validate } from "~/utils/validate.utils";
 import { Toast } from "~/components/admin/toast/toast";
 import { sendVerficationMail } from "~/utils/sendVerficationMail";
 import Twilio from "twilio";
+import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
 
 export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
   const formData: any = data;
@@ -71,7 +69,6 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
       formData?.generalInfo?.address?.postalCode !== "" &&
       validate(formData?.generalInfo?.address?.postalCode ?? "", "postalCode"),
   };
-  console.log(formData.isPhoneValid);
   const isValid = Object.values(validationObject).every(
     (item) => item === true
   );
@@ -86,7 +83,7 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
   try {
     const verified = jwt.verify(token, process.env.JWTSECRET ?? "");
     if (!verified) {
-      throw requestEvent.redirect(301, "/login");
+      return { status: "failed", message: "Invalid token" };
     }
     const updateReq = await updateExistingUser(data, formData?.id ?? "");
     if (updateReq?.status === "failed") {
@@ -99,14 +96,13 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
     };
   } catch (error: any) {
     if (error.message === "jwt expired") {
-      throw requestEvent.redirect(301, "/login");
+      return { status: "failed", message: "Token expired" };
     }
   }
 });
 
 const getTheToken = server$(async function () {
   const token = this.cookie.get("token")?.value;
-  //console.log(cookieValue);
   if (!token) {
     return { status: "failed" };
   }
@@ -115,9 +111,12 @@ const getTheToken = server$(async function () {
     if (decoded) {
       const request = await getUserEmailById(decoded.user_id);
       const EmailVerifyToken = generateUniqueInteger();
-      // const saveNewUser = await updateEmailVerficationCode(request?.result?.id ?? "" ,EmailVerifyToken );
-      if (request?.status === "success") {
-        sendVerficationMail(
+      const updateReq = await emailUpdateToken(
+        decoded.user_id,
+        EmailVerifyToken
+      );
+      if (request?.status === "success" && updateReq?.status === "success") {
+        await sendVerficationMail(
           request?.result?.email ?? "",
           `${request?.result?.firstName ?? ""} ${
             request?.result?.lastName ?? ""
@@ -126,7 +125,6 @@ const getTheToken = server$(async function () {
           EmailVerifyToken ?? ""
         );
         return { status: "success", token: token };
-        // return JSON.stringify({ user: request.result, token: token });
       } else {
         return { status: "failed" };
       }
@@ -135,6 +133,37 @@ const getTheToken = server$(async function () {
     return { status: "failed" };
   }
   return { status: "success", token: token ?? "" };
+});
+
+const getThePhoneToken = server$(async function () {
+  const token = this.cookie.get("token")?.value;
+  if (!token) {
+    return { status: "failed" };
+  }
+  try {
+    const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+    if (decoded) {
+      const request = await getUserEmailById(decoded.user_id);
+      const PhoneVerifyToken = generateUniqueInteger();
+      const updateReq = await phoneUpdateToken(
+        decoded.user_id,
+        PhoneVerifyToken
+      );
+      if (request?.status === "success" && updateReq?.status === "success") {
+        const send = await sendPhoneOtp(
+          request?.result?.phoneNumber ?? "",
+          PhoneVerifyToken
+        );
+        console.log(send);
+        return { status: "success", token: token };
+      } else {
+        return { status: "failed" };
+      }
+    }
+  } catch (error) {
+    return { status: "failed" };
+  }
+  return { status: "failed" };
 });
 
 export const validatePhoneProfile = server$(async (data) => {
@@ -151,8 +180,6 @@ export default component$(() => {
   const { user }: any = useContext(UserContext);
   const action = useUpdateProfile();
   const toast = useSignal<HTMLElement>();
-  // const token = useSignal<string>("")
-  const nav = useNavigate();
   const placesPredictions = useSignal<any[]>([]);
   const country = useSignal<string>("");
   const addressLine1 = useSignal<string>("");
@@ -161,7 +188,6 @@ export default component$(() => {
   const postalCode = useSignal<string>("");
   const isPhoneValid = useSignal<boolean>(true);
   const message = useSignal<string>("");
-  const isRecaptcha = useSignal<boolean>(false);
   const recaptchaToken = useSignal<string>("");
 
   const handleAlertClose = $(() => {
@@ -175,36 +201,6 @@ export default component$(() => {
       user.isPhoneVerified = updatedUser.result.isPhoneVerified;
     }
   });
-
-  // const useCheckoutData = server$(async ({ cookie ,redirect }) => {
-  //   const token = cookie.get("token")?.value;
-  //   const nav = useNavigate();
-  //   if (!token) {
-  //     throw redirect(301, "/");
-  //   }
-  //   try {
-  //     const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
-  //     const request = await getUserEmailById(decoded.user_id);
-  //     if (request?.status === "success") {
-  //       sendVerficationMail(
-  //         user?.email ?? "",
-  //         `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
-  //         token ?? "",
-  //         user?.EmailVerifyToken ?? ""
-  //       );
-  //       await nav(`/emailVerify/?token=${token ?? ""}`);
-  //       console.log("hello");
-  //       // return JSON.stringify({ user: request.result, token: token });
-  //     } else {
-  //       throw redirect(301, "/login");
-  //     }
-  //   } catch (error) {
-  //     throw redirect(301, "/");
-  //   }
-
-  //   return { status: "success", token: token ?? "" };
-
-  // });
 
   const handleStreetAddressChange = $(async (e: any) => {
     const input = e.target.value;
@@ -227,7 +223,6 @@ export default component$(() => {
     if (phone.startsWith("+1")) phone = e.target.value.slice(2);
 
     const req = await validatePhoneProfile(e.target.value);
-    console.log(req);
     const result = JSON.parse(req?.res ?? "");
     if (!(result.countryCode == "US" || result.countryCode == "CA")) {
       isPhoneValid.value = false;
@@ -239,26 +234,8 @@ export default component$(() => {
   });
 
   useVisibleTask$(
-    () => {
-      if (isRecaptcha.value === false) {
-        isRecaptcha.value = true;
-        setTimeout(() => {
-          (window as any).grecaptcha?.ready(async () => {
-            const token = await (window as any).grecaptcha.execute(
-              process.env.RECAPTCHA_SITE_KEY ?? "",
-              { action: "submit" }
-            );
-            recaptchaToken.value = token;
-          });
-        }, 1000);
-      }
-    },
-    { strategy: "document-idle" }
-  );
-
-  useVisibleTask$(
     ({ track }) => {
-      track(() => action.isRunning);
+      track(() => action?.value?.status);
       (window as any).grecaptcha?.ready(async () => {
         const token = await (window as any).grecaptcha.execute(
           process.env.RECAPTCHA_SITE_KEY ?? "",
@@ -273,11 +250,9 @@ export default component$(() => {
   return (
     <>
       <div class="gird">
-        {isRecaptcha.value === true && (
-          <script
-            src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
-          ></script>
-        )}
+        <script
+          src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+        ></script>
         <Form action={action} reloadDocument={false}>
           <div class="px-9 gap-4">
             <div>
@@ -335,7 +310,8 @@ export default component$(() => {
                       onClick$={async () => {
                         const res = await getTheToken();
                         if (res?.status === "success") {
-                          await nav(`/emailVerify/?token=${res.token ?? ""}`);
+                          location.href = `/emailVerify/?token=${res.token}`;
+                          return;
                         }
                       }}
                       class="btn normal-case btn-sm btn-warning"
@@ -364,9 +340,10 @@ export default component$(() => {
                   ) : (
                     <button
                       onClick$={async () => {
-                        const res = await getTheToken();
+                        const res = await getThePhoneToken();
                         if (res?.status === "success") {
-                          await nav(`/phoneVerify/?token=${res.token ?? ""}`);
+                          location.href = `/phoneVerify/?token=${res.token}`;
+                          return;
                         }
                       }}
                       class="btn normal-case btn-sm btn-warning"
@@ -379,7 +356,7 @@ export default component$(() => {
                   )}
                   <InputField
                     type="text"
-                    value={user?.phoneNumber ?? ""}
+                    value={user?.phoneNumber?.replace("+1", "") ?? ""}
                     placeholder="2222222222"
                     identifier="phoneNumber"
                     validation={

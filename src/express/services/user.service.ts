@@ -169,6 +169,40 @@ export const getUserEmailOtp = async (data: any) => {
   }
 };
 
+export const emailUpdateToken = async (id: string, token: string) => {
+  try {
+    const result = await User.findOneAndUpdate(
+      { _id: id },
+      { EmailVerifyToken: token },
+      { new: true }
+    );
+    if (result) {
+      return { status: "success", result: result };
+    } else {
+      return { status: "failed" };
+    }
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
+
+export const phoneUpdateToken = async (id: string, token: string) => {
+  try {
+    const result = await User.findOneAndUpdate(
+      { _id: id },
+      { PhoneVerifyToken: token },
+      { new: true }
+    );
+    if (result) {
+      return { status: "success", result: result };
+    } else {
+      return { status: "failed" };
+    }
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
+
 export const updateExistingUser = async (data: any, id: string) => {
   try {
     const userdata = await User.findOne({ _id: id });

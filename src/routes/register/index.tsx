@@ -8,8 +8,9 @@ import { connect } from "~/express/db.connection";
 import jwt from "jsonwebtoken";
 import { validate } from "~/utils/validate.utils";
 import Twilio from "twilio";
+import { sendVerficationMail } from "~/utils/sendVerficationMail";
 
-export const useRegisterForm = routeAction$(async (data, { headers, send }) => {
+export const useRegisterForm = routeAction$(async (data) => {
   await connect();
   const newData: any = { ...data };
   const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
@@ -63,9 +64,17 @@ export const useRegisterForm = routeAction$(async (data, { headers, send }) => {
   );
 
   try {
-    headers.set("Location", `/emailVerify?token=${token}`);
-    send(301, "Redirecting");
-    return;
+    sendVerficationMail(
+      newData?.email ?? "",
+      `${newData?.firstName ?? ""} ${newData?.lastName ?? ""}`,
+      token ?? "",
+      newData?.EmailVerifyToken ?? ""
+    );
+
+    return {
+      status: "success",
+      token: token,
+    };
   } catch (e) {
     console.log(e);
   }
@@ -94,24 +103,6 @@ export default component$(() => {
   });
   const isPhoneValid = useSignal<boolean>(false);
 
-  useVisibleTask$(
-    () => {
-      if (isRecaptcha.value === false) {
-        isRecaptcha.value = true;
-        setTimeout(() => {
-          (window as any).grecaptcha?.ready(async () => {
-            const token = await (window as any).grecaptcha.execute(
-              process.env.RECAPTCHA_SITE_KEY ?? "",
-              { action: "submit" }
-            );
-            recaptchaToken.value = token;
-          });
-        }, 1000);
-      }
-    },
-    { strategy: "document-idle" }
-  );
-
   const handleChange = $(async (e: any) => {
     isPhoneValid.value = false;
     let phone = e.target.value;
@@ -135,7 +126,11 @@ export default component$(() => {
 
   useVisibleTask$(
     ({ track }) => {
-      track(() => action.isRunning);
+      track(() => action.value?.status);
+      if (action.value?.status === "success") {
+        window.location.href = "/emailVerify/?token=" + action.value?.token;
+        return;
+      }
       (window as any).grecaptcha?.ready(async () => {
         const token = await (window as any).grecaptcha.execute(
           process.env.RECAPTCHA_SITE_KEY ?? "",
@@ -153,11 +148,10 @@ export default component$(() => {
         <div class="w-full h-96 bg-no-repeat md:hidden bg-[url('/Registration.webp')] bg-contain bg-center">
           {" "}
         </div>
-        {isRecaptcha.value === true && (
-          <script
-            src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
-          ></script>
-        )}
+        <script
+          src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+        ></script>
+
         <Form action={action} reloadDocument={false}>
           <div class="card w-full md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
             {action?.value?.status === "failed" && (
@@ -277,7 +271,7 @@ export default component$(() => {
             <button
               class={`btn w-full bg-black text-white text-lg`}
               type="submit"
-              disabled={!isRecaptcha.value}
+              // disabled={!isRecaptcha.value}
             >
               {isLoading.value && <span class="loading loading-spinner"></span>}
               Sign up
