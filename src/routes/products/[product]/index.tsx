@@ -384,9 +384,7 @@ export const head: DocumentHead = ({ resolveValue }) => {
       jsonData.companyName.name && jsonData.companyName.name !== ""
         ? `${jsonData.companyName.name} |`
         : ""
-    } ${`${jsonData.categories[0].main ?? ""} | ${
-      jsonData.categories[1].name
-    }`}`,
+    } ${`${jsonData.categories[0].main ?? ""}`}`,
     meta: [
       {
         name: "description",
