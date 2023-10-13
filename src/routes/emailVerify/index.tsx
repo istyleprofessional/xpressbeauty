@@ -13,7 +13,8 @@ import {
   getUserEmailById,
   getUserEmailOtp,
 } from "~/express/services/user.service";
-import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
+// import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
+import { sendVerficationMail } from "~/utils/sendVerficationMail";
 
 export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
   const token = url.searchParams.get("token");
@@ -24,6 +25,14 @@ export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
     const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
     const request = await getUserEmailById(decoded.user_id);
     if (request?.status === "success") {
+      sendVerficationMail(
+        request?.result?.email ?? "",
+        `${request?.result?.firstName ?? ""} ${
+          request?.result?.lastName ?? ""
+        }`,
+        token ?? "",
+        request?.result?.EmailVerifyToken ?? ""
+      );
       return JSON.stringify({ user: request.result, token: token });
     } else {
       throw redirect(301, "/");
@@ -33,7 +42,7 @@ export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
   }
 });
 
-export const useFormAction = routeAction$(async (data, requestEvent) => {
+export const useFormAction = routeAction$(async (data, { cookie }) => {
   const newData = Object.values(data.otp);
   const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${data.recaptcha}`;
@@ -43,7 +52,7 @@ export const useFormAction = routeAction$(async (data, requestEvent) => {
   if (!google_response.success) {
     return {
       status: "failed",
-      err: "Boot detected",
+      err: "Bot detected",
     };
   }
   const isValid = validate(newData.join(""), "otp");
@@ -53,7 +62,7 @@ export const useFormAction = routeAction$(async (data, requestEvent) => {
       err: "Invalid data",
     };
   }
-  const token = requestEvent.cookie.get("token")?.value;
+  const token = cookie.get("token")?.value;
   if (!token) {
     return {
       status: "failed",
@@ -67,26 +76,16 @@ export const useFormAction = routeAction$(async (data, requestEvent) => {
     const verify: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
     if (verify) {
       const request = await getUserEmailOtp(body);
-
       if (request.status === "success") {
-        if (!request?.result?.isPhoneVerified ?? "") {
-          await sendPhoneOtp(
-            request?.result?.phoneNumber ?? "",
-            request?.result?.PhoneVerifyToken ?? ""
-          );
-          return {
-            status: "success",
-            token: token,
-          };
-        } else {
-          throw requestEvent.redirect(301, "/login");
-        }
-      } else {
         return {
-          status: "failed",
-          err: "Invalid OTP",
+          status: "success",
+          token: token,
         };
       }
+      return {
+        status: "failed",
+        err: "Invalid OTP",
+      };
     } else {
       return {
         status: "failed",
@@ -101,19 +100,15 @@ export const useFormAction = routeAction$(async (data, requestEvent) => {
         process.env.JWTSECRET ?? "",
         { expiresIn: "2h" }
       );
-      requestEvent.cookie.set("token", newJwtToken, {
+      cookie.set("token", newJwtToken, {
         httpOnly: true,
-        secure: true,
+        path: "/",
       });
       const request = await getUserEmailOtp(body);
       if (request.status === "success") {
-        await sendPhoneOtp(
-          request?.result?.phoneNumber ?? "",
-          request?.result?.PhoneVerifyToken ?? ""
-        );
         return {
           status: "success",
-          token: newJwtToken,
+          token: token,
         };
       } else {
         return {
@@ -136,15 +131,16 @@ export default component$(() => {
   const user: any = useVerifyToken().value;
   const jsonUser = JSON.parse(user ?? "{}");
   const inputs = useSignal<Element>();
-  const isRecaptcha = useSignal<boolean>(false);
   const recaptchaToken = useSignal<string>("");
   const action = useFormAction();
   const nav = useNavigate();
 
   useVisibleTask$(
-    () => {
-      if (isRecaptcha.value === false) {
-        isRecaptcha.value = true;
+    ({ track }) => {
+      track(() => action.value?.status);
+      if (action.value?.status === "success") {
+        window.location.href = "/phoneVerify/?token=" + jsonUser.token;
+      } else {
         setTimeout(() => {
           (window as any).grecaptcha.ready(async () => {
             const token = await (window as any).grecaptcha.execute(
@@ -190,8 +186,7 @@ export default component$(() => {
   });
 
   const handleAlertClose = $(() => {
-    successMessage.value = "";
-    errorMessage.value = "";
+    document.querySelector(".alert")?.classList.add("hidden");
   });
 
   useVisibleTask$(({ track, cleanup }) => {
@@ -206,28 +201,19 @@ export default component$(() => {
     });
   });
 
-  const handleOtpSubmit = $(async () => {
-    if (action?.value?.status === "success") {
-      isLoading.value = false;
-      setTimeout(() => {
-        window.location.href = `/phoneVerify/?token=${
-          action?.value?.token ?? ""
-        }`;
-      }, 1000);
-    } else {
-      (window as any).grecaptcha.ready(async () => {
-        const token = await (window as any).grecaptcha.execute(
-          process.env.RECAPTCHA_SITE_KEY ?? "",
-          { action: "submit" }
-        );
-        recaptchaToken.value = token;
-      });
-      isLoading.value = false;
-      errorMessage.value = action?.value?.err
-        ? action.value.err
-        : "Something went wrong";
-    }
-  });
+  // const handleOtpSubmit = $(async () => {
+  //   (window as any).grecaptcha.ready(async () => {
+  //     const token = await (window as any).grecaptcha.execute(
+  //       process.env.RECAPTCHA_SITE_KEY ?? "",
+  //       { action: "submit" }
+  //     );
+  //     recaptchaToken.value = token;
+  //   });
+  //   isLoading.value = false;
+  //   errorMessage.value = action?.value?.err
+  //     ? action.value.err
+  //     : "Something went wrong";
+  // });
 
   const handleSkip = $(async () => {
     const sendPhoneOtp = await postRequest("/api/phoneOtp/send", {
@@ -244,12 +230,12 @@ export default component$(() => {
     <>
       <div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-12">
         <div class="relative bg-white px-6 pt-10 pb-9 shadow-xl mx-auto w-full max-w-lg rounded-2xl">
-          {errorMessage.value && (
+          {action?.value?.err && (
             <div class="w-full mb-10">
               <Toast
                 status="e"
                 handleClose={handleAlertClose}
-                message={errorMessage.value}
+                message={action?.value?.err}
                 index={1}
               />
             </div>
@@ -275,12 +261,10 @@ export default component$(() => {
                 </p>
               </div>
             </div>
-            {isRecaptcha.value === true && (
-              <script
-                src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
-              ></script>
-            )}
-            <Form action={action} onSubmit$={handleOtpSubmit}>
+            <script
+              src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+            ></script>
+            <Form action={action}>
               <div class="flex flex-col space-y-16">
                 <div
                   class="flex flex-row items-center justify-between mx-auto gap-3 w-full max-w-xs"

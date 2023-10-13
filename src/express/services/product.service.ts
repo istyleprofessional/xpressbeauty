@@ -126,7 +126,7 @@ export const get_new_arrivals_products = async (filter: string) => {
   try {
     const result = await Product.find({
       isHidden: { $ne: true },
-      categories: { $regex: filter, $options: "i" },
+      categories: { $elemMatch: { main: { $regex: filter, $options: "i" } } },
     }).limit(20);
     return result as ProductModel;
   } catch (err) {

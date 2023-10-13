@@ -6,11 +6,10 @@ import { generateUniqueInteger } from "~/utils/generateOTP";
 import { userRegistration } from "~/express/services/user.service";
 import { connect } from "~/express/db.connection";
 import jwt from "jsonwebtoken";
-import { sendVerficationMail } from "~/utils/sendVerficationMail";
 import { validate } from "~/utils/validate.utils";
 import Twilio from "twilio";
 
-export const useRegisterForm = routeAction$(async (data, requestEvent) => {
+export const useRegisterForm = routeAction$(async (data, { headers, send }) => {
   await connect();
   const newData: any = { ...data };
   const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
@@ -62,17 +61,14 @@ export const useRegisterForm = routeAction$(async (data, requestEvent) => {
     process?.env?.JWTSECRET ?? "",
     { expiresIn: "2h" }
   );
-  requestEvent.cookie.set("token", token, {
-    httpOnly: true,
-    path: "/",
-  });
-  sendVerficationMail(
-    newData?.email ?? "",
-    `${data?.firstName ?? ""} ${data?.lastName ?? ""}`,
-    token ?? "",
-    newData?.EmailVerifyToken ?? ""
-  );
-  throw requestEvent.redirect(301, `/emailVerify/?token=${token}`);
+
+  try {
+    headers.set("Location", `/emailVerify?token=${token}`);
+    send(301, "Redirecting");
+    return;
+  } catch (e) {
+    console.log(e);
+  }
 });
 
 export const validatePhone = server$(async (data) => {

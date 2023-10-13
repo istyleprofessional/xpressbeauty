@@ -8,6 +8,7 @@ import {
   getUserEmailById,
   getUserPhoneOtp,
 } from "~/express/services/user.service";
+import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
 
 export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
   const token = url.searchParams.get("token");
@@ -18,6 +19,10 @@ export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
     const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
     const request = await getUserEmailById(decoded.user_id);
     if (request?.status === "success") {
+      await sendPhoneOtp(
+        request.result?.phoneNumber ?? "",
+        request.result?.PhoneVerifyToken ?? ""
+      );
       return JSON.stringify({ user: request.result, token: token });
     } else {
       throw redirect(301, "/");
@@ -37,7 +42,7 @@ export const useFormAction = routeAction$(async (data, requestEvent) => {
   if (!google_response.success) {
     return {
       status: "failed",
-      err: "Boot detected",
+      err: "Bot detected",
     };
   }
   const isValid = validate(newData.join(""), "otp");

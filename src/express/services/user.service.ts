@@ -20,6 +20,9 @@ export const userRegistration = async (userObject: any) => {
     });
     return { status: "success", result: result };
   } catch (err: any) {
+    if (err.code === 11000) {
+      return { status: "failed", err: "Email already exists" };
+    }
     return { status: "failed", err: err?.message };
   }
 };
@@ -28,7 +31,15 @@ export const getUserEmailById = async (id: string) => {
   try {
     const result = await User.findOne(
       { _id: id },
-      { email: 1, _id: 1, firstName: 1, lastName: 1, phoneNumber: 1 }
+      {
+        email: 1,
+        _id: 1,
+        firstName: 1,
+        lastName: 1,
+        phoneNumber: 1,
+        EmailVerifyToken: 1,
+        PhoneVerifyToken: 1,
+      }
     );
 
     if (result) {
