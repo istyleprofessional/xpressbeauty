@@ -1,38 +1,28 @@
 import {
   component$,
   useContext,
-  useSignal,
   useTask$,
   $,
   useStore,
-  useVisibleTask$,
 } from "@builder.io/qwik";
 import { TrashIcon } from "~/components/shared/icons/icons";
-import { CartContext } from "~/context/cart.context";
-import { ItemQuantity } from "../item-quantity/item-quantity";
+import { WishListContext } from "~/context/wishList.context";
+// import { ItemQuantity } from "../cart/item-quantity/item-quantity";
 import { deleteRequest } from "~/utils/fetch.utils";
 import { uuid } from "~/utils/uuid";
 
 export const ProductList = component$(() => {
   const currentQuantityValue = useStore<any>({});
-  const context: any = useContext(CartContext);
-  const totalQuantity = useSignal<number>(0);
+  const context: any = useContext(WishListContext);
 
   const handleDeleteItemClick = $(async (product: any) => {
-    const request = await deleteRequest(`/api/cart/`, JSON.stringify(product));
-    const response = await request.json();
-    context.cart.products = response.products;
-    context.cart.totalQuantity = response.totalQuantity;
-    const totalPrice = response?.products?.reduce(
-      (acc: number, curr: any) => acc + curr.price * curr.quantity,
-      0
+    const request = await deleteRequest(
+      `/api/wishlist/`,
+      JSON.stringify(product)
     );
-    context.cart.totalPrice = totalPrice;
-  });
-
-  useVisibleTask$(({ track }) => {
-    track(() => context?.cart?.products);
-    totalQuantity.value = context?.cart?.totalQuantity;
+    const response = await request.json();
+    console.log(response);
+    context.wishList.data = response?.result?.products;
   });
 
   useTask$(() => {
@@ -46,55 +36,44 @@ export const ProductList = component$(() => {
   return (
     <>
       <div class="pl-6 flex flex-col gap-4">
-        <p class="text-black font-semibold text-sm md:text-base">
-          Shopping cart
-        </p>
         <p class="text-black text-xs md:text-base">
-          {context?.cart && context?.cart?.totalQuantity > 0
-            ? `You have ${context?.cart?.totalQuantity} item in your cart`
-            : "You have 0 item in your cart"}
+          You have{" "}
+          {context?.wishList?.data?.length > 0
+            ? context?.wishList?.data?.length
+            : 0}{" "}
+          item in your wishlist
         </p>
       </div>
-      {context?.cart && (
+      {context?.wishList && (
         <>
-          {context?.cart?.products?.map((product: any) => (
+          {context?.wishList?.data?.map((product: any) => (
             <div
               class="flex flex-row gap-1 md:gap-5 justify-start items-center h-fit w-fit lg:w-[50%] bg-white border-2
-                                border-solid border-[#E0E0E0] rounded-lg"
+                                  border-solid border-[#E0E0E0] rounded-lg"
               key={uuid()}
             >
               <a
-                class="flex flex-row gap-1 md:gap-5 justify-start items-center h-fit w-fit lg:w-[50%]"
                 href={`/products/${encodeURIComponent(
                   product.product_name
                     ?.replace(/[^a-zA-Z ]/g, "")
                     .replace(/ /g, "-")
                     .toLowerCase() ?? ""
                 )}`}
+                class="flex flex-row gap-1 md:gap-5 justify-start items-center h-fit w-fit lg:w-[50%]"
               >
                 <img
-                  src={product?.product_img}
+                  src={product?.imgs[0]}
                   alt={product?.product_name}
                   class="w-12 h-12 md:w-32 md:h-32 object-contain lg:p-5"
                 />
                 <div class="flex flex-col">
-                  <h2 class="text-black text-xs md:text-sm w-20 overflow-ellipsis whitespace-nowrap overflow-hidden">
+                  <h2 class="text-black text-xs md:text-sm w-52 overflow-ellipsis overflow-hidden">
                     {product?.product_name}
                   </h2>
                   <p class="text-black text-xs">
                     {product?.variation_name ?? ""}
                   </p>
                 </div>
-
-                <ItemQuantity product={product} />
-                <p class="text-black md:text-sm text-xs">
-                  CA$ {parseFloat(product?.price.replace("$", "")).toFixed(2)}
-                </p>
-                {context.isVerified && (
-                  <p class="text-xs md:text-sm font-bold text-[red]">
-                    +20% off
-                  </p>
-                )}
               </a>
               <button
                 class="btn text-[#CC0000] m-2 ml-auto"

@@ -222,7 +222,9 @@ export const ToolBar = component$((props: ToolBarProps) => {
                 {(wishList as any)?.wishList?.data?.length ?? 0} Items
               </span>
               <div class="card-actions">
-                <button class="btn btn-primary btn-block">View wishlist</button>
+                <a href="/wishlist" class="btn btn-primary btn-block">
+                  View wishlist
+                </a>
               </div>
             </div>
           </div>

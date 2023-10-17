@@ -1,12 +1,12 @@
 import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
-import { Form, routeAction$ } from "@builder.io/qwik-city";
+import { Form, routeAction$, useLocation } from "@builder.io/qwik-city";
 import { Toast } from "~/components/admin/toast/toast";
 import { InputField } from "~/components/shared/input-field/input-field";
-import { userLogin } from "~/express/services/user.service";
+import { updateUserPassword } from "~/express/services/user.service";
 import { validate } from "~/utils/validate.utils";
 import jwt from "jsonwebtoken";
 
-export const useAction = routeAction$(async (data, requestEvent) => {
+export const useAction = routeAction$(async (data) => {
   const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${data.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
@@ -20,9 +20,10 @@ export const useAction = routeAction$(async (data, requestEvent) => {
   }
   const newData: any = { ...data };
   const validationObject = {
-    email: validate(newData.email, "email") && newData.email.length > 0,
-    password:
-      validate(newData.password, "password") && newData.password.length > 0,
+    new_password:
+      validate(newData.new_password, "password") &&
+      newData.new_password.length > 0,
+    confirm_password: newData.new_password === newData.confirm_password,
   };
   const isValid = Object.values(validationObject).every(
     (item) => item === true
@@ -34,28 +35,30 @@ export const useAction = routeAction$(async (data, requestEvent) => {
       validation: validationObject,
     };
   }
-  const verifyUser = await userLogin(data);
-  if (verifyUser.err) {
-    return {
-      status: "failed",
-      err: "Invalid Credentials",
-    };
-  }
-  if (verifyUser.status === "success") {
-    const token = jwt.sign(
-      { user_id: verifyUser?.result?._id, isDummy: false },
-      process.env.JWTSECRET ?? "",
-      { expiresIn: "2h" }
+  try {
+    const token = newData.token;
+    const verifyToken = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+    console.log(verifyToken);
+    if (!verifyToken) {
+      return {
+        status: "failed",
+        err: "Something went wrong",
+      };
+    }
+    const email = (verifyToken as any).email;
+    const updatePassword = await updateUserPassword(
+      email,
+      newData.new_password
     );
-    requestEvent.cookie.set("token", token, {
-      httpOnly: true,
-      path: "/",
-    });
-    throw requestEvent.redirect(301, "/");
-  } else {
+    if (updatePassword.status === "success") {
+      return {
+        status: "success",
+      };
+    }
+  } catch (error) {
     return {
       status: "failed",
-      err: "Invalid Credentials",
+      err: "Something went wrong",
     };
   }
 });
@@ -66,11 +69,13 @@ export default component$(() => {
   const action = useAction();
   const isRecaptcha = useSignal<boolean>(false);
   const recaptchaToken = useSignal<string>("");
+  const loc = useLocation();
+  const token = loc.url.searchParams.get("token") ?? "";
 
   useVisibleTask$(({ track }) => {
     track(() => action.value?.status);
     if (action.value?.status === "success") {
-      window.location.href = "/";
+      window.location.href = "/login";
     } else {
       message.value = action.value?.err ?? "";
     }
@@ -131,18 +136,18 @@ export default component$(() => {
             )}
 
             <InputField
-              label="Email"
-              placeholder="example@gmail.com"
-              validation={action?.value?.validation?.email}
-              type="text"
-              identifier="email"
+              label="New Password"
+              placeholder="**********"
+              validation={action?.value?.validation?.new_password}
+              type="password"
+              identifier="new_password"
             />
             <InputField
-              label="Password"
+              label="Confirm Password"
               placeholder="**********"
-              validation={action?.value?.validation?.password}
+              validation={action?.value?.validation?.confirm_password}
               type="password"
-              identifier="password"
+              identifier="confirm_password"
             />
             <input
               type="hidden"
@@ -150,37 +155,17 @@ export default component$(() => {
               id="recaptcha"
               value={recaptchaToken.value}
             />
+            <input type="hidden" name="token" id="token" value={token} />
             <button
-              class={`btn w-full bg-black text-white text-lg`}
+              class={`btn w-full bg-black text-white text-lg normal-case`}
               type="submit"
               disabled={recaptchaToken.value.length === 0}
             >
               {isLoading.value && (
                 <span class="loading-spinner loading-spinner-white"></span>
               )}
-              Sign In
+              Reset
             </button>
-
-            <div class="flex flex-col">
-              <button
-                class="btn btn-ghost text-black"
-                type="button"
-                disabled={recaptchaToken.value.length === 0}
-                onClick$={() => {
-                  window.location.href = "/forget-password";
-                }}
-              >
-                Forget Password ?
-              </button>
-              <a
-                class={`btn btn-ghost text-black ${
-                  recaptchaToken.value.length === 0 ? "pointer-events-none" : ""
-                }`}
-                href="/register"
-              >
-                Don't have an account? Register Now
-              </a>
-            </div>
           </div>
         </Form>
       </div>

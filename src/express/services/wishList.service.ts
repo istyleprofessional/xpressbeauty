@@ -36,3 +36,16 @@ export const getWishList = async (userId: string) => {
     return { status: "failed", data: error };
   }
 };
+
+export const deleteProductWishlist = async (data: any) => {
+  try {
+    const result = await wishListSchema.findOneAndUpdate(
+      { userId: data.userId },
+      { $pull: { products: { _id: data._id } } },
+      { new: true }
+    );
+    return { status: "success", result: result };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};

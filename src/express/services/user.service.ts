@@ -277,3 +277,34 @@ export const getUserPhoneOtp = async (data: any) => {
     return { status: "failed", err: err };
   }
 };
+
+export const findUserByUserEmail = async (email: string) => {
+  try {
+    const req = await User.find({ email: email });
+    if (req.length > 0) {
+      return { status: "success", result: req };
+    } else {
+      return { status: "failed" };
+    }
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
+
+export const updateUserPassword = async (email: string, password: string) => {
+  try {
+    const encryptedString = cryptr.encrypt(password);
+    const result = await User.findOneAndUpdate(
+      { email: email },
+      { password: encryptedString },
+      { new: true }
+    );
+    if (result) {
+      return { status: "success", result: result };
+    } else {
+      return { status: "failed", err: "Something went wrong" };
+    }
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};

@@ -74,7 +74,7 @@ app.get("/api/uploadProducts", async (_, res: any) => {
   const productsD = await productSchema.find({});
 
   const doc = new GoogleSpreadsheet(
-    "1fUjNGVBRLh8bb6hS0wEJlnfAju5Iqd7_F6dhtrv64Jc"
+    "1315PBG49Tduql9s-pV2IIL_NKa1V6tbuUq9FrYOGCBY"
   );
   await doc.useServiceAccountAuth({
     client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "",
@@ -99,12 +99,19 @@ app.get("/api/uploadProducts", async (_, res: any) => {
         currency: "CAD",
         value:
           productD.priceType === "range"
-            ? `${productD.price.max}-${productD.price.min}`
-            : productD.price.regular,
+            ? `${parseFloat(
+                productD?.price?.max?.toString().replace("$", "")
+              )} CAD - ${parseFloat(
+                productD?.price?.min?.toString().replace("$", "")
+              )} CAD`
+            : `${parseFloat(
+                productD?.price?.regular?.toString().replace("$", "")
+              )} CAD`,
       },
       "identifier exists": "no",
       brand: productD.companyName.name,
       condition: "new",
+      "sell on google quantity": productD?.quantity_on_hand ?? "0",
     };
     rows.push({
       id: product.id,
@@ -117,6 +124,7 @@ app.get("/api/uploadProducts", async (_, res: any) => {
       "identifier exists": product["identifier exists"],
       brand: product.brand,
       condition: product.condition,
+      "sell on google quantity": product["sell on google quantity"],
     });
   }
   try {

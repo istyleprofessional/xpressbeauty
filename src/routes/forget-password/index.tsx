@@ -2,13 +2,15 @@ import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
 import { Form, routeAction$ } from "@builder.io/qwik-city";
 import { Toast } from "~/components/admin/toast/toast";
 import { InputField } from "~/components/shared/input-field/input-field";
-import { userLogin } from "~/express/services/user.service";
 import { validate } from "~/utils/validate.utils";
 import jwt from "jsonwebtoken";
+import { sendForgetPasswordEmail } from "~/utils/forgetPassword";
+import { findUserByUserEmail } from "~/express/services/user.service";
 
-export const useAction = routeAction$(async (data, requestEvent) => {
+export const useAction = routeAction$(async (data) => {
+  const form: any = data;
   const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
-  const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${data.recaptcha}`;
+  const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${form.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
   const recaptchaText = await recaptcha.text();
   const google_response = JSON.parse(recaptchaText);
@@ -18,11 +20,8 @@ export const useAction = routeAction$(async (data, requestEvent) => {
       err: "Bot detected",
     };
   }
-  const newData: any = { ...data };
   const validationObject = {
-    email: validate(newData.email, "email") && newData.email.length > 0,
-    password:
-      validate(newData.password, "password") && newData.password.length > 0,
+    email: validate(form.email, "email") && form.email.length > 0,
   };
   const isValid = Object.values(validationObject).every(
     (item) => item === true
@@ -34,28 +33,23 @@ export const useAction = routeAction$(async (data, requestEvent) => {
       validation: validationObject,
     };
   }
-  const verifyUser = await userLogin(data);
-  if (verifyUser.err) {
+
+  try {
+    const checkUserByEmail = await findUserByUserEmail(form.email);
+    if (checkUserByEmail.status === "success") {
+      const tokenToSend = jwt.sign(
+        { email: form.email },
+        process.env.JWTSECRET ?? "",
+        { expiresIn: "1h" }
+      );
+      await sendForgetPasswordEmail(form.email, tokenToSend);
+    }
     return {
-      status: "failed",
-      err: "Invalid Credentials",
+      status: "success",
     };
-  }
-  if (verifyUser.status === "success") {
-    const token = jwt.sign(
-      { user_id: verifyUser?.result?._id, isDummy: false },
-      process.env.JWTSECRET ?? "",
-      { expiresIn: "2h" }
-    );
-    requestEvent.cookie.set("token", token, {
-      httpOnly: true,
-      path: "/",
-    });
-    throw requestEvent.redirect(301, "/");
-  } else {
+  } catch (error) {
     return {
       status: "failed",
-      err: "Invalid Credentials",
     };
   }
 });
@@ -66,15 +60,7 @@ export default component$(() => {
   const action = useAction();
   const isRecaptcha = useSignal<boolean>(false);
   const recaptchaToken = useSignal<string>("");
-
-  useVisibleTask$(({ track }) => {
-    track(() => action.value?.status);
-    if (action.value?.status === "success") {
-      window.location.href = "/";
-    } else {
-      message.value = action.value?.err ?? "";
-    }
-  });
+  const confirmationMessage = useSignal<string>("");
 
   useVisibleTask$(
     () => {
@@ -94,14 +80,28 @@ export default component$(() => {
     { strategy: "document-idle" }
   );
 
+  useVisibleTask$(
+    ({ track }) => {
+      track(() => action.value?.status);
+      if (action.value?.status === "success") {
+        confirmationMessage.value = "Email sent successfully";
+      } else {
+        message.value = action.value?.err ?? "";
+      }
+    },
+    { strategy: "document-idle" }
+  );
+
   const handleAlertClose = $(() => {
     message.value = "";
   });
 
   useVisibleTask$(({ track, cleanup }) => {
     track(() => message.value);
+    track(() => confirmationMessage.value);
     const timer = setTimeout(() => {
       message.value = "";
+      confirmationMessage.value = "";
     }, 3000);
     cleanup(() => clearTimeout(timer));
   });
@@ -129,20 +129,27 @@ export default component$(() => {
                 />
               </div>
             )}
-
+            {confirmationMessage.value && (
+              <div class="w-full">
+                <Toast
+                  status="s"
+                  handleClose={handleAlertClose}
+                  message={confirmationMessage.value}
+                  index={1}
+                />
+              </div>
+            )}
+            <h1 class="text-2xl font-bold">Forget Password</h1>
+            <p class="text-base text-gray-500">
+              Enter your email to get a password reset link if we find your
+              email
+            </p>
             <InputField
               label="Email"
               placeholder="example@gmail.com"
               validation={action?.value?.validation?.email}
-              type="text"
+              type="email"
               identifier="email"
-            />
-            <InputField
-              label="Password"
-              placeholder="**********"
-              validation={action?.value?.validation?.password}
-              type="password"
-              identifier="password"
             />
             <input
               type="hidden"
@@ -158,29 +165,8 @@ export default component$(() => {
               {isLoading.value && (
                 <span class="loading-spinner loading-spinner-white"></span>
               )}
-              Sign In
+              Send Email
             </button>
-
-            <div class="flex flex-col">
-              <button
-                class="btn btn-ghost text-black"
-                type="button"
-                disabled={recaptchaToken.value.length === 0}
-                onClick$={() => {
-                  window.location.href = "/forget-password";
-                }}
-              >
-                Forget Password ?
-              </button>
-              <a
-                class={`btn btn-ghost text-black ${
-                  recaptchaToken.value.length === 0 ? "pointer-events-none" : ""
-                }`}
-                href="/register"
-              >
-                Don't have an account? Register Now
-              </a>
-            </div>
           </div>
         </Form>
       </div>

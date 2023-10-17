@@ -35,7 +35,7 @@ export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
   const product = params.product;
   const result: any = await get_product_by_name(product);
-  const ratings = await getRatingByProductId(result._id);
+  const ratings = await getRatingByProductId(result?._id ?? "");
   if (!result) {
     throw redirect(301, "/products/");
   }
