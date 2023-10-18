@@ -31,7 +31,6 @@ export const getCategoriesServer = server$(async function (value: string) {
 });
 
 export const updateCategoryVisibility = server$(async function (data: any) {
-  console.log(data);
   const update = await updateVisibility(data._id, !data.isHidden);
   return JSON.stringify(update);
 });

@@ -2,7 +2,6 @@ import wishListSchema from "../schemas/wishList.schema";
 
 export const addToWishList = async (data: any) => {
   try {
-    console.log(data.product._id.toString());
     let request = await wishListSchema.findOne({ userId: data.userId });
     if (request) {
       const check = request.products.some(

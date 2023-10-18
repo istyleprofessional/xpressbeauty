@@ -17,11 +17,9 @@ export const connect = () => {
           pass: process.env.QWIK_APP_MONGO_PWD,
         })
         .then(() => {
-          console.log("Connected to MongoDB");
           resolve(undefined);
         })
-        .catch((e) => {
-          console.log(e);
+        .catch(() => {
           reject();
         });
     }

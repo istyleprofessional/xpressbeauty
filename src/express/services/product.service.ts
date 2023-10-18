@@ -212,7 +212,6 @@ export const get_products_data = async (
     if (filterByBrand.length > 0) {
       buildQuery["companyName.name"] = { $in: filterByBrand };
     }
-    console.log(filterByCategory);
     if (filterByCategory.length > 0) {
       buildQuery["categories"] = {
         $elemMatch: {
@@ -452,9 +451,6 @@ export const update_hair_product_service = async (
       const variations = result?.variations;
       const newVariations = variations?.map((variation: any) => {
         if (variation.variation_id === variation_id) {
-          console.log(
-            `variation_id: ${variation_id} --- newQuantity: ${quantity} --- oldQuantity: ${variation.quantity_on_hand}`
-          );
           variation.quantity_on_hand = quantity;
         }
         return variation;
@@ -469,7 +465,6 @@ export const update_hair_product_service = async (
         { perfix: id },
         { quantity_on_hand: quantity }
       );
-      console.log(result);
       return { status: "success", result: result };
     }
   } catch (err) {

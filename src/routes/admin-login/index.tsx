@@ -15,7 +15,6 @@ export const useAdminLoginAction = routeAction$(async (data, requestEvenet) => {
   if (result.status === "success") {
     throw requestEvenet.redirect(301, "/admin");
   } else {
-    console.log(result.err);
     return { status: "error", message: result.err ?? "something went wrong" };
   }
 });

@@ -34,8 +34,7 @@ export const onGet: RequestHandler = async ({ json }) => {
       };
     }
 
-    const save = await product.save();
-    console.log(save);
+    await product.save();
   }
   json(200, { status: "success" });
   return;

@@ -42,7 +42,6 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
       if (total.value === 0) {
         return;
       }
-      console.log(total.value);
       const stripe: any = await loadStripe(
         process.env.STRIPE_TEST_PUBLISHABLE_KEY ?? ""
       );

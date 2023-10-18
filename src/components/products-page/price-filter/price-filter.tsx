@@ -25,7 +25,6 @@ export const PriceFilter = component$((props: PriceFilterInterface) => {
       const pricesFilters = filterPricesFunc();
       if (pricesFilters !== "") {
         filterPrices.value = pricesFilters.split("+");
-        console.log(filterPrices.value.length);
       }
     },
     { eagerness: "idle" }

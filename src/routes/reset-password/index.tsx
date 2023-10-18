@@ -38,7 +38,6 @@ export const useAction = routeAction$(async (data) => {
   try {
     const token = newData.token;
     const verifyToken = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
-    console.log(verifyToken);
     if (!verifyToken) {
       return {
         status: "failed",

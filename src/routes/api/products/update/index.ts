@@ -3,7 +3,6 @@ import { update_hair_product_service } from "~/express/services/product.service"
 
 export const onPut: RequestHandler = async ({ json, parseBody }) => {
   const body: any = await parseBody();
-  console.log("body", body);
   if (!body) {
     json(200, { status: "failed", result: "Something went wrong" });
     return;

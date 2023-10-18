@@ -180,7 +180,6 @@ export default component$(() => {
       category: product.categories,
       name: product.product_name,
     };
-    console.log(data);
     const req = await getAllRelatedProductsServer(data);
     relatedProducts.value = JSON.parse(req);
   });
@@ -389,8 +388,8 @@ export const head: DocumentHead = ({ resolveValue }) => {
       {
         name: "description",
         content: `Discover ${jsonData?.product_name ?? ""}${
-          jsonData.companyName && jsonData.companyName !== ""
-            ? ` by ${jsonData.companyName}`
+          jsonData.companyName.name && jsonData.companyName.name !== ""
+            ? ` by ${jsonData.companyName.name}`
             : " "
         }${
           jsonData.lineName && jsonData.lineName !== ""

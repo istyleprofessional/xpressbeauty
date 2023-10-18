@@ -67,7 +67,6 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
   }
   let user: any;
   let isDummy = false;
-  console.log(data);
   try {
     const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
     if (verify.isDummy) {
@@ -348,7 +347,6 @@ export default component$(() => {
                         class="btn btn-ghost normal-case"
                         type="button"
                         onClick$={async () => {
-                          console.log(item);
                           const data = await fetch(
                             "/api/places/details?place_id=" + item.place_id
                           );

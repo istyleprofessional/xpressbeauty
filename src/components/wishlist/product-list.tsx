@@ -21,7 +21,6 @@ export const ProductList = component$(() => {
       JSON.stringify(product)
     );
     const response = await request.json();
-    console.log(response);
     context.wishList.data = response?.result?.products;
   });
 

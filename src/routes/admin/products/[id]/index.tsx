@@ -42,8 +42,7 @@ export const useFormAction = routeAction$(async function (data, event) {
       formData[key] = formData[key] === "true" ? true : false;
     }
   });
-  const updateReq = await update_product_service(formData, token);
-  console.log(updateReq);
+  await update_product_service(formData, token);
   return { status: "success" };
 });
 
@@ -54,11 +53,6 @@ export default component$(() => {
   const action = useFormAction();
   const imageSignal = useSignal<string>(product.imgs[0]);
   const descriptionSignal = useSignal<string>(product.description);
-
-  useVisibleTask$(({ track }) => {
-    track(() => action.isRunning);
-    console.log(action.status);
-  });
 
   useVisibleTask$(() => {
     (window as any)?.tinymce?.init({

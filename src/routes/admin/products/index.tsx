@@ -12,7 +12,6 @@ import { putRequest } from "~/utils/fetch.utils";
 
 export const useProductData = routeLoader$(async (ev) => {
   const pageNumber = parseInt(ev.url.searchParams.get("page") ?? "1");
-  console.log("page", pageNumber);
   const search = ev.url.searchParams.get("search") ?? "";
   await connect();
   const products = await getProductBySearchAdmin(search, pageNumber);
@@ -25,7 +24,6 @@ export const getProductsServer = server$(async function (value: string) {
   await connect();
   // const token = this.cookie.get("token")?.value;
   const page = this.url.searchParams.get("page") ?? "1";
-  console.log("page", page);
   const products = await getProductBySearchAdmin(value, parseInt(page));
   return JSON.stringify(products);
 });

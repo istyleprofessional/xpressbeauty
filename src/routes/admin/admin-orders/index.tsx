@@ -41,7 +41,6 @@ export default component$(() => {
 
   const handleConfirmStatusChange = $(() => {
     (document?.getElementById("my_modal_1") as any)?.close();
-    console.log(orderStatus.value, userEmail.value, orderId.value);
   });
 
   // const handleSearchOrders = $(() => {

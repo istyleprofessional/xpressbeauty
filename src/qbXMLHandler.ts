@@ -64,9 +64,7 @@ async function buildRequests(callback: any) {
 
 function getResponses(response: any) {
   xml2js.parseString(response, async (err: any, jsonData: any) => {
-    if (err) {
-      console.log(err);
-    } else {
+    if (!err) {
       const manufacturerPartNumber = jsonData.QBXML.QBXMLMsgsRs[0]
         .ItemInventoryQueryRs[0].ItemInventoryRet[0].ManufacturerPartNumber
         ? jsonData.QBXML.QBXMLMsgsRs[0].ItemInventoryQueryRs[0]

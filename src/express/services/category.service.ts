@@ -42,10 +42,8 @@ export const get_all_categories_per_page = async (
       },
     ];
     const categories = await Category.aggregate(aggregationPipeline);
-    console.log(categories);
     return { status: "success", result: categories };
   } catch (err: any) {
-    console.log(err);
     return { status: "failed", message: err.message };
   }
 };

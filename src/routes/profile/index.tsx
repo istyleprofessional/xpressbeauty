@@ -150,11 +150,10 @@ const getThePhoneToken = server$(async function () {
         PhoneVerifyToken
       );
       if (request?.status === "success" && updateReq?.status === "success") {
-        const send = await sendPhoneOtp(
+        await sendPhoneOtp(
           request?.result?.phoneNumber ?? "",
           PhoneVerifyToken
         );
-        console.log(send);
         return { status: "success", token: token };
       } else {
         return { status: "failed" };
@@ -424,7 +423,6 @@ export default component$(() => {
                               class="btn btn-ghost normal-case"
                               type="button"
                               onClick$={async () => {
-                                console.log(item);
                                 const data = await fetch(
                                   "/api/places/details?place_id=" +
                                     item.place_id

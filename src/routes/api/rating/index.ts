@@ -7,7 +7,6 @@ import {
 
 export const onPost: RequestHandler = async ({ cookie, parseBody, json }) => {
   const token = cookie.get("token")?.value;
-  console.log("token", token);
   const body = await parseBody();
   const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${

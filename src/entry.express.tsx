@@ -130,7 +130,6 @@ app.get("/api/uploadProducts", async (_, res: any) => {
   try {
     await allSheets.addRows(rows);
   } catch (error: any) {
-    console.log(error);
     if (error.response && error.response.status === 429) {
       console.log("Rate limit exceeded. Waiting for a minute...");
       await delay(60000); // Wait for a minute (60,000 milliseconds) before continuing.
@@ -201,7 +200,6 @@ app.get("/sitemap.xml", async (req, res) => {
 app.post("/api/twilioSMS", async (req, res) => {
   // forward the sms to 6479067973
   const response = new MessagingResponse();
-  console.log("req.body: " + req.body);
   response.message({ to: "+16479067973", from: "+12134014667" }, req.body);
   res.set("Content-Type", "text/xml");
   res.send(response.toString());
@@ -237,8 +235,6 @@ app.post("/api/twilioVoice", (req, res) => {
 });
 
 app.post("/api/recordedMessage", async (req, res) => {
-  console.log("recordingUrl: " + req.body.RecordingUrl);
-
   try {
     const response = await axios.get(req.body.RecordingUrl, {
       responseType: "stream", // Stream the response data
@@ -265,7 +261,6 @@ app.post("/api/recordedMessage", async (req, res) => {
     response.data.pipe(fileStream);
 
     fileStream.on("close", async () => {
-      console.log("File downloaded successfully");
       const fileName = filePath;
       // Upload the downloaded file to AWS S3
       const fileStreamForUpload = fs.createReadStream(filePath);
@@ -278,8 +273,7 @@ app.post("/api/recordedMessage", async (req, res) => {
       };
 
       try {
-        const result = await awsS3.putObject(params);
-        console.log("File uploaded to S3:", result);
+        await awsS3.putObject(params);
       } catch (error) {
         console.error("Error uploading file to S3:", error);
       }
@@ -297,7 +291,6 @@ app.post("/api/recordedMessage", async (req, res) => {
 });
 
 app.post("/api/transcriptionCallback", (req, res) => {
-  console.log("TranscriptionText " + req.body.TranscriptionText);
   res.send(200);
 });
 

@@ -43,10 +43,8 @@ export const RatingAndDescription = component$(
       async () => {
         const request: any = await getRequest(`/api/rating/?id=${productId}`);
         const response = await request.json();
-        console.log(response);
         if (response.status === "success") {
           ratings.value = response?.result?.ratings || [];
-          console.log(ratings.value);
         }
       },
       { strategy: "document-idle" }
