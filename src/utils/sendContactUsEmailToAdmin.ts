@@ -34,8 +34,8 @@ export const sendContactUsEmailToAdmin = async (data: any) => {
     </body>`,
     attachments: [
       {
-        filename: "new logo 1.jpg",
-        path: `${process.cwd()}/public/new logo 1.jpg`,
+        filename: "logoX2.jpg",
+        path: `${process.cwd()}/public/logoX2.jpg`,
         cid: "img",
       },
     ],
