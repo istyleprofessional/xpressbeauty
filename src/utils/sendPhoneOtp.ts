@@ -3,8 +3,8 @@ import Twilio from "twilio";
 export const sendPhoneOtp = async (phoneNumber: string, otp: string) => {
   try {
     const client = new (Twilio as any).Twilio(
-      process?.env?.TWILIO_ACCOUNT_SID ?? "",
-      process?.env?.TWILIO_AUTH_TOKEN ?? ""
+      import.meta.env.VITE_TWILIO_ACCOUNT_SID ?? "",
+      import.meta.env.VITE_TWILIO_AUTH_TOKEN ?? ""
     );
     const result = await client.messages.create({
       body: `Xpressbeauty verification code is: ${otp}`,

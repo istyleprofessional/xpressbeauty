@@ -8,7 +8,12 @@ import { deleteCart } from "~/express/services/cart.service";
 import { generateOrderNumber } from "~/utils/generateOrderNo";
 import { sendConfirmationOrderForAdmin } from "~/utils/sendConfirmationOrderForAdmin";
 
-export const onPost: RequestHandler = async ({ json, parseBody, cookie }) => {
+export const onPost: RequestHandler = async ({
+  json,
+  parseBody,
+  cookie,
+  env,
+}) => {
   const data: any = await parseBody();
   const token = cookie.get("token")?.value;
   // console.log(data);
@@ -17,7 +22,10 @@ export const onPost: RequestHandler = async ({ json, parseBody, cookie }) => {
     return;
   }
   try {
-    const verify: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+    const verify: any = jwt.verify(
+      token ?? "",
+      env.get("VITE_JWTSECRET") ?? ""
+    );
     if (verify.isDummy) {
       const request: any = await getDummyCustomer(verify.user_id);
       const email = request?.result?.email;
@@ -78,7 +86,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, cookie }) => {
       const decoded: any = jwt.decode(token ?? "");
       const newToken = jwt.sign(
         { user_id: decoded.user_id, isDummy: decoded.isDummy },
-        process.env.JWTSECRET ?? "",
+        env.get("VITE_JWTSECRET") ?? "",
         {
           expiresIn: "2h",
         }

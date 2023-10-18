@@ -9,12 +9,12 @@ export const connect = () => {
     ) {
       resolve(undefined);
     } else {
-      const mongoUrl = process.env.QWIK_APP_MONGO_CONNECTION || "";
+      const mongoUrl = import.meta.env.VITE_QWIK_APP_MONGO_CONNECTION || "";
       mongoose.set("strictQuery", false);
       mongoose
         .connect(mongoUrl, {
-          user: process.env.QWIK_APP_MONGO_USERNAME,
-          pass: process.env.QWIK_APP_MONGO_PWD,
+          user: import.meta.env.VITE_QWIK_APP_MONGO_USERNAME,
+          pass: import.meta.env.VITE_QWIK_APP_MONGO_PWD,
         })
         .then(() => {
           resolve(undefined);

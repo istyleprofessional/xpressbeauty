@@ -7,9 +7,9 @@ import jwt from "jsonwebtoken";
 import { sendForgetPasswordEmail } from "~/utils/forgetPassword";
 import { findUserByUserEmail } from "~/express/services/user.service";
 
-export const useAction = routeAction$(async (data) => {
+export const useAction = routeAction$(async (data, { env }) => {
   const form: any = data;
-  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  const secret_key = env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${form.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
   const recaptchaText = await recaptcha.text();
@@ -39,7 +39,7 @@ export const useAction = routeAction$(async (data) => {
     if (checkUserByEmail.status === "success") {
       const tokenToSend = jwt.sign(
         { email: form.email },
-        process.env.JWTSECRET ?? "",
+        env.get("VITE_JWTSECRET") ?? "",
         { expiresIn: "1h" }
       );
       await sendForgetPasswordEmail(form.email, tokenToSend);
@@ -66,7 +66,7 @@ export default component$(() => {
       track(() => action.value?.status);
       (window as any).grecaptcha.ready(async () => {
         const token = await (window as any).grecaptcha.execute(
-          process.env.RECAPTCHA_SITE_KEY ?? "",
+          import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
           { action: "submit" }
         );
         recaptchaToken.value = token;
@@ -109,7 +109,9 @@ export default component$(() => {
           {" "}
         </div>
         <script
-          src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+          src={`https://www.google.com/recaptcha/api.js?render=${
+            import.meta.env.VITE_RECAPTCHA_SITE_KEY
+          }`}
         ></script>
         <Form action={action} reloadDocument={false}>
           <div class="card w-[90%] md:w-[35rem] h-fit m-6 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">

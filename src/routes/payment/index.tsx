@@ -7,13 +7,13 @@ import { routeLoader$ } from "@builder.io/qwik-city";
 import jwt from "jsonwebtoken";
 import { getCartByUserId } from "~/express/services/cart.service";
 
-export const usePaymentRoute = routeLoader$(async ({ cookie }) => {
+export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   const token = cookie.get("token")?.value;
   if (!token) {
     return JSON.stringify({ status: "failed" });
   }
   try {
-    const verified: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+    const verified: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
     if (!verified) {
       return JSON.stringify({ status: "failed" });
     }
@@ -30,7 +30,7 @@ export const usePaymentRoute = routeLoader$(async ({ cookie }) => {
       const decoded: any = jwt.decode(token);
       const newToken = jwt.sign(
         { user_id: decoded.user_id, isDummy: decoded.isDummy },
-        process.env.JWTSECRET ?? "",
+        env.get("VITE_JWTSECRET") ?? "",
         { expiresIn: "1h" }
       );
       cookie.set("token", newToken, { httpOnly: true, path: "/" });

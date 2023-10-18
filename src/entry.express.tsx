@@ -55,7 +55,7 @@ const distDir = join(fileURLToPath(import.meta.url), "..", "..", "dist");
 const buildDir = join(distDir, "build");
 
 // Allow for dynamic port
-const PORT = process.env.PORT ?? 3000;
+const PORT = import.meta.env.VITE_PORT ?? 3000;
 
 // Create the Qwik City express middleware
 const { router, notFound } = createQwikCity({ render, qwikCityPlan, manifest });
@@ -77,8 +77,9 @@ app.get("/api/uploadProducts", async (_, res: any) => {
     "1315PBG49Tduql9s-pV2IIL_NKa1V6tbuUq9FrYOGCBY"
   );
   await doc.useServiceAccountAuth({
-    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "",
-    private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") || "",
+    client_email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL || "",
+    private_key:
+      import.meta.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") || "",
   });
   await doc.loadInfo();
   const allSheets = doc.sheetsByIndex[0];
@@ -247,8 +248,8 @@ app.post("/api/recordedMessage", async (req, res) => {
     // Prepare AWS S3
     const awsS3 = new S3({
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
-        secretAccessKey: process.env.AWS_SECRET_KEY ?? "",
+        accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID ?? "",
+        secretAccessKey: import.meta.env.VITE_AWS_SECRET_KEY ?? "",
       },
       region: "ca-central-1",
     });
@@ -265,7 +266,7 @@ app.post("/api/recordedMessage", async (req, res) => {
       // Upload the downloaded file to AWS S3
       const fileStreamForUpload = fs.createReadStream(filePath);
       const params = {
-        Bucket: process.env.AWS_BUCKET_NAME ?? "",
+        Bucket: import.meta.env.VITE_AWS_BUCKET_NAME ?? "",
         Key: `voicemail/${fileName}`,
         Body: fileStreamForUpload,
         ContentType: "audio/wav",

@@ -7,7 +7,7 @@ import { validate } from "~/utils/validate.utils";
 import jwt from "jsonwebtoken";
 
 export const useAction = routeAction$(async (data, requestEvent) => {
-  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  const secret_key = requestEvent.env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${data.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
   const recaptchaText = await recaptcha.text();
@@ -44,7 +44,7 @@ export const useAction = routeAction$(async (data, requestEvent) => {
   if (verifyUser.status === "success") {
     const token = jwt.sign(
       { user_id: verifyUser?.result?._id, isDummy: false },
-      process.env.JWTSECRET ?? "",
+      requestEvent.env.get("VITE_JWTSECRET") ?? "",
       { expiresIn: "2h" }
     );
     requestEvent.cookie.set("token", token, {
@@ -64,32 +64,23 @@ export default component$(() => {
   const isLoading = useSignal<boolean>(false);
   const message = useSignal<string>("");
   const action = useAction();
-  const isRecaptcha = useSignal<boolean>(false);
   const recaptchaToken = useSignal<string>("");
 
-  useVisibleTask$(({ track }) => {
-    track(() => action.value?.status);
-    if (action.value?.status === "success") {
-      window.location.href = "/";
-    } else {
-      message.value = action.value?.err ?? "";
-    }
-  });
-
   useVisibleTask$(
-    () => {
-      if (isRecaptcha.value === false) {
-        isRecaptcha.value = true;
-        setTimeout(() => {
-          (window as any).grecaptcha.ready(async () => {
-            const token = await (window as any).grecaptcha.execute(
-              process.env.RECAPTCHA_SITE_KEY ?? "",
-              { action: "submit" }
-            );
-            recaptchaToken.value = token;
-          });
-        }, 1000);
+    ({ track }) => {
+      track(() => action.value?.status);
+      if (action.value?.status === "success") {
+        window.location.href = "/";
+      } else {
+        message.value = action.value?.err ?? "";
       }
+      (window as any).grecaptcha.ready(async () => {
+        const token = await (window as any).grecaptcha.execute(
+          import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
+          { action: "submit" }
+        );
+        recaptchaToken.value = token;
+      });
     },
     { strategy: "document-idle" }
   );
@@ -112,11 +103,11 @@ export default component$(() => {
         <div class="w-full h-96 bg-no-repeat md:hidden bg-[url('/Registration.webp')] bg-contain bg-center">
           {" "}
         </div>
-        {isRecaptcha.value === true && (
-          <script
-            src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
-          ></script>
-        )}
+        <script
+          src={`https://www.google.com/recaptcha/api.js?render=${
+            import.meta.env.VITE_RECAPTCHA_SITE_KEY
+          }`}
+        ></script>
         <Form action={action} reloadDocument={true}>
           <div class="card w-[90%] md:w-[35rem] h-fit m-6 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
             {message.value && (

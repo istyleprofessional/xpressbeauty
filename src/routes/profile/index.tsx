@@ -25,7 +25,7 @@ import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
 
 export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
   const formData: any = data;
-  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  const secret_key = requestEvent.env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${formData.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
   const recaptchaText = await recaptcha.text();
@@ -81,7 +81,10 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
     };
   }
   try {
-    const verified = jwt.verify(token, process.env.JWTSECRET ?? "");
+    const verified = jwt.verify(
+      token,
+      requestEvent.env.get("VITE_JWTSECRET") ?? ""
+    );
     if (!verified) {
       return { status: "failed", message: "Invalid token" };
     }
@@ -107,7 +110,10 @@ const getTheToken = server$(async function () {
     return { status: "failed" };
   }
   try {
-    const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+    const decoded: any = jwt.verify(
+      token ?? "",
+      this.env.get("VITE_JWTSECRET") ?? ""
+    );
     if (decoded) {
       const request = await getUserEmailById(decoded.user_id);
       const EmailVerifyToken = generateUniqueInteger();
@@ -141,7 +147,10 @@ const getThePhoneToken = server$(async function () {
     return { status: "failed" };
   }
   try {
-    const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+    const decoded: any = jwt.verify(
+      token ?? "",
+      this.env.get("VITE_JWTSECRET") ?? ""
+    );
     if (decoded) {
       const request = await getUserEmailById(decoded.user_id);
       const PhoneVerifyToken = generateUniqueInteger();
@@ -191,7 +200,7 @@ export default component$(() => {
   const phoneMessage = useSignal<string>("");
 
   const handleAlertClose = $(() => {
-    toast.value?.remove();
+    message.value = "";
   });
   useVisibleTask$(({ track }) => {
     track(() => action.value?.user);
@@ -252,7 +261,7 @@ export default component$(() => {
       }
       (window as any).grecaptcha?.ready(async () => {
         const token = await (window as any).grecaptcha.execute(
-          process.env.RECAPTCHA_SITE_KEY ?? "",
+          import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
           { action: "submit" }
         );
         recaptchaToken.value = token;
@@ -265,7 +274,9 @@ export default component$(() => {
     <>
       <div class="gird">
         <script
-          src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+          src={`https://www.google.com/recaptcha/api.js?render=${
+            import.meta.env.VITE_RECAPTCHA_SITE_KEY
+          }`}
         ></script>
         <Form action={action} reloadDocument={false}>
           <div class="px-9 gap-4">

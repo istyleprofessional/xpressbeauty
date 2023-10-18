@@ -7,13 +7,13 @@ import {
   updateEmailVerficationCode,
 } from "~/express/services/user.service";
 
-export const onGet: RequestHandler = async ({ url, json, cookie }) => {
+export const onGet: RequestHandler = async ({ url, json, cookie, env }) => {
   const recaptchaToken = url.searchParams.get("recaptcha");
   if (!recaptchaToken) {
     json(200, { status: "failed", message: "Something went wrong" });
     return;
   }
-  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  const secret_key = env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
   const googleUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${recaptchaToken}`;
   const recaptcha = await fetch(googleUrl, { method: "post" });
   const recaptchaText = await recaptcha.text();
@@ -28,7 +28,10 @@ export const onGet: RequestHandler = async ({ url, json, cookie }) => {
     return;
   }
   try {
-    const verify: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+    const verify: any = jwt.verify(
+      token ?? "",
+      env.get("VITE_JWTSECRET") ?? ""
+    );
     if (verify) {
       const newToken = generateUniqueInteger();
       const request: any = await getUserEmailById(verify.user_id ?? "");
@@ -50,7 +53,7 @@ export const onGet: RequestHandler = async ({ url, json, cookie }) => {
       const decoded: any = jwt.decode(token ?? "");
       const newJwtToken = jwt.sign(
         { user_id: decoded.user_id, isDummy: false },
-        process.env.JWTSECRET ?? "",
+        env.get("VITE_JWTSECRET") ?? "",
         { expiresIn: "2h" }
       );
       cookie.set("token", newJwtToken, {

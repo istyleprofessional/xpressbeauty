@@ -3,23 +3,25 @@ import { routeLoader$ } from "@builder.io/qwik-city";
 import jwt from "jsonwebtoken";
 import { getMyOrdersService } from "~/express/services/order.service";
 
-export const useGetMyOrders = routeLoader$(async ({ cookie, redirect }) => {
-  const token = cookie.get("token")?.value;
-  if (!token) {
-    throw redirect(301, "/login");
-  }
-  try {
-    const verified: any = jwt.verify(token, process.env.JWTSECRET ?? "");
-    if (!verified) {
+export const useGetMyOrders = routeLoader$(
+  async ({ cookie, redirect, env }) => {
+    const token = cookie.get("token")?.value;
+    if (!token) {
       throw redirect(301, "/login");
     }
-    const user_id = verified.user_id;
-    const getMyOrders = await getMyOrdersService(user_id);
-    return JSON.stringify(getMyOrders);
-  } catch (err) {
-    throw redirect(301, "/login");
+    try {
+      const verified: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
+      if (!verified) {
+        throw redirect(301, "/login");
+      }
+      const user_id = verified.user_id;
+      const getMyOrders = await getMyOrdersService(user_id);
+      return JSON.stringify(getMyOrders);
+    } catch (err) {
+      throw redirect(301, "/login");
+    }
   }
-});
+);
 
 export default component$(() => {
   const myOrders = useGetMyOrders();

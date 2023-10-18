@@ -3,10 +3,15 @@ import jwt from "jsonwebtoken";
 import { getUserById } from "~/express/services/user.service";
 import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
 
-export const onPost: RequestHandler = async ({ cookie, json, parseBody }) => {
+export const onPost: RequestHandler = async ({
+  cookie,
+  json,
+  parseBody,
+  env,
+}) => {
   const body = await parseBody();
   const token = (body as any).token;
-  const secret = process.env.JWTSECRET || "";
+  const secret = env.get("VITE_JWTSECRET") || "";
   try {
     const verify = jwt.verify(token, secret);
     if (verify) {

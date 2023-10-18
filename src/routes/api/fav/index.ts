@@ -2,7 +2,12 @@ import type { RequestHandler } from "@builder.io/qwik-city";
 import jwt from "jsonwebtoken";
 import { addToWishList } from "~/express/services/wishList.service";
 
-export const onPost: RequestHandler = async ({ json, cookie, parseBody }) => {
+export const onPost: RequestHandler = async ({
+  json,
+  cookie,
+  parseBody,
+  env,
+}) => {
   const body: any = await parseBody();
   const token = cookie.get("token")?.value;
   if (!token) {
@@ -10,7 +15,10 @@ export const onPost: RequestHandler = async ({ json, cookie, parseBody }) => {
     return;
   }
   try {
-    const verified: any = jwt.verify(token ?? "", process.env.JWTSECRET || "");
+    const verified: any = jwt.verify(
+      token ?? "",
+      env.get("VITE_JWTSECRET") || ""
+    );
     if (!verified) {
       json(200, { status: "failed", data: "Please login first" });
       return;
@@ -31,7 +39,7 @@ export const onPost: RequestHandler = async ({ json, cookie, parseBody }) => {
       const decoded: any = jwt.decode(token);
       const newToken = jwt.sign(
         { userId: decoded.userId, isDummy: decoded.isDummy },
-        process.env.JWTSECRET || "",
+        env.get("VITE_JWTSECRET") || "",
         { expiresIn: "1d" }
       );
       cookie.set("token", newToken, {

@@ -21,7 +21,7 @@ export const RouterHead = component$(() => {
   return (
     <>
       <title>{head.title}</title>
-      {process.env.isLive && (
+      {import.meta.env.VITE_isLive && (
         <>
           <script
             async

@@ -9,13 +9,16 @@ import {
   getUserPhoneOtp,
 } from "~/express/services/user.service";
 
-export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
+export const useVerifyToken = routeLoader$(async ({ url, redirect, env }) => {
   const token = url.searchParams.get("token");
   if (!token) {
     throw redirect(301, "/");
   }
   try {
-    const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+    const decoded: any = jwt.verify(
+      token ?? "",
+      env.get("VITE_JWTSECRET") ?? ""
+    );
     const request = await getUserEmailById(decoded.user_id);
     if (request?.status === "success") {
       return JSON.stringify({ user: request.result, token: token });
@@ -29,7 +32,7 @@ export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
 
 export const useFormAction = routeAction$(async (data, requestEvent) => {
   const newData = Object.values(data.otp);
-  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  const secret_key = requestEvent.env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${data.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
   const recaptchaText = await recaptcha.text();
@@ -58,7 +61,10 @@ export const useFormAction = routeAction$(async (data, requestEvent) => {
     otp: newData.join(""),
   };
   try {
-    const verify: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+    const verify: any = jwt.verify(
+      token ?? "",
+      requestEvent.env.get("VITE_JWTSECRET") ?? ""
+    );
     if (verify) {
       const request = await getUserPhoneOtp(body);
       if (request.status === "success") {
@@ -82,7 +88,7 @@ export const useFormAction = routeAction$(async (data, requestEvent) => {
       const decode: any = jwt.decode(token);
       const newJwtToken = jwt.sign(
         { user_id: decode.user_id, isDummy: false },
-        process.env.JWTSECRET ?? "",
+        requestEvent.env.get("VITE_JWTSECRET") ?? "",
         { expiresIn: "2h" }
       );
       requestEvent.cookie.set("token", newJwtToken, {
@@ -117,7 +123,6 @@ export default component$(() => {
   const phone = useSignal<string>("");
   const inputs = useSignal<Element>();
   const action = useFormAction();
-  const isRecaptcha = useSignal<boolean>(false);
   const recaptchaToken = useSignal<string>("");
 
   useVisibleTask$(async () => {
@@ -176,39 +181,23 @@ export default component$(() => {
     });
   });
 
-  const handleOtpSubmit = $(() => {
-    if (action?.value?.status === "success") {
-      isLoading.value = false;
-      setTimeout(() => {
+  useVisibleTask$(
+    ({ track }) => {
+      track(() => action.value?.status);
+      if (action.value?.status === "success") {
         window.location.href = `/login/`;
-      }, 1000);
-    } else {
+      }
+      if (action.value?.status === "failed") {
+        errorMessage.value = action.value?.err ?? "Something went wrong";
+      }
       (window as any).grecaptcha.ready(async () => {
         const token = await (window as any).grecaptcha.execute(
-          process.env.RECAPTCHA_SITE_KEY ?? "",
+          import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
           { action: "submit" }
         );
         recaptchaToken.value = token;
       });
       isLoading.value = false;
-      errorMessage.value = action?.value?.err ?? "Something went wrong";
-    }
-  });
-
-  useVisibleTask$(
-    () => {
-      if (isRecaptcha.value === false) {
-        isRecaptcha.value = true;
-        setTimeout(() => {
-          (window as any).grecaptcha.ready(async () => {
-            const token = await (window as any).grecaptcha.execute(
-              process.env.RECAPTCHA_SITE_KEY ?? "",
-              { action: "submit" }
-            );
-            recaptchaToken.value = token;
-          });
-        }, 1000);
-      }
     },
     { strategy: "document-idle" }
   );
@@ -250,12 +239,12 @@ export default component$(() => {
                 <p>We have sent a code to your phone {phone.value}</p>
               </div>
             </div>
-            {isRecaptcha.value === true && (
-              <script
-                src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
-              ></script>
-            )}
-            <Form action={action} onSubmit$={handleOtpSubmit}>
+            <script
+              src={`https://www.google.com/recaptcha/api.js?render=${
+                import.meta.env.VITE_RECAPTCHA_SITE_KEY
+              }`}
+            ></script>
+            <Form action={action} reloadDocument={false}>
               <div class="flex flex-col space-y-16">
                 <div
                   class="flex flex-row items-center justify-between mx-auto gap-3 w-full max-w-xs"

@@ -10,10 +10,11 @@ import { validate } from "~/utils/validate.utils";
 import Twilio from "twilio";
 import { sendVerficationMail } from "~/utils/sendVerficationMail";
 
-export const useRegisterForm = routeAction$(async (data) => {
+export const useRegisterForm = routeAction$(async (data, { env }) => {
   await connect();
   const newData: any = { ...data };
-  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  console.log(env.get("VITE_RECAPTCHA_SECRET_KEY"));
+  const secret_key = env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${newData.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
   const recaptchaText = await recaptcha.text();
@@ -59,7 +60,7 @@ export const useRegisterForm = routeAction$(async (data) => {
   }
   const token = jwt.sign(
     { user_id: saveNewUser?.result?._id, isDummy: false },
-    process?.env?.JWTSECRET ?? "",
+    env.get("VITE_JWTSECRET") ?? "",
     { expiresIn: "2h" }
   );
 
@@ -70,20 +71,22 @@ export const useRegisterForm = routeAction$(async (data) => {
       token ?? "",
       newData?.EmailVerifyToken ?? ""
     );
-
     return {
       status: "success",
       token: token,
     };
-  } catch (e) {
-    console.log(e);
+  } catch (e: any) {
+    return {
+      status: "failed",
+      err: e.message,
+    };
   }
 });
 
-export const validatePhone = server$(async (data) => {
+export const validatePhone = server$(async function (data) {
   const client = new (Twilio as any).Twilio(
-    process?.env?.TWILIO_ACCOUNT_SID ?? "",
-    process?.env?.TWILIO_AUTH_TOKEN ?? ""
+    this.env.get("VITE_TWILIO_ACCOUNT_SID") ?? "",
+    this.env.get("VITE_TWILIO_AUTH_TOKEN") ?? ""
   );
   const req = await client.lookups.v2.phoneNumbers(`${data}`).fetch();
 
@@ -96,11 +99,12 @@ export default component$(() => {
   const recaptchaToken = useSignal<string>("");
   const message = useSignal<string>("");
   const passwordValidation = useSignal<boolean>(true);
+  const isPhoneValid = useSignal<boolean>(false);
+  const phoneMessage = useSignal<string>("");
 
   const handleAlertClose = $(() => {
-    document.querySelector(".alert")?.classList.add("hidden");
+    message.value = "";
   });
-  const isPhoneValid = useSignal<boolean>(false);
 
   const handleChange = $(async (e: any) => {
     isPhoneValid.value = false;
@@ -109,30 +113,33 @@ export default component$(() => {
     if (phone.startsWith("+1")) phone = e.target.value.slice(2);
 
     if (phone.length !== 10) {
-      message.value = "";
+      phoneMessage.value = "";
       return;
     }
     const req = await validatePhone(e.target.value);
     const result = JSON.parse(req?.res ?? "");
     if (!(result.countryCode == "US" || result.countryCode == "CA")) {
       isPhoneValid.value = false;
-      message.value = "Please enter a valid USA or Canada phone number";
+      phoneMessage.value = "Please enter a valid USA or Canada phone number";
       return;
     }
-    message.value = "";
+    phoneMessage.value = "";
     isPhoneValid.value = true;
   });
 
   useVisibleTask$(
     ({ track }) => {
       track(() => action.value?.status);
+      if (action.value?.status === "failed") {
+        message.value = action.value?.err ?? "";
+      }
+
       if (action.value?.status === "success") {
-        window.location.href = "/emailVerify/?token=" + action.value?.token;
-        return;
+        window.location.href = "/emailVerify?token=" + action.value?.token;
       }
       (window as any).grecaptcha?.ready(async () => {
         const token = await (window as any).grecaptcha.execute(
-          process.env.RECAPTCHA_SITE_KEY ?? "",
+          import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
           { action: "submit" }
         );
         recaptchaToken.value = token;
@@ -148,17 +155,19 @@ export default component$(() => {
           {" "}
         </div>
         <script
-          src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+          src={`https://www.google.com/recaptcha/api.js?render=${
+            import.meta.env.VITE_RECAPTCHA_SITE_KEY
+          }`}
         ></script>
 
         <Form action={action} reloadDocument={false}>
           <div class="card w-full md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
-            {action?.value?.status === "failed" && (
+            {message.value && (
               <div class="w-full">
                 <Toast
                   status="e"
                   handleClose={handleAlertClose}
-                  message={action?.value?.err ?? ""}
+                  message={message.value}
                   index={1}
                 />
               </div>
@@ -205,8 +214,10 @@ export default component$(() => {
             </div>
 
             <div class="flex flex-col gap-1 justify-start">
-              {message.value !== "" && (
-                <p class="text-error text-sm font-light">{message.value}</p>
+              {phoneMessage.value !== "" && (
+                <p class="text-error text-sm font-light">
+                  {phoneMessage.value}
+                </p>
               )}
               <InputField
                 label="Phone Number"

@@ -4,8 +4,13 @@ import { createOrder } from "~/express/services/order.service";
 import { capturePayment } from "~/utils/paypal-capture-payment";
 import jwt from "jsonwebtoken";
 
-export const onPost: RequestHandler = async ({ parseBody, json, cookie }) => {
-  const paypalMode = process.env.PAYPAL_MODE;
+export const onPost: RequestHandler = async ({
+  parseBody,
+  json,
+  cookie,
+  env,
+}) => {
+  const paypalMode = env.get("VITE_PAYPAL_MODE") ?? "";
   const token = cookie.get("token")?.value;
   if (!token) {
     json(401, { status: "failed" });
@@ -15,15 +20,15 @@ export const onPost: RequestHandler = async ({ parseBody, json, cookie }) => {
   const data: any = await parseBody();
   const jsonBody = JSON.parse(data);
   try {
-    const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+    const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
     if (!verify) {
       json(401, { status: "failed" });
       return;
     }
     if (paypalMode === "sandbox") {
-      baseURL = process.env.PAYPAL_SANDBOX_URL ?? "";
+      baseURL = env.get("VITE_PAYPAL_SANDBOX_URL") ?? "";
     } else {
-      baseURL = process.env.PAYPAL_LIVE_URL ?? "";
+      baseURL = env.get("VITE_PAYPAL_LIVE_URL") ?? "";
     }
     const captureData = await capturePayment(jsonBody.orderID, baseURL);
     const dataToBeSent = {
@@ -53,7 +58,7 @@ export const onPost: RequestHandler = async ({ parseBody, json, cookie }) => {
       if (decode) {
         const newJwtToken = jwt.sign(
           { user_id: decode.user_id, isDummy: decode.isDummy },
-          process.env.JWTSECRET ?? "",
+          env.get("VITE_JWTSECRET") ?? "",
           { expiresIn: "2h" }
         );
         cookie.set("token", newJwtToken, {
@@ -62,9 +67,9 @@ export const onPost: RequestHandler = async ({ parseBody, json, cookie }) => {
         });
         let baseURL: string;
         if (paypalMode === "sandbox") {
-          baseURL = process.env.PAYPAL_SANDBOX_URL ?? "";
+          baseURL = env.get("VITE_PAYPAL_SANDBOX_URL") ?? "";
         } else {
-          baseURL = process.env.PAYPAL_LIVE_URL ?? "";
+          baseURL = env.get("VITE_PAYPAL_LIVE_URL") ?? "";
         }
         const captureData = await capturePayment(jsonBody.orderID, baseURL);
         const dataToBeSent = {

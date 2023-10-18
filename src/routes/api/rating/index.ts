@@ -5,10 +5,15 @@ import {
   updateProductReviews,
 } from "~/express/services/rating.reviews.service";
 
-export const onPost: RequestHandler = async ({ cookie, parseBody, json }) => {
+export const onPost: RequestHandler = async ({
+  cookie,
+  parseBody,
+  json,
+  env,
+}) => {
   const token = cookie.get("token")?.value;
   const body = await parseBody();
-  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  const secret_key = env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${
     (body as any)?.recaptcha
   }`;
@@ -25,7 +30,7 @@ export const onPost: RequestHandler = async ({ cookie, parseBody, json }) => {
     return;
   }
   try {
-    const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+    const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
     if (verify && !verify?.isDummy) {
       const request = await updateProductReviews(body);
       if (request.status === "success") {
@@ -49,7 +54,7 @@ export const onPost: RequestHandler = async ({ cookie, parseBody, json }) => {
       if (decode && !decode?.isDummy) {
         const newToken = jwt.sign(
           { user_id: decode?.user_id, isDummy: decode?.isDummy },
-          process.env.JWTSECRET ?? "",
+          env.get("VITE_JWTSECRET") ?? "",
           { expiresIn: "2h" }
         );
         cookie.set("token", newToken, {
@@ -77,7 +82,7 @@ export const onPost: RequestHandler = async ({ cookie, parseBody, json }) => {
   return;
 };
 
-export const onGet: RequestHandler = async ({ cookie, url, json }) => {
+export const onGet: RequestHandler = async ({ cookie, url, json, env }) => {
   const productId = url.searchParams.get("id");
   const token = cookie.get("token")?.value;
   if (!token) {
@@ -103,7 +108,7 @@ export const onGet: RequestHandler = async ({ cookie, url, json }) => {
       if (decode && !decode?.isDummy) {
         const newToken = jwt.sign(
           { user_id: decode?.user_id, isDummy: decode?.isDummy },
-          process.env.JWTSECRET ?? "",
+          env.get("VITE_JWTSECRET") ?? "",
           { expiresIn: "2h" }
         );
         cookie.set("token", newToken, {

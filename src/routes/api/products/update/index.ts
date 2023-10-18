@@ -11,7 +11,7 @@ export const onPut: RequestHandler = async ({ json, parseBody }) => {
     json(200, { status: "failed", result: "Something went wrong" });
     return;
   }
-  if (body.secret !== process.env.SECRET) {
+  if (body.secret !== import.meta.env.VITE_SECRET) {
     json(200, { status: "failed", result: "Something went wrong" });
     return;
   }

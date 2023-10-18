@@ -17,7 +17,10 @@ export const onPost: RequestHandler = async ({ parseBody, cookie, json }) => {
   let user: any;
   if (token) {
     try {
-      const decoded: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+      const decoded: any = jwt.verify(
+        token,
+        import.meta.env.VITE_JWTSECRET ?? ""
+      );
       if (decoded.isDummy) {
         user = await getDummyCustomer(decoded.user_id);
         jsonData.userId = user?.result?._id.toString();
@@ -34,7 +37,7 @@ export const onPost: RequestHandler = async ({ parseBody, cookie, json }) => {
         const decode: any = jwt.decode(token);
         const newToken = jwt.sign(
           { user_id: decode.user_id, isDummy: decode.isDummy },
-          process.env.JWTSECRET ?? "",
+          import.meta.env.VITE_JWTSECRET ?? "",
           { expiresIn: "2h" }
         );
         cookie.set("token", newToken, { httpOnly: true, path: "/" });
@@ -66,7 +69,10 @@ export const onDelete: RequestHandler = async ({ parseBody, cookie, json }) => {
   let user: any;
   if (token) {
     try {
-      const decoded: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+      const decoded: any = jwt.verify(
+        token,
+        import.meta.env.VITE_JWTSECRET ?? ""
+      );
       if (decoded.isDummy) {
         user = await getDummyCustomer(decoded.user_id);
         jsonData.userId = user?.result?._id.toString();
@@ -83,7 +89,7 @@ export const onDelete: RequestHandler = async ({ parseBody, cookie, json }) => {
         const decode: any = jwt.decode(token);
         const newToken = jwt.sign(
           { user_id: decode.user_id, isDummy: decode.isDummy },
-          process.env.JWTSECRET ?? "",
+          import.meta.env.VITE_JWTSECRET ?? "",
           { expiresIn: "2h" }
         );
         cookie.set("token", newToken, { httpOnly: true, path: "/" });
@@ -115,7 +121,10 @@ export const onPut: RequestHandler = async ({ parseBody, cookie, json }) => {
   let user: any;
   if (token) {
     try {
-      const decoded: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+      const decoded: any = jwt.verify(
+        token,
+        import.meta.env.VITE_JWTSECRET ?? ""
+      );
       if (decoded.isDummy) {
         user = await getDummyCustomer(decoded.user_id);
         jsonData.userId = user?.result?._id.toString();
@@ -132,7 +141,7 @@ export const onPut: RequestHandler = async ({ parseBody, cookie, json }) => {
         const decode: any = jwt.decode(token);
         const newToken = jwt.sign(
           { user_id: decode.user_id, isDummy: decode.isDummy },
-          process.env.JWTSECRET ?? "",
+          import.meta.env.VITE_JWTSECRET ?? "",
           { expiresIn: "2h" }
         );
         cookie.set("token", newToken, { httpOnly: true, path: "/" });

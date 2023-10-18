@@ -3,7 +3,7 @@ import Cryptr from "cryptr";
 import jwt from "jsonwebtoken";
 import { generateUniqueInteger } from "~/utils/generateOTP";
 
-export const cryptr = new Cryptr(process.env.SECRET ?? "");
+export const cryptr = new Cryptr(import.meta.env.VITE_SECRET ?? "");
 
 export const userRegistration = async (userObject: any) => {
   const phoneVerifyToken = generateUniqueInteger();
@@ -87,7 +87,7 @@ export const userLogin = async (userObject: any) => {
     if (userObject.password === cryptr.decrypt(result?.password ?? "")) {
       const token = jwt.sign(
         { user_id: result?._id },
-        process.env.JWTSECRET ?? "",
+        import.meta.env.VITE_JWTSECRET ?? "",
         {
           expiresIn: "2h",
         }

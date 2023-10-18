@@ -97,7 +97,7 @@ export const RatingAndDescription = component$(
           setTimeout(() => {
             (window as any).grecaptcha.ready(async () => {
               const token = await (window as any).grecaptcha.execute(
-                process.env.RECAPTCHA_SITE_KEY ?? "",
+                import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
                 { action: "submit" }
               );
               recaptchaToken.value = token;
@@ -117,7 +117,9 @@ export const RatingAndDescription = component$(
         <div class="bg-[#F4F4F5] w-96 md:w-[32rem] h-20 justify-center flex items-center rounded-lg">
           {isRecaptcha.value === true && (
             <script
-              src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+              src={`https://www.google.com/recaptcha/api.js?render=${
+                import.meta.env.VITE_RECAPTCHA_SITE_KEY
+              }`}
             ></script>
           )}
           <div class="btn-group w-96 flex justify-center items-center">

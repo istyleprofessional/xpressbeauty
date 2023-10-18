@@ -11,7 +11,10 @@ export const useOrderTableData = routeLoader$(
       throw redirect(301, "/admin");
     }
     try {
-      const verified: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+      const verified: any = jwt.verify(
+        token,
+        import.meta.env.VITE_JWTSECRET ?? ""
+      );
       if (!verified) {
         throw redirect(301, "/admin");
       }

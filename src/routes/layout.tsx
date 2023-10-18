@@ -21,7 +21,7 @@ import { UserContext } from "~/context/user.context";
 import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 
-export const useUserData = routeLoader$(async ({ cookie }) => {
+export const useUserData = routeLoader$(async ({ cookie, env }) => {
   await connect();
   const token = cookie.get("token")?.value ?? "";
   if (!token) {
@@ -32,7 +32,7 @@ export const useUserData = routeLoader$(async ({ cookie }) => {
           user_id: request?.result?._id?.toString() ?? "",
           isDummy: true,
         },
-        process.env.JWTSECRET ?? "",
+        env.get("VITE_JWTSECRET") ?? "",
         { expiresIn: "1h" }
       );
       cookie.set("token", token, {
@@ -72,7 +72,7 @@ export const useUserData = routeLoader$(async ({ cookie }) => {
     }
   }
   try {
-    const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+    const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
     let user: any;
     if (verify.isDummy) {
       user = await getDummyCustomer(verify?.user_id ?? "");
@@ -104,7 +104,8 @@ export const useUserData = routeLoader$(async ({ cookie }) => {
           user_id: decode.user_id,
           isDummy: decode.isDummy,
         },
-        process.env.JWTSECRET ?? "",
+
+        env.get("VITE_JWTSECRET") ?? "",
         { expiresIn: "1h" }
       );
       cookie.set("token", newToken, {

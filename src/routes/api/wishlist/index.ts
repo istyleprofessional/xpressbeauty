@@ -4,7 +4,12 @@ import jwt from "jsonwebtoken";
 import { findUserByUserId } from "~/express/services/user.service";
 import { deleteProductWishlist } from "~/express/services/wishList.service";
 
-export const onDelete: RequestHandler = async ({ parseBody, cookie, json }) => {
+export const onDelete: RequestHandler = async ({
+  parseBody,
+  cookie,
+  json,
+  env,
+}) => {
   await connect();
   const data: any = await parseBody();
   const jsonData = JSON.parse(data);
@@ -12,7 +17,7 @@ export const onDelete: RequestHandler = async ({ parseBody, cookie, json }) => {
   let user: any;
   if (token) {
     try {
-      const decoded: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+      const decoded: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
       if (decoded.isDummy) {
         json(200, { status: "failed", error: "Suspicious behavior detected" });
       } else {
@@ -26,7 +31,7 @@ export const onDelete: RequestHandler = async ({ parseBody, cookie, json }) => {
         const decode: any = jwt.decode(token);
         const newToken = jwt.sign(
           { user_id: decode.user_id, isDummy: decode.isDummy },
-          process.env.JWTSECRET ?? "",
+          env.get("VITE_JWTSECRET") ?? "",
           { expiresIn: "2h" }
         );
         cookie.set("token", newToken, { httpOnly: true, path: "/" });

@@ -15,13 +15,16 @@ import {
 } from "~/express/services/user.service";
 import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
 
-export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
+export const useVerifyToken = routeLoader$(async ({ url, redirect, env }) => {
   const token = url.searchParams.get("token");
   if (!token) {
     throw redirect(301, "/");
   }
   try {
-    const decoded: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+    const decoded: any = jwt.verify(
+      token ?? "",
+      env.get("VITE_JWTSECRET") ?? ""
+    );
     const request = await getUserEmailById(decoded.user_id);
     if (request?.status === "success") {
       return JSON.stringify({ user: request.result, token: token });
@@ -33,9 +36,9 @@ export const useVerifyToken = routeLoader$(async ({ url, redirect }) => {
   }
 });
 
-export const useFormAction = routeAction$(async (data, { cookie }) => {
+export const useFormAction = routeAction$(async (data, { cookie, env }) => {
   const newData = Object.values(data.otp);
-  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  const secret_key = env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${data.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
   const recaptchaText = await recaptcha.text();
@@ -64,7 +67,10 @@ export const useFormAction = routeAction$(async (data, { cookie }) => {
     otp: newData.join(""),
   };
   try {
-    const verify: any = jwt.verify(token ?? "", process.env.JWTSECRET ?? "");
+    const verify: any = jwt.verify(
+      token ?? "",
+      env.get("VITE_JWTSECRET") ?? ""
+    );
     if (verify) {
       const request = await getUserEmailOtp(body);
       if (request.status === "success") {
@@ -97,7 +103,7 @@ export const useFormAction = routeAction$(async (data, { cookie }) => {
       const decode: any = jwt.decode(token);
       const newJwtToken = jwt.sign(
         { user_id: decode.user_id, isDummy: false },
-        process.env.JWTSECRET ?? "",
+        env.get("VITE_JWTSECRET") ?? "",
         { expiresIn: "2h" }
       );
       cookie.set("token", newJwtToken, {
@@ -155,15 +161,13 @@ export default component$(() => {
         window.location.href = "/login";
         return;
       } else {
-        setTimeout(() => {
-          (window as any).grecaptcha.ready(async () => {
-            const token = await (window as any).grecaptcha.execute(
-              process.env.RECAPTCHA_SITE_KEY ?? "",
-              { action: "submit" }
-            );
-            recaptchaToken.value = token;
-          });
-        }, 1000);
+        (window as any).grecaptcha.ready(async () => {
+          const token = await (window as any).grecaptcha.execute(
+            import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
+            { action: "submit" }
+          );
+          recaptchaToken.value = token;
+        });
       }
     },
     { strategy: "document-idle" }
@@ -215,20 +219,6 @@ export default component$(() => {
     });
   });
 
-  // const handleOtpSubmit = $(async () => {
-  //   (window as any).grecaptcha.ready(async () => {
-  //     const token = await (window as any).grecaptcha.execute(
-  //       process.env.RECAPTCHA_SITE_KEY ?? "",
-  //       { action: "submit" }
-  //     );
-  //     recaptchaToken.value = token;
-  //   });
-  //   isLoading.value = false;
-  //   errorMessage.value = action?.value?.err
-  //     ? action.value.err
-  //     : "Something went wrong";
-  // });
-
   const handleSkip = $(async () => {
     const sendPhoneOtp = await postRequest("/api/phoneOtp/send", {
       token: jsonUser.token,
@@ -275,7 +265,9 @@ export default component$(() => {
               </div>
             </div>
             <script
-              src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+              src={`https://www.google.com/recaptcha/api.js?render=${
+                import.meta.env.VITE_RECAPTCHA_SITE_KEY
+              }`}
             ></script>
             <Form action={action}>
               <div class="flex flex-col space-y-16">

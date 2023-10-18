@@ -28,7 +28,9 @@ export const sendVerficationMail = async (
               <p>Your OTP for verification is:</p>
               <p style="font-size: 28px; font-weight: bold; color: #333333; margin: 15px 0;">${otp}</p>
               <p>Use this OTP to complete the verification process.</p>
-              <a href="${process.env.APPURL}/emailVerify/?token=${token}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">Verify Account</a>
+              <a href="${
+                import.meta.env.VITE_APPURL
+              }/emailVerify/?token=${token}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">Verify Account</a>
           </div>
           <div style="text-align: center; padding-top: 20px; color: #777777;">
               <p>If you have any questions, please contact us at <a href="mailto:xpressbeautysupplier@gmail.com">xpressbeautysupplier@gmail.com</a>.</p>

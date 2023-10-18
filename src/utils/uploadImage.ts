@@ -5,8 +5,8 @@ export const uploadImages = async (formData: any, isResize?: boolean) => {
   try {
     const awsS3 = new S3({
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
-        secretAccessKey: process.env.AWS_SECRET_KEY ?? "",
+        accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID ?? "",
+        secretAccessKey: import.meta.env.VITE_AWS_SECRET_KEY ?? "",
       },
       region: "ca-central-1",
     });
@@ -22,7 +22,7 @@ export const uploadImages = async (formData: any, isResize?: boolean) => {
         .toBuffer();
     }
     const params = {
-      Bucket: process.env.AWS_BUCKET_NAME ?? "",
+      Bucket: import.meta.env.VITE_AWS_BUCKET_NAME ?? "",
       Key: `testimages/${formData.name}`,
       Body: resizedImageBuffer ? resizedImageBuffer : fileBuffer,
       ContentType: "image/webp",

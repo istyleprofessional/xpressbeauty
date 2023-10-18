@@ -28,7 +28,7 @@ export const useToolsProducts = routeLoader$(async () => {
 });
 
 export default component$(() => {
-  const status = process.env.STATUS;
+  const status = import.meta.env.VITE_STATUS;
   const newArrivalProducts: ProductModel[] = JSON.parse(
     useHairProducts().value
   );

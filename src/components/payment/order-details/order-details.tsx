@@ -43,7 +43,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
         return;
       }
       const stripe: any = await loadStripe(
-        process.env.STRIPE_TEST_PUBLISHABLE_KEY ?? ""
+        import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
       );
 
       const data = {

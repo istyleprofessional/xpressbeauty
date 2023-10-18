@@ -21,7 +21,9 @@ export const sendForgetPasswordEmail = async (email: string, token: string) => {
           <div style="padding: 20px 0; text-align: center;">
               <p>Hello</p>
               <p>To Reset The Password Please Click Here</p>
-              <a href="${process.env.APPURL}/reset-password/?token=${token}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
+              <a href="${
+                import.meta.env.VITE_APPURL
+              }/reset-password/?token=${token}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
           </div>
           <div style="text-align: center; padding-top: 20px; color: #777777;">
               <p>If you have any questions, please contact us at <a href="mailto:xpressbeautysupplier@gmail.com">xpressbeautysupplier@gmail.com</a>.</p>

@@ -16,7 +16,7 @@ import {
 import { validate } from "~/utils/validate.utils";
 import { validatePhone } from "../register";
 
-export const useCheckoutData = routeLoader$(async ({ cookie }) => {
+export const useCheckoutData = routeLoader$(async ({ cookie, env }) => {
   const token = cookie.get("token")?.value;
   if (!token) {
     return JSON.stringify({
@@ -24,7 +24,7 @@ export const useCheckoutData = routeLoader$(async ({ cookie }) => {
     });
   }
   try {
-    const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+    const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
     if (verify.isDummy) {
       const request = await getDummyCustomer(verify?.user_id ?? "");
       if (request.status === "success") {
@@ -68,7 +68,10 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
   let user: any;
   let isDummy = false;
   try {
-    const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+    const verify: any = jwt.verify(
+      token,
+      requestEvent.env.get("VITE_JWTSECRET") ?? ""
+    );
     if (verify.isDummy) {
       isDummy = true;
       user = await getDummyCustomer(verify?.user_id ?? "");
@@ -92,7 +95,7 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
       const decoded: any = jwt.decode(token);
       const newToken = jwt.sign(
         { user_id: decoded.user_id, isDummy: decoded.isDummy },
-        process.env.JWTSECRET ?? "",
+        requestEvent.env.get("VITE_JWTSECRET") ?? "",
         { expiresIn: "1d" }
       );
       requestEvent.cookie.set("token", newToken, { httpOnly: true, path: "/" });

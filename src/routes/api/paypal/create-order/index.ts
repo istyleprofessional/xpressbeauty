@@ -1,13 +1,13 @@
 import type { RequestHandler } from "@builder.io/qwik-city";
 import { generateAccessToken } from "~/utils/paypalToken";
 
-export const onPost: RequestHandler = async ({ parseBody, json }) => {
-  const paypalMode = process.env.PAYPAL_MODE;
+export const onPost: RequestHandler = async ({ parseBody, json, env }) => {
+  const paypalMode = env.get("VITE_PAYPAL_MODE") ?? "";
   let baseURL: string;
   if (paypalMode === "sandbox") {
-    baseURL = process.env.PAYPAL_SANDBOX_URL ?? "";
+    baseURL = env.get("VITE_PAYPAL_SANDBOX_URL") ?? "";
   } else {
-    baseURL = process.env.PAYPAL_LIVE_URL ?? "";
+    baseURL = env.get("VITE_PAYPAL_LIVE_URL") ?? "";
   }
   const body: any = await parseBody();
   const jsonBody = JSON.parse(body);

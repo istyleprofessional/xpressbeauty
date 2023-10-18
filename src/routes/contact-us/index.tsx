@@ -9,7 +9,7 @@ import { sendContactUsEmailToAdmin } from "~/utils/sendContactUsEmailToAdmin";
 
 export const useFormActions = routeAction$(async (data, requestEvent) => {
   const newData: any = { ...data };
-  const secret_key = process.env.RECAPTCHA_SECRET_KEY ?? "";
+  const secret_key = requestEvent.env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${newData.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
   const recaptchaText = await recaptcha.text();
@@ -45,7 +45,10 @@ export const useFormActions = routeAction$(async (data, requestEvent) => {
     clientMessage: newData.clientMessage,
   };
   try {
-    const decoded: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+    const decoded: any = jwt.verify(
+      token,
+      requestEvent.env.get("VITE_JWTSECRET") ?? ""
+    );
     if (!decoded) {
       return {
         status: "failed",
@@ -80,7 +83,7 @@ export const useFormActions = routeAction$(async (data, requestEvent) => {
       }
       const newToken = jwt.sign(
         { user_id: decoded.user_id, isDummy: decoded.isDummy },
-        process.env.JWTSECRET ?? "",
+        requestEvent.env.get("VITE_JWTSECRET") ?? "",
         { expiresIn: "1h" }
       );
       requestEvent.cookie.set("token", newToken, {
@@ -128,7 +131,7 @@ export default component$(() => {
         setTimeout(() => {
           (window as any).grecaptcha.ready(async () => {
             const token = await (window as any).grecaptcha.execute(
-              process.env.RECAPTCHA_SITE_KEY ?? "",
+              import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
               { action: "submit" }
             );
             recaptchaToken.value = token;
@@ -191,7 +194,9 @@ export default component$(() => {
         </div>
         {isRecaptcha.value === true && (
           <script
-            src={`https://www.google.com/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`}
+            src={`https://www.google.com/recaptcha/api.js?render=${
+              import.meta.env.VITE_RECAPTCHA_SITE_KEY
+            }`}
           ></script>
         )}
         <Form

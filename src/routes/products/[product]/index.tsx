@@ -42,12 +42,12 @@ export const useServerData = routeLoader$(async ({ params, redirect }) => {
   return JSON.stringify({ ...result, ratings: ratings });
 });
 
-export const useAuth = routeLoader$(async ({ cookie }) => {
+export const useAuth = routeLoader$(async ({ cookie, env }) => {
   await connect();
   const token = cookie.get("token")?.value ?? "";
 
   try {
-    const verify: any = jwt.verify(token, process.env.JWTSECRET ?? "");
+    const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
     if (verify.isDummy) {
       return JSON.stringify({});
     }
@@ -64,7 +64,7 @@ export const useAuth = routeLoader$(async ({ cookie }) => {
         {
           user_id: decode.user_id,
         },
-        process.env.JWTSECRET ?? "",
+        env.get("VITE_JWTSECRET") ?? "",
         { expiresIn: "1h" }
       );
       cookie.set("token", newToken, {
