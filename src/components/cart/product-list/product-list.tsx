@@ -64,7 +64,6 @@ export const ProductList = component$(() => {
               key={uuid()}
             >
               <a
-                class="flex flex-row gap-1 md:gap-5 justify-start items-center h-fit w-fit lg:w-[50%]"
                 href={`/products/${encodeURIComponent(
                   product.product_name
                     ?.replace(/[^a-zA-Z ]/g, "")
@@ -77,25 +76,24 @@ export const ProductList = component$(() => {
                   alt={product?.product_name}
                   class="w-12 h-12 md:w-32 md:h-32 object-contain lg:p-5"
                 />
-                <div class="flex flex-col">
-                  <h2 class="text-black text-xs md:text-sm w-20 overflow-ellipsis whitespace-nowrap overflow-hidden">
-                    {product?.product_name}
-                  </h2>
-                  <p class="text-black text-xs">
-                    {product?.variation_name ?? ""}
-                  </p>
-                </div>
-
-                <ItemQuantity product={product} />
-                <p class="text-black md:text-sm text-xs">
-                  CA$ {parseFloat(product?.price.replace("$", "")).toFixed(2)}
-                </p>
-                {context.isVerified && (
-                  <p class="text-xs md:text-sm font-bold text-[red]">
-                    +20% off
-                  </p>
-                )}
               </a>
+              <div class="flex flex-col">
+                <h2 class="text-black text-xs md:text-sm w-20 overflow-ellipsis whitespace-nowrap overflow-hidden">
+                  {product?.product_name}
+                </h2>
+                <p class="text-black text-xs">
+                  {product?.variation_name ?? ""}
+                </p>
+              </div>
+
+              <ItemQuantity product={product} />
+              <p class="text-black md:text-sm text-xs">
+                CA$ {parseFloat(product?.price.replace("$", "")).toFixed(2)}
+              </p>
+              {context.isVerified && (
+                <p class="text-xs md:text-sm font-bold text-[red]">+20% off</p>
+              )}
+
               <button
                 class="btn text-[#CC0000] m-2 ml-auto"
                 onClick$={() => {

@@ -9,11 +9,11 @@ import jwt from "jsonwebtoken";
 import { validate } from "~/utils/validate.utils";
 import Twilio from "twilio";
 import { sendVerficationMail } from "~/utils/sendVerficationMail";
+import Stripe from "stripe";
 
 export const useRegisterForm = routeAction$(async (data, { env }) => {
   await connect();
   const newData: any = { ...data };
-  console.log(env.get("VITE_RECAPTCHA_SECRET_KEY"));
   const secret_key = env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${newData.recaptcha}`;
   const recaptcha = await fetch(url, { method: "post" });
@@ -51,6 +51,14 @@ export const useRegisterForm = routeAction$(async (data, { env }) => {
     };
   }
   newData.EmailVerifyToken = generateUniqueInteger();
+  const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "", {
+    apiVersion: "2022-11-15",
+  });
+  const createStripeCustomer = await stripe.customers.create({
+    email: newData?.email,
+    name: `${newData?.firstName} ${newData?.lastName}`,
+  });
+  newData.stripeCustomerId = createStripeCustomer.id;
   const saveNewUser = await userRegistration(newData);
   if (saveNewUser.status === "failed") {
     return {
@@ -58,6 +66,7 @@ export const useRegisterForm = routeAction$(async (data, { env }) => {
       err: saveNewUser.err,
     };
   }
+
   const token = jwt.sign(
     { user_id: saveNewUser?.result?._id, isDummy: false },
     env.get("VITE_JWTSECRET") ?? "",

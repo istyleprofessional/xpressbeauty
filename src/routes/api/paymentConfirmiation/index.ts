@@ -67,6 +67,7 @@ export const onPost: RequestHandler = async ({
           shipping_address,
           data.products
         );
+
         data.userId = verify.user_id;
         data.shipping_address = request.result?.generalInfo.address;
         data.paymentMethod = "STRIPE";

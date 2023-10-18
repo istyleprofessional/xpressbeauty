@@ -17,6 +17,7 @@ export const userRegistration = async (userObject: any) => {
       phoneNumber: userObject.phoneNumber,
       EmailVerifyToken: userObject.EmailVerifyToken,
       PhoneVerifyToken: phoneVerifyToken,
+      stripeCustomerId: userObject.stripeCustomerId,
     });
     return { status: "success", result: result };
   } catch (err: any) {
@@ -301,6 +302,26 @@ export const updateUserPassword = async (email: string, password: string) => {
     );
     if (result) {
       return { status: "success", result: result };
+    } else {
+      return { status: "failed", err: "Something went wrong" };
+    }
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
+
+export const updatePaymentMethod = async (data: any, id: string) => {
+  try {
+    const req = await User.findOneAndUpdate(
+      { _id: id },
+      {
+        clientSecret: data.clientSecret,
+        paymentMethod: data.paymentMethod,
+      },
+      { new: true }
+    );
+    if (req) {
+      return { status: "success", result: req };
     } else {
       return { status: "failed", err: "Something went wrong" };
     }

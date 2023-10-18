@@ -1,113 +1,28 @@
-import {
-  component$,
-  useContext,
-  useSignal,
-  useVisibleTask$,
-} from "@builder.io/qwik";
-import { loadStripe } from "@stripe/stripe-js";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
-import { CartContext } from "~/context/cart.context";
-import { UserContext } from "~/context/user.context";
-import { postRequest } from "~/utils/fetch.utils";
 
 interface OrderDetailsProps {
-  isLoading: any;
+  cart: any;
+  total: any;
 }
 
 export const OrderDetails = component$((props: OrderDetailsProps) => {
-  const { isLoading } = props;
-  const cartContext: any = useContext(CartContext);
-  const userContext: any = useContext(UserContext);
+  const { cart, total } = props;
   const subTotal = useSignal<number>(0);
   const hst = useSignal<number>(0);
-  const total = useSignal<number>(0);
   const shipping = useSignal<number>(0);
 
   useVisibleTask$(({ track }) => {
-    track(() => cartContext?.cart?.totalPrice);
-    subTotal.value = cartContext?.cart?.totalPrice ?? 0;
-    hst.value = (cartContext?.cart?.totalPrice ?? 0) * 0.13;
+    track(() => cart?.totalPrice);
+    subTotal.value = cart?.totalPrice ?? 0;
+    hst.value = (cart?.totalPrice ?? 0) * 0.13;
     if (subTotal.value > 150) {
       shipping.value = 0;
     } else {
       shipping.value = 15;
     }
-    total.value =
-      (cartContext?.cart?.totalPrice ?? 0) + hst.value + shipping.value;
+    total.value = (cart?.totalPrice ?? 0) + hst.value + shipping.value;
   });
-
-  useVisibleTask$(
-    async ({ track }) => {
-      track(() => total.value);
-      if (total.value === 0) {
-        return;
-      }
-      const stripe: any = await loadStripe(
-        import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
-      );
-
-      const data = {
-        amount: total.value,
-      };
-      const request = await postRequest("/api/stripe/secret", data);
-      const secret = await request.json();
-      const options = {
-        clientSecret: secret.clientSecret,
-        appearance: {
-          theme: "night",
-        },
-      };
-      const elements = stripe.elements(options);
-      const paymentElement = elements.create("payment", {
-        defaultValues: {
-          billingDetails: {
-            address: {
-              postal_code: userContext?.user?.generalInfo?.address?.postalCode,
-              country: userContext?.user?.generalInfo?.address?.country,
-            },
-          },
-        },
-      });
-      paymentElement.mount("#payment-element");
-      const form = document.getElementById("payment-form");
-      form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        isLoading.value = true;
-
-        const pay = await stripe.confirmPayment({
-          elements,
-          confirmParams: {
-            return_url: "http://localhost:5173/payment/success",
-          },
-          redirect: "if_required",
-        });
-        if (
-          pay?.paymentIntent?.status &&
-          pay?.paymentIntent?.status === "succeeded"
-        ) {
-          isLoading.value = false;
-          const dataToBeSent = cartContext?.cart;
-          dataToBeSent.order_amount = parseFloat(
-            total.value.toString()
-          ).toFixed(2);
-          dataToBeSent.payment_status = pay.paymentIntent.status;
-          dataToBeSent.payment_method = "stripe";
-          dataToBeSent.payment_id = pay.paymentIntent.id;
-
-          const emailReq = await postRequest(
-            "/api/paymentConfirmiation",
-            dataToBeSent
-          );
-          const emailRes = await emailReq.json();
-          if (emailRes.status === "success") {
-            window.location.href = "/payment/success";
-          }
-        }
-        isLoading.value = false;
-      });
-    },
-    { strategy: "document-idle" }
-  );
 
   return (
     <>
