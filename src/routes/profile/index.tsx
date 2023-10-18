@@ -188,6 +188,7 @@ export default component$(() => {
   const isPhoneValid = useSignal<boolean>(true);
   const message = useSignal<string>("");
   const recaptchaToken = useSignal<string>("");
+  const phoneMessage = useSignal<string>("");
 
   const handleAlertClose = $(() => {
     toast.value?.remove();
@@ -212,7 +213,7 @@ export default component$(() => {
   const handlePhoneVerify = $(async (e: any) => {
     let phone = e.target.value;
     if (phone.length !== 10) {
-      message.value = "";
+      phoneMessage.value = "";
       return;
     }
     // debugger;
@@ -225,16 +226,30 @@ export default component$(() => {
     const result = JSON.parse(req?.res ?? "");
     if (!(result.countryCode == "US" || result.countryCode == "CA")) {
       isPhoneValid.value = false;
-      message.value = "Please enter a valid USA or Canada phone number";
+      phoneMessage.value = "Please enter a valid USA or Canada phone number";
       return;
     }
-    message.value = "";
+    phoneMessage.value = "";
     isPhoneValid.value = true;
+  });
+
+  useVisibleTask$(({ track, cleanup }) => {
+    track(() => message.value);
+    const timer = setTimeout(() => {
+      message.value = "";
+    }, 3000);
+    cleanup(() => clearTimeout(timer));
   });
 
   useVisibleTask$(
     ({ track }) => {
       track(() => action?.value?.status);
+      if (action?.value?.status === "success") {
+        message.value = "User updated successfully";
+      }
+      if (action?.value?.status === "failed") {
+        message.value = "Please enter valid details";
+      }
       (window as any).grecaptcha?.ready(async () => {
         const token = await (window as any).grecaptcha.execute(
           process.env.RECAPTCHA_SITE_KEY ?? "",
@@ -350,8 +365,10 @@ export default component$(() => {
                       Verify Phone
                     </button>
                   )}
-                  {message.value !== "" && (
-                    <p class="text-error text-sm font-light">{message.value}</p>
+                  {phoneMessage.value !== "" && (
+                    <p class="text-error text-sm font-light">
+                      {phoneMessage.value}
+                    </p>
                   )}
                   <InputField
                     type="text"
@@ -568,12 +585,12 @@ export default component$(() => {
                   </button>
                 </div>
 
-                {action?.value?.status && (
+                {message.value && (
                   <div ref={toast} class="w-full">
                     <Toast
-                      status={action.value.status === "success" ? "s" : "e"}
+                      status={action?.value?.status === "success" ? "s" : "e"}
                       handleClose={handleAlertClose}
-                      message={(action?.value?.message as string) ?? ""}
+                      message={message.value ?? ""}
                       index={1}
                     />
                   </div>
