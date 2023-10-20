@@ -174,13 +174,12 @@ const getThePhoneToken = server$(async function () {
   return { status: "failed" };
 });
 
-export const validatePhoneProfile = server$(async (data) => {
-  const client = new (Twilio as any).Twilio(
-    process?.env?.TWILIO_ACCOUNT_SID ?? "",
-    process?.env?.TWILIO_AUTH_TOKEN ?? ""
+export const validatePhoneProfile = server$(async function (data) {
+  const client: any = new (Twilio as any).Twilio(
+    this.env.get("VITE_TWILIO_ACCOUNT_SID") ?? "",
+    this.env.get("VITE_TWILIO_AUTH_TOKEN") ?? ""
   );
   const req = await client.lookups.v2.phoneNumbers(`${data}`).fetch();
-
   return { status: "success", res: JSON.stringify(req) };
 });
 

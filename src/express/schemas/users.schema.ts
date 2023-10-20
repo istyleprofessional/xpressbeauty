@@ -13,7 +13,7 @@ const userSchema = new Schema(
     isEmailVerified: { type: Boolean, default: false },
     isPhoneVerified: { type: Boolean, default: false },
     stripeCustomerId: { type: String, default: null },
-    paymentMethod: { type: String, default: null },
+    paymentMethod: { type: Array, default: null },
     clientSecret: { type: String, default: null },
   },
   { timestamps: true }

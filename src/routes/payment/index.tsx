@@ -127,6 +127,7 @@ export default component$(() => {
           },
           redirect: "if_required",
         });
+        console.log(pay);
         if (
           pay?.paymentIntent?.status &&
           pay?.paymentIntent?.status === "succeeded"
@@ -137,7 +138,7 @@ export default component$(() => {
             total.value.toString()
           ).toFixed(2);
           dataToBeSent.payment_status = pay.paymentIntent.status;
-          dataToBeSent.payment_method = "stripe";
+          dataToBeSent.payment_method = pay.paymentIntent.payment_method;
           dataToBeSent.payment_id = pay.paymentIntent.id;
           const emailReq = await postRequest(
             "/api/paymentConfirmiation",

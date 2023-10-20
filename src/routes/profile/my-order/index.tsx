@@ -6,6 +6,7 @@ import { getMyOrdersService } from "~/express/services/order.service";
 export const useGetMyOrders = routeLoader$(
   async ({ cookie, redirect, env }) => {
     const token = cookie.get("token")?.value;
+
     if (!token) {
       throw redirect(301, "/login");
     }
@@ -32,7 +33,7 @@ export default component$(() => {
       <div class="card shadow-lg">
         <div class="card-body">
           <div class="flex flex-col gap-2">
-            {myOrdersData.request.length === 0 && (
+            {myOrdersData.request.length > 0 && (
               <>
                 {myOrdersData.request.map((order: any, index: number) => {
                   const order_date = new Date(order.createdAt);
@@ -83,7 +84,7 @@ export default component$(() => {
             {myOrdersData.request.length === 0 && (
               <>
                 <div class="flex flex-col gap-4">
-                  <p class="text-gray-600">No Orders Found</p>
+                  <p class="text-black">No Orders Found</p>
                 </div>
               </>
             )}
