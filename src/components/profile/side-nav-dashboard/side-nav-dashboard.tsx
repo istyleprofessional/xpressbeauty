@@ -29,15 +29,6 @@ export const SideNavDashboard = component$(() => {
                 <span>My Orders</span>
               </a>
             </li>
-            <li>
-              <a
-                href="/profile/payment-method"
-                class="menu-title text-black font-normal text-xl btn btn-ghost normal-case"
-              >
-                <WalletProfileIcon />
-                <span>Payment Methods</span>
-              </a>
-            </li>
           </ul>
         </div>
       </div>
