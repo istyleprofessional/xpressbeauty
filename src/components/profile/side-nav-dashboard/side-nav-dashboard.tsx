@@ -2,7 +2,6 @@ import { component$ } from "@builder.io/qwik";
 import {
   EditProfileIcon,
   OrderProfileIcon,
-  WalletProfileIcon,
 } from "~/components/shared/icons/icons";
 
 export const SideNavDashboard = component$(() => {
