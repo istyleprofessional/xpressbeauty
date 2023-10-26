@@ -61,6 +61,7 @@
     "@stripe/stripe-js": "^1.52.1",
     "@types/twilio": "^3.19.3",
     "@types/xml2js": "^0.4.11",
+    "@unpic/qwik": "^0.0.28",
     "address-validator": "^0.2.3",
     "apexcharts": "^3.42.0",
     "axios": "^1.4.0",

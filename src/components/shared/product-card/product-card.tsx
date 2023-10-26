@@ -1,6 +1,7 @@
 import { component$, useContext } from "@builder.io/qwik";
 import { CartContext } from "~/context/cart.context";
 import type { ProductModel } from "~/models/product.model";
+import { Image } from "@unpic/qwik";
 
 interface ProductCardProps {
   product: ProductModel;
@@ -25,7 +26,8 @@ export const ProductCard = component$((props: ProductCardProps) => {
           .toLowerCase() ?? ""
       )}`}
     >
-      <img
+      <Image
+        layout="constrained"
         key={i}
         src={(product.imgs ?? [])[0]}
         onError$={(e: any) => {

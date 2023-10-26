@@ -9,6 +9,7 @@ import {
   PerviousArrowIconNoStick,
 } from "../../shared/icons/icons";
 import styles from "./hero.css?inline";
+import { Image } from "@unpic/qwik";
 
 export const Hero = component$(() => {
   useStylesScoped$(styles);
@@ -54,7 +55,8 @@ export const Hero = component$(() => {
       <div class="carousels flex felx-row gap-5 overflow-x-hidden">
         <a href="/products/filter/Tools" class="carousel-item w-fit">
           <div class="flex flex-col gap-2">
-            <img
+            <Image
+              layout="constrained"
               src="/hero-images/Barbering-Products.webp"
               alt="barber products"
               class="rounded-box w-96 h-96"
@@ -78,7 +80,8 @@ export const Hero = component$(() => {
         </a>
         <a href="/products/filter/Hair" class="carousel-item">
           <div class="flex flex-col gap-2">
-            <img
+            <Image
+              layout="constrained"
               src="/hero-images/Hair-Care-Products.webp"
               alt="hair care products"
               class="rounded-box w-96 h-96"
@@ -102,7 +105,8 @@ export const Hero = component$(() => {
         </a>
         <a href="/products/filter/Hair" class="carousel-item">
           <div class="flex flex-col gap-2">
-            <img
+            <Image
+              layout="constrained"
               src="/hero-images/Hair-Color-Products.webp"
               alt="hair color products"
               class="rounded-box w-96 h-96"
@@ -126,7 +130,8 @@ export const Hero = component$(() => {
         </a>
         <a href="/products/filter/Tools" class="carousel-item">
           <div class="flex flex-col gap-2">
-            <img
+            <Image
+              layout="constrained"
               src="/hero-images/Hair-tools-Brushes.webp"
               alt="hair tools brushes"
               class="rounded-box w-96 h-96"
@@ -150,7 +155,8 @@ export const Hero = component$(() => {
         </a>
         <a href="/products/filter/Hair" class="carousel-item">
           <div class="flex flex-col gap-2">
-            <img
+            <Image
+              layout="constrained"
               src="/hero-images/Men's-Grooming-Products.webp"
               alt="Men's grooming products"
               class="rounded-box w-full h-full"
@@ -174,7 +180,8 @@ export const Hero = component$(() => {
         </a>
         <a href="/products/filter/Hair" class="carousel-item">
           <div class="flex flex-col gap-2">
-            <img
+            <Image
+              layout="constrained"
               src="/hero-images/Textured-Hair-Products.webp"
               alt="Textured Hair Products"
               class="rounded-box w-full h-full"
