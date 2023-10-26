@@ -44,7 +44,7 @@ export default component$(() => {
           Our success stems from our flexibility and commitment to meeting
           individual needs. We strive to ensure that every customer is
           completely satisfied with their experience. If you don't find what you
-          need on our website, please call us at (416) 285-0555 or complete the
+          need on our website, please text us on (213) 401-4667 or complete the
           following form to let us know, and we'll get back to you soon.
           <br />
           <br />
