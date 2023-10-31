@@ -310,13 +310,15 @@ export const updateUserPassword = async (email: string, password: string) => {
   }
 };
 
-export const updatePaymentMethod = async (data: any, id: string) => {
+export const updatePaymentMethod = async (
+  paymentMethod: string,
+  id: string
+) => {
   try {
     const req = await User.findOneAndUpdate(
       { _id: id },
       {
-        clientSecret: data.clientSecret,
-        paymentMethod: data.paymentMethod,
+        $push: { paymentMethod: paymentMethod },
       },
       { new: true }
     );

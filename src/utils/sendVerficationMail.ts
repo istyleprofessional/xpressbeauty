@@ -7,14 +7,16 @@ export const sendVerficationMail = async (
   otp: string
 ) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.zoho.com",
+    port: 465,
+    secure: true, //ssl
     auth: {
-      user: "xpressbeautysupplier@gmail.com",
-      pass: "iljmmriysldnignu",
+      user: import.meta.env.VITE_EMAIL ?? "",
+      pass: import.meta.env.VITE_EMAIL_PASS ?? "",
     },
   });
   const mailOptions = {
-    from: "xpressbeautysupplier@gmail.com",
+    from: import.meta.env.VITE_EMAIL ?? "",
     to: email,
     subject: "Xpress Beauty Verification",
     html: `

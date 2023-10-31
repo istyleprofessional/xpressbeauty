@@ -6,10 +6,12 @@ export const sendConfirmationOrderForAdmin = async (
   products: any[]
 ) => {
   const transporter = createTransport({
-    service: "gmail",
+    host: "smtp.zoho.com",
+    port: 465,
+    secure: true, //ssl
     auth: {
-      user: "xpressbeautysupplier@gmail.com",
-      pass: "iljmmriysldnignu",
+      user: import.meta.env.VITE_EMAIL ?? "",
+      pass: import.meta.env.VITE_EMAIL_PASS ?? "",
     },
   });
   const hst = 0.13;
@@ -19,7 +21,7 @@ export const sendConfirmationOrderForAdmin = async (
   const tax = total * hst;
   const finalTotal = total + tax;
   const mailOptions = {
-    from: "xpressbeautysupplier@gmail.com",
+    from: import.meta.env.VITE_EMAIL ?? "",
     to: "Isbeautysupply@gmail.com",
     subject: "New Order Details",
     html: `<body>

@@ -2,15 +2,17 @@ import nodemailer from "nodemailer";
 
 export const sendContactUsEmailToClient = async (data: any) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.zoho.com",
+    port: 465,
+    secure: true, //ssl
     auth: {
-      user: "xpressbeautysupplier@gmail.com",
-      pass: "iljmmriysldnignu",
+      user: import.meta.env.VITE_EMAIL ?? "",
+      pass: import.meta.env.VITE_EMAIL_PASS ?? "",
     },
   });
 
   const mailOptions = {
-    from: "xpressbeautysupplier@gmail.com",
+    from: import.meta.env.VITE_EMAIL ?? "",
     to: data.email,
     subject: "Thank you for contacting us!",
     html: `
@@ -24,7 +26,7 @@ export const sendContactUsEmailToClient = async (data: any) => {
             <p>Thank you for contacting us. We will get back to you as soon as possible.</p>
           </div>
           <div style="text-align: center; padding-top: 20px; color: #777777;">
-              <p>If you have any questions, please contact us at <a href="mailto:xpressbeautysupplier@gmail.com">xpressbeautysupplier@gmail.com</a>.</p>
+              <p>If you have any questions, please contact us at <a href="mailto:info@xpressbeauty.ca">info@xpressbeauty.ca</a>.</p>
           </div>
       </div>
     </body>`,
