@@ -36,7 +36,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
         alt={product.product_name}
         class={`${
           cardSize === "sm" ? "lg:w-28 lg:h-28" : "lg:w-44 lg:h-44"
-        } w-16 h-16 object-contain`}
+        } w-24 h-24 object-contain`}
         itemProp="image"
       />
       <div class="p-0 m-0 flex flex-col items-left gap-3 w-full">
