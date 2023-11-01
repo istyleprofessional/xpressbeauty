@@ -31,6 +31,8 @@ export default component$(() => {
   const userEmail = useSignal<string>("");
   const orderId = useSignal<string>("");
   const searchValue = loc.url.searchParams.get("search") ?? "";
+  const isOrderDetailsOpen = useSignal<boolean>(false);
+  const orderDetail = useSignal<any>({});
 
   const handleStatusChanged = $((status: string, email: string, id: string) => {
     (document?.getElementById("my_modal_1") as any)?.showModal();
@@ -198,7 +200,13 @@ export default component$(() => {
                           </li>
                         </ul>
                       </div>
-                      <button class="btn btn-ghost btn-xs">
+                      <button
+                        class="btn btn-ghost btn-xs"
+                        onClick$={() => {
+                          isOrderDetailsOpen.value = true;
+                          orderDetail.value = order;
+                        }}
+                      >
                         <CheckOrderIcon />
                       </button>
                     </td>
@@ -266,6 +274,74 @@ export default component$(() => {
               </div>
             </div>
           </dialog>
+          {/** create a card with order details from orderDetail signal */}
+          {isOrderDetailsOpen.value && (
+            <div class="fixed inset-0 z-[100] bg-[#00000080] flex justify-center items-center">
+              <div class="bg-[#fff] w-[80%] h-[80%] rounded-md">
+                <div class="flex flex-row justify-between items-center p-2">
+                  <h1 class="text-xl font-bold">Order Details</h1>
+                  <button
+                    class="btn btn-ghost btn-xs"
+                    onClick$={() => {
+                      isOrderDetailsOpen.value = false;
+                      orderDetail.value = {};
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
+                <div class="flex flex-row justify-between items-center p-2">
+                  <p class="text-xs">
+                    Order No: {orderDetail.value?.order_number}
+                  </p>
+                  <p class="text-xs">
+                    Order Date: {orderDetail.value?.createdAt}
+                  </p>
+                </div>
+                <div class="overflow-x-auto h-[80%]">
+                  <table class="table table-pin-rows table-sm h-full">
+                    <thead>
+                      <tr class="bg-[#F1F5F9]">
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Sub Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orderDetail.value?.products?.map(
+                        (product: any, index: number) => {
+                          console.log("product", product);
+                          const total =
+                            parseFloat(product?.price) * product?.quantity;
+                          const subTotal = total.toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "CAD",
+                          });
+                          return (
+                            <tr key={index}>
+                              <td>
+                                <img
+                                  src={product?.product_img}
+                                  alt=""
+                                  class="w-24 h-24"
+                                />
+                              </td>
+                              <td>{product?.product_name}</td>
+                              <td>{product?.price}</td>
+                              <td>{product?.quantity}</td>
+                              <td>{subTotal}</td>
+                            </tr>
+                          );
+                        }
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

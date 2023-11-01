@@ -69,6 +69,7 @@ export const getOrdersService = async (page: number) => {
           createdAt: 1,
           orderStatus: 1,
           order_number: 1,
+          products: 1,
         },
       },
     ])
