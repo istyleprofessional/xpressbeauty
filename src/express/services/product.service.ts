@@ -285,15 +285,17 @@ export const get_products_data = async (
         }
       }
     }
+    console.log(query);
     if (query && query !== "") {
       buildQuery["$or"].push(
         ...[
           {
             categories: {
               $elemMatch: {
-                $or: filterByCategory.map((cat) => {
-                  return { name: { $regex: cat, $options: "i" } };
-                }),
+                main: { $regex: filter },
+                // $or: filterByCategory.map((cat) => {
+                //   return { name: { $regex: cat, $options: "i" } };
+                // }),
               },
             },
           },

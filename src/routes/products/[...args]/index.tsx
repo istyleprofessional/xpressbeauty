@@ -286,6 +286,7 @@ export default component$(() => {
       page: checkPage,
       sort: sort.value,
     });
+
     url.searchParams.set("search", value);
     nav(url.search, {
       forceReload: false,
@@ -293,6 +294,7 @@ export default component$(() => {
       scroll: false,
     });
     const result = await request.json();
+    console.log(result);
     productData.value = JSON.parse(result);
   });
 
