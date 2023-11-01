@@ -58,13 +58,17 @@ export const ProductCard = component$((props: ProductCardProps) => {
               product.sale_price.sale !== "" && (
                 <>
                   <span class="text-xs text-gray-400 line-through">
-                    {product?.price?.regular?.toLocaleString("en-US", {
+                    {parseFloat(
+                      product?.price?.regular?.toString()
+                    )?.toLocaleString("en-US", {
                       style: "currency",
                       currency: "CAD",
                     })}
                   </span>
                   <span class="text-xs text-error ml-2">
-                    {product?.sale_price?.sale?.toLocaleString("en-US", {
+                    {parseFloat(
+                      product?.sale_price?.sale?.toString()
+                    )?.toLocaleString("en-US", {
                       style: "currency",
                       currency: "CAD",
                     })}
@@ -74,7 +78,9 @@ export const ProductCard = component$((props: ProductCardProps) => {
             {product.priceType === "single" &&
               product.sale_price.sale === "" && (
                 <span class="text-xs text-black">
-                  {product?.price?.regular?.toLocaleString("en-US", {
+                  {parseFloat(
+                    product?.price?.regular?.toString()
+                  )?.toLocaleString("en-US", {
                     style: "currency",
                     currency: "CAD",
                   })}
@@ -84,15 +90,21 @@ export const ProductCard = component$((props: ProductCardProps) => {
               product.sale_price.min === "" &&
               product.sale_price.max === "" && (
                 <span class="text-xs text-black">
-                  {product?.price?.min?.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "CAD",
-                  })}{" "}
+                  {parseFloat(product?.price?.min?.toString())?.toLocaleString(
+                    "en-US",
+                    {
+                      style: "currency",
+                      currency: "CAD",
+                    }
+                  )}{" "}
                   -{" "}
-                  {product?.price?.max?.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "CAD",
-                  })}
+                  {parseFloat(product?.price?.max?.toString())?.toLocaleString(
+                    "en-US",
+                    {
+                      style: "currency",
+                      currency: "CAD",
+                    }
+                  )}
                 </span>
               )}
             {product.priceType === "range" &&
@@ -100,23 +112,31 @@ export const ProductCard = component$((props: ProductCardProps) => {
               product.sale_price.max !== "" && (
                 <div class="flex flex-col gap-2">
                   <span class="text-xs text-gray-400 line-through">
-                    {product?.sale_price?.min?.toLocaleString("en-US", {
+                    {parseFloat(
+                      product?.sale_price?.min?.toString()
+                    )?.toLocaleString("en-US", {
                       style: "currency",
                       currency: "CAD",
                     })}{" "}
                     -{" "}
-                    {product?.sale_price?.max?.toLocaleString("en-US", {
+                    {parseFloat(
+                      product?.sale_price?.max?.toString()
+                    )?.toLocaleString("en-US", {
                       style: "currency",
                       currency: "CAD",
                     })}
                   </span>
                   <span class="text-xs text-error">
-                    {product?.sale_price?.min?.toLocaleString("en-US", {
+                    {parseFloat(
+                      product?.sale_price?.min?.toString()
+                    )?.toLocaleString("en-US", {
                       style: "currency",
                       currency: "CAD",
                     })}{" "}
                     -{" "}
-                    {product?.sale_price?.max?.toLocaleString("en-US", {
+                    {parseFloat(
+                      product?.sale_price?.max?.toString()
+                    )?.toLocaleString("en-US", {
                       style: "currency",
                       currency: "CAD",
                     })}

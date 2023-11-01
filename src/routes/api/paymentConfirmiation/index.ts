@@ -30,6 +30,7 @@ export const onPost: RequestHandler = async ({
       token ?? "",
       env.get("VITE_JWTSECRET") ?? ""
     );
+
     if (verify.isDummy) {
       const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "", {
         apiVersion: "2022-11-15",
@@ -39,7 +40,7 @@ export const onPost: RequestHandler = async ({
         source: data.token,
       });
       const charges = await stripe.charges.create({
-        amount: parseInt(data.amount) * 100,
+        amount: parseInt(data.order_amount) * 100,
         currency: "cad",
         source: source.id,
         customer: customer.id,
@@ -64,6 +65,7 @@ export const onPost: RequestHandler = async ({
         data.userId = verify.user_id;
         data.shipping_address = request.result?.generalInfo.address;
         data.paymentMethod = "STRIPE";
+        data.paymentStatus = "Paid";
         data.order_status = "Pending";
         data.order_number = generateOrderNumber();
         await createOrder(data);
@@ -91,7 +93,7 @@ export const onPost: RequestHandler = async ({
           { source: data.token }
         );
         const charges = await stripe.charges.create({
-          amount: parseInt(data.amount) * 100,
+          amount: parseInt(data?.order_amount ?? "0") * 100,
           currency: "cad",
           source: source.id,
           customer: request.result?.stripeCustomerId ?? "",
@@ -107,6 +109,12 @@ export const onPost: RequestHandler = async ({
           shipping_address,
           data.products
         );
+        data.userId = verify.user_id;
+        data.shipping_address = request.result?.generalInfo.address;
+        data.paymentMethod = "STRIPE";
+        data.paymentStatus = "Paid";
+        data.order_status = "Pending";
+        data.order_number = generateOrderNumber();
         await updatePaymentMethod(charges.payment_method ?? "", verify.user_id);
         await createOrder(data);
         await deleteCart(verify.user_id);
@@ -140,32 +148,23 @@ export const onPost: RequestHandler = async ({
         const email = request?.result?.email;
         const name = `${request?.result?.firstName} ${request?.result?.lastName}`;
         const shipping_address = request.result?.generalInfo.address;
-        await sendConfirmationEmail(
-          email ?? "",
-          name,
-          shipping_address,
-          data.products
+        const stripe = new Stripe(
+          env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "",
+          {
+            apiVersion: "2022-11-15",
+          }
         );
-        await sendConfirmationOrderForAdmin(
-          name,
-          shipping_address,
-          data.products
+        const source = await stripe.customers.createSource(
+          request.result?.stripeCustomerId ?? "",
+          { source: data.token }
         );
-        data.userId = decoded.user_id;
-        data.shipping_address = request.result?.generalInfo.address;
-        data.paymentMethod = "STRIPE";
-        data.order_status = "Pending";
-        data.order_number = generateOrderNumber();
-        await createOrder(data);
-        await deleteCart(decoded.user_id);
-        json(200, { status: "success" });
-        return;
-      } else {
-        const request = await getUserById(decoded.user_id);
-        if (request.status === "success") {
-          const email = request?.result?.email;
-          const name = `${request?.result?.firstName} ${request?.result?.lastName}`;
-          const shipping_address = request.result?.generalInfo.address;
+        const charges = await stripe.charges.create({
+          amount: parseInt(data.order_amount) * 100,
+          currency: "cad",
+          source: source.id,
+          customer: request.result?.stripeCustomerId ?? "",
+        });
+        if (charges.status === "succeeded") {
           await sendConfirmationEmail(
             email ?? "",
             name,
@@ -186,6 +185,61 @@ export const onPost: RequestHandler = async ({
           await deleteCart(decoded.user_id);
           json(200, { status: "success" });
           return;
+        } else {
+          json(200, { status: "failed", result: "Something went wrong" });
+          return;
+        }
+      } else {
+        const request = await getUserById(decoded.user_id);
+        if (request.status === "success") {
+          const email = request?.result?.email;
+          const name = `${request?.result?.firstName} ${request?.result?.lastName}`;
+          const shipping_address = request.result?.generalInfo.address;
+          const stripe = new Stripe(
+            env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "",
+            {
+              apiVersion: "2022-11-15",
+            }
+          );
+          const source = await stripe.customers.createSource(
+            request.result?.stripeCustomerId ?? "",
+            { source: data.token }
+          );
+          const charges = await stripe.charges.create({
+            amount: parseInt(data.order_amount) * 100,
+            currency: "cad",
+            source: source.id,
+            customer: request.result?.stripeCustomerId ?? "",
+          });
+          if (charges.status === "succeeded") {
+            await sendConfirmationEmail(
+              email ?? "",
+              name,
+              shipping_address,
+              data.products
+            );
+            await sendConfirmationOrderForAdmin(
+              name,
+              shipping_address,
+              data.products
+            );
+            data.userId = decoded.user_id;
+            data.shipping_address = request.result?.generalInfo.address;
+            data.paymentMethod = "STRIPE";
+            data.order_status = "Pending";
+            data.order_number = generateOrderNumber();
+            await updatePaymentMethod(
+              charges.payment_method ?? "",
+              decoded.user_id
+            );
+            await createOrder(data);
+            await deleteCart(decoded.user_id);
+            json(200, { status: "success" });
+            return;
+          } else {
+            json(200, { status: "failed", result: "Something went wrong" });
+            return;
+          }
         } else {
           json(200, { status: "failed", result: request.err });
           return;

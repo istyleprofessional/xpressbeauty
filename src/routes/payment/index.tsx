@@ -99,7 +99,7 @@ export const callServer = server$(async function (
   paymentId: string,
   id: string,
   total: number,
-  products: any[]
+  cart: any
 ) {
   try {
     const stripe: any = new Stripe(
@@ -122,13 +122,14 @@ export const callServer = server$(async function (
         this.env.get("VITE_JWTSECRET") ?? ""
       );
       const user = await getUserById(verified.user_id);
-      const data: any = {};
+      const data: any = cart;
+      data.order_amount = total;
       data.userId = verified.user_id;
       data.shipping_address = user.result?.generalInfo.address;
       data.paymentMethod = "STRIPE";
       data.order_status = "Pending";
       data.order_number = generateOrderNumber();
-      data.products = products;
+
       await sendConfirmationEmail(
         user.result?.email ?? "",
         `${user.result?.firstName} ${user.result?.lastName}`,
@@ -140,6 +141,12 @@ export const callServer = server$(async function (
         data.shipping_address,
         data.products
       );
+      data.userId = verified.user_id;
+      data.shipping_address = user.result?.generalInfo.address;
+      data.paymentMethod = "STRIPE";
+      data.paymentStatus = "Paid";
+      data.order_status = "Pending";
+      data.order_number = generateOrderNumber();
       await createOrder(data);
       await deleteCart(verified.user_id);
     }
@@ -213,8 +220,9 @@ export default component$(() => {
         hiddenInput.setAttribute("value", token.id);
         form?.appendChild(hiddenInput);
         const dataToSend = {
+          ...cartContext?.cart,
           token: token.id,
-          amount: total.value,
+          order_amount: parseFloat(total.value.toString()).toFixed(2),
           email: userContext?.user?.email,
           products: cartContext?.cart?.products,
         };
@@ -238,7 +246,7 @@ export default component$(() => {
             finalCard.value.id,
             userContext?.user?.stripeCustomerId,
             total.value,
-            cartContext?.cart?.products ?? []
+            cartContext?.cart ?? {}
           );
           if (pay.status === "succeeded") {
             isLoading.value = false;
@@ -247,7 +255,9 @@ export default component$(() => {
             isLoading.value = false;
             alert("Payment Failed");
           }
+          return;
         }
+
         stripe.createToken(cardNo).then((res) => {
           console.log(res);
           // attach the token to the customer object.
