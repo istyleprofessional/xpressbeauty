@@ -55,7 +55,7 @@ export default component$(() => {
             return (
               <tr key={index}>
                 <td class="border px-4 py-2 text-center">
-                  {order.order_number}
+                  {order?.order_number}
                 </td>
                 <td class="border px-4 py-2 text-center">
                   <span>{order?.shippingAddress?.addressLine1 ?? ""}</span>
