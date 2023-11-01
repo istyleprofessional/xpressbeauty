@@ -27,7 +27,12 @@ export const useFormAction = routeAction$(async function (data, event) {
   const formData: any = data;
   Object.keys(formData).forEach((key: string) => {
     if (key === "category") {
-      formData.categories = [`${formData[key]},${formData["sub-category"]}`];
+      formData.categories = [
+        {
+          main: formData[key],
+          name: formData["sub-category"],
+        },
+      ];
       delete formData[key];
       delete formData["sub-category"];
     }
@@ -264,17 +269,19 @@ export default component$(() => {
                   return resArr;
                 }, [])
                 .sort((a: any, b: any) => a.main - b.main)
-                .map((category: any, index: number) => (
-                  <option
-                    key={index}
-                    value={category.main}
-                    selected={product.categories.some(
-                      (prodCat: any) => prodCat.main === category.main
-                    )}
-                  >
-                    {category.main}
-                  </option>
-                ))}
+                .map((category: any, index: number) => {
+                  return (
+                    <option
+                      key={index}
+                      value={category.main}
+                      selected={product.categories.some(
+                        (prodCat: any) => prodCat.main === category.main
+                      )}
+                    >
+                      {category.main}
+                    </option>
+                  );
+                })}
             </select>
           </div>
           <div class="grid grid-cols-4">
