@@ -243,24 +243,31 @@ export const get_products_data = async (
         if (filterPrices[i].includes(">")) {
           const vars = filterPrices[i].split(">");
           buildQuery["$or"].push({
+            "price.regular": { $lte: parseFloat(vars[1]) },
+          });
+          buildQuery["$or"].push({
+            "price.sale": { $lte: parseFloat(vars[1]) },
+          });
+
+          buildQuery["$or"].push({
+            "price.max": { $lte: parseFloat(vars[1]) },
+          });
+          buildQuery["$or"].push({
+            "price.min": { $lte: parseFloat(vars[1]) },
+          });
+        } else if (filterPrices[i].includes("<")) {
+          const vars = filterPrices[i].split("<");
+          buildQuery["$or"].push({
             "price.regular": { $gte: parseFloat(vars[1]) },
+          });
+          buildQuery["$or"].push({
+            "price.sale": { $gte: parseFloat(vars[1]) },
           });
           buildQuery["$or"].push({
             "price.max": { $gte: parseFloat(vars[1]) },
           });
           buildQuery["$or"].push({
             "price.min": { $gte: parseFloat(vars[1]) },
-          });
-        } else if (filterPrices[i].includes("<")) {
-          const vars = filterPrices[i].split("<");
-          buildQuery["$or"].push({
-            "price.regular": { $lte: parseFloat(vars[1]) },
-          });
-          buildQuery["$or"].push({
-            "price.max": { $lte: parseFloat(vars[1]) },
-          });
-          buildQuery["$or"].push({
-            "price.min": { $lte: parseFloat(vars[1]) },
           });
         } else if (filterPrices[i].includes("-")) {
           const vars = filterPrices[i].split("-");

@@ -163,6 +163,7 @@ export default component$(() => {
       track(() => filterCategoriessArray.value.length);
       track(() => filterPrices.value.length);
       track(() => query.value);
+      track(() => sort.value);
       const url = loc.url;
       const isSearch = url.searchParams.get("search") ?? "";
       const isFilter = url.searchParams.get("filter") ?? "";
@@ -172,7 +173,8 @@ export default component$(() => {
         filterPrices.value.length +
         (query.value ? 1 : 0) +
         (isSearch ? 1 : 0) + // search
-        (isFilter ? 1 : 0); // filter
+        (isFilter ? 1 : 0) +
+        (sort.value ? 1 : 0);
     },
     { strategy: "intersection-observer" }
   );
@@ -250,6 +252,10 @@ export default component$(() => {
     filterCategoriessArray.value = [];
     url.searchParams.delete("search");
     url.searchParams.delete("page");
+    url.searchParams.delete("sort");
+    sort.value = "";
+    filterPrices.value = [];
+    page.value = "1";
     url.pathname = "/products/";
     nav(url.pathname, {
       forceReload: false,
@@ -294,15 +300,56 @@ export default component$(() => {
       scroll: false,
     });
     const result = await request.json();
-    console.log(result);
     productData.value = JSON.parse(result);
   });
 
   const handleSorting = $(async (e: any) => {
-    const url = loc.url;
+    const url = new URL(window.location.href);
     sort.value = e.target.value;
+    let newFilterBrands = [];
+    let newFilterCategories = [];
+    if (filterBrandsArray.value.length) {
+      newFilterBrands = filterBrandsArray.value.map((brand: string) => {
+        return brand.replace(/ /g, "-");
+      });
+    }
+    if (filterCategoriessArray.value.length > 0) {
+      newFilterCategories = filterCategoriessArray.value.map(
+        (category: string) => {
+          return category.replace(/ /g, "-");
+        }
+      );
+    }
+    url.pathname = `/products/${
+      newFilterBrands.length > 0
+        ? `filterBrands/${newFilterBrands.join("+")}/`
+        : ""
+    }${
+      filterCategoriessArray.value.length
+        ? `filterCategories/${newFilterCategories.join("+")}/`
+        : ""
+    }${
+      filterPrices.value.length > 0
+        ? `filterPrices/${filterPrices.value.join("+")}/`
+        : ""
+    }`;
     url.searchParams.set("sort", e.target.value);
-    nav(url.pathname, {
+    url.searchParams.set("page", "1");
+    const checkPage = url.searchParams.get("page") ?? "1";
+    const result = await postRequest("/api/products/get", {
+      filterBrands: filterBrandsArray.value,
+      filterCategories: filterCategoriessArray.value,
+      filterPrices: filterPrices.value,
+      filter: "",
+      query: "",
+      page: checkPage,
+      sort: sort.value,
+    });
+    const data = await result.json();
+    productData.value = JSON.parse(data);
+    url.searchParams.set("page", "1");
+    page.value = "1";
+    nav(url.pathname + url.search, {
       forceReload: false,
       replaceState: false,
       scroll: false,

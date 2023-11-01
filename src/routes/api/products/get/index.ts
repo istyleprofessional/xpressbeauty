@@ -22,6 +22,7 @@ export const onPost: RequestHandler = async ({
       json(401, { message: "Unauthorized" });
       return;
     }
+
     const request = await get_products_data(
       body.filterBrands,
       body.filterCategories,

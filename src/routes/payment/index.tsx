@@ -205,7 +205,6 @@ export default component$(() => {
       if (!isExistingPaymentMethod.value) {
         cardNo = elements.create("cardNumber");
         cardNo.mount("#card-element");
-        // cardNoElm.value = cardNo;
         cardExpiration = elements.create("cardExpiry");
         cardExpiration.mount("#card-expiration");
         cardCvc = elements.create("cardCvc");
