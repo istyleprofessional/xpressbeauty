@@ -285,24 +285,21 @@ export const get_products_data = async (
         }
       }
     }
-    console.log(query);
     if (query && query !== "") {
       buildQuery["$or"].push(
         ...[
           {
             categories: {
               $elemMatch: {
-                main: { $regex: filter },
-                // $or: filterByCategory.map((cat) => {
-                //   return { name: { $regex: cat, $options: "i" } };
-                // }),
+                main: { $regex: filter, $options: "i" },
+                name: { $regex: query, $options: "i" },
               },
             },
           },
           { product_name: { $regex: query, $options: "i" } },
           { "companyName.name": { $regex: query, $options: "i" } },
-          { lineName: { $regex: query, $options: "i" } },
-          { description: { $regex: query, $options: "i" } },
+          // { lineName: { $regex: query, $options: "i" } },
+          // { description: { $regex: query, $options: "i" } },
         ]
       );
     }
