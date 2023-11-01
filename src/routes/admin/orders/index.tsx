@@ -58,20 +58,20 @@ export default component$(() => {
                   {order.order_number}
                 </td>
                 <td class="border px-4 py-2 text-center">
-                  <span>{order?.shippingAddress?.addressLine1}</span>
+                  <span>{order?.shippingAddress?.addressLine1 ?? ""}</span>
                   {", "}
-                  <span>{order?.shippingAddress?.city}</span>
+                  <span>{order?.shippingAddress?.city ?? ""}</span>
                   {", "}
-                  <span>{order?.shippingAddress?.country}</span>
+                  <span>{order?.shippingAddress?.country ?? ""}</span>
                 </td>
                 <td class="border px-4 py-2 text-center">
-                  {order?.totalPrice.toLocaleString("en-US", {
+                  {order?.totalPrice?.toLocaleString("en-US", {
                     style: "currency",
                     currency: "CAD",
                   })}
                 </td>
                 <td class="border px-4 py-2 text-center">
-                  {order?.orderStatus}
+                  {order?.orderStatus ?? ""}
                 </td>
               </tr>
             );
