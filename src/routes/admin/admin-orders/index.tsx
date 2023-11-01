@@ -103,11 +103,11 @@ export default component$(() => {
                     </td>
                     <td>{order.order_number}</td>
                     <td>
-                      <span>{order.shippingAddress.addressLine1}</span>
+                      <span>{order?.shippingAddress?.addressLine1}</span>
                       {", "}
-                      <span>{order.shippingAddress.city}</span>
+                      <span>{order?.shippingAddress?.city}</span>
                       {", "}
-                      <span>{order.shippingAddress.country}</span>
+                      <span>{order?.shippingAddress?.country}</span>
                     </td>
                     <td>
                       {order.totalPrice.toLocaleString("en-US", {
@@ -149,8 +149,8 @@ export default component$(() => {
                               onClick$={() =>
                                 handleStatusChanged(
                                   "Shipped",
-                                  order.user.email,
-                                  order._id
+                                  order?.user?.email,
+                                  order?._id
                                 )
                               }
                             >
@@ -162,8 +162,8 @@ export default component$(() => {
                               onClick$={() =>
                                 handleStatusChanged(
                                   "Completed",
-                                  order.user.email,
-                                  order._id
+                                  order?.user?.email,
+                                  order?._id
                                 )
                               }
                             >
@@ -175,8 +175,8 @@ export default component$(() => {
                               onClick$={() =>
                                 handleStatusChanged(
                                   "Pending",
-                                  order.user.email,
-                                  order._id
+                                  order?.user.email,
+                                  order?._id
                                 )
                               }
                             >
@@ -188,8 +188,8 @@ export default component$(() => {
                               onClick$={() =>
                                 handleStatusChanged(
                                   "Return",
-                                  order.user.email,
-                                  order._id
+                                  order?.user.email,
+                                  order?._id
                                 )
                               }
                             >
