@@ -314,7 +314,7 @@ export default component$(() => {
           </div>
           <div class="grid grid-cols-4">
             <p class="col-span-1">Brand</p>
-            <select class="select w-full max-w-xs" name="companyName">
+            <select class="select w-full max-w-xs" name="companyName.name">
               <option disabled selected={!product.companyName}>
                 Pick product brand
               </option>
