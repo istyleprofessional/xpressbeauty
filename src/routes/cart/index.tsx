@@ -19,7 +19,7 @@ export default component$(() => {
           <Steps pageType="cart" />
         </div>
         <div class="flex flex-col md:flex-row gap-10 justify-center items-center">
-          <div class="flex flex-col gap-4 justify-center items-start w-full">
+          <div class="flex flex-col gap-10 justify-center items-start w-full">
             <a
               class="text-black font-bold text-base lg:text-3xl flex flex-row gap-1 items-center cursor-pointer"
               href="/products/"
@@ -29,8 +29,10 @@ export default component$(() => {
             </a>
             <ProductList />
           </div>
-          <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 mb-5">
-            <CartDetails />
+          <div class="flex flex-col gap-4 items-center lg:items-end w-full">
+            <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 mb-5">
+              <CartDetails />
+            </div>
           </div>
         </div>
       </div>

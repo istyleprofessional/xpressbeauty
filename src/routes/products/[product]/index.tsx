@@ -329,7 +329,7 @@ export default component$(() => {
               {(product?.variations?.length ?? 0) > 0 && (
                 <div
                   class="menu menu-horizontal bg-base-100 shadow-xl h-fit max-h-96 overflow-scroll gap-10 justify-center
-                  items-center md:p-4 w-full md:w-[30vw]"
+                  items-center md:p-4 w-full lg:w-[30vw]"
                 >
                   {product?.variations?.map((variation: any, index: number) => {
                     const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;

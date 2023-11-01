@@ -272,8 +272,11 @@ export default component$(() => {
           <Steps pageType="payment" />
         </div>
         <div class="flex flex-col md:flex-row gap-10 justify-center items-center">
-          <div class="flex flex-col gap-4 justify-center items-start w-full">
-            <a class="text-black font-bold text-3xl flex flex-row gap-1 items-center cursor-pointer">
+          <div class="flex flex-col gap-10 justify-center items-start w-full">
+            <a
+              class="text-black font-bold text-3xl flex flex-row gap-1 items-center cursor-pointer"
+              href="/products/"
+            >
               <PerviousArrowIconNoStick color="black" width="10%" /> Continue
               Shopping
             </a>
