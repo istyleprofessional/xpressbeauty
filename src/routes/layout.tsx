@@ -73,6 +73,20 @@ export const useUserData = routeLoader$(async ({ cookie, env }) => {
   }
   try {
     const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
+    console.log(verify);
+    if (verify?.role === "a") {
+      const cartContextObject = {
+        userId: "",
+        cart: {},
+        quantity: "0",
+        verified: false,
+      };
+      return JSON.stringify({
+        cart: cartContextObject,
+        user: null,
+        wishList: [],
+      });
+    }
     let user: any;
     if (verify.isDummy) {
       user = await getDummyCustomer(verify?.user_id ?? "");
@@ -80,6 +94,7 @@ export const useUserData = routeLoader$(async ({ cookie, env }) => {
       user = await findUserByUserId(verify?.user_id ?? "");
     }
     if (!user?.result) {
+      console.log("user not found");
       cookie.delete("token", { path: "/" });
       const request: any = await addDummyCustomer("", null);
       const newTokentoken = jwt.sign(
