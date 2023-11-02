@@ -74,17 +74,7 @@ export const useUserData = routeLoader$(async ({ cookie, env }) => {
   try {
     const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
     if (verify?.role === "a") {
-      const cartContextObject = {
-        userId: "",
-        cart: {},
-        quantity: "0",
-        verified: false,
-      };
-      return JSON.stringify({
-        cart: cartContextObject,
-        user: null,
-        wishList: [],
-      });
+      return;
     }
     let user: any;
     if (verify.isDummy) {

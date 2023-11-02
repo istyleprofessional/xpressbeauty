@@ -11,12 +11,14 @@ export const sendPhoneOtp = async (phoneNumber: string, otp: string) => {
       from: "+12134014667",
       to: `+${phoneNumber}`,
     });
+    console.log(result);
     if (result) {
       return { status: "success", result: result };
     } else {
       return { status: "failed" };
     }
   } catch (err) {
+    console.log(err);
     return { status: "failed", err: err };
   }
 };

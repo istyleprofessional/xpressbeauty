@@ -8,8 +8,13 @@ import { verifyTokenAdmin } from "~/utils/token.utils";
 export const useProfileLoader = routeLoader$(async ({ cookie, redirect }) => {
   const token = cookie.get("token")?.value;
   const validateToken = verifyTokenAdmin(token ?? "");
+  console.log(validateToken);
   if (!validateToken) {
     throw redirect(301, "/admin-login/");
+  } else {
+    return JSON.stringify({
+      user: validateToken,
+    });
   }
 });
 

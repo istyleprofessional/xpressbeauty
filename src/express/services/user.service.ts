@@ -331,3 +331,16 @@ export const updatePaymentMethod = async (
     return { status: "failed", err: err };
   }
 };
+
+export const getUsers = async (page: number) => {
+  try {
+    const result = await User.find({}, { password: 0 })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * 20)
+      .limit(20);
+    const count = await User.countDocuments();
+    return { status: "success", result: result, count: count };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
