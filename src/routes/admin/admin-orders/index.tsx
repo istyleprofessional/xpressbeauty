@@ -1,11 +1,17 @@
 import { component$, $, useSignal } from "@builder.io/qwik";
-import { routeLoader$, useLocation } from "@builder.io/qwik-city";
+import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import {
   CheckOrderIcon,
   MoreAdminIcon,
   OrderFilterIcon,
 } from "~/components/shared/icons/icons";
-import { getOrdersService } from "~/express/services/order.service";
+import {
+  getOrderByOrderIdService,
+  getOrdersService,
+  updateOrderStatus,
+} from "~/express/services/order.service";
+import { findUserByUserEmail } from "~/express/services/user.service";
+import { sendShippedEmail } from "~/utils/sendShippedEmail";
 
 export const useOrderTableData = routeLoader$(async ({ url }) => {
   const page = url.searchParams.get("page") ?? "1";
@@ -15,6 +21,36 @@ export const useOrderTableData = routeLoader$(async ({ url }) => {
   } else {
     return { status: orders.status };
   }
+});
+
+export const sendShippedEmailServer = server$(async function (data: any) {
+  const getUser = await findUserByUserEmail(data.email);
+  if (getUser.status === "error")
+    return { status: "error", message: "User not found" };
+  if (getUser.result?.length === 0)
+    return { status: "error", message: "User not found" };
+  const user = (getUser?.result ?? [])[0];
+  const fullName = `${user?.firstName} ${user?.lastName}`;
+  const shippingAddress = user?.generalInfo.address;
+  const getOrder = await getOrderByOrderIdService(data.orderId);
+
+  if (getOrder.status === "error")
+    return { status: "error", message: "Order not found" };
+  const order = getOrder?.request;
+  const orderNo = order?.order_number;
+  const products = order?.products;
+  await sendShippedEmail(
+    data.email,
+    fullName,
+    shippingAddress,
+    products ?? [],
+    data.trackingNumber,
+    orderNo ?? ""
+  );
+  const updateOrderStatusreq = await updateOrderStatus(data.orderId, "Shipped");
+  if (updateOrderStatusreq.status === "error")
+    return { status: "error", message: "Order status not updated" };
+  return { status: "success", message: updateOrderStatusreq.request };
 });
 
 export default component$(() => {
@@ -33,6 +69,7 @@ export default component$(() => {
   const searchValue = loc.url.searchParams.get("search") ?? "";
   const isOrderDetailsOpen = useSignal<boolean>(false);
   const orderDetail = useSignal<any>({});
+  const trackingNumber = useSignal<string>("");
 
   const handleStatusChanged = $((status: string, email: string, id: string) => {
     (document?.getElementById("my_modal_1") as any)?.showModal();
@@ -43,11 +80,20 @@ export default component$(() => {
 
   const handleConfirmStatusChange = $(() => {
     (document?.getElementById("my_modal_1") as any)?.close();
+    if (orderStatus.value === "Shipped")
+      (document?.getElementById("my_modal_2") as any)?.showModal();
   });
 
-  // const handleSearchOrders = $(() => {
-  //   const
-  // });
+  const handleSendTrackingNumber = $(async () => {
+    (document?.getElementById("my_modal_2") as any)?.close();
+    const data = {
+      email: userEmail.value,
+      orderId: orderId.value,
+      trackingNumber: trackingNumber.value,
+    };
+    await sendShippedEmailServer(data);
+    window.location.reload();
+  });
 
   return (
     <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
@@ -57,7 +103,6 @@ export default component$(() => {
           type="text"
           class="input input-bordered w-[20rem] m-2"
           placeholder="Search For Orders"
-          // onInput$={handleSearchOrders}
           value={searchValue}
         />
       </div>
@@ -163,19 +208,6 @@ export default component$(() => {
                             <button
                               onClick$={() =>
                                 handleStatusChanged(
-                                  "Completed",
-                                  order?.user?.email,
-                                  order?._id
-                                )
-                              }
-                            >
-                              Completed
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              onClick$={() =>
-                                handleStatusChanged(
                                   "Pending",
                                   order?.user.email,
                                   order?._id
@@ -250,7 +282,8 @@ export default component$(() => {
             <div class="modal-box">
               <h3 class="font-bold text-lg">Change Order Status!</h3>
               <p class="py-4">
-                Are you sure you want to change the order status?
+                Are you sure you want to change the order status to{" "}
+                {orderStatus.value}?
               </p>
               <div class="modal-action">
                 <form method="dialog">
@@ -267,6 +300,40 @@ export default component$(() => {
                   <button
                     class="btn btn-primary"
                     onClick$={handleConfirmStatusChange}
+                  >
+                    Confirm
+                  </button>
+                </form>
+              </div>
+            </div>
+          </dialog>
+          <dialog id="my_modal_2" class="modal">
+            <div class="modal-box">
+              <h3 class="font-bold text-lg">Tracking Number!</h3>
+              <p class="py-4">Please enter the tracking number?</p>
+              <div class="modal-action">
+                <form method="dialog">
+                  <input
+                    type="text"
+                    class="input input-bordered w-[20rem] m-2"
+                    placeholder="Tracking Number"
+                    onChange$={(e: any) => {
+                      trackingNumber.value = e.target.value;
+                    }}
+                  />
+                  <button
+                    class="btn"
+                    onClick$={() => {
+                      orderId.value = "";
+                      userEmail.value = "";
+                      orderStatus.value = "";
+                    }}
+                  >
+                    Close
+                  </button>
+                  <button
+                    class="btn btn-primary"
+                    onClick$={handleSendTrackingNumber}
                   >
                     Confirm
                   </button>

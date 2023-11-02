@@ -82,3 +82,16 @@ export const getOrdersService = async (page: number) => {
     return { status: "failed", err: error.message };
   }
 };
+
+export const updateOrderStatus = async (orderId: string, status: string) => {
+  try {
+    const request = await Order.findOneAndUpdate(
+      { _id: orderId },
+      { orderStatus: status },
+      { new: true }
+    );
+    return { status: "success", request: request };
+  } catch (error: any) {
+    return { status: "failed", err: error.message };
+  }
+};
