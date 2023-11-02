@@ -79,6 +79,39 @@ export const useUserData = routeLoader$(async ({ cookie, env }) => {
     } else {
       user = await findUserByUserId(verify?.user_id ?? "");
     }
+    if (!user?.result) {
+      cookie.delete("token", { path: "/" });
+      const request: any = await addDummyCustomer("", null);
+      const newTokentoken = jwt.sign(
+        {
+          user_id: request?.result?._id?.toString() ?? "",
+          isDummy: true,
+        },
+        env.get("VITE_JWTSECRET") ?? "",
+        { expiresIn: "1h" }
+      );
+      cookie.set("token", newTokentoken, {
+        httpOnly: true,
+        path: "/",
+      });
+      const cart: any = await getCartByUserId(
+        request?.result?._id?.toString() ?? ""
+      );
+      const cartContextObject = {
+        userId: request?.result?._id?.toString() ?? "",
+        cart: cart,
+        quantity: cart?.totalQuantity ?? "0",
+        verified: false,
+      };
+      const wishList = await getWishList(
+        request?.result?._id?.toString() ?? ""
+      );
+      return JSON.stringify({
+        cart: cartContextObject,
+        user: null,
+        wishList: wishList,
+      });
+    }
     const cart: any = await getCartByUserId(user?.result?._id ?? "");
     const cartContextObject = {
       userId: user?.result?._id ?? "",
