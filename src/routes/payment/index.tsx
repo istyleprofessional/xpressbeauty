@@ -292,7 +292,7 @@ export default component$(() => {
             <ProductList />
           </div>
           <div class="flex flex-col gap-4 items-center lg:items-end w-full">
-            <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5">
+            <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 mb-5">
               {cards?.length > 0 && (
                 <div class="bg-white shadow-md flex-col gap-3 flex rounded px-8 pt-6 pb-8 mb-4">
                   <p class="text-black text-lg font-bold">Payment Method</p>

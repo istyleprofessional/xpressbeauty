@@ -25,7 +25,6 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     }
     total.value = (cart?.totalPrice ?? 0) + hst.value + shipping.value;
   });
-  console.log("isExistingPaymentMethod", isExistingPaymentMethod);
   return (
     <>
       <h2 class="text-white text-xl font-semibold">Card Details</h2>

@@ -477,3 +477,41 @@ export const update_hair_product_service = async (
     return { status: "failed", result: err };
   }
 };
+
+export const getTotalQuantityService = async (
+  id: string,
+  isVariant: boolean
+) => {
+  try {
+    if (isVariant) {
+      const mainId = id.split(".")[0];
+      const variation_id = id.split(".")[1];
+      const quantity = await Product.findOne({
+        _id: mainId,
+        variations: {
+          $elemMatch: {
+            variation_id: variation_id,
+          },
+        },
+      }).select({ variations: 1, _id: 0 });
+      const total = quantity?.variations?.reduce((acc: any, variation: any) => {
+        if (variation.variation_id === variation_id) {
+          return acc + parseInt(variation.quantity_on_hand);
+        }
+        return acc;
+      }, 0);
+      return { status: "success", result: total };
+    } else {
+      const total = await Product.findOne({ _id: id }).select({
+        quantity_on_hand: 1,
+        _id: 0,
+      });
+      return {
+        status: "success",
+        result: parseInt(total?.quantity_on_hand ?? ""),
+      };
+    }
+  } catch (err) {
+    return { status: "failed", result: err };
+  }
+};
