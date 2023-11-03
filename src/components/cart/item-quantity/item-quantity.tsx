@@ -51,7 +51,7 @@ export const ItemQuantity = component$((props: ItemQuantityProps) => {
   });
 
   return (
-    <label class="input-group input-group-xs md:input-group-sm w-fit">
+    <label class="input-group input-group-xs md:input-group-lg w-44">
       <span
         class={`btn btn-sm md:btn-sm text-sm md:text-xl text-black bg-[#F4F4F5] ${
           quantity.value === 0 ? "btn-disabled" : ""
@@ -66,7 +66,7 @@ export const ItemQuantity = component$((props: ItemQuantityProps) => {
         readOnly
         min="0"
         max={20}
-        class="input input-sm input-bordered w-14 text-black"
+        class="input input-sm input-bordered w-fit text-black"
       />
       <span
         class={`btn btn-sm text-sm md:btn-sm text-black bg-[#F4F4F5]`}

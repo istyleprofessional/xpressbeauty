@@ -39,9 +39,9 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
   });
 
   return (
-    <div class="flex flex-col gap-7">
-      <div class="h-24 bg-[#F4F4F5] w-[100%] md:flex md:flex-row items-center hidden">
-        <div class="md:flex md:flex-row md:gap-10 hidden">
+    <div class="flex flex-col gap-7 w-full">
+      <div class="h-24 bg-[#F4F4F5] w-[100%] lg:flex lg:flex-row items-center hidden md:hidden">
+        <div class="lg:flex lg:flex-row lg:gap-10 hidden md:hidden">
           <h3 class="text-black font-bold text-base pl-4">View as:</h3>
           <button
             class="btn btn-ghost btn-sm flex flex-row gap-1 justify-center items-center"

@@ -450,6 +450,7 @@ export default component$(() => {
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
     }`;
+
     url.searchParams.set("page", "1");
     page.value = "1";
     nav(url.pathname, {
@@ -474,13 +475,13 @@ export default component$(() => {
   return (
     <>
       <h1 class="text-xl md:text-3xl p-5 font-bold">Product Filters</h1>
-      <div class="flex flex-col gap-4 md:grid md:grid-cols-4 p-6">
+      <div class="flex flex-col gap-4 lg:grid  lg:grid-cols-4 p-6">
         <div class="drawer lg:drawer-open flex flex-col gap-5">
           <input id="my-drawer" type="checkbox" class="drawer-toggle" />
           <div class="drawer-content">
             <label
               for="my-drawer"
-              class="btn btn-primary drawer-button md:hidden"
+              class="btn btn-primary drawer-button lg:hidden"
             >
               Filter By
               <svg
@@ -499,7 +500,7 @@ export default component$(() => {
               </svg>
             </label>
           </div>
-          <div class="flex flex-row gap-4 items-center md:hidden">
+          <div class="flex flex-row gap-4 items-center lg:hidden">
             <p class="text-black text-base font-bold">
               Filters Applied :{" "}
               <span class="text-black text-base font-normal">
@@ -516,23 +517,23 @@ export default component$(() => {
           </div>
           <div class=" w-full drawer-side z-50">
             <label for="my-drawer" class="drawer-overlay"></label>
-            <ul class="menu mt-12 md:mt-0 bg-base-200 md:bg-transparent flex flex-col md:gap-10">
-              <li class="md:flex flex-row gap-4 items-center hidden">
-                <p class="text-black text-base font-bold">
+            <ul class="menu mt-12 lg:mt-0 bg-base-200 lg:bg-transparent flex flex-col lg:gap-10">
+              <li class="lg:flex flex-row gap-4 items-center hidden">
+                <p class="text-black lg:text-base md:text-xs font-bold">
                   Filters Applied :{" "}
-                  <span class="text-black text-base font-normal">
+                  <span class="text-black text-xs font-normal">
                     {filtersNo.value}
                   </span>
                 </p>
                 <button
-                  class="btn btn-ghost w-fit btn-sm"
+                  class="btn btn-ghost w-fit btn-sm text-xs normal-case"
                   onClick$={handleClearFilter}
                 >
                   {" "}
                   Clear All
                 </button>
               </li>
-              <li class="flex flex-col gap-1">
+              <li class="flex flex-col gap-1 w-full">
                 <p class="text-black text-base font-bold">Filter By :</p>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none">
@@ -554,14 +555,14 @@ export default component$(() => {
                   </div>
                   <input
                     id="default-search"
-                    class="block w-full p-6 text-sm border-0 focus:border-none rounded-lg bg-gray-50"
+                    class="block w-full p-6 text-xs border-0 focus:border-none rounded-lg bg-gray-50"
                     placeholder="Search by name or brand"
                     onInput$={handleSearchInput}
                     value={query.value}
                   />
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-80">
+              <li class="collapse collapse-arrow w-fit">
                 <input
                   type="radio"
                   name="my-accordion-1"
@@ -586,7 +587,7 @@ export default component$(() => {
                   />
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-80">
+              <li class="collapse collapse-arrow w-fit">
                 <input
                   type="radio"
                   name="my-accordion-2"
@@ -613,7 +614,7 @@ export default component$(() => {
                   />
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-80">
+              <li class="collapse collapse-arrow w-fit">
                 <input
                   type="radio"
                   name="my-accordion-2"

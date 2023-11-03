@@ -45,6 +45,8 @@ export const sendShippedEmailServer = server$(async function (data: any) {
     shippingAddress,
     products ?? [],
     data.trackingNumber,
+    data.trackingCompanyName,
+    data.trackingLink,
     orderNo ?? ""
   );
   const updateOrderStatusreq = await updateOrderStatus(data.orderId, "Shipped");
@@ -70,6 +72,8 @@ export default component$(() => {
   const isOrderDetailsOpen = useSignal<boolean>(false);
   const orderDetail = useSignal<any>({});
   const trackingNumber = useSignal<string>("");
+  const trackingCompanyName = useSignal<string>("");
+  const trackingLink = useSignal<string>("");
 
   const handleStatusChanged = $((status: string, email: string, id: string) => {
     (document?.getElementById("my_modal_1") as any)?.showModal();
@@ -90,6 +94,8 @@ export default component$(() => {
       email: userEmail.value,
       orderId: orderId.value,
       trackingNumber: trackingNumber.value,
+      trackingCompanyName: trackingCompanyName.value,
+      trackingLink: trackingLink.value,
     };
     await sendShippedEmailServer(data);
     window.location.reload();
@@ -309,34 +315,54 @@ export default component$(() => {
           </dialog>
           <dialog id="my_modal_2" class="modal">
             <div class="modal-box">
-              <h3 class="font-bold text-lg">Tracking Number!</h3>
+              <h3 class="font-bold text-lg">Tracking Details!</h3>
               <p class="py-4">Please enter the tracking number?</p>
               <div class="modal-action">
-                <form method="dialog">
-                  <input
-                    type="text"
-                    class="input input-bordered w-[20rem] m-2"
-                    placeholder="Tracking Number"
-                    onChange$={(e: any) => {
-                      trackingNumber.value = e.target.value;
-                    }}
-                  />
-                  <button
-                    class="btn"
-                    onClick$={() => {
-                      orderId.value = "";
-                      userEmail.value = "";
-                      orderStatus.value = "";
-                    }}
-                  >
-                    Close
-                  </button>
-                  <button
-                    class="btn btn-primary"
-                    onClick$={handleSendTrackingNumber}
-                  >
-                    Confirm
-                  </button>
+                <form method="dialog" class="w-full">
+                  <div class="flex flex-col gap-3 w-full">
+                    <input
+                      type="text"
+                      class="input input-bordered w-full"
+                      placeholder="Company Name"
+                      onChange$={(e: any) => {
+                        trackingCompanyName.value = e.target.value;
+                      }}
+                    />
+                    <input
+                      type="text"
+                      class="input input-bordered w-full"
+                      placeholder="Tracking Number"
+                      onChange$={(e: any) => {
+                        trackingNumber.value = e.target.value;
+                      }}
+                    />
+                    <input
+                      type="text"
+                      class="input input-bordered w-full"
+                      placeholder="Tracking Link"
+                      onChange$={(e: any) => {
+                        trackingLink.value = e.target.value;
+                      }}
+                    />
+                    <div class="flex flex-row gap-2">
+                      <button
+                        class="btn"
+                        onClick$={() => {
+                          orderId.value = "";
+                          userEmail.value = "";
+                          orderStatus.value = "";
+                        }}
+                      >
+                        Close
+                      </button>
+                      <button
+                        class="btn btn-primary"
+                        onClick$={handleSendTrackingNumber}
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
                 </form>
               </div>
             </div>
@@ -379,7 +405,6 @@ export default component$(() => {
                     <tbody>
                       {orderDetail.value?.products?.map(
                         (product: any, index: number) => {
-                          console.log("product", product);
                           const total =
                             parseFloat(product?.price) * product?.quantity;
                           const subTotal = total.toLocaleString("en-US", {

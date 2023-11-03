@@ -6,6 +6,8 @@ export const sendShippedEmail = async (
   shipping_address: any,
   products: any[],
   trackingNumber: string,
+  trackingCompanyName: string,
+  trackingLink: string,
   orderNumber: string
 ) => {
   const transporter = createTransport({
@@ -65,7 +67,9 @@ export const sendShippedEmail = async (
           <p>Country: ${shipping_address?.country ?? ""}</p>
         </div>
         <p style="text-align: center; margin-top: 20px;">Your order has been shipped! Please find your tracking number below.</p>
+        <p style="text-align: center; margin-top: 20px;">Shipping Company Name: ${trackingCompanyName}</p>
         <p style="text-align: center; margin-top: 20px;">Tracking Number: ${trackingNumber}</p>
+        <p style="text-align: center; margin-top: 20px;">Tracking Link: <a href="${trackingLink}">${trackingLink}</a></p>
         <p style="text-align: center; margin-top: 20px;">Thank you for your order! Please find your order details above.</p>
     </div>
 </body>`,

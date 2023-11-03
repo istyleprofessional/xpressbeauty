@@ -55,16 +55,16 @@ export const ProductList = component$(() => {
             : "You have 0 item in your cart"}
         </p>
       </div>
-      {context?.cart && (
-        <>
-          {context?.cart?.products?.map((product: any) => (
-            <div
-              class="flex flex-row gap-1 md:gap-5 justify-center lg:justify-start items-center w-fit h-fit lg:w-[60%] bg-white border-2
+      <div class="flex flex-row flex-wrap gap-5 justify-between items-center p-6 w-full">
+        {context?.cart && (
+          <>
+            {context?.cart?.products?.map((product: any) => (
+              <div
+                class="flex flex-row gap-1 md:gap-5 justify-center items-center w-full h-fit lg:w-96 lg:h-96 bg-white border-2
                                 border-solid border-[#E0E0E0] rounded-lg"
-              key={uuid()}
-            >
-              <div class="flex flex-col gap-2 p-4 w-full">
-                <div class="flex flex-row gap-3 w-full">
+                key={uuid()}
+              >
+                <div class="flex flex-col gap-2 w-full p-5 ">
                   <a
                     href={`/products/${encodeURIComponent(
                       product.product_name
@@ -72,51 +72,54 @@ export const ProductList = component$(() => {
                         .replace(/ /g, "-")
                         .toLowerCase() ?? ""
                     )}`}
+                    class="w-full h-44"
                   >
                     <img
                       src={product?.product_img}
                       alt={product?.product_name}
-                      class="w-24 h-24 md:w-40 md:h-40 object-contain "
+                      class=" object-contain self-center w-full h-full"
                     />
                   </a>
-                  <div class="flex flex-col gap-3 w-full">
-                    <h2 class="text-black text-xs md:text-sm w-full overflow-ellipsis whitespace-nowrap overflow-hidden">
-                      {product?.product_name}
-                    </h2>
-                    <p class="text-black text-xs">
-                      {product?.variation_name ?? ""}
-                    </p>
-                    <ItemQuantity product={product} />
-                    <div class="flex flex-row w-full">
-                      <div class="flex flex-col gap-1">
-                        <p class="text-black md:text-sm text-xs">
-                          CA${" "}
-                          {parseFloat(product?.price.replace("$", "")).toFixed(
-                            2
-                          )}
-                        </p>
-                        {context.isVerified && (
-                          <p class="text-xs md:text-sm font-bold text-[red]">
-                            +20% off
+                  <div class="flex flex-row gap-3 w-full justify-center items-center">
+                    <div class="flex flex-col gap-3 w-full justify-center items-center">
+                      <h2 class="text-black text-sm md:text-md">
+                        {product?.product_name}
+                      </h2>
+                      <p class="text-black text-xs md:text-sm">
+                        {product?.variation_name ?? ""}
+                      </p>
+                      <ItemQuantity product={product} />
+                      <div class="flex flex-row w-full justify-center items-center">
+                        <div class="flex flex-col gap-1">
+                          <p class="text-black md:text-sm text-xs">
+                            CA${" "}
+                            {parseFloat(
+                              product?.price.replace("$", "")
+                            ).toFixed(2)}
                           </p>
-                        )}
+                          {context.isVerified && (
+                            <p class="text-xs md:text-sm font-bold text-[red]">
+                              +20% off
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          class="btn text-[#CC0000] m-2 ml-auto"
+                          onClick$={() => {
+                            handleDeleteItemClick(product);
+                          }}
+                        >
+                          <TrashIcon classes="md:w-5 md:h-5 w-4 h-4" />
+                        </button>
                       </div>
-                      <button
-                        class="btn text-[#CC0000] m-2 ml-auto"
-                        onClick$={() => {
-                          handleDeleteItemClick(product);
-                        }}
-                      >
-                        <TrashIcon classes="md:w-5 md:h-5 w-4 h-4" />
-                      </button>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </>
-      )}
+            ))}
+          </>
+        )}
+      </div>
     </>
   );
 });
