@@ -21,7 +21,6 @@ export const Hero = component$(() => {
   });
   return (
     <div class="flex flex-col justify-center items-center">
-      <h2 class="text-black p-3 text-3xl font-bold">Related Products</h2>
       <div class="flex flex-row items-center justify-center w-full">
         <button
           class="btn btn-circle w-fit md:w-12 z-10 flex items-center justifty-center justify-self-start  bg-black absolute left-0"
