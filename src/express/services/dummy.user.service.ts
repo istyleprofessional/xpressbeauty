@@ -56,3 +56,12 @@ export const update_dummy_user = async (body: any, id: string) => {
     return { err: err };
   }
 };
+
+export const getAllDummyUsersCount = async () => {
+  try {
+    const result = await DummyUser.countDocuments();
+    return { status: "success", result: result };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};

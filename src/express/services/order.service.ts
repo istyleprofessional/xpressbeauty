@@ -95,3 +95,38 @@ export const updateOrderStatus = async (orderId: string, status: string) => {
     return { status: "failed", err: error.message };
   }
 };
+
+export const getAllShippedOrdersCount = async () => {
+  try {
+    const request = await Order.countDocuments({ orderStatus: "Shipped" });
+    return { status: "success", request: request };
+  } catch (error: any) {
+    return { status: "failed", err: error.message };
+  }
+};
+
+export const getAllPendingOrdersCount = async () => {
+  try {
+    const request = await Order.countDocuments({ orderStatus: "Pending" });
+    return { status: "success", request: request };
+  } catch (error: any) {
+    return { status: "failed", err: error.message };
+  }
+};
+
+export const getTotalRevenue = async () => {
+  // return revenue of each month by calculating total price of each order in that month using createdAt field
+  try {
+    const request = await Order.aggregate([
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          total: { $sum: "$totalPrice" },
+        },
+      },
+    ]);
+    return { status: "success", request: request };
+  } catch (error: any) {
+    return { status: "failed", err: error.message };
+  }
+};

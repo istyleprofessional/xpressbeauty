@@ -344,3 +344,12 @@ export const getUsers = async (page: number) => {
     return { status: "failed", err: err };
   }
 };
+
+export const getAllRegisteredUsersCount = async () => {
+  try {
+    const result = await User.countDocuments();
+    return { status: "success", result: result };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};

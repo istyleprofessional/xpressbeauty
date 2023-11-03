@@ -1,9 +1,56 @@
 import { component$ } from "@builder.io/qwik";
+import { routeLoader$ } from "@builder.io/qwik-city";
 import { BestSellerChart } from "~/components/admin/best-seller-chart/best-seller-chart";
 import { Card } from "~/components/admin/card/card";
 import { Revenues } from "~/components/admin/revenues/revenues";
+import { getAllDummyUsersCount } from "~/express/services/dummy.user.service";
+import {
+  getAllPendingOrdersCount,
+  getAllShippedOrdersCount,
+  getTotalRevenue,
+} from "~/express/services/order.service";
+import { getAllRegisteredUsersCount } from "~/express/services/user.service";
+
+export const useLoader = routeLoader$(async () => {
+  const shippedOrders = await getAllShippedOrdersCount();
+  const shippedOrdersCount =
+    shippedOrders.status === "success"
+      ? shippedOrders.request?.toString()
+      : "0";
+  const pendingOrders = await getAllPendingOrdersCount();
+  const pendingOrdersCount =
+    pendingOrders.status === "success"
+      ? pendingOrders.request?.toString()
+      : "0";
+  const allOrderCount = (
+    parseInt(shippedOrdersCount ?? "0") + parseInt(pendingOrdersCount ?? "0")
+  ).toString();
+  const registeredUsers = await getAllRegisteredUsersCount();
+  const registeredUsersCount =
+    registeredUsers.status === "success"
+      ? registeredUsers.result?.toString()
+      : "0";
+  const dummyUsers = await getAllDummyUsersCount();
+  const dummyUsersCount =
+    dummyUsers.status === "success" ? dummyUsers.result?.toString() : "0";
+  const totalRevenue = await getTotalRevenue();
+  console.log(totalRevenue);
+  const totalRev =
+    totalRevenue.status === "success" ? totalRevenue?.request ?? [] : [];
+  console.log(totalRev);
+  return {
+    shippedOrdersCount,
+    pendingOrdersCount,
+    allOrderCount,
+    registeredUsersCount,
+    dummyUsersCount,
+    totalRev,
+  };
+});
 
 export default component$(() => {
+  const loader = useLoader();
+
   return (
     <div class="w-full h-full flex-col justify-start items-start gap-10 inline-flex">
       <div class="w-full h-full px-6 pt-3 bg-white rounded-lg shadow flex-col justify-center items-center flex">
@@ -34,7 +81,7 @@ export default component$(() => {
               </svg>
               `}
             title="Shipped Orders"
-            count={"6,000"}
+            count={loader.value.shippedOrdersCount ?? "0"}
           />
           <Card
             icon={`
@@ -43,7 +90,7 @@ export default component$(() => {
               </svg>
               `}
             title="Pending Orders"
-            count={"200"}
+            count={loader.value.pendingOrdersCount ?? "0"}
           />
           <Card
             icon={`
@@ -52,7 +99,7 @@ export default component$(() => {
                 </svg>
               `}
             title="New Orders"
-            count={"1,000"}
+            count={loader.value.allOrderCount ?? "0"}
           />
         </div>
       </div>
@@ -68,17 +115,8 @@ export default component$(() => {
                 <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               `}
-            title="Old Registered Users"
-            count={"200"}
-          />
-          <Card
-            icon={`
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 4.35418C12.7329 3.52375 13.8053 3 15 3C17.2091 3 19 4.79086 19 7C19 9.20914 17.2091 11 15 11C13.8053 11 12.7329 10.4762 12 9.64582M15 21H3V20C3 16.6863 5.68629 14 9 14C12.3137 14 15 16.6863 15 20V21ZM15 21H21V20C21 16.6863 18.3137 14 15 14C13.9071 14 12.8825 14.2922 12 14.8027M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z" stroke="#F9FAFB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              `}
-            title="New Registered Users"
-            count={"1,000"}
+            title="Registered Users"
+            count={loader.value.registeredUsersCount ?? "0"}
           />
           <Card
             icon={`
@@ -87,7 +125,7 @@ export default component$(() => {
               </svg>
               `}
             title="Dummy Users"
-            count={"6,000"}
+            count={loader.value.dummyUsersCount ?? "0"}
           />
         </div>
       </div>
@@ -96,7 +134,7 @@ export default component$(() => {
           <h2 class="text-gray-500 text-2xl font-medium font-['Inter'] leading-loose">
             Revenues
           </h2>
-          <Revenues />
+          <Revenues rev={loader.value.totalRev} />
         </div>
         <div class="flex-col justify-start items-start gap-6 flex">
           <h2 class="text-gray-500 text-2xl font-medium font-['Inter'] leading-loose">

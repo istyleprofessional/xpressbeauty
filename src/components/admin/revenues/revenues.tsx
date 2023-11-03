@@ -1,10 +1,139 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 
-export const Revenues = component$(() => {
-  const columnChart = useSignal<HTMLDivElement>();
+export interface RevenuesProps {
+  rev: any[];
+}
 
+export const Revenues = component$((props: RevenuesProps) => {
+  const { rev } = props;
+  const columnChart = useSignal<HTMLDivElement>();
+  console.log(rev.length);
   useVisibleTask$(
-    async () => {
+    async ({ track }) => {
+      track(() => rev.length);
+      const months = [
+        rev
+          .map((r) => {
+            if (r._id === 1) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 2) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 3) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 4) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 5) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 6) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 7) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 8) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 9) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 10) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 11) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+        rev
+          .map((r) => {
+            if (r._id === 12) {
+              return r.total;
+            } else {
+              return null;
+            }
+          })
+          .filter((r) => r !== null)
+          .join(""),
+      ];
+      console.log(parseInt(months[9] ?? "0"));
       const options = {
         colors: ["#1A56DB", "#FDBA8C"],
         series: [
@@ -12,18 +141,54 @@ export const Revenues = component$(() => {
             name: "Total Revenue",
             color: "#1A56DB",
             data: [
-              { x: "Jan", y: 231 },
-              { x: "Feb", y: 122 },
-              { x: "Mar", y: 63 },
-              { x: "Apr", y: 421 },
-              { x: "Mai", y: 122 },
-              { x: "Jun", y: 323 },
-              { x: "Jul", y: 111 },
-              { x: "Aug", y: 111 },
-              { x: "Sep", y: 111 },
-              { x: "Oct", y: 111 },
-              { x: "Nov", y: 111 },
-              { x: "Dec", y: 111 },
+              {
+                x: "Jan",
+                y: parseInt(months[0] ?? "0"),
+              },
+              {
+                x: "Feb",
+                y: parseInt(months[1] ?? "0"),
+              },
+              {
+                x: "Mar",
+                y: parseInt(months[2] ?? "0"),
+              },
+              {
+                x: "Apr",
+                y: parseInt(months[3] ?? "0"),
+              },
+              {
+                x: "Mai",
+                y: parseInt(months[4] ?? "0"),
+              },
+              {
+                x: "Jun",
+                y: parseInt(months[5] ?? "0"),
+              },
+              {
+                x: "Jul",
+                y: parseInt(months[6] ?? "0"),
+              },
+              {
+                x: "Aug",
+                y: parseInt(months[7] ?? "0"),
+              },
+              {
+                x: "Sep",
+                y: parseInt(months[8] ?? "0"),
+              },
+              {
+                x: "Oct",
+                y: parseInt(months[9] ?? "0"),
+              },
+              {
+                x: "Nov",
+                y: parseInt(months[10] ?? "0"),
+              },
+              {
+                x: "Dec",
+                y: parseInt(months[11] ?? "0"),
+              },
             ],
           },
         ],
@@ -105,7 +270,7 @@ export const Revenues = component$(() => {
       const chart = new ApexCharts.default(columnChart.value, options);
       chart.render();
     },
-    { strategy: "document-ready" }
+    { strategy: "intersection-observer" }
   );
 
   return (
