@@ -21,7 +21,8 @@ import { UserContext } from "~/context/user.context";
 import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 
-export const useUserData = routeLoader$(async ({ cookie, env }) => {
+export const useUserData = routeLoader$(async ({ cookie, env, clientConn }) => {
+  console.log(clientConn.country);
   await connect();
   const token = cookie.get("token")?.value ?? "";
   if (!token) {
