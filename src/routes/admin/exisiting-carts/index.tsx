@@ -11,7 +11,6 @@ import { sendReminderEmailService } from "~/utils/sendReminderEmailService";
 export const useCartTableData = routeLoader$(async ({ url }) => {
   const page = url.searchParams.get("page") ?? "1";
   const carts = await getCartsPerPageService(parseInt(page ?? "1"));
-  //   console.log(carts);
   if (carts.status === "success") {
     return { status: carts.status, res: JSON.stringify(carts) };
   } else {
@@ -44,13 +43,17 @@ export default component$(() => {
       email: string,
       name: string,
       totalQuantity: number,
-      products: any
+      products: any,
+      _id: string,
+      isDummy: boolean
     ) => {
       const data = {
         email,
         name,
         totalQuantity,
         products,
+        _id,
+        isDummy,
       };
       if (email) {
         isLoading.value = true;
@@ -169,7 +172,9 @@ export default component$(() => {
                                     ""
                                   }`,
                                   cart?.totalQuantity ?? 0,
-                                  cart?.products ?? []
+                                  cart?.products ?? [],
+                                  cart?.userId ?? "",
+                                  cart?.dummyUser ? true : false
                                 );
                               }}
                             >

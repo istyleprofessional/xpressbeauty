@@ -1,11 +1,31 @@
-import { component$, useSignal } from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { PerviousArrowIconNoStick } from "~/components/shared/icons/icons";
 import { Steps } from "~/components/shared/steps/steps";
 import { CartDetails } from "~/components/cart/cart-details/cart-details";
 import { ProductList } from "~/components/cart/product-list/product-list";
+import { server$, useLocation } from "@builder.io/qwik-city";
+
+export const changeToken = server$(async function (token: string) {
+  this.cookie.set("token", token, {
+    path: "/",
+    httpOnly: true,
+  });
+});
 
 export default component$(() => {
   const isLoading = useSignal<boolean>(false);
+  const loc = useLocation();
+  const token = loc.url.searchParams.get("token");
+
+  useVisibleTask$(
+    async () => {
+      if (token) {
+        await changeToken(token);
+        location.href = "/cart/";
+      }
+    },
+    { strategy: "document-idle" }
+  );
 
   return (
     <>

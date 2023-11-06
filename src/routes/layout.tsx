@@ -21,9 +21,7 @@ import { UserContext } from "~/context/user.context";
 import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 
-export const useUserData = routeLoader$(async ({ cookie, env, request }) => {
-  console.log(request.signal ?? "");
-
+export const useUserData = routeLoader$(async ({ cookie, env }) => {
   await connect();
   const token = cookie.get("token")?.value ?? "";
   if (!token) {
@@ -84,8 +82,8 @@ export const useUserData = routeLoader$(async ({ cookie, env, request }) => {
     } else {
       user = await findUserByUserId(verify?.user_id ?? "");
     }
+
     if (!user?.result) {
-      console.log("user not found");
       cookie.delete("token", { path: "/" });
       const request: any = await addDummyCustomer("", null);
       const newTokentoken = jwt.sign(

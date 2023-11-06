@@ -1,7 +1,8 @@
 import { createTransport } from "nodemailer";
+import jwt from "jsonwebtoken";
 
 export const sendReminderEmailService = async (data: any) => {
-  const { email, name, totalQuantity, products } = data;
+  const { email, name, totalQuantity, products, isDummy } = data;
   const transporter = createTransport({
     host: "smtp.zoho.com",
     port: 465,
@@ -11,6 +12,11 @@ export const sendReminderEmailService = async (data: any) => {
       pass: import.meta.env.VITE_EMAIL_PASS ?? "",
     },
   });
+
+  const token = jwt.sign(
+    { user_id: data._id, isDummy: isDummy },
+    import.meta.env.VITE_JWTSECRET ?? ""
+  );
   const mailOptions = {
     from: import.meta.env.VITE_EMAIL ?? "",
     to: email,
@@ -43,7 +49,7 @@ export const sendReminderEmailService = async (data: any) => {
               .join("")}
         </table>
         <div style="text-align: center;">
-          <a href="https://xpressbeauty/cart" style="display: inline-block; text-decoration: none; background-color: #000; color: #fff; padding: 10px 20px; border-radius: 5px;">Go To Cart</a>
+          <a href="https://xpressbeauty.ca/cart?token=${token}" style="display: inline-block; text-decoration: none; background-color: #000; color: #fff; padding: 10px 20px; border-radius: 5px;">Go To Cart</a>
         </div>
         <div style="text-align: center; padding-top: 20px; color: #777777;">
             <p>If you have any questions, please contact us at <a href="mailto:info@xpressbeauty.ca">info@xpressbeauty.ca</a>.</p>
