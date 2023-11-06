@@ -89,13 +89,6 @@ export const Footer = component$(() => {
                 <span>Facebook</span>
               </a>
               <a
-                href="#"
-                class="text-white font-light text-base flex flex-row gap-2"
-              >
-                <img src="/Twitter.webp" alt="facebook" class="w-6 h-full" />
-                <span>Twitter</span>
-              </a>
-              <a
                 href="https://web.whatsapp.com/send/?phone=12134014667"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
@@ -185,13 +178,6 @@ export const Footer = component$(() => {
               >
                 <img src="/Facebook.webp" alt="facebook" class="w-6 h-full" />
                 <span>Facebook</span>
-              </a>
-              <a
-                href="#"
-                class="text-white font-light text-base flex flex-row gap-2"
-              >
-                <img src="/Twitter.webp" alt="facebook" class="w-6 h-full" />
-                <span>Twitter</span>
               </a>
               <a
                 href="https://web.whatsapp.com/send/?phone=12134014667"
