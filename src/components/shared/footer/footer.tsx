@@ -96,7 +96,7 @@ export const Footer = component$(() => {
                 <span>Twitter</span>
               </a>
               <a
-                href="#"
+                href="https://web.whatsapp.com/send/?phone=12134014667"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
                 <img src="/whatsapp.webp" alt="whatsapp" class="w-6 h-full" />
@@ -194,7 +194,7 @@ export const Footer = component$(() => {
                 <span>Twitter</span>
               </a>
               <a
-                href="#"
+                href="https://web.whatsapp.com/send/?phone=12134014667"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
                 <img src="/whatsapp.webp" alt="whatsapp" class="w-6 h-full" />
