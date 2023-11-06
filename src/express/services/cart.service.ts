@@ -91,3 +91,64 @@ export const handleDecIncVariationProducts = async (data: any) => {
     return { status: "failed", err: err };
   }
 };
+
+export const getCartsPerPageService = async (page: number) => {
+  try {
+    const request = await Cart.aggregate([
+      {
+        $addFields: {
+          userIdObj: { $toObjectId: "$userId" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userIdObj",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "dummyusers",
+          localField: "userIdObj",
+          foreignField: "_id",
+          as: "dummyUser",
+        },
+      },
+      {
+        $unwind: { path: "$dummyUser", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $project: {
+          _id: 1,
+          userId: 1,
+          "user.email": 1,
+          "user.firstName": 1,
+          "user.lastName": 1,
+          "user.phoneNumber": 1,
+          "user.generalInfo": 1,
+          "user.isEmailVerified": 1,
+          "user.isPhoneNumberVerified": 1,
+          "dummyUser.phoneNumber": 1,
+          "dummyUser.generalInfo": 1,
+          "dummyUser.email": 1,
+          "dummyUser.firstName": 1,
+          "dummyUser.lastName": 1,
+          products: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          totalQuantity: 1,
+        },
+      },
+    ])
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * 20)
+      .limit(20);
+    const count = await Cart.countDocuments();
+    return { status: "success", result: request, total: count };
+  } catch (err: any) {
+    return { status: "failed", err: err.message };
+  }
+};

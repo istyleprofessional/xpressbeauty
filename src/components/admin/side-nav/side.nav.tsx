@@ -143,6 +143,27 @@ export const SideNav = component$(() => {
           Users
         </p>
       </a>
+
+      <a
+        class="flex flex-row gap-1 cursor-pointer bg-base-100 normal-case"
+        aria-label="Users"
+        href="/admin/exisiting-carts"
+      >
+        <UsersAdminIcon
+          color={
+            loc.url.pathname.includes("exisiting-carts") ? "#7C3AED" : "#6B7280"
+          }
+        />
+        <p
+          class={`text-lg ${
+            loc.url.pathname.includes("exisiting-carts")
+              ? "text-[#7C3AED]"
+              : "text-[#6B7280]"
+          }`}
+        >
+          Exisiting Carts
+        </p>
+      </a>
       <button
         class="flex flex-row gap-1 cursor-pointer bg-base-100 normal-case mt-auto"
         onClick$={handleLogOutAdmin}

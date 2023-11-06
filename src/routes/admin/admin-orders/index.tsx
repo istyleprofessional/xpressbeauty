@@ -16,6 +16,7 @@ import { sendShippedEmail } from "~/utils/sendShippedEmail";
 export const useOrderTableData = routeLoader$(async ({ url }) => {
   const page = url.searchParams.get("page") ?? "1";
   const orders = await getOrdersService(parseInt(page));
+  // console.log(orders);
   if (orders.status === "success") {
     return { status: orders.status, res: JSON.stringify(orders) };
   } else {
