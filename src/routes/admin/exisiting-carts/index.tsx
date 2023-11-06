@@ -211,7 +211,7 @@ export default component$(() => {
               const url = new URL(window.location.href);
               url.searchParams.set(
                 "page",
-                (parseInt(currentPageNo) + 1).toString()
+                (parseInt(currentPageNo) - 1).toString()
               );
               location.href = url.toString();
             }}
