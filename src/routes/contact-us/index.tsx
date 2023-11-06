@@ -188,7 +188,7 @@ export default component$(() => {
               conversation.
             </div>
             <div class="text-zinc-600 text-lg font-normal leading-7">
-              xpressbeautysupplier@gmail.com
+              {import.meta.env.VITE_EMAIL}
             </div>
           </div>
         </div>
