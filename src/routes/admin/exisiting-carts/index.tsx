@@ -202,6 +202,14 @@ export default component$(() => {
               currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
             } text-xs`}
             disabled={currentPageNo === "1"}
+            onClick$={() => {
+              const url = new URL(window.location.href);
+              url.searchParams.set(
+                "page",
+                (parseInt(currentPageNo) + 1).toString()
+              );
+              location.href = url.toString();
+            }}
           >
             Previous
           </button>
@@ -215,6 +223,14 @@ export default component$(() => {
                 : "text-[#7C3AED]"
             }`}
             disabled={currentPageNo === totalPages.toString()}
+            onClick$={() => {
+              const url = new URL(window.location.href);
+              url.searchParams.set(
+                "page",
+                (parseInt(currentPageNo) + 1).toString()
+              );
+              location.href = url.toString();
+            }}
           >
             Next
           </button>
