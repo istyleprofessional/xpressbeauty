@@ -206,7 +206,7 @@ export const onPost: RequestHandler = async ({
             { source: data.token }
           );
           const charges = await stripe.charges.create({
-            amount: parseInt(data.order_amount) * 100,
+            amount: parseFloat(parseFloat(data.order_amount).toFixed(2)) * 100,
             currency: "cad",
             source: source.id,
             customer: request.result?.stripeCustomerId ?? "",

@@ -156,6 +156,25 @@ export const callServer = server$(async function (
   }
 });
 
+// export const calcualteTaxesServer = server$(async function (data: any) {
+//   const stripe = new Stripe(this.env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "", {
+//     apiVersion: "2022-11-15",
+//   });
+//   const paymentIntent = await stripe.paymentIntents.create({
+//     amount: 1000, // The payment amount in cents
+//     currency: "usd",
+//     shipping: {
+//       name: "Jenny Rosen",
+//       address: {
+//         country: "US",
+//         postal_code: "98140",
+//       },
+//     },
+//   });
+//   console.log(paymentIntent);
+//   return paymentIntent;
+// });
+
 export default component$(() => {
   const isLoading = useSignal<boolean>(false);
   const paymentRoute = JSON.parse(usePaymentRoute().value);
@@ -198,6 +217,20 @@ export default component$(() => {
       if (!stripe) {
         return;
       }
+      // const taxData = {
+      //   amount: total.value,
+      //   line1: userContext?.user?.generalInfo?.address?.addressLine1,
+      //   postal_code: userContext?.user?.generalInfo?.address?.postalCode,
+      //   state: userContext?.user?.generalInfo?.address?.state,
+      //   city: userContext?.user?.generalInfo?.address?.city,
+      //   country:
+      //     userContext?.user?.generalInfo?.address?.country === "Canada"
+      //       ? "CA"
+      //       : "US",
+      //   customerId: userContext?.user?.stripeCustomerId,
+      // };
+      // const calculateTaxes = await calcualteTaxesServer(taxData);
+      // console.log(calculateTaxes);
       const elements = stripe.elements();
       let cardNo: any;
       let cardExpiration: any;

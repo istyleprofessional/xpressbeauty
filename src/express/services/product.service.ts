@@ -122,13 +122,18 @@ export const hide_product_service = async (product: any, token: string) => {
   }
 };
 
-export const get_new_arrivals_products = async (filter: string) => {
+export const get_new_arrivals_products = async (filter?: string) => {
   try {
-    const result = await Product.find({
-      isHidden: { $ne: true },
-      categories: { $elemMatch: { main: { $regex: filter, $options: "i" } } },
-    }).limit(20);
-    return result as ProductModel;
+    if (filter && filter !== "") {
+      const result = await Product.find({
+        isHidden: { $ne: true },
+        categories: { $elemMatch: { main: { $regex: filter, $options: "i" } } },
+      }).limit(8);
+      return result as ProductModel;
+    } else {
+      const result = await Product.aggregate([{ $sample: { size: 8 } }]);
+      return result as ProductModel;
+    }
   } catch (err) {
     return { err: err };
   }

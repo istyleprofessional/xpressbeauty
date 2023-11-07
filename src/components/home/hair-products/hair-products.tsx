@@ -24,7 +24,9 @@ export const HairProducts = component$((props: NewArrivalProps) => {
       class="flex flex-col justify-center items-center gap-7 w-full"
       style="background-image: url(Dash-lines.webp) "
     >
-      <h2 class="font-inter font-bold text-4xl text-black">Hair</h2>
+      <h2 class="font-inter font-bold text-4xl text-black">
+        Top Selling Products
+      </h2>
       {isVisble.value && (
         <div class="m-6 flex flex-row flex-wrap gap-10 justify-center items-center w-full">
           {newArrivalProducts?.map((item: ProductModel, i: number) => (

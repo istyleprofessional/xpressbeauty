@@ -224,7 +224,8 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
                 <div class="flex flex-row gap-2">
                   <div class="flex flex-col gap-1">
                     <p class="text-sm text-gray-500">
-                      Login or Register to get an extra 20% off
+                      Login or Register and verify Phone Number and Email
+                      Address to get an extra 20% off
                     </p>
                     <h2 class="flex flex-row gap-2 text-xl lg:text-3xl">
                       {priceType === "single" && sale_price.sale !== "" && (

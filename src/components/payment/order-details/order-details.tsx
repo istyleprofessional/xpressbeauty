@@ -17,13 +17,13 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
   useVisibleTask$(({ track }) => {
     track(() => cart?.totalPrice);
     subTotal.value = cart?.totalPrice ?? 0;
-    hst.value = (cart?.totalPrice ?? 0) * 0.13;
+    // hst.value = (cart?.totalPrice ?? 0) * 0.13;
     if (subTotal.value > 150) {
       shipping.value = 0;
     } else {
       shipping.value = 15;
     }
-    total.value = (cart?.totalPrice ?? 0) + hst.value + shipping.value;
+    total.value = (cart?.totalPrice ?? 0) + shipping.value;
   });
   return (
     <>
