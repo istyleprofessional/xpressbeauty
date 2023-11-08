@@ -50,10 +50,13 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
             {priceType === "single" && sale_price.sale !== "" && (
               <>
                 <span class="text-gray-400 line-through" itemProp="price">
-                  {price.regular.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "CAD",
-                  })}
+                  {parseFloat(price?.regualr?.toString()).toLocaleString(
+                    "en-US",
+                    {
+                      style: "currency",
+                      currency: "CAD",
+                    }
+                  )}
                 </span>
                 <span class="text-error ml-2" itemProp="price">
                   {parseFloat(sale_price.sale.toString()).toLocaleString(

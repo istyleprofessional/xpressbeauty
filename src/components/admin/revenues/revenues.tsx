@@ -1,4 +1,5 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import ApexCharts from "apexcharts";
 
 export interface RevenuesProps {
   rev: any[];
@@ -7,7 +8,7 @@ export interface RevenuesProps {
 export const Revenues = component$((props: RevenuesProps) => {
   const { rev } = props;
   const columnChart = useSignal<HTMLDivElement>();
-  console.log(rev.length);
+
   useVisibleTask$(
     async ({ track }) => {
       track(() => rev.length);
@@ -133,7 +134,7 @@ export const Revenues = component$((props: RevenuesProps) => {
           .filter((r) => r !== null)
           .join(""),
       ];
-      console.log(parseInt(months[9] ?? "0"));
+      // console.log(parseInt(months[9] ?? "0"));
       const options = {
         colors: ["#1A56DB", "#FDBA8C"],
         series: [
@@ -266,9 +267,13 @@ export const Revenues = component$((props: RevenuesProps) => {
           opacity: 1,
         },
       };
-      const ApexCharts = await import("apexcharts");
-      const chart = new ApexCharts.default(columnChart.value, options);
-      chart.render();
+      // const ApexCharts = await import("apexcharts");
+      if (columnChart.value && ApexCharts && rev.length > 0) {
+        const chart = new ApexCharts(columnChart.value, options);
+        chart.render();
+      } else {
+        console.log("no chart");
+      }
     },
     { strategy: "intersection-observer" }
   );

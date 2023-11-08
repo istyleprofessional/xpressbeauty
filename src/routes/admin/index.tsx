@@ -34,10 +34,8 @@ export const useLoader = routeLoader$(async () => {
   const dummyUsersCount =
     dummyUsers.status === "success" ? dummyUsers.result?.toString() : "0";
   const totalRevenue = await getTotalRevenue();
-  console.log(totalRevenue);
   const totalRev =
     totalRevenue.status === "success" ? totalRevenue?.request ?? [] : [];
-  console.log(totalRev);
   return {
     shippedOrdersCount,
     pendingOrdersCount,
