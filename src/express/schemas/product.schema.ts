@@ -23,6 +23,7 @@ const productsSchema = new Schema(
     companyName: { type: Object, default: null },
     perfix: { type: String, default: null },
     priceType: { type: String, default: null },
+    updateQuickBooks: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

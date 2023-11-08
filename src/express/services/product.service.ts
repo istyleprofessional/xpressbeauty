@@ -55,10 +55,17 @@ export const update_product_service = async (product: any, token: string) => {
 
 export const get_all_products_with_item_no = async () => {
   try {
-    const result = await Product.find({ item_no: { $ne: "" } }).select({
+    const result = await Product.find({
+      item_no: { $ne: "" },
+      $or: [
+        { updateQuickBooks: { $exists: false } },
+        { updateQuickBooks: true },
+      ],
+    }).select({
       item_no: 1,
       _id: 0,
     });
+    console.log(result);
     const products: any[] = result;
     return products;
   } catch (err) {

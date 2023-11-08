@@ -10,6 +10,7 @@ import {
 
 export const useEditProductData = routeLoader$(async ({ params }) => {
   const product = await getProductByIdForAdmin(params.id);
+  // console.log(product);
   const categories = await get_all_categories();
   const brands = await get_all_brands();
   return JSON.stringify({
@@ -45,6 +46,11 @@ export const useFormAction = routeAction$(async function (data, event) {
     }
     if (key === "isHidden") {
       formData[key] = formData[key] === "true" ? true : false;
+    }
+    if (key === "updateQuickBooks") {
+      formData[key] = true;
+    } else {
+      formData["updateQuickBooks"] = false;
     }
   });
   await update_product_service(formData, token);
@@ -415,6 +421,15 @@ export default component$(() => {
                 In Active
               </option>
             </select>
+          </div>
+          <div class="grid grid-cols-4">
+            <p class="col-span-1">Update Using QuickBooks</p>
+            <input
+              class="form-checkbox h-5 w-5 text-[#7C3AED]"
+              type="checkbox"
+              name="updateQuickBooks"
+              checked={product.updateQuickBooks}
+            />
           </div>
         </div>
       </Form>
