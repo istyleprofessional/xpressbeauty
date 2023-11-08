@@ -59,11 +59,26 @@ export const getOrdersService = async (page: number) => {
         $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
       },
       {
+        $lookup: {
+          from: "dummyUsers",
+          localField: "userIdObj",
+          foreignField: "_id",
+          as: "dummyUser",
+        },
+      },
+      {
+        $unwind: { path: "$dummyUser", preserveNullAndEmptyArrays: true },
+      },
+      {
         $project: {
           _id: 1,
+          userId: 1,
           "user.email": 1,
           "user.firstName": 1,
           "user.lastName": 1,
+          "dummyUser.email": 1,
+          "dummyUser.firstName": 1,
+          "dummyUser.lastName": 1,
           shippingAddress: 1,
           totalPrice: 1,
           createdAt: 1,

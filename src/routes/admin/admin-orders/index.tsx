@@ -1,4 +1,4 @@
-import { component$, $, useSignal } from "@builder.io/qwik";
+import { component$, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import {
   CheckOrderIcon,
@@ -16,6 +16,7 @@ import { sendShippedEmail } from "~/utils/sendShippedEmail";
 export const useOrderTableData = routeLoader$(async ({ url }) => {
   const page = url.searchParams.get("page") ?? "1";
   const orders = await getOrdersService(parseInt(page));
+  // console.log(orders);
   // console.log(orders);
   if (orders.status === "success") {
     return { status: orders.status, res: JSON.stringify(orders) };
@@ -145,6 +146,9 @@ export default component$(() => {
             {ordersData?.request?.length > 0 &&
               ordersData?.request?.map((order: any, index: number) => {
                 const date = new Date(order.createdAt);
+                useVisibleTask$(() => {
+                  console.log(order);
+                });
                 return (
                   <tr key={index}>
                     <th>
@@ -153,7 +157,12 @@ export default component$(() => {
                       </label>
                     </th>
                     <td>
-                      {order?.user?.firstName} {order?.user?.lastName}
+                      {order?.user?.firstName ??
+                        order?.dummyUser?.firstName ??
+                        "Guest User"}{" "}
+                      {order?.user?.lastName ??
+                        order?.dummyUser?.lastName ??
+                        ""}
                     </td>
                     <td>{order.order_number}</td>
                     <td>
@@ -383,6 +392,24 @@ export default component$(() => {
                   >
                     Close
                   </button>
+                </div>
+                {/** Customer Details */}
+                <div class="flex flex-row justify-between items-center p-2">
+                  <p class="text-xs">
+                    Customer Name:{" "}
+                    {orderDetail.value?.user?.firstName ??
+                      orderDetail.value?.dummyUser?.firstName ??
+                      "Guest User"}{" "}
+                    {orderDetail.value?.user?.lastName ??
+                      orderDetail.value?.dummyUser?.lastName ??
+                      ""}
+                  </p>
+                  <p class="text-xs">
+                    Customer Email:{" "}
+                    {orderDetail.value?.user?.email ??
+                      orderDetail.value?.dummyUser?.email ??
+                      "Not Found"}
+                  </p>
                 </div>
                 <div class="flex flex-row justify-between items-center p-2">
                   <p class="text-xs">
