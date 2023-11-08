@@ -60,7 +60,7 @@ export const getOrdersService = async (page: number) => {
       },
       {
         $lookup: {
-          from: "dummyUsers",
+          from: "dummyusers",
           localField: "userIdObj",
           foreignField: "_id",
           as: "dummyUser",

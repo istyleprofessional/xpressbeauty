@@ -1,4 +1,4 @@
-import { component$, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, $, useSignal } from "@builder.io/qwik";
 import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import {
   CheckOrderIcon,
@@ -16,8 +16,6 @@ import { sendShippedEmail } from "~/utils/sendShippedEmail";
 export const useOrderTableData = routeLoader$(async ({ url }) => {
   const page = url.searchParams.get("page") ?? "1";
   const orders = await getOrdersService(parseInt(page));
-  // console.log(orders);
-  // console.log(orders);
   if (orders.status === "success") {
     return { status: orders.status, res: JSON.stringify(orders) };
   } else {
@@ -146,9 +144,9 @@ export default component$(() => {
             {ordersData?.request?.length > 0 &&
               ordersData?.request?.map((order: any, index: number) => {
                 const date = new Date(order.createdAt);
-                useVisibleTask$(() => {
-                  console.log(order);
-                });
+                // useVisibleTask$(() => {
+                //   console.log(order);
+                // });
                 return (
                   <tr key={index}>
                     <th>
@@ -278,6 +276,14 @@ export default component$(() => {
               currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
             } text-xs`}
             disabled={currentPageNo === "1"}
+            onClick$={() => {
+              const url = new URL(window.location.href);
+              url.searchParams.set(
+                "page",
+                (parseInt(currentPageNo) - 1).toString()
+              );
+              location.href = url.toString();
+            }}
           >
             Previous
           </button>
@@ -291,6 +297,14 @@ export default component$(() => {
                 : "text-[#7C3AED]"
             }`}
             disabled={currentPageNo === totalPages.toString()}
+            onClick$={() => {
+              const url = new URL(window.location.href);
+              url.searchParams.set(
+                "page",
+                (parseInt(currentPageNo) + 1).toString()
+              );
+              location.href = url.toString();
+            }}
           >
             Next
           </button>
