@@ -19,7 +19,8 @@ export const sendConfirmationOrderForAdmin = async (
     return acc + product.price * product.quantity;
   }, 0);
   const tax = total * hst;
-  const finalTotal = total + tax;
+  const shipping = 15;
+  const finalTotal = total + tax + shipping;
   const mailOptions = {
     from: import.meta.env.VITE_EMAIL ?? "",
     to: "Isbeautysupply@gmail.com",
@@ -50,6 +51,7 @@ export const sendConfirmationOrderForAdmin = async (
         </table>
         <div style="text-align: right;">
             <p>Tax: $${parseFloat(tax.toString()).toFixed(2)}</p>
+            <p>Shipping: $${parseFloat(shipping.toString()).toFixed(2)}</p>
             <p>Final Total: $${parseFloat(finalTotal.toString()).toFixed(2)}</p>
         </div>
         <div style="text-align: center;">

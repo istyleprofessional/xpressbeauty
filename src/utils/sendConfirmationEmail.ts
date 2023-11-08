@@ -19,8 +19,9 @@ export const sendConfirmationEmail = async (
   const total = products.reduce((acc, product) => {
     return acc + product.price * product.quantity;
   }, 0);
+  const shipping = 15;
   const tax = total * hst;
-  const finalTotal = total + tax;
+  const finalTotal = total + tax + shipping;
   const mailOptions = {
     from: import.meta.env.VITE_EMAIL ?? "",
     to: email,
@@ -51,6 +52,7 @@ export const sendConfirmationEmail = async (
         </table>
         <div style="text-align: right;">
             <p>Tax: $${parseFloat(tax.toString()).toFixed(2)}</p>
+            <p>Shipping: $${parseFloat(shipping.toString()).toFixed(2)}</p>
             <p>Final Total: $${parseFloat(finalTotal.toString()).toFixed(2)}</p>
         </div>
         <div style="text-align: center;">
