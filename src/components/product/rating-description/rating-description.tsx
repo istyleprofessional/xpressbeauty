@@ -148,7 +148,7 @@ export const RatingAndDescription = component$(
               itemProp="description"
               dangerouslySetInnerHTML={product_description.replace(
                 /<img .*?>/g,
-                "<text>"
+                ""
               )}
             ></div>
           ) : (

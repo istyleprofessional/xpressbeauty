@@ -62,8 +62,8 @@ export default component$(() => {
   const categories = JSON.parse(useEditProductData()?.value ?? "[]").categories;
   const brands = JSON.parse(useEditProductData()?.value ?? "[]").brands;
   const action = useFormAction();
-  const imageSignal = useSignal<string>(product.imgs[0]);
-  const descriptionSignal = useSignal<string>(product.description);
+  const imageSignal = useSignal<string>(product?.imgs[0] ?? "");
+  const descriptionSignal = useSignal<string>(product?.description ?? "");
 
   useVisibleTask$(() => {
     (window as any)?.tinymce?.init({
@@ -146,8 +146,8 @@ export default component$(() => {
 
       <Form action={action}>
         <div class="flex flex-row justify-between w-full">
-          <input type="hidden" name="_id" value={product._id} />
-          <input type="hidden" name="priceType" value={product.priceType} />
+          <input type="hidden" name="_id" value={product?._id} />
+          <input type="hidden" name="priceType" value={product?.priceType} />
           <h1 class="text-2xl font-bold p-2 text-[#6B7280]">
             Edit <span class="text-[#7C3AED]">{product.product_name}</span>{" "}
             Product
