@@ -116,25 +116,12 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
   if (user.status === "success") {
     const newData: any = data;
     const validationObject = {
-      country:
-        validate(newData?.generalInfo?.address?.country ?? "", "country") &&
-        (newData?.generalInfo?.address?.country?.length ?? 0) > 0,
+      country: (newData?.generalInfo?.address?.country?.length ?? 0) > 0,
       addressLine1:
-        validate(
-          newData?.generalInfo?.address?.addressLine1 ?? "",
-          "addressLine1"
-        ) && (newData?.generalInfo?.address?.addressLine1?.length ?? 0) > 0,
-      city:
-        validate(newData?.generalInfo?.address?.city ?? "", "city") &&
-        (newData?.generalInfo?.address?.city?.length ?? 0) > 0,
-      state:
-        validate(newData?.generalInfo?.address?.state ?? "", "state") &&
-        (newData?.generalInfo?.address?.state?.length ?? 0) > 0,
-      postalCode:
-        validate(
-          newData?.generalInfo?.address?.postalCode ?? "",
-          "postalCode"
-        ) && (newData?.generalInfo?.address?.postalCode?.length ?? 0) > 0,
+        (newData?.generalInfo?.address?.addressLine1?.length ?? 0) > 0,
+      city: (newData?.generalInfo?.address?.city?.length ?? 0) > 0,
+      state: (newData?.generalInfo?.address?.state?.length ?? 0) > 0,
+      postalCode: (newData?.generalInfo?.address?.postalCode?.length ?? 0) > 0,
       firstName:
         validate(newData?.firstName ?? "", "firstName") &&
         newData?.firstName.length > 0,
@@ -151,6 +138,7 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
           "phoneNumber"
         ) && newData?.phoneNumber.length >= 10,
     };
+    console.log(validationObject);
     const isValid = Object.values(validationObject).every((item) => item);
     newData.phoneNumber = newData.phoneNumber.toString().startsWith("1")
       ? `+${newData.phoneNumber}`

@@ -50,24 +50,12 @@ export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
       formData?.lastName !== "" && validate(formData?.lastName ?? "", "name"),
     email: formData?.email !== "" && validate(formData?.email ?? "", "email"),
     phoneNumber:
-      formData?.phoneNumber !== "" &&
-      validate(formData?.phoneNumber ?? "", "phoneNumber") &&
-      formData.isPhoneValid === "true",
-    country:
-      formData?.generalInfo?.address?.country !== "" &&
-      validate(formData?.generalInfo?.address?.country ?? "", "country"),
-    addressLine1:
-      formData?.generalInfo?.address?.addressLine1 !== "" &&
-      validate(formData?.generalInfo?.address?.addressLine1 ?? "", "address"),
-    city:
-      formData?.generalInfo?.address?.city !== "" &&
-      validate(formData?.generalInfo?.address?.city ?? "", "city"),
-    state:
-      formData?.generalInfo?.address?.state !== "" &&
-      validate(formData?.generalInfo?.address?.state ?? "", "state"),
-    postalCode:
-      formData?.generalInfo?.address?.postalCode !== "" &&
-      validate(formData?.generalInfo?.address?.postalCode ?? "", "postalCode"),
+      formData?.phoneNumber !== "" && formData.isPhoneValid === "true",
+    country: formData?.generalInfo?.address?.country !== "",
+    addressLine1: formData?.generalInfo?.address?.addressLine1 !== "",
+    city: formData?.generalInfo?.address?.city !== "",
+    state: formData?.generalInfo?.address?.state !== "",
+    postalCode: formData?.generalInfo?.address?.postalCode !== "",
   };
   const isValid = Object.values(validationObject).every(
     (item) => item === true
