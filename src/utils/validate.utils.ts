@@ -48,7 +48,7 @@ export const validate = (arg: string, type: string) => {
     return re.test(arg);
   }
   if (type.toLowerCase().includes("state")) {
-    const re = /^[a-zA-Z\s]*$/;
+    const re = /^[a-zA-Z\sé]*$/;
     return re.test(arg);
   }
 };
