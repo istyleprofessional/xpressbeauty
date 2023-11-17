@@ -362,12 +362,16 @@ export default component$(() => {
               )}
             </div>
           </div>
-          <RatingAndDescription
-            product_description={product.description ?? ""}
-            user={user.email ? user : null}
-            productId={product._id ?? ""}
-          />
-          <RelatedProducts relatedProducts={relatedProducts.value || null} />
+          <div class="flex flex-col gap-5 lg:gap-10 p-3 lg:p-10">
+            <RatingAndDescription
+              product_description={product.description ?? ""}
+              user={user.email ? user : null}
+              productId={product._id ?? ""}
+            />
+          </div>
+          {relatedProducts.value?.length > 0 && (
+            <RelatedProducts relatedProducts={relatedProducts.value || null} />
+          )}
         </div>
       </div>
     </>

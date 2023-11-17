@@ -180,11 +180,22 @@ export const Footer = component$(() => {
                 <span>Facebook</span>
               </a>
               <a
-                href="https://web.whatsapp.com/send/?phone=12134014667"
+                href="https://wa.me/12134014667"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
                 <img src="/whatsapp.webp" alt="whatsapp" class="w-6 h-full" />
-                <span>What’sApp</span>
+                <span>WhatsApp</span>
+              </a>
+              <a
+                class="text-white font-light text-base flex flex-row gap-2"
+                href="https://www.instagram.com/xpressbeauty23"
+              >
+                <img
+                  src="/instagram (2).png"
+                  alt="instagram"
+                  class="w-6 h-full"
+                />
+                <span>Instagram</span>
               </a>
             </div>
           </div>

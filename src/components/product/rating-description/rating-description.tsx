@@ -146,10 +146,9 @@ export const RatingAndDescription = component$(
             <div
               class="text-black font-normal text-sm md:text-lg"
               itemProp="description"
-              dangerouslySetInnerHTML={product_description.replace(
-                /<img .*?>/g,
-                ""
-              )}
+              dangerouslySetInnerHTML={product_description
+                .replace(/<img .*?>/g, "")
+                .replace(/Cosmo Prof/g, "Xpress Beauty")}
             ></div>
           ) : (
             <div class="flex flex-col gap-10">
