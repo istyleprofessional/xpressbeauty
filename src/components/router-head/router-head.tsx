@@ -47,7 +47,7 @@ fbq('track', 'PageView');
       <link rel="canonical" href={`https://xpressbeauty.ca${url}`} />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="icon" type="image/svg+xml" href="/logoX2.jpg" />
-
+      <meta name="robots" content="max-snippet:50, max-image-preview:large" />
       {head.meta.map((m) => (
         <meta key={m.key} {...m} />
       ))}
