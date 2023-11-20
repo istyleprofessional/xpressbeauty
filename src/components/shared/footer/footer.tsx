@@ -95,6 +95,17 @@ export const Footer = component$(() => {
                 <img src="/whatsapp.webp" alt="whatsapp" class="w-6 h-full" />
                 <span>What’sApp</span>
               </a>
+              <a
+                class="text-white font-light text-base flex flex-row gap-2"
+                href="https://www.instagram.com/xpressbeauty23"
+              >
+                <img
+                  src="/instagram (2).png"
+                  alt="instagram"
+                  class="w-6 h-full"
+                />
+                <span>Instagram</span>
+              </a>
             </div>
           </div>
         </div>
