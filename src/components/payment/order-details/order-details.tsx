@@ -1,4 +1,4 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, useSignal, useTask$ } from "@builder.io/qwik";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 
 interface OrderDetailsProps {
@@ -6,15 +6,17 @@ interface OrderDetailsProps {
   total: any;
   cards: any;
   isExistingPaymentMethod: boolean;
+  acceptSaveCard: any;
+  user: any | null;
 }
 
 export const OrderDetails = component$((props: OrderDetailsProps) => {
-  const { cart, total, isExistingPaymentMethod } = props;
+  const { cart, total, isExistingPaymentMethod, acceptSaveCard, user } = props;
   const subTotal = useSignal<number>(0);
   const hst = useSignal<number>(0);
   const shipping = useSignal<number>(0);
 
-  useVisibleTask$(({ track }) => {
+  useTask$(({ track }) => {
     track(() => cart?.totalPrice);
     subTotal.value = cart?.totalPrice ?? 0;
     hst.value = (cart?.totalPrice ?? 0) * 0.13;
@@ -122,15 +124,34 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
             </p>
           </div>
         </div>
-
-        <button type="submit" class="btn btn-primary text-white w-full">
-          <div class="flex flex-row w-full items-center text-xs">
-            <div class="flex flex-row gap-1 items-center w-full justify-center text-sm">
-              Pay <NextArrowIconNoStick color="white" />
+        <div class="flex flex-col gap-3 justify-center h-full">
+          {user && !isExistingPaymentMethod && (
+            <div class="flex flex-row gap-3">
+              <input
+                type="checkbox"
+                name="save-card"
+                class="checkbox"
+                id="save-card"
+                onChange$={(e) => {
+                  acceptSaveCard.value = e.target.checked;
+                }}
+              />
+              <label for="save-card" class="text-black text-sm font-semibold">
+                {" "}
+                Save card for future purchases
+              </label>
             </div>
-          </div>
-        </button>
+          )}
+          <button type="submit" class="btn btn-primary text-white w-full">
+            <div class="flex flex-row w-full items-center text-xs">
+              <div class="flex flex-row gap-1 items-center w-full justify-center text-sm">
+                Pay <NextArrowIconNoStick color="white" />
+              </div>
+            </div>
+          </button>
+        </div>
       </form>
+      <div id="paypal-button-container" style="max-width:1000px;"></div>
       <div class="divider text-white"></div>
     </>
   );

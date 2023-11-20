@@ -22,6 +22,8 @@ import { generateOrderNumber } from "~/utils/generateOrderNo";
 import { sendConfirmationEmail } from "~/utils/sendConfirmationEmail";
 import { sendConfirmationOrderForAdmin } from "~/utils/sendConfirmationOrderForAdmin";
 import { createOrder } from "~/express/services/order.service";
+import { loadScript } from "@paypal/paypal-js";
+import paypal from "paypal-rest-sdk";
 
 export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   const token = cookie.get("token")?.value;
@@ -95,6 +97,71 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   }
 });
 
+export const paypalServer = server$(async function (data: any) {
+  try {
+    paypal.configure({
+      mode: "sandbox", //sandbox or live
+      client_id: import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
+      client_secret: import.meta.env.VITE_PAYPAL_APP_SECRET ?? "",
+    });
+    const create_payment_json = {
+      intent: "sale",
+      payer: {
+        payment_method: "paypal",
+      },
+      redirect_urls: {
+        return_url: "https://xpressbeauty.ca/payment/success",
+        cancel_url: "https://xpressbeauty.ca/payment/cancel",
+      },
+      transactions: [
+        {
+          item_list: {
+            items: data.products.map((product: any) => {
+              return {
+                name: product.name,
+                sku: product.sku,
+                price: product.price,
+                currency: "CAD",
+                quantity: product.quantity,
+              };
+            }),
+          },
+          amount: {
+            currency: "CAD",
+            total: data.order_amount,
+            details: {
+              subtotal: data.subTotal,
+              shipping: "15.00", // Example shipping cost
+              tax: data.hst, // Example tax amount
+            },
+          },
+        },
+      ],
+    };
+    return await new Promise((resolve, reject) => {
+      paypal.payment.create(create_payment_json, (error, payment) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+        } else {
+          for (let i = 0; i < (payment?.links?.length ?? 0); i++) {
+            if ((payment?.links ?? [])[i].rel === "approval_url") {
+              resolve(
+                JSON.stringify({
+                  id: (payment?.links ?? [])[i].href.split("EC-", 2)[1],
+                })
+              );
+            }
+          }
+          reject(new Error("No approval_url found in payment links."));
+        }
+      });
+    });
+  } catch (e) {
+    console.log(e);
+  }
+});
+
 export const callServer = server$(async function (
   paymentId: string,
   id: string,
@@ -165,7 +232,8 @@ export default component$(() => {
   const finalCard = useSignal<any>(null);
   const isExistingPaymentMethod = useSignal<boolean>(false);
   const cards = paymentRoute.cards;
-
+  const acceptSaveCard = useSignal<boolean>(false);
+  // console.log(userContext);
   useVisibleTask$(
     () => {
       if (paymentRoute.status === "failed") {
@@ -183,6 +251,74 @@ export default component$(() => {
       }
     },
     { eagerness: "idle" }
+  );
+
+  useVisibleTask$(
+    async () => {
+      const paypalUi = await loadScript({
+        "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
+        currency: "CAD",
+      });
+      (paypalUi as any)
+        .Buttons({
+          style: {
+            layout: "horizontal",
+            color: "blue",
+            shape: "rect",
+            label: "paypal",
+            tagline: false,
+          },
+          createOrder: async () => {
+            const dataToSend = {
+              subTotal: parseFloat(
+                cartContext.cart?.totalPrice.toString()
+              ).toFixed(2),
+              hst: parseFloat(
+                ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
+              ).toFixed(2),
+              ...cartContext?.cart,
+              order_amount: parseFloat(total.value.toString()).toFixed(2),
+              email: userContext?.user?.email,
+              products: cartContext?.cart?.products,
+            };
+            const paypalReq: any = await paypalServer(dataToSend);
+            const paypalRes = JSON.parse(paypalReq);
+            return paypalRes.id;
+          },
+          onApprove: async (data: any) => {
+            const dataToSend = {
+              ...cartContext?.cart,
+              order_amount: parseFloat(total.value.toString()).toFixed(2),
+              email: userContext?.user?.email,
+              products: cartContext?.cart?.products,
+              paymentSource: "PAYPAL",
+              paypalObj: {
+                payerId: data.payerID,
+                paymentId: data.paymentID,
+                orderId: data.orderID,
+              },
+            };
+            const req = await postRequest(
+              "/api/paymentConfirmiation",
+              dataToSend
+            );
+            const res = await req.json();
+            if (res.status === "success") {
+              isLoading.value = false;
+              window.location.href = "/payment/success";
+            } else {
+              console.log(res);
+              isLoading.value = false;
+              alert("Payment Failed");
+            }
+          },
+          onError: (err: any) => {
+            console.log(err);
+          },
+        })
+        .render("#paypal-button-container");
+    },
+    { strategy: "document-idle" }
   );
 
   useVisibleTask$(
@@ -214,7 +350,6 @@ export default component$(() => {
       const errorEl = document.querySelector("#card-errors") as HTMLElement;
       const stripeTokenHandler = async (token: any) => {
         const hiddenInput = document.createElement("input");
-        console.log(total.value);
         hiddenInput.setAttribute("type", "hidden");
         hiddenInput.setAttribute("name", "stripeToken");
         hiddenInput.setAttribute("value", token.id);
@@ -225,6 +360,8 @@ export default component$(() => {
           order_amount: parseFloat(total.value.toString()).toFixed(2),
           email: userContext?.user?.email,
           products: cartContext?.cart?.products,
+          acceptSaveCard: acceptSaveCard.value,
+          paymentSource: "STRIPE",
         };
 
         const req = await postRequest("/api/paymentConfirmiation", dataToSend);
@@ -259,8 +396,6 @@ export default component$(() => {
         }
 
         stripe.createToken(cardNo).then((res) => {
-          console.log(res);
-          // attach the token to the customer object.
           if (res.error) errorEl.innerText = res?.error?.message ?? "";
           else stripeTokenHandler(res.token);
         });
@@ -333,6 +468,8 @@ export default component$(() => {
                 total={total}
                 cards={cards?.value}
                 isExistingPaymentMethod={isExistingPaymentMethod.value}
+                acceptSaveCard={acceptSaveCard}
+                user={userContext?.user}
               />
             </div>
           </div>

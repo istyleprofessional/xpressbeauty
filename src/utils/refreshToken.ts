@@ -9,5 +9,6 @@ export const refreshToken = (token: string) => {
       expiresIn: "2h",
     }
   );
-  return newToken;
+  const decodeNewToken: any = jwt.decode(newToken);
+  return decodeNewToken;
 };

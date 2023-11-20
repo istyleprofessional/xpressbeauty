@@ -138,7 +138,6 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
           "phoneNumber"
         ) && newData?.phoneNumber.length >= 10,
     };
-    console.log(validationObject);
     const isValid = Object.values(validationObject).every((item) => item);
     newData.phoneNumber = newData.phoneNumber.toString().startsWith("1")
       ? `+${newData.phoneNumber}`
