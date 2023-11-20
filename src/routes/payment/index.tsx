@@ -182,6 +182,7 @@ export const callServer = server$(async function (
       payment_method: paymentId,
       confirm: true,
     });
+    let orderId = "";
     if (paymentIntent.status === "succeeded") {
       const token = this.cookie.get("token")?.value;
       const verified: any = jwt.verify(
@@ -196,7 +197,7 @@ export const callServer = server$(async function (
       data.paymentMethod = "STRIPE";
       data.order_status = "Pending";
       data.order_number = generateOrderNumber();
-
+      orderId = data.order_number;
       await sendConfirmationEmail(
         user.result?.email ?? "",
         `${user.result?.firstName} ${user.result?.lastName}`,
@@ -208,16 +209,10 @@ export const callServer = server$(async function (
         data.shipping_address,
         data.products
       );
-      data.userId = verified.user_id;
-      data.shipping_address = user.result?.generalInfo.address;
-      data.paymentMethod = "STRIPE";
-      data.paymentStatus = "Paid";
-      data.order_status = "Pending";
-      data.order_number = generateOrderNumber();
       await createOrder(data);
       await deleteCart(verified.user_id);
     }
-    return paymentIntent;
+    return { paymentIntent: paymentIntent, orderId: orderId };
   } catch (e) {
     console.log(e);
   }
@@ -305,7 +300,7 @@ export default component$(() => {
             const res = await req.json();
             if (res.status === "success") {
               isLoading.value = false;
-              window.location.href = "/payment/success";
+              window.location.href = `/payment/success/${res.orderId}`;
             } else {
               console.log(res);
               isLoading.value = false;
@@ -369,7 +364,7 @@ export default component$(() => {
 
         if (res.status === "success") {
           isLoading.value = false;
-          window.location.href = "/payment/success";
+          window.location.href = `/payment/success${res.orderId}`;
         } else {
           isLoading.value = false;
           errorEl.innerText = res.message;
@@ -385,9 +380,9 @@ export default component$(() => {
             total.value,
             cartContext?.cart ?? {}
           );
-          if (pay.status === "succeeded") {
+          if (pay?.paymentIntent.status === "succeeded") {
             isLoading.value = false;
-            window.location.href = "/payment/success";
+            window.location.href = `/payment/success/${pay.orderId}`;
           } else {
             isLoading.value = false;
             alert("Payment Failed");

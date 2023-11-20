@@ -40,6 +40,15 @@ export const getOrderByOrderIdService = async (orderId: string) => {
   }
 };
 
+export const getOrderByOrderNumberService = async (orderNumber: string) => {
+  try {
+    const request = await Order.findOne({ order_number: orderNumber });
+    return { status: "success", request: request };
+  } catch (error: any) {
+    return { status: "failed", err: error.message };
+  }
+};
+
 export const getOrdersService = async (page: number) => {
   try {
     const request = await Order.aggregate([

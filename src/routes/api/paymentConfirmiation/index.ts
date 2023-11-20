@@ -77,7 +77,7 @@ export const onPost: RequestHandler = async ({
     data.order_number = generateOrderNumber();
     await createOrder(data);
     await deleteCart(verifiedToken.user_id);
-    json(200, { status: "success" });
+    json(200, { status: "success", orderId: data.order_number });
     return;
   } else {
     const request = await getUserById(verifiedToken.user_id);
@@ -130,7 +130,7 @@ export const onPost: RequestHandler = async ({
 
       await createOrder(data);
       await deleteCart(verifiedToken.user_id);
-      json(200, { status: "success" });
+      json(200, { status: "success", orderId: data.order_number });
       return;
     } else {
       json(200, { status: "failed", result: request.err });
