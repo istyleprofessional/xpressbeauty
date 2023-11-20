@@ -364,7 +364,7 @@ export default component$(() => {
 
         if (res.status === "success") {
           isLoading.value = false;
-          window.location.href = `/payment/success${res.orderId}`;
+          window.location.href = `/payment/success/${res.orderId}`;
         } else {
           isLoading.value = false;
           errorEl.innerText = res.message;
