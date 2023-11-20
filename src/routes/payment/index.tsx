@@ -280,32 +280,37 @@ export default component$(() => {
             const paypalRes = JSON.parse(paypalReq);
             return paypalRes.id;
           },
-          onApprove: async (data: any) => {
-            const dataToSend = {
-              ...cartContext?.cart,
-              order_amount: parseFloat(total.value.toString()).toFixed(2),
-              email: userContext?.user?.email,
-              products: cartContext?.cart?.products,
-              paymentSource: "PAYPAL",
-              paypalObj: {
-                payerId: data.payerID,
-                paymentId: data.paymentID,
-                orderId: data.orderID,
-              },
-            };
-            const req = await postRequest(
-              "/api/paymentConfirmiation",
-              dataToSend
-            );
-            const res = await req.json();
-            if (res.status === "success") {
-              isLoading.value = false;
-              window.location.href = `/payment/success/${res.orderId}`;
-            } else {
-              console.log(res);
-              isLoading.value = false;
-              alert("Payment Failed");
-            }
+          onApprove: async (data: any, actions: any) => {
+            return actions.order.capture().then(async function (details: any) {
+              const dataToSend = {
+                ...cartContext?.cart,
+                order_amount: parseFloat(total.value.toString()).toFixed(2),
+                email: userContext?.user?.email,
+                products: cartContext?.cart?.products,
+                paymentSource: "PAYPAL",
+                paypalObj: {
+                  payerId: data.payerID,
+                  paymentId: data.paymentID,
+                  orderId: data.orderID,
+                },
+              };
+              const req = await postRequest(
+                "/api/paymentConfirmiation",
+                dataToSend
+              );
+              const res = await req.json();
+
+              if (res.status === "success") {
+                isLoading.value = false;
+                window.location.href = `/payment/success/${res.orderId}`;
+              } else {
+                console.log(res);
+                isLoading.value = false;
+                alert("Payment Failed");
+              }
+              // Handle the captured payment details
+              console.log("Payment captured:", details);
+            });
           },
           onError: (err: any) => {
             console.log(err);
