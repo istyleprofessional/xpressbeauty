@@ -100,7 +100,7 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
 export const paypalServer = server$(async function (data: any) {
   try {
     paypal.configure({
-      mode: "sandbox", //sandbox or live
+      mode: import.meta.env.VITE_PAYPAL_MODE, //sandbox or live
       client_id: import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
       client_secret: import.meta.env.VITE_PAYPAL_APP_SECRET ?? "",
     });
