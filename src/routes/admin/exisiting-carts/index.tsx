@@ -261,8 +261,11 @@ export default component$(() => {
                 </div>
                 <div class="flex flex-row justify-between items-center p-2">
                   <p class="text-xs">
-                    User Info: {cartDetail.value.user?.generalInfo?.country}{" "}
-                    {cartDetail.value.user?.generalInfo?.city}
+                    User Info:{" "}
+                    {cartDetail.value.user?.generalInfo?.country ??
+                      cartDetail.value.dummyUser?.generalInfo?.country}{" "}
+                    {cartDetail.value.user?.generalInfo?.city ??
+                      cartDetail.value.dummyUser?.generalInfo?.city}
                   </p>
                 </div>
                 <div class="overflow-x-auto h-[80%]">
