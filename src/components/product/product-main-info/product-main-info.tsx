@@ -1,4 +1,4 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useSignal, useTask$ } from "@builder.io/qwik";
 import { Rating } from "~/components/shared/rating/rating";
 
 interface ProductMainInfoProps {
@@ -22,6 +22,167 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     ratings,
     companyName,
   } = props;
+  const finalSalePrice = useSignal<string>("");
+  const finalRegularPrice = useSignal<string>("");
+  const verifiedPrice = useSignal<string>("");
+  const verifiedSalePrice = useSignal<string>("");
+
+  useTask$(() => {
+    if (priceType === "single" && sale_price.sale !== "") {
+      finalRegularPrice.value = parseFloat(
+        price?.regular?.toString()
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+      finalSalePrice.value = parseFloat(
+        sale_price.sale.toString()
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    } else if (priceType === "single" && sale_price.sale === "") {
+      finalRegularPrice.value = parseFloat(
+        price?.regular?.toString()
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    } else if (priceType === "range" && sale_price.min === "") {
+      finalRegularPrice.value =
+        price.min.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        price.max.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+    } else if (priceType === "range" && sale_price.min !== "") {
+      finalRegularPrice.value =
+        price.min.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        price.max.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+      finalSalePrice.value =
+        price.max.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        sale_price.max.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+    } else {
+      finalRegularPrice.value = price.min.toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+      finalSalePrice.value = price.max.toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    }
+  });
+
+  useTask$(() => {
+    if (priceType === "single" && sale_price.sale !== "") {
+      verifiedPrice.value = (
+        parseFloat(price?.regular?.toString()) -
+        parseFloat(price?.regular?.toString()) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+      verifiedSalePrice.value = (
+        parseFloat(sale_price?.sale?.toString()) -
+        parseFloat(sale_price?.sale?.toString()) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    } else if (priceType === "single" && sale_price.sale === "") {
+      verifiedPrice.value = (
+        parseFloat(price?.regular?.toString()) -
+        parseFloat(price?.regular?.toString()) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    } else if (priceType === "range" && sale_price.min === "") {
+      verifiedPrice.value =
+        (
+          parseFloat(price?.min?.toString()) -
+          parseFloat(price?.min?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        (
+          parseFloat(price?.max?.toString()) -
+          parseFloat(price?.max?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+    } else if (priceType === "range" && sale_price.min !== "") {
+      verifiedPrice.value =
+        (
+          parseFloat(price?.min?.toString()) -
+          parseFloat(price?.min?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        (
+          parseFloat(price?.max?.toString()) -
+          parseFloat(price?.max?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+      verifiedSalePrice.value =
+        (
+          parseFloat(sale_price?.min?.toString()) -
+          parseFloat(sale_price?.min?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        (
+          parseFloat(sale_price?.max?.toString()) -
+          parseFloat(sale_price?.max?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+    } else {
+      verifiedPrice.value = (
+        parseFloat(price?.min?.toString()) -
+        parseFloat(price?.min?.toString()) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+      verifiedSalePrice.value = (
+        parseFloat(price?.max?.toString()) -
+        parseFloat(price?.max?.toString()) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    }
+  });
 
   return (
     <div class="flex flex-col gap-10">
@@ -50,78 +211,34 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
             {priceType === "single" && sale_price.sale !== "" && (
               <>
                 <span class="text-gray-400 line-through" itemProp="price">
-                  {parseFloat(price?.regular?.toString()).toLocaleString(
-                    "en-US",
-                    {
-                      style: "currency",
-                      currency: "CAD",
-                    }
-                  )}
+                  {finalRegularPrice.value}
                 </span>
                 <span class="text-error ml-2" itemProp="price">
-                  {parseFloat(sale_price.sale.toString()).toLocaleString(
-                    "en-US",
-                    {
-                      style: "currency",
-                      currency: "CAD",
-                    }
-                  )}
+                  {finalSalePrice.value}
                 </span>
               </>
             )}
             {priceType === "single" && sale_price.sale === "" && (
               <span class="text-black" itemProp="price">
-                {parseFloat(price?.regular?.toString()).toLocaleString(
-                  "en-US",
-                  {
-                    style: "currency",
-                    currency: "CAD",
-                  }
-                )}
+                {finalRegularPrice.value}
               </span>
             )}
             {priceType === "range" &&
               sale_price.min === "" &&
               sale_price.max === "" && (
                 <span class="text-black" itemProp="price">
-                  {price.min.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "CAD",
-                  })}{" "}
-                  -{" "}
-                  {price.max.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "CAD",
-                  })}
+                  {finalRegularPrice.value}
                 </span>
               )}
             {priceType === "range" &&
               sale_price.min !== "" &&
               sale_price.max !== "" && (
-                <div class="flex flex-col gap-2">
-                  <span class="text-gray-400 line-through" itemProp="price">
-                    {sale_price.min.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}{" "}
-                    -{" "}
-                    {sale_price.max.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}
+                <>
+                  <span class="text-gray-400 line-through">
+                    {finalRegularPrice.value}
                   </span>
-                  <span class="text-error" itemProp="price">
-                    {sale_price.min.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}{" "}
-                    -{" "}
-                    {sale_price.max.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}
-                  </span>
-                </div>
+                  <span class="text-error ml-2">{finalSalePrice.value}</span>
+                </>
               )}
           </h2>
         )}
@@ -131,50 +248,19 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
             <h2 class="flex flex-row gap-2 text-xl lg:text-3xl">
               {priceType === "single" && sale_price.sale !== "" && (
                 <>
-                  <span class="text-gray-400 line-through" itemProp="price">
-                    {(
-                      parseFloat(price.regular ?? "") -
-                      parseFloat(price.regular ?? "") * 0.2
-                    ).toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}
-                  </span>
-                  <span class="text-error ml-2" itemProp="price">
-                    {(
-                      parseFloat(sale_price.sale.toString()) -
-                      parseFloat(sale_price.sale.toString()) * 0.2
-                    ).toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}
-                  </span>
+                  <span></span>
                 </>
               )}
               {priceType === "single" && sale_price.sale === "" && (
                 <span class="text-black" itemProp="price">
-                  {(price.regular - price.regular * 0.2).toLocaleString(
-                    "en-US",
-                    {
-                      style: "currency",
-                      currency: "CAD",
-                    }
-                  )}
+                  {verifiedPrice.value}
                 </span>
               )}
               {priceType === "range" &&
                 sale_price.min === "" &&
                 sale_price.max === "" && (
                   <span class="text-black" itemProp="price">
-                    {(price.min - price.min * 0.2).toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}{" "}
-                    -{" "}
-                    {(price.max - price.max * 0.2).toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}
+                    {verifiedPrice.value}
                   </span>
                 )}
               {priceType === "range" &&
@@ -182,32 +268,10 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
                 sale_price.max !== "" && (
                   <div class="flex flex-col gap-2">
                     <span class="text-gray-400 line-through" itemProp="price">
-                      {(price.min - price.min * 0.2).toLocaleString("en-US", {
-                        style: "currency",
-                        currency: "CAD",
-                      })}{" "}
-                      -{" "}
-                      {(price.max - price.max * 0.2).toLocaleString("en-US", {
-                        style: "currency",
-                        currency: "CAD",
-                      })}
+                      {verifiedPrice.value}
                     </span>
                     <span class="text-error" itemProp="price">
-                      {(sale_price.min - sale_price.min * 0.2).toLocaleString(
-                        "en-US",
-                        {
-                          style: "currency",
-                          currency: "CAD",
-                        }
-                      )}{" "}
-                      -{" "}
-                      {(sale_price.max - sale_price.max * 0.2).toLocaleString(
-                        "en-US",
-                        {
-                          style: "currency",
-                          currency: "CAD",
-                        }
-                      )}
+                      {verifiedSalePrice.value}
                     </span>
                   </div>
                 )}
@@ -240,55 +304,23 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
                             class="text-gray-400 line-through"
                             itemProp="price"
                           >
-                            {(
-                              parseFloat(price.regular ?? "") -
-                              parseFloat(price.regular ?? "") * 0.2
-                            ).toLocaleString("en-US", {
-                              style: "currency",
-                              currency: "CAD",
-                            })}
+                            {verifiedPrice.value}
                           </span>
                           <span class="text-error ml-2" itemProp="price">
-                            {(
-                              parseFloat(sale_price.sale.toString()) -
-                              parseFloat(sale_price.sale.toString()) * 0.2
-                            ).toLocaleString("en-US", {
-                              style: "currency",
-                              currency: "CAD",
-                            })}
+                            {verifiedSalePrice.value}
                           </span>
                         </>
                       )}
                       {priceType === "single" && sale_price.sale === "" && (
                         <span class="text-black" itemProp="price">
-                          {(price.regular - price.regular * 0.2).toLocaleString(
-                            "en-US",
-                            {
-                              style: "currency",
-                              currency: "CAD",
-                            }
-                          )}
+                          {verifiedPrice.value}
                         </span>
                       )}
                       {priceType === "range" &&
                         sale_price.min === "" &&
                         sale_price.max === "" && (
                           <span class="text-black" itemProp="price">
-                            {(price.min - price.min * 0.2).toLocaleString(
-                              "en-US",
-                              {
-                                style: "currency",
-                                currency: "CAD",
-                              }
-                            )}{" "}
-                            -{" "}
-                            {(price.max - price.max * 0.2).toLocaleString(
-                              "en-US",
-                              {
-                                style: "currency",
-                                currency: "CAD",
-                              }
-                            )}
+                            {verifiedPrice.value}
                           </span>
                         )}
                       {priceType === "range" &&
@@ -299,38 +331,10 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
                               class="text-gray-400 line-through"
                               itemProp="price"
                             >
-                              {(price.min - price.min * 0.2).toLocaleString(
-                                "en-US",
-                                {
-                                  style: "currency",
-                                  currency: "CAD",
-                                }
-                              )}{" "}
-                              -{" "}
-                              {(price.max - price.max * 0.2).toLocaleString(
-                                "en-US",
-                                {
-                                  style: "currency",
-                                  currency: "CAD",
-                                }
-                              )}
+                              {verifiedPrice.value}
                             </span>
                             <span class="text-error" itemProp="price">
-                              {(
-                                sale_price.min -
-                                sale_price.min * 0.2
-                              ).toLocaleString("en-US", {
-                                style: "currency",
-                                currency: "CAD",
-                              })}{" "}
-                              -{" "}
-                              {(
-                                sale_price.max -
-                                sale_price.max * 0.2
-                              ).toLocaleString("en-US", {
-                                style: "currency",
-                                currency: "CAD",
-                              })}
+                              {verifiedSalePrice.value}
                             </span>
                           </div>
                         )}
