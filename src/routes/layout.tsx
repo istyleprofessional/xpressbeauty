@@ -27,6 +27,7 @@ export const useUserData = routeLoader$(async ({ cookie, env, request }) => {
   const userIP =
     request.headers.get("do-connecting-ip") || request.headers.get("X-Real-IP");
   const { country_name, city } = await ip2location.fetch(userIP);
+  console.log(country_name, city);
   const token = cookie.get("token")?.value ?? "";
   if (!token) {
     const data = {
