@@ -143,6 +143,7 @@ export default component$(() => {
                         onClick$={() => {
                           isCartDetailsOpen.value = true;
                           cartDetail.value = cart;
+                          console.log(cartDetail.value);
                         }}
                       >
                         <CheckOrderIcon />
