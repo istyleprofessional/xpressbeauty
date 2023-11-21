@@ -20,15 +20,24 @@ import jwt from "jsonwebtoken";
 import { UserContext } from "~/context/user.context";
 import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
+import ip2location from "ip-to-location";
 
 export const useUserData = routeLoader$(async ({ cookie, env, request }) => {
   await connect();
   const userIP =
     request.headers.get("do-connecting-ip") || request.headers.get("X-Real-IP");
-  console.log(userIP);
+  const { country_name, city } = await ip2location.fetch(userIP);
   const token = cookie.get("token")?.value ?? "";
   if (!token) {
-    const request: any = await addDummyCustomer("", null);
+    const data = {
+      generalInfo: {
+        address: {
+          country: country_name,
+          city: city,
+        },
+      },
+    };
+    const request: any = await addDummyCustomer("", data);
     if (request.status === "success") {
       const token = jwt.sign(
         {

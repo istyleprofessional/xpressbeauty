@@ -243,7 +243,7 @@ export default component$(() => {
             <div class="fixed inset-0 z-[100] bg-[#00000080] flex justify-center items-center">
               <div class="bg-[#fff] w-[80%] h-[80%] rounded-md">
                 <div class="flex flex-row justify-between items-center p-2">
-                  <h1 class="text-xl font-bold">Order Details</h1>
+                  <h1 class="text-xl font-bold">Cart Details</h1>
                   <button
                     class="btn btn-ghost btn-xs"
                     onClick$={() => {
@@ -257,6 +257,12 @@ export default component$(() => {
                 <div class="flex flex-row justify-between items-center p-2">
                   <p class="text-xs">
                     Cart Date: {cartDetail.value?.createdAt}
+                  </p>
+                </div>
+                <div class="flex flex-row justify-between items-center p-2">
+                  <p class="text-xs">
+                    User Info: {cartDetail.value.user?.generalInfo?.country}{" "}
+                    {cartDetail.value.user?.generalInfo?.city}
                   </p>
                 </div>
                 <div class="overflow-x-auto h-[80%]">
