@@ -203,8 +203,10 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           </div>
         )}
       </div>
+      {ratings?.result?.ratings?.length > 0 && (
+        <Rating ratings={ratings?.result?.ratings ?? []} />
+      )}
 
-      <Rating ratings={ratings?.result?.ratings ?? []} />
       <div class="flex flex-col gap-3 ">
         {!isVerified && (
           <h2 class="flex flex-row gap-2 text-xl lg:text-3xl">
