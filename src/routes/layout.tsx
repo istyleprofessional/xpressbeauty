@@ -32,8 +32,8 @@ export const useUserData = routeLoader$(async ({ cookie, env, request }) => {
     const data = {
       generalInfo: {
         address: {
-          country: country_name,
-          city: city,
+          country: country_name ?? "",
+          city: city ?? "",
         },
       },
     };
