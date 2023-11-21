@@ -22,82 +22,16 @@ import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 import ip2location from "ip-to-location";
 
-export const useUserData = routeLoader$(async ({ cookie, env, request }) => {
-  await connect();
-  const userIP =
-    request.headers.get("do-connecting-ip") || request.headers.get("X-Real-IP");
-  const { country_name, city } = await ip2location.fetch(userIP);
-  console.log(country_name, city);
-  const token = cookie.get("token")?.value ?? "";
-  if (!token) {
-    const data = {
-      generalInfo: {
-        address: {
-          country: country_name ?? "",
-          city: city ?? "",
-        },
-      },
-    };
-    const request: any = await addDummyCustomer("", data);
-    if (request.status === "success") {
-      const token = jwt.sign(
-        {
-          user_id: request?.result?._id?.toString() ?? "",
-          isDummy: true,
-        },
-        env.get("VITE_JWTSECRET") ?? "",
-        { expiresIn: "1h" }
-      );
-      cookie.set("token", token, {
-        httpOnly: true,
-        path: "/",
-      });
-      const cart: any = await getCartByUserId(
-        request?.result?._id?.toString() ?? ""
-      );
-      const cartContextObject = {
-        userId: request?.result?._id?.toString() ?? "",
-        cart: cart,
-        quantity: cart?.totalQuantity ?? "0",
-        verified: false,
-      };
-      const wishList = await getWishList(
-        request?.result?._id?.toString() ?? ""
-      );
+export const useUserData = routeLoader$(
+  async ({ cookie, env, request, url }) => {
+    await connect();
+    const userIP =
+      request.headers.get("do-connecting-ip") ||
+      request.headers.get("X-Real-IP");
+    const { country_name, city } = await ip2location.fetch(userIP);
 
-      return JSON.stringify({
-        cart: cartContextObject,
-        user: null,
-        wishList: wishList,
-      });
-    } else {
-      const cartContextObject = {
-        userId: "",
-        cart: {},
-        quantity: "0",
-        verified: false,
-      };
-      return JSON.stringify({
-        cart: cartContextObject,
-        user: null,
-        wishList: [],
-      });
-    }
-  }
-  try {
-    const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
-    if (verify?.role === "a") {
-      return;
-    }
-    let user: any;
-    if (verify.isDummy) {
-      user = await getDummyCustomer(verify?.user_id ?? "");
-    } else {
-      user = await findUserByUserId(verify?.user_id ?? "");
-    }
-
-    if (!user?.result) {
-      cookie.delete("token", { path: "/" });
+    const token = cookie.get("token")?.value ?? "";
+    if (!token) {
       const data = {
         generalInfo: {
           address: {
@@ -107,74 +41,129 @@ export const useUserData = routeLoader$(async ({ cookie, env, request }) => {
         },
       };
       const request: any = await addDummyCustomer("", data);
-      const newTokentoken = jwt.sign(
-        {
-          user_id: request?.result?._id?.toString() ?? "",
-          isDummy: true,
-        },
-        env.get("VITE_JWTSECRET") ?? "",
-        { expiresIn: "1h" }
-      );
-      cookie.set("token", newTokentoken, {
-        httpOnly: true,
-        path: "/",
-      });
-      const cart: any = await getCartByUserId(
-        request?.result?._id?.toString() ?? ""
-      );
-      const cartContextObject = {
-        userId: request?.result?._id?.toString() ?? "",
-        cart: cart,
-        quantity: cart?.totalQuantity ?? "0",
-        verified: false,
-      };
-      const wishList = await getWishList(
-        request?.result?._id?.toString() ?? ""
-      );
-      return JSON.stringify({
-        cart: cartContextObject,
-        user: null,
-        wishList: wishList,
-      });
-    }
-    const cart: any = await getCartByUserId(user?.result?._id ?? "");
-    const cartContextObject = {
-      userId: user?.result?._id ?? "",
-      cart: cart,
-      quantity: cart?.totalQuantity ?? "0",
-      verified:
-        user?.result?.isEmailVerified && user?.result?.isPhoneVerified
-          ? true
-          : false,
-    };
-    const wishList = await getWishList(user?.result?._id ?? "");
+      if (request.status === "success") {
+        const token = jwt.sign(
+          {
+            user_id: request?.result?._id?.toString() ?? "",
+            isDummy: true,
+          },
+          env.get("VITE_JWTSECRET") ?? "",
+          { expiresIn: "1h" }
+        );
+        cookie.set("token", token, {
+          httpOnly: true,
+          path: "/",
+        });
+        const cart: any = await getCartByUserId(
+          request?.result?._id?.toString() ?? ""
+        );
+        const cartContextObject = {
+          userId: request?.result?._id?.toString() ?? "",
+          cart: cart,
+          quantity: cart?.totalQuantity ?? "0",
+          verified: false,
+        };
+        const wishList = await getWishList(
+          request?.result?._id?.toString() ?? ""
+        );
 
-    return JSON.stringify({
-      cart: cartContextObject,
-      user: verify.isDummy ? null : user?.result,
-      wishList: wishList,
-    });
-  } catch (error: any) {
-    if (error.message === "jwt expired") {
-      const decode: any = jwt.decode(token);
-      const newToken = jwt.sign(
-        {
-          user_id: decode.user_id,
-          isDummy: decode.isDummy,
-        },
-
-        env.get("VITE_JWTSECRET") ?? "",
-        { expiresIn: "1h" }
-      );
-      cookie.set("token", newToken, {
-        httpOnly: true,
-        path: "/",
-      });
-      let user: any;
-      if (decode.isDummy) {
-        user = await getDummyCustomer(decode.user_id);
+        return JSON.stringify({
+          cart: cartContextObject,
+          user: null,
+          wishList: wishList,
+        });
       } else {
-        user = await findUserByUserId(decode.user_id);
+        const cartContextObject = {
+          userId: "",
+          cart: {},
+          quantity: "0",
+          verified: false,
+        };
+        return JSON.stringify({
+          cart: cartContextObject,
+          user: null,
+          wishList: [],
+        });
+      }
+    }
+    try {
+      let verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
+      if (verify?.role === "a") {
+        // check if url contains admin or not
+        if (url.href.includes("admin")) {
+          return;
+        } else {
+          const data = {
+            generalInfo: {
+              address: {
+                country: country_name ?? "",
+                city: city ?? "",
+              },
+            },
+          };
+          const request: any = await addDummyCustomer("", data);
+          const newTokentoken = jwt.sign(
+            {
+              user_id: request?.result?._id?.toString() ?? "",
+              isDummy: true,
+            },
+            env.get("VITE_JWTSECRET") ?? "",
+            { expiresIn: "1h" }
+          );
+          cookie.set("token", newTokentoken, {
+            httpOnly: true,
+            path: "/",
+          });
+          verify = jwt.verify(newTokentoken, env.get("VITE_JWTSECRET") ?? "");
+        }
+      }
+      let user: any;
+      if (verify.isDummy) {
+        user = await getDummyCustomer(verify?.user_id ?? "");
+      } else {
+        user = await findUserByUserId(verify?.user_id ?? "");
+      }
+
+      if (!user?.result) {
+        cookie.delete("token", { path: "/" });
+        const data = {
+          generalInfo: {
+            address: {
+              country: country_name ?? "",
+              city: city ?? "",
+            },
+          },
+        };
+        const request: any = await addDummyCustomer("", data);
+        const newTokentoken = jwt.sign(
+          {
+            user_id: request?.result?._id?.toString() ?? "",
+            isDummy: true,
+          },
+          env.get("VITE_JWTSECRET") ?? "",
+          { expiresIn: "1h" }
+        );
+        cookie.set("token", newTokentoken, {
+          httpOnly: true,
+          path: "/",
+        });
+        const cart: any = await getCartByUserId(
+          request?.result?._id?.toString() ?? ""
+        );
+        const cartContextObject = {
+          userId: request?.result?._id?.toString() ?? "",
+          cart: cart,
+          quantity: cart?.totalQuantity ?? "0",
+          verified: false,
+        };
+        const wishList = await getWishList(
+          request?.result?._id?.toString() ?? ""
+        );
+        return JSON.stringify({
+          cart: cartContextObject,
+          user: null,
+          wishList: wishList,
+        });
       }
       const cart: any = await getCartByUserId(user?.result?._id ?? "");
       const cartContextObject = {
@@ -187,21 +176,65 @@ export const useUserData = routeLoader$(async ({ cookie, env, request }) => {
             : false,
       };
       const wishList = await getWishList(user?.result?._id ?? "");
+
       return JSON.stringify({
         cart: cartContextObject,
-        user: decode.isDummy ? null : user?.result,
+        user: verify.isDummy ? null : user?.result,
         wishList: wishList,
       });
+    } catch (error: any) {
+      if (error.message === "jwt expired") {
+        const decode: any = jwt.decode(token);
+        const newToken = jwt.sign(
+          {
+            user_id: decode.user_id,
+            isDummy: decode.isDummy,
+          },
+
+          env.get("VITE_JWTSECRET") ?? "",
+          { expiresIn: "1h" }
+        );
+        cookie.set("token", newToken, {
+          httpOnly: true,
+          path: "/",
+        });
+        let user: any;
+        if (decode.isDummy) {
+          user = await getDummyCustomer(decode.user_id);
+        } else {
+          user = await findUserByUserId(decode.user_id);
+        }
+        const cart: any = await getCartByUserId(user?.result?._id ?? "");
+        const cartContextObject = {
+          userId: user?.result?._id ?? "",
+          cart: cart,
+          quantity: cart?.totalQuantity ?? "0",
+          verified:
+            user?.result?.isEmailVerified && user?.result?.isPhoneVerified
+              ? true
+              : false,
+        };
+        const wishList = await getWishList(user?.result?._id ?? "");
+        return JSON.stringify({
+          cart: cartContextObject,
+          user: decode.isDummy ? null : user?.result,
+          wishList: wishList,
+        });
+      }
     }
+    const cartContextObject = {
+      userId: "",
+      cart: {},
+      quantity: "0",
+      verified: false,
+    };
+    return JSON.stringify({
+      cart: cartContextObject,
+      user: null,
+      wishList: [],
+    });
   }
-  const cartContextObject = {
-    userId: "",
-    cart: {},
-    quantity: "0",
-    verified: false,
-  };
-  return JSON.stringify({ cart: cartContextObject, user: null, wishList: [] });
-});
+);
 
 export default component$(() => {
   const user = useUserData().value;
