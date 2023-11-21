@@ -393,12 +393,13 @@ export default component$(() => {
             alert("Payment Failed");
           }
           return;
+        } else {
+          stripe.createToken(cardNo).then((res) => {
+            if (res.error) errorEl.innerText = res?.error?.message ?? "";
+            else stripeTokenHandler(res.token);
+          });
+          isLoading.value = false;
         }
-
-        stripe.createToken(cardNo).then((res) => {
-          if (res.error) errorEl.innerText = res?.error?.message ?? "";
-          else stripeTokenHandler(res.token);
-        });
       });
     },
     { strategy: "document-idle" }
