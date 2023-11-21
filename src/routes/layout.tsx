@@ -98,7 +98,15 @@ export const useUserData = routeLoader$(async ({ cookie, env, request }) => {
 
     if (!user?.result) {
       cookie.delete("token", { path: "/" });
-      const request: any = await addDummyCustomer("", null);
+      const data = {
+        generalInfo: {
+          address: {
+            country: country_name ?? "",
+            city: city ?? "",
+          },
+        },
+      };
+      const request: any = await addDummyCustomer("", data);
       const newTokentoken = jwt.sign(
         {
           user_id: request?.result?._id?.toString() ?? "",

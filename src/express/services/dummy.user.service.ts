@@ -3,7 +3,7 @@ import DummyUser from "../schemas/dummy.user.schema";
 export const addDummyCustomer = async (id: string, data: any) => {
   try {
     if (!id) {
-      const result = await DummyUser.create({});
+      const result = await DummyUser.create({ generalInfo: data?.generalInfo });
       return { status: "success", result: result };
     } else {
       const result = await DummyUser.findOneAndUpdate(
