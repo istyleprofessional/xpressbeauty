@@ -1,7 +1,10 @@
 import { component$, $, useSignal } from "@builder.io/qwik";
 import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import { connect } from "~/express/db.connection";
-import { getProductBySearchAdmin } from "~/express/services/product.service";
+import {
+  getAllProductForDownload,
+  getProductBySearchAdmin,
+} from "~/express/services/product.service";
 import {
   CheckOrderIcon,
   EditAdimnIcon,
@@ -15,8 +18,6 @@ export const useProductData = routeLoader$(async (ev) => {
   const search = ev.url.searchParams.get("search") ?? "";
   await connect();
   const products = await getProductBySearchAdmin(search, pageNumber);
-  // const products = await get_products_service(token ?? "", pageNumber);
-  // const count = await get_products_count_service(token ?? "");
   return JSON.stringify(products);
 });
 
@@ -25,6 +26,12 @@ export const getProductsServer = server$(async function (value: string) {
   // const token = this.cookie.get("token")?.value;
   const page = this.url.searchParams.get("page") ?? "1";
   const products = await getProductBySearchAdmin(value, parseInt(page));
+  return JSON.stringify(products);
+});
+
+export const getAllProductsServer = server$(async function () {
+  await connect();
+  const products = await getAllProductForDownload();
   return JSON.stringify(products);
 });
 
@@ -74,9 +81,54 @@ export default component$(() => {
     history.pushState({}, "", url.toString());
   });
 
+  const handleDownloadClick = $(async () => {
+    const getAllProducts = await getAllProductsServer();
+    const jsonRes = JSON.parse(getAllProducts);
+    const csvRows = [];
+    const headers = [
+      "id",
+      "title",
+      "description",
+      "availability",
+      "condition",
+      "price",
+      "link",
+      "image_link",
+      "brand",
+    ];
+    csvRows.push(headers.join(","));
+    for (const product of jsonRes) {
+      const values = [
+        product._id,
+        product.product_name.substring(0, 150),
+        // maxium 9999 characters
+        product.description
+          ? product.description
+              .replace(/<img .*?>/g, "")
+              .replace(/Cosmo Prof/g, "Xpress Beauty")
+              .substring(0, 9999)
+          : "",
+        parseInt(product.quantity_on_hand) > 0 ? "in stock" : "out of stock",
+        "new",
+        `${parseFloat(product.price.regular).toFixed(2)} CAD`,
+        `https://xpressbeauty.ca/products/${product.perfix}`,
+        product.imgs[0],
+        product.companyName.name,
+      ];
+      csvRows.push(values.join(","));
+    }
+    const csvString = csvRows.join("\n");
+    const a = document.createElement("a");
+    a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csvString);
+    a.download = "products.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+
   return (
     <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
-      <div class="flex flex-row gap-5 items-center">
+      <div class="flex flex-row gap-5 items-center w-full">
         <h1 class="text-2xl font-bold p-2">Products</h1>
         <input
           type="text"
@@ -85,6 +137,9 @@ export default component$(() => {
           onInput$={handleSearchProducts}
           value={searchValue}
         />
+        <button class="btn btn-primary ml-auto" onClick$={handleDownloadClick}>
+          Download Products Backup
+        </button>
       </div>
 
       <div class="overflow-x-auto h-[80vh] bg-[#FFF]">

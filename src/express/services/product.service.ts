@@ -527,3 +527,21 @@ export const getTotalQuantityService = async (
     return { status: "failed", result: err };
   }
 };
+
+export const getAllProductForDownload = async () => {
+  try {
+    const result = await Product.find({ isHidden: { $ne: true } }).select({
+      product_name: 1,
+      description: 1,
+      companyName: 1,
+      imgs: 1,
+      price: 1,
+      perfix: 1,
+      quantity_on_hand: 1,
+      _id: 1,
+    });
+    return result;
+  } catch (err) {
+    return { err: err };
+  }
+};
