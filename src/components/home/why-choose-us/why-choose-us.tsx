@@ -25,8 +25,8 @@ export const WhyChooseUs = component$(() => {
             will receive an email from us with your tracking number.
           </p>
         </div>
-        <div class="flex flex-row gap-16 lg:gap-[38%] justify-center items-start">
-          <div class="flex justify-center items-center flex-col w-[35%] gap-3">
+        <div class="flex flex-col lg:flex-row gap-16 lg:gap-[38%] justify-center items-start">
+          <div class="flex justify-center items-center flex-col lg:w-[35%] gap-3">
             <img
               src="/support.webp"
               class="lg:w-42 w-24 h-24 lg:h-42 object-contain"
@@ -42,7 +42,7 @@ export const WhyChooseUs = component$(() => {
               business hours.
             </p>
           </div>
-          <div class="flex justify-center items-center flex-col w-[35%] gap-3">
+          <div class="flex justify-center items-center flex-col lg:w-[35%] gap-3">
             <img
               src="/secure.webp"
               class="lg:w-42 w-24 h-24 lg:h-42 object-contain"
