@@ -21,8 +21,11 @@ import { UserContext } from "~/context/user.context";
 import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 
-export const useUserData = routeLoader$(async ({ cookie, env }) => {
+export const useUserData = routeLoader$(async ({ cookie, env, request }) => {
   await connect();
+  const userIP =
+    request.headers.get("do-connecting-ip") || request.headers.get("X-Real-IP");
+  console.log(userIP);
   const token = cookie.get("token")?.value ?? "";
   if (!token) {
     const request: any = await addDummyCustomer("", null);
