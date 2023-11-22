@@ -70,7 +70,7 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
         </select>
       </div>
       {viewToggle.value === "grid" ? (
-        <div class="flex flex-row flex-wrap justify-center gap-4 md:gap-10">
+        <div class="flex flex-row flex-wrap justify-center gap-1 md:gap-2 lg:gap-4">
           {products.value?.result?.map((product: any, index: number) => (
             <div key={index}>
               <ProductCard product={product} i={index} cardSize="sm" />

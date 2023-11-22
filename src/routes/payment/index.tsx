@@ -397,8 +397,8 @@ export default component$(() => {
           stripe.createToken(cardNo).then((res) => {
             if (res.error) errorEl.innerText = res?.error?.message ?? "";
             else stripeTokenHandler(res.token);
+            isLoading.value = false;
           });
-          isLoading.value = false;
         }
       });
     },
