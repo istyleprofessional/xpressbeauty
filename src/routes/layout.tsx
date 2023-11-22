@@ -2,6 +2,7 @@ import { useSignal, useVisibleTask$, $, useTask$ } from "@builder.io/qwik";
 import { useStore } from "@builder.io/qwik";
 import { useContextProvider } from "@builder.io/qwik";
 import { component$, Slot } from "@builder.io/qwik";
+import type { RequestHandler } from "@builder.io/qwik-city";
 import { routeLoader$, useLocation, useNavigate } from "@builder.io/qwik-city";
 import { Footer } from "~/components/shared/footer/footer";
 import { Header } from "~/components/shared/header/header";
@@ -22,6 +23,19 @@ import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 import ip2location from "ip-to-location";
 
+export const onGet: RequestHandler = async ({ cacheControl }) => {
+  cacheControl({
+    staleWhileRevalidate: 60 * 60 * 24 * 7,
+    maxAge: 5,
+  });
+};
+
+export const useServerTimeLoader = routeLoader$(() => {
+  return {
+    date: new Date().toISOString(),
+  };
+});
+
 export const useUserData = routeLoader$(
   async ({ cookie, env, request, url }) => {
     await connect();
@@ -30,7 +44,7 @@ export const useUserData = routeLoader$(
       request.headers.get("X-Real-IP");
     const { country_name, city } = await ip2location.fetch(userIP);
     const referrer = request.headers.get("referer");
-    console.log(country_name + " - " + city + " - " + referrer);
+    const visitPage = url.href;
     const token = cookie.get("token")?.value ?? "";
     if (!token) {
       const data = {
@@ -39,8 +53,12 @@ export const useUserData = routeLoader$(
             country: country_name ?? "",
             city: city ?? "",
           },
+          referrer: referrer ?? "",
+          ip: userIP ?? "",
+          visitPage: visitPage ?? "",
         },
       };
+      console.log(data);
       const request: any = await addDummyCustomer("", data);
       if (request.status === "success") {
         const token = jwt.sign(
@@ -100,8 +118,12 @@ export const useUserData = routeLoader$(
                 country: country_name ?? "",
                 city: city ?? "",
               },
+              referrer: referrer ?? "",
+              ip: userIP ?? "",
+              visitPage: visitPage ?? "",
             },
           };
+          console.log(data);
           const request: any = await addDummyCustomer("", data);
           const newTokentoken = jwt.sign(
             {
@@ -133,8 +155,12 @@ export const useUserData = routeLoader$(
               country: country_name ?? "",
               city: city ?? "",
             },
+            referrer: referrer ?? "",
+            ip: userIP ?? "",
+            visitPage: visitPage ?? "",
           },
         };
+        console.log(data);
         const request: any = await addDummyCustomer("", data);
         const newTokentoken = jwt.sign(
           {

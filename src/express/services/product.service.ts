@@ -138,7 +138,13 @@ export const get_new_arrivals_products = async (filter?: string) => {
       }).limit(8);
       return result as ProductModel;
     } else {
-      const result = await Product.aggregate([{ $sample: { size: 8 } }]);
+      const query = {
+        quantity_on_hand: { $nin: ["0", ""] },
+      };
+      const result = await Product.aggregate([
+        { $match: query },
+        { $sample: { size: 8 } },
+      ]);
       return result as ProductModel;
     }
   } catch (err) {

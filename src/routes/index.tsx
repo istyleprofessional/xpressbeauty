@@ -1,20 +1,20 @@
 import {
   component$,
-  useContext,
+  // useContext,
   useSignal,
-  useVisibleTask$,
+  // useVisibleTask$,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { routeLoader$ } from "@builder.io/qwik-city";
+import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import { FeatureProducts } from "~/components/home/tools-products/tools-products";
 import { Hero } from "~/components/home/hero/hero";
-import { ShopByBrand } from "~/components/home/shop-by-brand/shop-by-brand";
+// import { ShopByBrand } from "~/components/home/shop-by-brand/shop-by-brand";
 import { WhyChooseUs } from "~/components/home/why-choose-us/why-choose-us";
 import { connect } from "~/express/db.connection";
 import { get_new_arrivals_products } from "~/express/services/product.service";
 import type { ProductModel } from "~/models/product.model";
 // import BannerImage from "~/media/banner.jpg?jsx";
-import { UserContext } from "~/context/user.context";
+// import { UserContext } from "~/context/user.context";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();
@@ -39,6 +39,19 @@ export const useBestSellerProducts = routeLoader$(async () => {
   return JSON.stringify(newArrivalsProducts as ProductModel[]);
 });
 
+export const checkIfDisplayCard = server$(async function () {
+  const isBannarDisplay = this.cookie.get("bannar")?.value ?? "";
+  if (!isBannarDisplay || isBannarDisplay === "false") {
+    this.cookie.set("bannar", "true", {
+      httpOnly: true,
+      path: "/",
+    });
+    return true;
+  } else {
+    return false;
+  }
+});
+
 export default component$(() => {
   const status = import.meta.env.VITE_STATUS;
   const newArrivalProducts: ProductModel[] = JSON.parse(
@@ -53,18 +66,25 @@ export default component$(() => {
   );
   const isCard = useSignal(false);
   // const nav = useNavigate();
-  const user = useContext(UserContext);
+  // const user = useContext(UserContext);
 
-  useVisibleTask$(
-    () => {
-      if (user.value) {
-        isCard.value = false;
-      } else {
-        isCard.value = true;
-      }
-    },
-    { strategy: "document-idle" }
-  );
+  // useVisibleTask$(
+  //   async ({ cleanup }) => {
+  //     const checkUserCard = await checkIfDisplayCard(user.value?._id ?? "");
+  //     if (checkUserCard) {
+  //       const time = setTimeout(() => {
+  //         isCard.value = true;
+  //       }, 1500);
+  //       cleanup(() => {
+  //         clearTimeout(time);
+  //       });
+  //     } else {
+  //       isCard.value = false;
+  //     }
+  //   },
+  //   { strategy: "document-idle" }
+  // );
+
   return (
     <>
       {isCard.value && (
@@ -97,7 +117,7 @@ export default component$(() => {
       {status === "1" && (
         <div class="flex flex-col gap-10">
           <Hero />
-          <ShopByBrand />
+          {/* <ShopByBrand /> */}
           <FeatureProducts
             bestSellerProducts={bestSellerProducts2}
             type="Top Selling Products"
