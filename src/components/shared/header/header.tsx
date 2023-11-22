@@ -13,10 +13,10 @@ export const Header = component$(() => {
       </p>
 
       <a
-        href="tel:+12134014667"
+        href="mailto:info@xpressbeauty.ca"
         class="text-white text-xs lg:text-base flex flex-row gap-3 font-normal"
       >
-        (213) 401-4667
+        info@xpressbeauty.ca
       </a>
     </div>
   );
