@@ -148,7 +148,6 @@ export const ProductCard = component$((props: ProductCardProps) => {
               )} */}
           </p>
           {/* {context.isVerified && ( */}
-          <span class="text-xs text-error">You got up to 40% off</span>
           {/* )} */}
           {/* {!context.isVerified && ( */}
           <>
