@@ -46,6 +46,7 @@ export const useUserData = routeLoader$(
     const referrer = request.headers.get("referer");
     const visitPage = url.href;
     const token = cookie.get("token")?.value ?? "";
+    const userAgent = request.headers.get("user-agent");
     const data = {
       generalInfo: {
         address: {
@@ -55,9 +56,9 @@ export const useUserData = routeLoader$(
         referrer: referrer ?? "",
         ip: userIP ?? "",
         visitPage: visitPage ?? "",
+        userAgent: userAgent ?? "",
       },
     };
-    console.log(data);
     if (!token) {
       const request: any = await addDummyCustomer("", data);
       if (request.status === "success") {
