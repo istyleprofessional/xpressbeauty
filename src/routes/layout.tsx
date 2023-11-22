@@ -46,19 +46,19 @@ export const useUserData = routeLoader$(
     const referrer = request.headers.get("referer");
     const visitPage = url.href;
     const token = cookie.get("token")?.value ?? "";
-    if (!token) {
-      const data = {
-        generalInfo: {
-          address: {
-            country: country_name ?? "",
-            city: city ?? "",
-          },
-          referrer: referrer ?? "",
-          ip: userIP ?? "",
-          visitPage: visitPage ?? "",
+    const data = {
+      generalInfo: {
+        address: {
+          country: country_name ?? "",
+          city: city ?? "",
         },
-      };
-      console.log(data);
+        referrer: referrer ?? "",
+        ip: userIP ?? "",
+        visitPage: visitPage ?? "",
+      },
+    };
+    console.log(data);
+    if (!token) {
       const request: any = await addDummyCustomer("", data);
       if (request.status === "success") {
         const token = jwt.sign(
@@ -112,18 +112,6 @@ export const useUserData = routeLoader$(
         if (url.href.includes("admin")) {
           return;
         } else {
-          const data = {
-            generalInfo: {
-              address: {
-                country: country_name ?? "",
-                city: city ?? "",
-              },
-              referrer: referrer ?? "",
-              ip: userIP ?? "",
-              visitPage: visitPage ?? "",
-            },
-          };
-          console.log(data);
           const request: any = await addDummyCustomer("", data);
           const newTokentoken = jwt.sign(
             {
@@ -149,18 +137,6 @@ export const useUserData = routeLoader$(
 
       if (!user?.result) {
         cookie.delete("token", { path: "/" });
-        const data = {
-          generalInfo: {
-            address: {
-              country: country_name ?? "",
-              city: city ?? "",
-            },
-            referrer: referrer ?? "",
-            ip: userIP ?? "",
-            visitPage: visitPage ?? "",
-          },
-        };
-        console.log(data);
         const request: any = await addDummyCustomer("", data);
         const newTokentoken = jwt.sign(
           {
