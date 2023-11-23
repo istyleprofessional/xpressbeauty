@@ -53,7 +53,7 @@ export const useFormAction = routeAction$(async function (data, event) {
       formData["updateQuickBooks"] = false;
     }
   });
-  await update_product_service(formData, token);
+  await update_product_service(formData);
   return { status: "success" };
 });
 
