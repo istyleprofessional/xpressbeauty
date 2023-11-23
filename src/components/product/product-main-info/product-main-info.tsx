@@ -250,7 +250,11 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         <h2 class="flex flex-row gap-2 text-xl lg:text-3xl">
           {priceType === "single" && sale_price.sale !== "" && (
             <>
-              <span></span>
+              <span>
+                <span class="text-gray-400 line-through" itemProp="price">
+                  {verifiedSalePrice.value}
+                </span>
+              </span>
             </>
           )}
           {priceType === "single" && sale_price.sale === "" && (
@@ -269,9 +273,6 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
             sale_price.min !== "" &&
             sale_price.max !== "" && (
               <div class="flex flex-col gap-2">
-                <span class="text-gray-400 line-through" itemProp="price">
-                  {verifiedPrice.value}
-                </span>
                 <span class="text-error" itemProp="price">
                   {verifiedSalePrice.value}
                 </span>
