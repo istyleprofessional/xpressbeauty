@@ -137,6 +137,9 @@ export default component$(() => {
           onInput$={handleSearchProducts}
           value={searchValue}
         />
+        <a class="btn btn-primary ml-auto" href={`/admin/products/add-new`}>
+          Add New Product
+        </a>
         <button class="btn btn-primary ml-auto" onClick$={handleDownloadClick}>
           Download Products Backup
         </button>

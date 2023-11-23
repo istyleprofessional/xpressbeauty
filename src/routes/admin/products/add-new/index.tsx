@@ -3,7 +3,7 @@ import { Form, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
 import { Toast } from "~/components/admin/toast/toast";
 import { get_all_brands } from "~/express/services/brand.service";
 import { get_all_categories } from "~/express/services/category.service";
-import { update_product_service } from "~/express/services/product.service";
+import { addProductServer } from "~/express/services/product.service";
 
 export const useEditProductData = routeLoader$(async () => {
   const categories = await get_all_categories();
@@ -47,7 +47,7 @@ export const useFormAction = routeAction$(async function (data, event) {
       formData["updateQuickBooks"] = false;
     }
   });
-  await update_product_service(formData, token);
+  await addProductServer(formData);
   return { status: "success" };
 });
 
@@ -418,15 +418,77 @@ export default component$(() => {
       </div>
       {isVariantOpen.value && (
         <div class="fixed inset-0 z-[100] bg-[#00000080] flex justify-center items-center">
-          <div class="bg-[#fff] w-[80%] h-[80%] rounded-md">
-            <p>Variation Name</p>
-            <input type="text" class="input input-md w-full" name="variations.variation_name" />
-            <p>Variation Image</p>
-            <input type="file" class="input input-md w-full" name="variations.variation_image" />
-            <p>Variation price</p>
-            <input type="text" class="input input-md w-full" name="variations.price" />
-            <p>Variation quantity</p>
-            <input type="text" class="input input-md w-full" name="variations.quantity_on_hand" />
+          <div class="bg-[#fff] w-[80%] h-fit max-h-[80%] overflow-scroll rounded-md">
+            <div class="flex flex-row justify-between items-center p-2">
+              <h3 class="font-bold text-lg">Add Variant</h3>
+              <button class="btn btn-ghost border-1 border-black btn-sm text-[#7C3AED] w-40 sticky top-0">
+                Save
+              </button>
+            </div>
+            <div class="flex flex-col gap-2 p-2 variantArray">
+              <p>Variation Name</p>
+              <input
+                type="text"
+                class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                name="variations.variation_name"
+              />
+              <p>Variation Image</p>
+              <input
+                type="file"
+                class="file w-full"
+                name="variations.variation_image"
+              />
+              <p>Variation price</p>
+              <input
+                type="text"
+                class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                name="variations.price"
+              />
+              <p>Variation quantity</p>
+              <input
+                type="text"
+                class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                name="variations.quantity_on_hand"
+              />
+              <hr class="border-[#D1D5DB] mt-5 pb-5" />
+            </div>
+            <div class="flex flex-row justify-end items-center p-2">
+              <button
+                class="btn btn-primary"
+                onClick$={() => {
+                  document.querySelector(".variantArray")?.insertAdjacentHTML(
+                    "beforeend",
+                    `<p>Variation Name</p>
+                <input
+                  type="text"
+                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                  name="variations.variation_name"
+                />
+                <p>Variation Image</p>
+                <input
+                  type="file"
+                  class="file w-full"
+                  name="variations.variation_image"
+                />
+                <p>Variation price</p>
+                <input
+                  type="text"
+                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                  name="variations.price"
+                />
+                <p>Variation quantity</p>
+                <input
+                  type="text"
+                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                  name="variations.quantity_on_hand"
+                />
+                <hr class="border-[#D1D5DB] mt-5 pb-5" />`
+                  );
+                }}
+              >
+                Add
+              </button>
+            </div>
           </div>
         </div>
       )}

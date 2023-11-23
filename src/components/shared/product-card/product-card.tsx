@@ -24,7 +24,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
        shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center items-center normal-case`}
       href={`/products/${encodeURIComponent(
         product.product_name
-          ?.replace(/[^a-zA-Z ]/g, "")
+          ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
           .replace(/ /g, "-")
           .toLowerCase() ?? ""
       )}`}

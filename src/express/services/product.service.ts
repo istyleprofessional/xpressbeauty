@@ -35,21 +35,25 @@ export const get_products_count_service = async (token: string) => {
   }
 };
 
-export const update_product_service = async (product: any, token: string) => {
-  const isAdmin = verifyTokenAdmin(token);
-  if (isAdmin) {
-    try {
-      const result = await Product.findOneAndUpdate(
-        { _id: product._id },
-        product,
-        { upsert: true, new: true, runValidators: true }
-      );
-      return result as unknown as ProductModel;
-    } catch (err) {
-      return { err: err };
-    }
-  } else {
-    return { e: "not authorized" };
+export const addProductServer = async (product: any) => {
+  try {
+    const result = await Product.create(product);
+    return result;
+  } catch (err) {
+    return { err: err };
+  }
+};
+
+export const update_product_service = async (product: any) => {
+  try {
+    const result = await Product.findOneAndUpdate(
+      { _id: product?._id },
+      product,
+      { upsert: true, new: true, runValidators: true }
+    );
+    return result as unknown as ProductModel;
+  } catch (err) {
+    return { err: err };
   }
 };
 
