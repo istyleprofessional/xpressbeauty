@@ -12,7 +12,7 @@ import { getRequest } from "~/utils/fetch.utils";
 import { CartContext } from "~/context/cart.context";
 import type { ProductModel } from "~/models/product.model";
 import { uuid } from "~/utils/uuid";
-import { useLocation } from "@builder.io/qwik-city";
+import { server$, useLocation } from "@builder.io/qwik-city";
 import { UserContext } from "~/context/user.context";
 import { WishListContext } from "~/context/wishList.context";
 
@@ -20,6 +20,12 @@ interface ToolBarProps {
   user?: any;
   handleOnCartClick: PropFunction<() => void>;
 }
+
+export const clearUser = server$(async function () {
+  this.cookie.delete("token");
+  this.cookie.delete("token");
+  return true;
+});
 
 export const ToolBar = component$((props: ToolBarProps) => {
   const { handleOnCartClick } = props;
@@ -31,6 +37,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
   const totalPrice = useSignal<string>("0");
   const loc = useLocation();
   const wishList = useContext(WishListContext);
+  const user = useSignal<any>(userContext.user);
 
   useVisibleTask$(({ track }) => {
     track(() => context?.cart?.totalQuantity);
@@ -39,11 +46,9 @@ export const ToolBar = component$((props: ToolBarProps) => {
   });
 
   const handleLogout = $(async () => {
-    const request: any = await getRequest("/api/logout");
-    const response = await request.json();
-    if (response.status === "success") {
-      location.reload();
-    }
+    await clearUser();
+    user.value = null;
+    location.href = "/";
   });
 
   const handleSearchInput = $(async (event: any) => {
@@ -252,7 +257,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
             tabIndex={0}
             class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 hidden md:block"
           >
-            {userContext?.user?.email ? (
+            {user.value?.email ? (
               <>
                 <li>
                   <a class="justify-between" href="/profile">
@@ -278,7 +283,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
             tabIndex={0}
             class="menu menu-sm dropdown-content mt-3 z-50 p-2 shadow bg-base-100 rounded-box w-52 block md:hidden"
           >
-            {userContext?.user?.email ? (
+            {user.value ? (
               <>
                 <li>
                   <a class="lg:text-lg" href="/" aria-label="home">

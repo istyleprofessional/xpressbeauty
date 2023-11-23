@@ -72,7 +72,7 @@ export const useUserData = routeLoader$(
         userAgent: userAgent ?? "",
       },
     };
-    console.log(data);
+    // console.log(data);
     if (!token) {
       const request: any = await addDummyCustomer("", data);
       if (request.status === "success") {
@@ -205,7 +205,8 @@ export default component$(() => {
   );
 
   useTask$(
-    async () => {
+    async ({ track }) => {
+      track(() => userData?.user);
       const wishList = await getWishListServer(userData?.user?._id ?? "");
       wishListContextObject.wishList = JSON.parse(wishList);
     },
