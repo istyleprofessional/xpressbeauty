@@ -48,7 +48,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
   const handleLogout = $(async () => {
     await clearUser();
     user.value = null;
-    location.href = "/";
+    location.reload();
   });
 
   const handleSearchInput = $(async (event: any) => {
