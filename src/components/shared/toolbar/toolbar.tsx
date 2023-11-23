@@ -22,7 +22,7 @@ interface ToolBarProps {
 }
 
 export const ToolBar = component$((props: ToolBarProps) => {
-  const { user, handleOnCartClick } = props;
+  const { handleOnCartClick } = props;
   const isSearchOpen = useSignal<boolean>(false);
   const context: any = useContext(CartContext);
   const userContext: any = useContext(UserContext);
