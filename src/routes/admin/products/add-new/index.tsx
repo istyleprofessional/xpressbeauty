@@ -53,6 +53,10 @@ export const useFormAction = routeAction$(async function (data, event) {
       formData[key].forEach((variation: any) => {
         variation.quantity_on_hand = parseInt(variation.quantity_on_hand);
       });
+      const newVariations = formData[key].filter(
+        (variation: any) => variation !== null
+      );
+      formData[key] = newVariations;
     }
   });
   await addProductServer(formData);
