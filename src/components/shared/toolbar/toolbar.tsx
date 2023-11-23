@@ -252,7 +252,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
             tabIndex={0}
             class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 hidden md:block"
           >
-            {userContext.user.email ? (
+            {userContext?.user?.email ? (
               <>
                 <li>
                   <a class="justify-between" href="/profile">
@@ -278,7 +278,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
             tabIndex={0}
             class="menu menu-sm dropdown-content mt-3 z-50 p-2 shadow bg-base-100 rounded-box w-52 block md:hidden"
           >
-            {user?.verified ? (
+            {userContext?.user?.email ? (
               <>
                 <li>
                   <a class="lg:text-lg" href="/" aria-label="home">
