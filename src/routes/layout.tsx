@@ -3,7 +3,12 @@ import { useStore } from "@builder.io/qwik";
 import { useContextProvider } from "@builder.io/qwik";
 import { component$, Slot } from "@builder.io/qwik";
 import type { RequestHandler } from "@builder.io/qwik-city";
-import { routeLoader$, useLocation, useNavigate } from "@builder.io/qwik-city";
+import {
+  routeLoader$,
+  server$,
+  useLocation,
+  useNavigate,
+} from "@builder.io/qwik-city";
 import { Footer } from "~/components/shared/footer/footer";
 import { Header } from "~/components/shared/header/header";
 import { NavBar } from "~/components/shared/navbar/navbar";
@@ -39,6 +44,9 @@ export const useServerTimeLoader = routeLoader$(() => {
 export const useUserData = routeLoader$(
   async ({ cookie, env, request, url }) => {
     await connect();
+    if (url.pathname.includes("admin")) {
+      return;
+    }
     const userIP =
       request.headers.get("do-connecting-ip") ||
       request.headers.get("X-Real-IP");
@@ -47,6 +55,11 @@ export const useUserData = routeLoader$(
     const visitPage = url.href;
     const token = cookie.get("token")?.value ?? "";
     const userAgent = request.headers.get("user-agent");
+    if (userAgent?.includes("bot")) {
+      return JSON.stringify({
+        user: null,
+      });
+    }
     const data = {
       generalInfo: {
         address: {
@@ -59,7 +72,6 @@ export const useUserData = routeLoader$(
         userAgent: userAgent ?? "",
       },
     };
-    console.log(data);
     if (!token) {
       const request: any = await addDummyCustomer("", data);
       if (request.status === "success") {
@@ -75,61 +87,13 @@ export const useUserData = routeLoader$(
           httpOnly: true,
           path: "/",
         });
-        const cart: any = await getCartByUserId(
-          request?.result?._id?.toString() ?? ""
-        );
-        const cartContextObject = {
-          userId: request?.result?._id?.toString() ?? "",
-          cart: cart,
-          quantity: cart?.totalQuantity ?? "0",
-          verified: false,
-        };
-        const wishList = await getWishList(
-          request?.result?._id?.toString() ?? ""
-        );
-
         return JSON.stringify({
-          cart: cartContextObject,
-          user: null,
-          wishList: wishList,
-        });
-      } else {
-        const cartContextObject = {
-          userId: "",
-          cart: {},
-          quantity: "0",
-          verified: false,
-        };
-        return JSON.stringify({
-          cart: cartContextObject,
-          user: null,
-          wishList: [],
+          user: request?.result,
         });
       }
     }
     try {
-      let verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
-      if (verify?.role === "a") {
-        // check if url contains admin or not
-        if (url.href.includes("admin")) {
-          return;
-        } else {
-          const request: any = await addDummyCustomer("", data);
-          const newTokentoken = jwt.sign(
-            {
-              user_id: request?.result?._id?.toString() ?? "",
-              isDummy: true,
-            },
-            env.get("VITE_JWTSECRET") ?? "",
-            { expiresIn: "1h" }
-          );
-          cookie.set("token", newTokentoken, {
-            httpOnly: true,
-            path: "/",
-          });
-          verify = jwt.verify(newTokentoken, env.get("VITE_JWTSECRET") ?? "");
-        }
-      }
+      const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
       let user: any;
       if (verify.isDummy) {
         user = await getDummyCustomer(verify?.user_id ?? "");
@@ -152,40 +116,12 @@ export const useUserData = routeLoader$(
           httpOnly: true,
           path: "/",
         });
-        const cart: any = await getCartByUserId(
-          request?.result?._id?.toString() ?? ""
-        );
-        const cartContextObject = {
-          userId: request?.result?._id?.toString() ?? "",
-          cart: cart,
-          quantity: cart?.totalQuantity ?? "0",
-          verified: false,
-        };
-        const wishList = await getWishList(
-          request?.result?._id?.toString() ?? ""
-        );
         return JSON.stringify({
-          cart: cartContextObject,
-          user: null,
-          wishList: wishList,
+          user: request?.result,
         });
       }
-      const cart: any = await getCartByUserId(user?.result?._id ?? "");
-      const cartContextObject = {
-        userId: user?.result?._id ?? "",
-        cart: cart,
-        quantity: cart?.totalQuantity ?? "0",
-        verified:
-          user?.result?.isEmailVerified && user?.result?.isPhoneVerified
-            ? true
-            : false,
-      };
-      const wishList = await getWishList(user?.result?._id ?? "");
-
       return JSON.stringify({
-        cart: cartContextObject,
-        user: verify.isDummy ? null : user?.result,
-        wishList: wishList,
+        user: user?.result,
       });
     } catch (error: any) {
       if (error.message === "jwt expired") {
@@ -209,49 +145,38 @@ export const useUserData = routeLoader$(
         } else {
           user = await findUserByUserId(decode.user_id);
         }
-        const cart: any = await getCartByUserId(user?.result?._id ?? "");
-        const cartContextObject = {
-          userId: user?.result?._id ?? "",
-          cart: cart,
-          quantity: cart?.totalQuantity ?? "0",
-          verified:
-            user?.result?.isEmailVerified && user?.result?.isPhoneVerified
-              ? true
-              : false,
-        };
-        const wishList = await getWishList(user?.result?._id ?? "");
         return JSON.stringify({
-          cart: cartContextObject,
-          user: decode.isDummy ? null : user?.result,
-          wishList: wishList,
+          user: user?.result,
         });
       }
     }
-    const cartContextObject = {
-      userId: "",
-      cart: {},
-      quantity: "0",
-      verified: false,
-    };
     return JSON.stringify({
-      cart: cartContextObject,
       user: null,
-      wishList: [],
     });
   }
 );
+
+export const getCart = server$(async function (userId: string) {
+  const cart = await getCartByUserId(userId);
+  return JSON.stringify(cart);
+});
+
+export const getWishListServer = server$(async function (userId: string) {
+  const wishList = await getWishList(userId);
+  return JSON.stringify(wishList);
+});
 
 export default component$(() => {
   const user = useUserData().value;
   const userData = JSON.parse(user ?? "{}");
   const nav = useNavigate();
   const cartContextObject = useStore<any>({
-    userId: userData?.cart?.userId,
-    cart: userData?.cart?.cart,
-    isVerified: userData?.cart?.verified,
+    userId: userData._id,
+    cart: {},
+    isVerified: false,
   });
   const wishListContextObject = useStore<any>({
-    wishList: userData?.wishList,
+    wishList: {},
   });
   const userContextObject = useStore<any>(
     {
@@ -263,15 +188,28 @@ export default component$(() => {
   const loc = useLocation();
   const url = loc?.url?.pathname;
 
-  useTask$(() => {
-    if (cartContextObject?.cart?.products?.length > 0) {
-      let totalPrice = 0;
-      cartContextObject.cart.products.forEach((element: any) => {
-        totalPrice += element.price * element.quantity;
-      });
-      cartContextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
-    }
-  });
+  useTask$(
+    async () => {
+      const cart = await getCart(userData?.user?._id ?? "");
+      cartContextObject.cart = JSON.parse(cart);
+      if (cartContextObject?.cart?.products?.length > 0) {
+        let totalPrice = 0;
+        cartContextObject.cart.products.forEach((element: any) => {
+          totalPrice += element.price * element.quantity;
+        });
+        cartContextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
+      }
+    },
+    { eagerness: "idle" }
+  );
+
+  useTask$(
+    async () => {
+      const wishList = await getWishListServer(userData?.user?._id ?? "");
+      wishListContextObject.wishList = JSON.parse(wishList);
+    },
+    { eagerness: "idle" }
+  );
 
   useVisibleTask$(({ track }) => {
     track(() => userData);

@@ -3,18 +3,20 @@ import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { NavBar } from "~/components/admin/nav-bar/nav-bar";
 import { SideNav } from "~/components/admin/side-nav/side.nav";
-import { verifyTokenAdmin } from "~/utils/token.utils";
+import jwt from "jsonwebtoken";
 
 export const useProfileLoader = routeLoader$(async ({ cookie, redirect }) => {
-  const token = cookie.get("token")?.value;
-  const validateToken = verifyTokenAdmin(token ?? "");
-  console.log(validateToken);
-  if (!validateToken) {
+  const token = cookie.get("admin-token")?.value;
+  try {
+    const validateToken = jwt.verify(
+      token ?? "",
+      import.meta.env.VITE_JWTSECRET
+    );
+    if (!validateToken) {
+      throw redirect(301, "/admin-login/");
+    }
+  } catch (error) {
     throw redirect(301, "/admin-login/");
-  } else {
-    return JSON.stringify({
-      user: validateToken,
-    });
   }
 });
 

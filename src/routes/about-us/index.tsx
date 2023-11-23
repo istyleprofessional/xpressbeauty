@@ -35,10 +35,9 @@ export default component$(() => {
           <br />
           <br />
           We take pride in being your one-stop-shop for all your salon and spa
-          supplies. Our location in Scarborough, close to Scarborough Town
-          Centre, makes us easily accessible to customers in Toronto, Oakville,
-          Mississauga, Brampton, Milton, Richmond Hill, North York, Vaughan,
-          Burlington, Kitchener, Waterloo, Barrie, Quebec, and beyond.
+          supplies. Our locations are Toronto, Oakville, Mississauga, Brampton,
+          Milton, Richmond Hill, North York, Vaughan, Burlington, Kitchener,
+          Waterloo, Barrie, Quebec, and beyond.
           <br />
           <br />
           Our success stems from our flexibility and commitment to meeting

@@ -7,10 +7,9 @@ import { login_service } from "~/express/services/admin.service";
 export const useAdminLoginAction = routeAction$(async (data, requestEvenet) => {
   const formData: any = { ...data };
   const result = await login_service(formData);
-  requestEvenet.cookie.delete("token");
-  requestEvenet.cookie.set("token", result.token ?? "", {
+  requestEvenet.cookie.set("admin-token", result.token ?? "", {
     httpOnly: true,
-    path: "/",
+    path: "/admin",
   });
   if (result.status === "success") {
     throw requestEvenet.redirect(301, "/admin");
