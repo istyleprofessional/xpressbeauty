@@ -34,7 +34,7 @@ export const useFormAction = routeAction$(async function (data, event) {
     }
     if (key === "price") {
       for (const price in formData[key]) {
-        formData[key][price] = parseInt(formData[key][price]);
+        formData[key][price] = parseFloat(formData[key][price]);
       }
     }
     if (key === "product_image") {
