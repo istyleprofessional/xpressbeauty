@@ -215,9 +215,6 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
               <span class="text-gray-400 line-through" itemProp="price">
                 {finalRegularPrice.value}
               </span>
-              <span class="text-error ml-2" itemProp="price">
-                {finalSalePrice.value}
-              </span>
             </>
           )}
           {priceType === "single" && sale_price.sale === "" && (
@@ -251,7 +248,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           {priceType === "single" && sale_price.sale !== "" && (
             <>
               <span>
-                <span class="text-gray-400 line-through" itemProp="price">
+                <span class="text-error" itemProp="price">
                   {verifiedSalePrice.value}
                 </span>
               </span>
