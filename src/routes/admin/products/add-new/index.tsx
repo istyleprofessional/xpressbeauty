@@ -50,6 +50,14 @@ export const useFormAction = routeAction$(async function (data, event) {
       formData["updateQuickBooks"] = false;
     }
     if (key === "variations") {
+      if (
+        formData[key].length === 1 &&
+        formData[key][0].variation_name === ""
+      ) {
+        formData[key] = [];
+        return;
+      }
+
       formData[key].forEach((variation: any) => {
         variation.quantity_on_hand = parseInt(variation.quantity_on_hand);
       });
