@@ -321,7 +321,7 @@ export default component$(() => {
           <div class="grid grid-cols-4">
             <p class="col-span-1">Brand</p>
             <select class="select w-full max-w-xs" name="companyName.name">
-              <option disabled selected={!product.companyName}>
+              <option disabled selected={!product.companyName.name}>
                 Pick product brand
               </option>
               {brands.result
@@ -338,7 +338,7 @@ export default component$(() => {
                   <option
                     key={index}
                     value={brand.name}
-                    selected={product.companyName === brand.name}
+                    selected={product.companyName.name === brand.name}
                   >
                     {brand.name}
                   </option>
