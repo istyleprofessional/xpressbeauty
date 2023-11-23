@@ -318,7 +318,7 @@ export default component$(() => {
                 qunatity={
                   product.variations && product.variations?.length > 0
                     ? 300
-                    : parseInt(product.quantity_on_hand?.toString() ?? "0")
+                    : parseInt(product?.quantity_on_hand?.toString() ?? "0")
                 }
                 isVariation={
                   (product.variations && product.variations?.length > 0) ??
@@ -351,7 +351,7 @@ export default component$(() => {
                           productId={product.id ?? ""}
                           folder={folder}
                           index={index}
-                          variationQuantity={variation.quantity_on_hand ?? 0}
+                          variationQuantity={variation?.quantity_on_hand ?? 0}
                           finalVariationToAdd={finalVariationToAdd}
                         />
                       </div>
