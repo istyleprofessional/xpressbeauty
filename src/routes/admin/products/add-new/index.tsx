@@ -49,6 +49,11 @@ export const useFormAction = routeAction$(async function (data, event) {
     } else {
       formData["updateQuickBooks"] = false;
     }
+    if (key === "variations") {
+      formData[key].forEach((variation: any) => {
+        variation.quantity_on_hand = parseInt(variation.quantity_on_hand);
+      });
+    }
   });
   await addProductServer(formData);
   return { status: "success" };
