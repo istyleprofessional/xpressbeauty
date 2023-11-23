@@ -21,7 +21,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
       class={`btn btn-ghost flex flex-row lg:flex-col ${
         cardSize === "sm" ? "lg:w-96 lg:h-96" : "lg:w-96 lg:h-96"
       } w-40 h-72 bg-[#FFFFFF] shadow-sm
-       shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center items-center`}
+       shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center items-center normal-case`}
       href={`/products/${encodeURIComponent(
         product.product_name
           ?.replace(/[^a-zA-Z ]/g, "")
@@ -151,8 +151,8 @@ export const ProductCard = component$((props: ProductCardProps) => {
           {/* )} */}
           {/* {!context.isVerified && ( */}
           <>
-            <label class="bg-black w-full text-center">
-              <span class="text-sm text-gray-500 text-center font-bold text-white">
+            <label class="bg-black w-full text-center rounded-md">
+              <span class="text-xs md:text-sm text-gray-500 text-center font-bold text-white p-1 normal-case">
                 Black Friday Sale
               </span>
             </label>
