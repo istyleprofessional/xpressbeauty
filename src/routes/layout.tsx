@@ -72,7 +72,7 @@ export const useUserData = routeLoader$(
         userAgent: userAgent ?? "",
       },
     };
-    // console.log(data);
+    console.log(data);
     if (!token) {
       const request: any = await addDummyCustomer("", data);
       if (request.status === "success") {
@@ -190,7 +190,8 @@ export default component$(() => {
   const url = loc?.url?.pathname;
 
   useTask$(
-    async () => {
+    async ({ track }) => {
+      track(() => userData?.user);
       const cart = await getCart(userData?.user?._id ?? "");
       cartContextObject.cart = JSON.parse(cart);
       if (cartContextObject?.cart?.products?.length > 0) {
