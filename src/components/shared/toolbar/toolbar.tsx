@@ -4,8 +4,8 @@ import {
   useContext,
   $,
   useSignal,
-  useVisibleTask$,
   Fragment,
+  useTask$,
 } from "@builder.io/qwik";
 import { SearchIcon } from "../icons/icons";
 import { getRequest } from "~/utils/fetch.utils";
@@ -39,7 +39,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
   const wishList = useContext(WishListContext);
   const user = useSignal<any>(userContext.user);
 
-  useVisibleTask$(({ track }) => {
+  useTask$(({ track }) => {
     track(() => context?.cart?.totalQuantity);
     quantity.value = context?.cart?.totalQuantity;
     totalPrice.value = parseFloat(context?.cart?.totalPrice ?? "0").toFixed(2);
