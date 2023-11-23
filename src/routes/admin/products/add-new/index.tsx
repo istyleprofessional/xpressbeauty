@@ -20,6 +20,7 @@ export const useFormAction = routeAction$(async function (data, event) {
     throw event.redirect(301, "/admin-login");
   }
   const formData: any = data;
+  console.log(formData);
   Object.keys(formData).forEach((key: string) => {
     if (key === "category") {
       formData.categories = [
@@ -31,8 +32,10 @@ export const useFormAction = routeAction$(async function (data, event) {
       delete formData[key];
       delete formData["sub-category"];
     }
-    if (key === "price.regular") {
-      formData[key] = parseFloat(formData[key]);
+    if (key === "price") {
+      for (const price in formData[key]) {
+        formData[key][price] = parseInt(formData[key][price]);
+      }
     }
     if (key === "product_image") {
       formData.imgs = [formData[key]];
@@ -59,6 +62,7 @@ export default component$(() => {
   const descriptionSignal = useSignal<string>("");
   const productName = useSignal<string>("");
   const isVariantOpen = useSignal<boolean>(false);
+  const variantSignal = useSignal<number>(1);
 
   useVisibleTask$(() => {
     (window as any)?.tinymce?.init({
@@ -85,16 +89,19 @@ export default component$(() => {
     });
   });
 
-  const handleFileChange = $(async (event: any) => {
+  const handleFileChange = $(async (event: any, track: string) => {
     const file = event.target.files[0];
     if (!file) {
       return;
     }
     const formData = new FormData();
     formData.append("image", file);
+    const uuid = Math.random().toString(36).substring(2, 15);
     formData.append(
       "name",
-      `${productName.value.replace(/ /g, "-")}/${file.name.split(".")[0]}.webp`
+      `${productName.value.replace(/ /g, "-")}/${
+        file.name.split(".")[0]
+      }${uuid}.webp`
     );
     const uploadReq = await fetch("/api/admin/product/upload", {
       method: "POST",
@@ -104,10 +111,32 @@ export default component$(() => {
     if (uploadRes.message !== 200) {
       return;
     }
-    imageSignal.value = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/${productName.value.replace(
-      / /g,
-      "-"
-    )}/${file.name.split(".")[0]}.webp`;
+    if (track === "main") {
+      imageSignal.value = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/${productName.value.replace(
+        / /g,
+        "-"
+      )}/${file.name.split(".")[0]}${uuid}.webp`;
+    }
+    if (track === "variant") {
+      document
+        .querySelector(`#variantImage-${variantSignal.value}`)
+        ?.setAttribute(
+          "src",
+          `https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/${productName.value.replace(
+            / /g,
+            "-"
+          )}/${file.name.split(".")[0]}${uuid}.webp`
+        );
+
+      // return `https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/${productName.value.replace(
+      //   / /g,
+      //   "-"
+      // )}/${file.name.split(".")[0]}${uuid}.webp`;
+    }
+    // imageSignal.value = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/${productName.value.replace(
+    //   / /g,
+    //   "-"
+    // )}/${file.name.split(".")[0]}${uuid}.webp`;
   });
 
   const handleAlertClose = $(() => {
@@ -167,7 +196,6 @@ export default component$(() => {
             name="product_name"
             class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
             onInput$={(e: any) => (productName.value = e.target.value)}
-            //   value={product.product_name}
           />
         </div>
         <div class="flex flex-col bg-[#FFF] h-full w-full p-6 gap-10">
@@ -178,7 +206,7 @@ export default component$(() => {
               <input
                 type="file"
                 class="file-input file-input-xs file-input-bordered w-full max-w-xs"
-                onChange$={handleFileChange}
+                onChange$={(event: any) => handleFileChange(event, "main")}
               />
               <input
                 type="hidden"
@@ -398,6 +426,90 @@ export default component$(() => {
               //   checked={product.updateQuickBooks}
             />
           </div>
+          <div class="grid grid-cols-4">
+            <p class="col-span-1">Add Variation</p>
+            <div class="flex flex-col gap-2 p-2 variantArray">
+              <p>Variation Name</p>
+              <input
+                type="text"
+                class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                name="variations.1.variation_name"
+              />
+              <p>Variation Image</p>
+              <img
+                src=""
+                class="w-24 h-24"
+                alt=""
+                id={`variantImage-${variantSignal.value}`}
+              />
+              <input
+                type="file"
+                class="file w-full"
+                onChange$={(event: any) => handleFileChange(event, "variant")}
+              />
+              <input type="hidden" name="variations.1.variation_image" />
+              <p>Variation price</p>
+              <input
+                type="text"
+                class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                name="variations.1.price"
+              />
+              <p>Variation quantity</p>
+              <input
+                type="text"
+                class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                name="variations.1.quantity_on_hand"
+              />
+              <hr class="border-[#D1D5DB] mt-5 pb-5" />
+            </div>
+            <div class="flex flex-row justify-end items-center p-2">
+              <button
+                type="button"
+                class="btn btn-primary"
+                onClick$={() => {
+                  document.querySelector(".variantArray")?.insertAdjacentHTML(
+                    "beforeend",
+                    `<p>Variation Name</p>
+                <input
+                  type="text"
+                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                  name="variations.${variantSignal.value - 1}.variation_name"
+                />
+                <p>Variation Image</p>
+                <img
+                  src=""
+                  class="w-24 h-24"
+                  alt=""
+                  id="variantImage-${variantSignal.value + 1}"
+                />
+                <input
+                  type="file"
+                  class="file w-full"
+                />
+                <input type="hidden" name="variations.${
+                  variantSignal.value - 1
+                }.variation_image" />
+                <p>Variation price</p>
+                <input
+                  type="text"
+                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                  name="variations.${variantSignal.value - 1}.price"
+                />
+                <p>Variation quantity</p>
+                <input
+                  type="text"
+                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                  name="variations.${variantSignal.value - 1}.quantity_on_hand"
+                />
+
+                <hr class="border-[#D1D5DB] mt-5 pb-5" />`
+                  );
+                }}
+              >
+                Add
+              </button>
+            </div>
+          </div>
         </div>
       </Form>
       <div class="bg-[#fff]">
@@ -416,82 +528,6 @@ export default component$(() => {
           </dialog>
         </div>
       </div>
-      {isVariantOpen.value && (
-        <div class="fixed inset-0 z-[100] bg-[#00000080] flex justify-center items-center">
-          <div class="bg-[#fff] w-[80%] h-fit max-h-[80%] overflow-scroll rounded-md">
-            <div class="flex flex-row justify-between items-center p-2">
-              <h3 class="font-bold text-lg">Add Variant</h3>
-              <button class="btn btn-ghost border-1 border-black btn-sm text-[#7C3AED] w-40 sticky top-0">
-                Save
-              </button>
-            </div>
-            <div class="flex flex-col gap-2 p-2 variantArray">
-              <p>Variation Name</p>
-              <input
-                type="text"
-                class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                name="variations.variation_name"
-              />
-              <p>Variation Image</p>
-              <input
-                type="file"
-                class="file w-full"
-                name="variations.variation_image"
-              />
-              <p>Variation price</p>
-              <input
-                type="text"
-                class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                name="variations.price"
-              />
-              <p>Variation quantity</p>
-              <input
-                type="text"
-                class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                name="variations.quantity_on_hand"
-              />
-              <hr class="border-[#D1D5DB] mt-5 pb-5" />
-            </div>
-            <div class="flex flex-row justify-end items-center p-2">
-              <button
-                class="btn btn-primary"
-                onClick$={() => {
-                  document.querySelector(".variantArray")?.insertAdjacentHTML(
-                    "beforeend",
-                    `<p>Variation Name</p>
-                <input
-                  type="text"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                  name="variations.variation_name"
-                />
-                <p>Variation Image</p>
-                <input
-                  type="file"
-                  class="file w-full"
-                  name="variations.variation_image"
-                />
-                <p>Variation price</p>
-                <input
-                  type="text"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                  name="variations.price"
-                />
-                <p>Variation quantity</p>
-                <input
-                  type="text"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                  name="variations.quantity_on_hand"
-                />
-                <hr class="border-[#D1D5DB] mt-5 pb-5" />`
-                  );
-                }}
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 });

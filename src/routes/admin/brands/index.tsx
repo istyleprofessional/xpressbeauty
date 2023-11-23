@@ -8,6 +8,7 @@ import {
 } from "~/components/shared/icons/icons";
 import { connect } from "~/express/db.connection";
 import {
+  addBrandService,
   get_brands_per_page,
   updateVisibility,
 } from "~/express/services/brand.service";
@@ -33,6 +34,11 @@ export const updateBrandVisibility = server$(async function (data: any) {
   return JSON.stringify(update);
 });
 
+export const updateBrandServer = server$(async function (name: string) {
+  const update = await addBrandService(name);
+  return JSON.stringify(update);
+});
+
 export default component$(() => {
   const data = JSON.parse(useBrands().value ?? "{}");
   const brandsIntial = data?.result ?? [];
@@ -42,12 +48,17 @@ export default component$(() => {
   const searchValue = loc.url.searchParams.get("search") ?? "";
   const currentBrand = useSignal<any>({});
   const currentPageNo = loc.url.searchParams.get("page") ?? "1";
-
   const totalPages = Math.ceil(count.value / 20);
-
-  const handleVisibilityChange = $((brand: any) => {
-    (document?.getElementById("my_modal_1") as any)?.showModal();
-    currentBrand.value = brand;
+  const brandNameSignal = useSignal<string>("");
+  const handleVisibilityChange = $((brand?: any, number?: number) => {
+    (
+      document?.getElementById(
+        number ? `my_modal_${number}` : "my_modal_1"
+      ) as any
+    )?.showModal();
+    if (brand) {
+      currentBrand.value = brand;
+    }
   });
 
   const handleSearchBrands = $(async (e: any) => {
@@ -78,6 +89,15 @@ export default component$(() => {
     });
   });
 
+  const handleSubmitNewBrand = $(async () => {
+    (document?.getElementById("my_modal_2") as any)?.close();
+    const callServerToUpdate = await updateBrandServer(brandNameSignal.value);
+    const response = JSON.parse(callServerToUpdate);
+    if (response.status !== "success") {
+      return;
+    }
+  });
+
   return (
     <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
       <div class="flex flex-row gap-5 items-center">
@@ -89,6 +109,14 @@ export default component$(() => {
           onInput$={handleSearchBrands}
           value={searchValue}
         />
+        <div class="flex-grow">
+          <button
+            class="btn btn-primary"
+            onClick$={() => handleVisibilityChange(undefined, 2)}
+          >
+            Add New Brand
+          </button>
+        </div>
       </div>
 
       <div class="overflow-x-auto h-[80vh] bg-[#FFF]">
@@ -218,6 +246,28 @@ export default component$(() => {
                   <button
                     class="btn btn-primary"
                     onClick$={handleConfirmStatusChange}
+                  >
+                    Confirm
+                  </button>
+                </form>
+              </div>
+            </div>
+          </dialog>
+          <dialog id="my_modal_2" class="modal">
+            <div class="modal-box">
+              <h3 class="font-bold text-lg">Change Product Visibility!</h3>
+              <p class="py-4">Brand Name</p>
+              <input
+                type="text"
+                class="input input-bordered w-full"
+                onChange$={(e) => (brandNameSignal.value = e.target.value)}
+              />
+              <div class="modal-action">
+                <form method="dialog" class="flex gap-2">
+                  <button class="btn">Close</button>
+                  <button
+                    class="btn btn-primary"
+                    onClick$={handleSubmitNewBrand}
                   >
                     Confirm
                   </button>

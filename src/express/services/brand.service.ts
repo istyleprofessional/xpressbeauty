@@ -40,6 +40,15 @@ export const get_brands_per_page = async (page: number, value?: string) => {
   }
 };
 
+export const addBrandService = async (data: any) => {
+  try {
+    const result = await Brands.create({ name: data });
+    return { status: "success", result: result };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
+
 export const updateVisibility = async (id: string, isHidden: boolean) => {
   try {
     const result = await Brands.findByIdAndUpdate(
