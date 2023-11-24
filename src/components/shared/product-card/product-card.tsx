@@ -1,5 +1,7 @@
 import {
   component$,
+  useSignal,
+  useTask$,
   //  useContext
 } from "@builder.io/qwik";
 // import { CartContext } from "~/context/cart.context";
@@ -15,6 +17,174 @@ interface ProductCardProps {
 export const ProductCard = component$((props: ProductCardProps) => {
   const { product, i, cardSize } = props;
   // const context: any = useContext(CartContext);
+
+  const finalSalePrice = useSignal<string>("");
+  const finalRegularPrice = useSignal<string>("");
+  const verifiedPrice = useSignal<string>("");
+  const verifiedSalePrice = useSignal<string>("");
+
+  useTask$(() => {
+    if (product.priceType === "single" && product.sale_price.sale !== "") {
+      finalRegularPrice.value = parseFloat(
+        product.price?.regular?.toString()
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+      finalSalePrice.value = parseFloat(
+        product.sale_price.sale.toString()
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    } else if (
+      product.priceType === "single" &&
+      product.sale_price.sale === ""
+    ) {
+      finalRegularPrice.value = parseFloat(
+        product.price?.regular?.toString()
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    } else if (product.priceType === "range" && product.sale_price.min === "") {
+      finalRegularPrice.value =
+        product.price.min.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        product.price.max.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+    } else if (product.priceType === "range" && product.sale_price.min !== "") {
+      finalRegularPrice.value =
+        product.price.min.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        product.price.max.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+      finalSalePrice.value =
+        product.price.max.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        product.sale_price.max.toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+    } else {
+      finalRegularPrice.value = product.price.min.toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+      finalSalePrice.value = product.price.max.toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    }
+  });
+
+  useTask$(() => {
+    if (product.priceType === "single" && product.sale_price.sale !== "") {
+      verifiedPrice.value = (
+        parseFloat(product.price?.regular?.toString()) -
+        parseFloat(product.price?.regular?.toString()) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+      verifiedSalePrice.value = (
+        parseFloat(product.sale_price?.sale?.toString()) -
+        parseFloat(product.sale_price?.sale?.toString()) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    } else if (
+      product.priceType === "single" &&
+      product.sale_price.sale === ""
+    ) {
+      verifiedPrice.value = (
+        parseFloat(product.price?.regular?.toString()) -
+        parseFloat(product.price?.regular?.toString()) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    } else if (product.priceType === "range" && product.sale_price.min === "") {
+      verifiedPrice.value =
+        (
+          parseFloat(product.price?.min?.toString()) -
+          parseFloat(product.price?.min?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        (
+          parseFloat(product.price?.max?.toString()) -
+          parseFloat(product.price?.max?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+    } else if (product.priceType === "range" && product.sale_price.min !== "") {
+      verifiedPrice.value =
+        (
+          parseFloat(product.price?.min?.toString()) -
+          parseFloat(product.price?.min?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        (
+          parseFloat(product.price?.max?.toString()) -
+          parseFloat(product.price?.max?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+      verifiedSalePrice.value =
+        (
+          parseFloat(product.sale_price?.min?.toString()) -
+          parseFloat(product.sale_price?.min?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        }) +
+        " - " +
+        (
+          parseFloat(product.sale_price?.max?.toString()) -
+          parseFloat(product.sale_price?.max?.toString()) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "CAD",
+        });
+    } else {
+      verifiedPrice.value = (
+        parseFloat(product.price?.min?.toString()) -
+        parseFloat(product.price?.min?.toString()) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+      verifiedSalePrice.value = (
+        parseFloat(product.price?.max?.toString()) -
+        parseFloat(product.price?.max?.toString()) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: "CAD",
+      });
+    }
+  });
 
   return (
     <a
@@ -61,53 +231,21 @@ export const ProductCard = component$((props: ProductCardProps) => {
               product.sale_price.sale !== "" && (
                 <>
                   <span class="text-xs text-neutral-800 line-through">
-                    {parseFloat(
-                      product?.price?.regular?.toString()
-                    )?.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}
+                    {finalRegularPrice.value}
                   </span>
-                  {/* <span class="text-xs text-error ml-2 line-through">
-                    {parseFloat(
-                      product?.sale_price?.sale?.toString()
-                    )?.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}
-                  </span> */}
                 </>
               )}
             {product.priceType === "single" &&
               product.sale_price.sale === "" && (
                 <span class="text-xs text-neutral-800 line-through">
-                  {parseFloat(
-                    product?.price?.regular?.toString()
-                  )?.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "CAD",
-                  })}
+                  {finalRegularPrice.value}
                 </span>
               )}
             {product.priceType === "range" &&
               product.sale_price.min === "" &&
               product.sale_price.max === "" && (
                 <span class="text-xs text-neutral-800 line-through">
-                  {parseFloat(product?.price?.min?.toString())?.toLocaleString(
-                    "en-US",
-                    {
-                      style: "currency",
-                      currency: "CAD",
-                    }
-                  )}{" "}
-                  -{" "}
-                  {parseFloat(product?.price?.max?.toString())?.toLocaleString(
-                    "en-US",
-                    {
-                      style: "currency",
-                      currency: "CAD",
-                    }
-                  )}
+                  {finalRegularPrice.value}
                 </span>
               )}
             {/* {product.priceType === "range" &&
@@ -164,13 +302,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
                     product?.sale_price?.sale !== "" && (
                       <>
                         <span class="text-error" itemProp="price">
-                          {(
-                            parseFloat(product?.price?.regular ?? "") -
-                            parseFloat(product?.price?.regular ?? "") * 0.2
-                          ).toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "CAD",
-                          })}
+                          {verifiedSalePrice.value}
                         </span>
                         {/* <span class="text-error ml-2" itemProp="price">
                           {(
@@ -190,13 +322,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
                         class="text-error text-sm lg:text-lg"
                         itemProp="price"
                       >
-                        {(
-                          product?.price?.regular -
-                          product?.price?.regular * 0.2
-                        ).toLocaleString("en-US", {
-                          style: "currency",
-                          currency: "CAD",
-                        })}
+                        {verifiedPrice.value}
                       </span>
                     )}
                   {product?.priceType === "range" &&
@@ -206,21 +332,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
                         class="text-error text-sm lg:text-lg"
                         itemProp="price"
                       >
-                        {(
-                          product?.price?.min -
-                          product?.price?.min * 0.2
-                        ).toLocaleString("en-US", {
-                          style: "currency",
-                          currency: "CAD",
-                        })}{" "}
-                        -{" "}
-                        {(
-                          product?.price?.max -
-                          product?.price?.max * 0.2
-                        ).toLocaleString("en-US", {
-                          style: "currency",
-                          currency: "CAD",
-                        })}
+                        {verifiedPrice.value}
                       </span>
                     )}
                   {product?.priceType === "range" &&
@@ -231,21 +343,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
                           class="text-error text-sm lg:text-lg"
                           itemProp="price"
                         >
-                          {(
-                            product?.price?.min -
-                            product?.price?.min * 0.2
-                          ).toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "CAD",
-                          })}{" "}
-                          -{" "}
-                          {(
-                            product?.price?.max -
-                            product?.price?.max * 0.2
-                          ).toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "CAD",
-                          })}
+                          {verifiedSalePrice.value}
                         </span>
                         {/* <span class="text-error" itemProp="price">
                           {(

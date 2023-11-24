@@ -167,6 +167,11 @@ export const getWishListServer = server$(async function (userId: string) {
   return JSON.stringify(wishList);
 });
 
+export const clearUser = server$(async function () {
+  this.cookie.set("token", "", { path: "/" });
+  return true;
+});
+
 export default component$(() => {
   const user = useUserData().value;
   const userData = JSON.parse(user ?? "{}");
@@ -229,6 +234,11 @@ export default component$(() => {
     nav("/cart");
   });
 
+  const handleLogout = $(async () => {
+    await clearUser();
+    location.reload();
+  });
+
   return (
     <div class="page flex flex-col gap-6 h-screen">
       <main>
@@ -239,6 +249,7 @@ export default component$(() => {
             <>
               <Header />
               <ToolBar
+                handleLogout={handleLogout}
                 user={userData?.cart}
                 handleOnCartClick={handleOnCartClick}
               />

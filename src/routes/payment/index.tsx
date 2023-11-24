@@ -412,66 +412,67 @@ export default component$(() => {
           <progress class="progress progress-white w-56 fixed z-20 m-auto inset-x-0 inset-y-0  bg-white"></progress>
         </div>
       )}
-
-      <div class="flex flex-col gap-20 md:p-10">
+      <div class="flex flex-col gap-5 md:p-10 justify-start">
         <div class="flex flex-col gap-3 justify-center items-center">
-          <Steps pageType="payment" />
+          <Steps pageType="cart" />
         </div>
-        <div class="flex flex-col md:flex-row gap-10 justify-center items-center">
-          <div class="flex flex-col gap-10 justify-center items-start w-full">
-            <a
-              class="text-black font-bold text-3xl flex flex-row gap-1 items-center cursor-pointer"
-              href="/products/"
-            >
-              <PerviousArrowIconNoStick color="black" width="10%" /> Continue
-              Shopping
-            </a>
-            <ProductList />
-          </div>
-          <div class="flex flex-col gap-4 items-center lg:items-end w-full">
-            <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 mb-5">
-              {cards?.length > 0 && (
-                <div class="bg-white shadow-md flex-col gap-3 flex rounded px-8 pt-6 pb-8 mb-4">
-                  <p class="text-black text-lg font-bold">Payment Method</p>
-                  {cards?.map((card: any, index: number) => (
-                    <>
-                      <div class="flex flex-row gap-3">
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          onChange$={() => {
-                            isExistingPaymentMethod.value = true;
-                            finalCard.value = card;
-                          }}
-                          class="form-radio h-5 w-5 text-black"
-                          checked={index === 0 && isExistingPaymentMethod.value}
-                        />
-                        <label class="text-black text-sm font-bold">
-                          ******{card.card.last4}
-                        </label>
-                      </div>
-                    </>
-                  ))}
-                  <button
-                    class="btn btn-primary text-white w-full"
-                    onClick$={() => {
-                      isExistingPaymentMethod.value = false;
-                    }}
-                  >
-                    {" "}
-                    Add New Card{" "}
-                  </button>
-                </div>
-              )}
+        <a
+          class="text-black font-bold text-base lg:text-3xl flex flex-row gap-1 items-center cursor-pointer"
+          href="/products/"
+        >
+          <PerviousArrowIconNoStick color="black" width="10%" /> Continue
+          Shopping
+        </a>
+        <div class="flex flex-col-reverse md:flex-row gap-2 justify-center items-start">
+          <ProductList />
+          <div class="h-full w-96 rounded-lg flex flex-col gap-3 p-5 lg:m-5 md:sticky md:top-0">
+            <div class="flex flex-col gap-4 items-center lg:items-end w-full">
+              <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 mb-5">
+                {cards?.length > 0 && (
+                  <div class="bg-white shadow-md flex-col gap-3 flex rounded px-8 pt-6 pb-8 mb-4">
+                    <p class="text-black text-lg font-bold">Payment Method</p>
+                    {cards?.map((card: any, index: number) => (
+                      <>
+                        <div class="flex flex-row gap-3">
+                          <input
+                            type="radio"
+                            name="paymentMethod"
+                            onChange$={() => {
+                              isExistingPaymentMethod.value = true;
+                              finalCard.value = card;
+                            }}
+                            class="form-radio h-5 w-5 text-black"
+                            checked={
+                              index === 0 && isExistingPaymentMethod.value
+                            }
+                          />
+                          <label class="text-black text-sm font-bold">
+                            ******{card.card.last4}
+                          </label>
+                        </div>
+                      </>
+                    ))}
+                    <button
+                      class="btn btn-primary text-white w-full"
+                      onClick$={() => {
+                        isExistingPaymentMethod.value = false;
+                      }}
+                    >
+                      {" "}
+                      Add New Card{" "}
+                    </button>
+                  </div>
+                )}
 
-              <OrderDetails
-                cart={cartContext?.cart}
-                total={total}
-                cards={cards?.value}
-                isExistingPaymentMethod={isExistingPaymentMethod.value}
-                acceptSaveCard={acceptSaveCard}
-                user={userContext?.user}
-              />
+                <OrderDetails
+                  cart={cartContext?.cart}
+                  total={total}
+                  cards={cards?.value}
+                  isExistingPaymentMethod={isExistingPaymentMethod.value}
+                  acceptSaveCard={acceptSaveCard}
+                  user={userContext?.user}
+                />
+              </div>
             </div>
           </div>
         </div>

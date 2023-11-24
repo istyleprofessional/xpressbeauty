@@ -45,22 +45,12 @@ export const ProductList = component$(() => {
 
   return (
     <>
-      <div class="pl-6 flex flex-col gap-4">
-        <p class="text-black font-semibold text-sm md:text-base">
-          Shopping cart
-        </p>
-        <p class="text-black text-xs md:text-base">
-          {context?.cart && context?.cart?.totalQuantity > 0
-            ? `You have ${context?.cart?.totalQuantity} item in your cart`
-            : "You have 0 item in your cart"}
-        </p>
-      </div>
-      <div class="flex flex-row flex-wrap gap-5 justify-between items-center p-6 w-full">
+      <div class="flex flex-row flex-wrap justify-start gap-3 items-center w-full">
         {context?.cart && (
           <>
             {context?.cart?.products?.map((product: any) => (
               <div
-                class="flex flex-row gap-1 md:gap-5 justify-center items-center w-full h-fit lg:w-96 lg:h-96 bg-white border-2
+                class="flex flex-row justify-center items-center w-full h-fit lg:w-96 lg:h-96 bg-white border-2
                                 border-solid border-[#E0E0E0] rounded-lg"
                 key={uuid()}
               >

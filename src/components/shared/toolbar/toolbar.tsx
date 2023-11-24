@@ -12,23 +12,18 @@ import { getRequest } from "~/utils/fetch.utils";
 import { CartContext } from "~/context/cart.context";
 import type { ProductModel } from "~/models/product.model";
 import { uuid } from "~/utils/uuid";
-import { server$, useLocation } from "@builder.io/qwik-city";
+import { useLocation } from "@builder.io/qwik-city";
 import { UserContext } from "~/context/user.context";
 import { WishListContext } from "~/context/wishList.context";
 
 interface ToolBarProps {
   user?: any;
   handleOnCartClick: PropFunction<() => void>;
+  handleLogout: PropFunction<() => void>;
 }
 
-export const clearUser = server$(async function () {
-  this.cookie.delete("token");
-  this.cookie.delete("token");
-  return true;
-});
-
 export const ToolBar = component$((props: ToolBarProps) => {
-  const { handleOnCartClick } = props;
+  const { handleOnCartClick, handleLogout } = props;
   const isSearchOpen = useSignal<boolean>(false);
   const context: any = useContext(CartContext);
   const userContext: any = useContext(UserContext);
@@ -37,18 +32,11 @@ export const ToolBar = component$((props: ToolBarProps) => {
   const totalPrice = useSignal<string>("0");
   const loc = useLocation();
   const wishList = useContext(WishListContext);
-  const user = useSignal<any>(userContext.user);
 
   useTask$(({ track }) => {
     track(() => context?.cart?.totalQuantity);
     quantity.value = context?.cart?.totalQuantity;
     totalPrice.value = parseFloat(context?.cart?.totalPrice ?? "0").toFixed(2);
-  });
-
-  const handleLogout = $(async () => {
-    await clearUser();
-    user.value = null;
-    location.reload();
   });
 
   const handleSearchInput = $(async (event: any) => {
@@ -257,7 +245,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
             tabIndex={0}
             class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 hidden md:block"
           >
-            {user.value?.email ? (
+            {userContext?.user?.email ? (
               <>
                 <li>
                   <a class="justify-between" href="/profile">
@@ -283,7 +271,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
             tabIndex={0}
             class="menu menu-sm dropdown-content mt-3 z-50 p-2 shadow bg-base-100 rounded-box w-52 block md:hidden"
           >
-            {user.value ? (
+            {userContext?.user?.email ? (
               <>
                 <li>
                   <a class="lg:text-lg" href="/" aria-label="home">
