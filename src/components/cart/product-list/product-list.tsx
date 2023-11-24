@@ -68,7 +68,7 @@ export const ProductList = component$(() => {
                   <a
                     href={`/products/${encodeURIComponent(
                       product.product_name
-                        ?.replace(/[^a-zA-Z ]/g, "")
+                        ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
                         .replace(/ /g, "-")
                         .toLowerCase() ?? ""
                     )}`}

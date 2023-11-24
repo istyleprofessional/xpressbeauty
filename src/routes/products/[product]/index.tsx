@@ -107,14 +107,10 @@ export default component$(() => {
           product_name: product.product_name,
           variation_name: element.variation_name,
           product_img: (product?.imgs ?? [])[0] ?? "",
-          price:
-            //  cartContext.isVerified
-            //   ?
-            (
-              parseFloat(element?.price.toString().replace("$", "")) -
-              parseFloat(element?.price.toString().replace("$", "")) * 0.2
-            ).toFixed(2),
-          // : parseFloat(element?.price.toString().replace("$", "")).toFixed(2),
+          price: (
+            parseFloat(element?.price.toString().replace("$", "")) -
+            parseFloat(element?.price.toString().replace("$", "")) * 0.2
+          ).toFixed(2),
           quantity: element.quantity,
         };
         totalQuantity += element.quantity;
