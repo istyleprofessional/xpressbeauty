@@ -80,6 +80,7 @@ export default component$(() => {
   const productName = useSignal<string>("");
   const isVariantOpen = useSignal<boolean>(false);
   const variantSignal = useSignal<number>(1);
+  const typeOfPrice = useSignal<string>("");
 
   useVisibleTask$(() => {
     (window as any)?.tinymce?.init({
@@ -190,15 +191,6 @@ export default component$(() => {
           <h1 class="text-2xl font-bold p-2 text-[#6B7280]">Add Product</h1>
           <div class="flex flex-row gap-2 items-center">
             <button
-              type="button"
-              class="btn btn-ghost border-1 border-black btn-sm text-[#7C3AED] w-40"
-              onClick$={() => {
-                isVariantOpen.value = true;
-              }}
-            >
-              Add Variant
-            </button>
-            <button
               type="submit"
               class="btn bg-[#7C3AED] btn-sm text-white w-40"
             >
@@ -206,327 +198,334 @@ export default component$(() => {
             </button>
           </div>
         </div>
-        <div class="grid grid-cols-4">
-          <p class="col-span-1">Product Name</p>
-          <input
-            type="text"
-            name="product_name"
-            class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
-            onInput$={(e: any) => (productName.value = e.target.value)}
-          />
-        </div>
+
         <div class="flex flex-col bg-[#FFF] h-full w-full p-6 gap-10">
           <div class="grid grid-cols-4">
-            <p class="col-span-1">Image</p>
-            <div class="col-span-3 flex flex-col gap-2">
-              <img src={imageSignal.value} class="w-24 h-24" alt="" />
-              <input
-                type="file"
-                class="file-input file-input-xs file-input-bordered w-full max-w-xs"
-                onChange$={(event: any) => handleFileChange(event, "main")}
-              />
-              <input
-                type="hidden"
-                name="product_image"
-                value={imageSignal.value}
-              />
-            </div>
+            <p class="col-span-1">Product Name</p>
+            <input
+              type="text"
+              name="product_name"
+              class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+              onInput$={(e: any) => (productName.value = e.target.value)}
+            />
           </div>
+          {productName.value !== "" && (
+            <>
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">Image</p>
+                <div class="col-span-3 flex flex-col gap-2">
+                  <img src={imageSignal.value} class="w-24 h-24" alt="" />
+                  <input
+                    type="file"
+                    class="file-input file-input-xs file-input-bordered w-full max-w-xs"
+                    onChange$={(event: any) => handleFileChange(event, "main")}
+                  />
+                  <input
+                    type="hidden"
+                    name="product_image"
+                    value={imageSignal.value}
+                  />
+                </div>
+              </div>
 
-          <div class="grid grid-cols-4">
-            {/* {product.priceType === "range" && ( */}
-            <>
-              <p class="col-span-1">Price Range</p>
-              <div class="flex flex-row gap-2 col-span-3 items-center">
-                <input
-                  type="text"
-                  name="price.min"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                  // value={product.price.min}
-                />
-                <p class="col-span-1">-</p>
-                <input
-                  type="text"
-                  name="price.max"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                  // value={product.price.max}
-                />
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">Price Type</p>
+                <select
+                  class="select w-full max-w-xs"
+                  name="priceType"
+                  onChange$={(e) => (typeOfPrice.value = e.target.value)}
+                >
+                  <option disabled>Pick product price type</option>
+                  <option value="single">Single</option>
+                  <option value="range">Range</option>
+                </select>
               </div>
-              {/* <input type="hidden" name="priceType" value="range" /> */}
-              <input
-                type="hidden"
-                name="perfix"
-                value={encodeURIComponent(
-                  productName.value
-                    ?.replace(/[^a-zA-Z ]/g, "")
-                    .replace(/ /g, "-")
-                    .toLowerCase() ?? ""
+              <div class="grid grid-cols-4">
+                {typeOfPrice.value === "range" && (
+                  <>
+                    <p class="col-span-1">Price Range</p>
+                    <div class="flex flex-row gap-2 col-span-3 items-center">
+                      <input
+                        type="text"
+                        name="price.min"
+                        class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                      />
+                      <p class="col-span-1">-</p>
+                      <input
+                        type="text"
+                        name="price.max"
+                        class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                      />
+                    </div>
+                    <input
+                      type="hidden"
+                      name="perfix"
+                      value={encodeURIComponent(
+                        productName.value
+                          ?.replace(/[^a-zA-Z ]/g, "")
+                          .replace(/ /g, "-")
+                          .toLowerCase() ?? ""
+                      )}
+                    />
+                  </>
                 )}
-              />
-            </>
-            {/* )} */}
-            {/* {product.priceType === "single" && ( */}
-            <p class="col-span-1">Price Type</p>
-            <input
-              type="text"
-              name="priceType"
-              class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
-              //   value={product.price.regular}
-            />
-            <>
-              <p class="col-span-1">Price</p>
-              <input
-                type="text"
-                name="price.regular"
-                class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
-                //   value={product.price.regular}
-              />
-            </>
-            {/* )} */}
-          </div>
-          <div class="grid grid-cols-4">
-            {/* {product.priceType === "range" && ( */}
-            <>
-              <p class="col-span-1">Sale Price Range</p>
-              <div class="flex flex-row gap-2 col-span-3 items-center">
+                {typeOfPrice.value === "single" && (
+                  <>
+                    <p class="col-span-1">Price</p>
+                    <input
+                      type="text"
+                      name="price.regular"
+                      class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                    />
+                  </>
+                )}
+              </div>
+              <div class="grid grid-cols-4">
+                {typeOfPrice.value === "range" && (
+                  <>
+                    <p class="col-span-1">Sale Price Range</p>
+                    <div class="flex flex-row gap-2 col-span-3 items-center">
+                      <input
+                        type="text"
+                        name="sale_price.min"
+                        class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                      />
+                      <p class="col-span-1">-</p>
+                      <input
+                        type="text"
+                        name="sale_price.max"
+                        class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                      />
+                    </div>
+                  </>
+                )}
+                {typeOfPrice.value === "single" && (
+                  <>
+                    <p class="col-span-1">Sale Price</p>
+                    <input
+                      type="text"
+                      name="sale_price.sale"
+                      class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                    />
+                  </>
+                )}
+              </div>
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">Category</p>
+                <select class="select w-full max-w-xs" name="category">
+                  <option disabled>Pick product main category</option>
+                  {categories.result
+                    .reduce((resArr: any, currentArr: any) => {
+                      const other = resArr.some(
+                        (ele: any) => currentArr.main === ele.main
+                      );
+                      if (!other) resArr.push(currentArr);
+                      return resArr;
+                    }, [])
+                    .sort((a: any, b: any) => a.main - b.main)
+                    .map((category: any, index: number) => {
+                      return (
+                        <option key={index} value={category.main}>
+                          {category.main}
+                        </option>
+                      );
+                    })}
+                </select>
+              </div>
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">Sub Category</p>
+                <select class="select w-full max-w-xs" name="sub-category">
+                  <option disabled>Pick product sub category</option>
+                  {categories.result
+                    .reduce((resArr: any, currentArr: any) => {
+                      const other = resArr.some(
+                        (ele: any) => currentArr.name === ele.name
+                      );
+                      if (!other) resArr.push(currentArr);
+                      return resArr;
+                    }, [])
+                    .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                    .map((category: any, index: number) => (
+                      <option key={index} value={category.name}>
+                        {category.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">Brand</p>
+                <select class="select w-full max-w-xs" name="companyName.name">
+                  <option disabled>Pick product brand</option>
+                  {brands.result
+                    .reduce((resArr: any, currentArr: any) => {
+                      const other = resArr.some(
+                        (ele: any) =>
+                          currentArr.name.toLowerCase() ===
+                          ele.name.toLowerCase()
+                      );
+                      if (!other) resArr.push(currentArr);
+                      return resArr;
+                    }, [])
+                    .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                    .map((brand: any, index: number) => (
+                      <option key={index} value={brand.name}>
+                        {brand.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">Description</p>
+                <textarea id="mytextarea" value={descriptionSignal.value} />
                 <input
-                  type="text"
-                  name="sale_price.min"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                  // value={product.sale_price.min}
-                />
-                <p class="col-span-1">-</p>
-                <input
-                  type="text"
-                  name="sale_price.max"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                  // value={product.sale_price.max}
+                  type="hidden"
+                  name="description"
+                  value={descriptionSignal.value}
                 />
               </div>
-            </>
-            {/* )} */}
-            {/* {product.priceType === "single" && ( */}
-            <>
-              <p class="col-span-1">Sale Price</p>
-              <input
-                type="text"
-                name="sale_price.sale"
-                class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
-                //   value={product.sale_price.sale}
-              />
-            </>
-            {/* )} */}
-          </div>
-          <div class="grid grid-cols-4">
-            <p class="col-span-1">Category</p>
-            <select class="select w-full max-w-xs" name="category">
-              <option disabled>Pick product main category</option>
-              {categories.result
-                .reduce((resArr: any, currentArr: any) => {
-                  const other = resArr.some(
-                    (ele: any) => currentArr.main === ele.main
-                  );
-                  if (!other) resArr.push(currentArr);
-                  return resArr;
-                }, [])
-                .sort((a: any, b: any) => a.main - b.main)
-                .map((category: any, index: number) => {
-                  return (
-                    <option key={index} value={category.main}>
-                      {category.main}
-                    </option>
-                  );
-                })}
-            </select>
-          </div>
-          <div class="grid grid-cols-4">
-            <p class="col-span-1">Sub Category</p>
-            <select class="select w-full max-w-xs" name="sub-category">
-              <option disabled>Pick product sub category</option>
-              {categories.result
-                .reduce((resArr: any, currentArr: any) => {
-                  const other = resArr.some(
-                    (ele: any) => currentArr.name === ele.name
-                  );
-                  if (!other) resArr.push(currentArr);
-                  return resArr;
-                }, [])
-                .sort((a: any, b: any) => a.name.localeCompare(b.name))
-                .map((category: any, index: number) => (
-                  <option key={index} value={category.name}>
-                    {category.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <div class="grid grid-cols-4">
-            <p class="col-span-1">Brand</p>
-            <select class="select w-full max-w-xs" name="companyName.name">
-              <option
-                disabled
-                //    selected={!product.companyName}
-              >
-                Pick product brand
-              </option>
-              {brands.result
-                .reduce((resArr: any, currentArr: any) => {
-                  const other = resArr.some(
-                    (ele: any) =>
-                      currentArr.name.toLowerCase() === ele.name.toLowerCase()
-                  );
-                  if (!other) resArr.push(currentArr);
-                  return resArr;
-                }, [])
-                .sort((a: any, b: any) => a.name.localeCompare(b.name))
-                .map((brand: any, index: number) => (
-                  <option
-                    key={index}
-                    value={brand.name}
-                    // selected={product.companyName === brand.name}
-                  >
-                    {brand.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <div class="grid grid-cols-4">
-            <p class="col-span-1">Description</p>
-            <textarea id="mytextarea" value={descriptionSignal.value} />
-            <input
-              type="hidden"
-              name="description"
-              value={descriptionSignal.value}
-            />
-          </div>
-          <div class="grid grid-cols-4">
-            <p class="col-span-1">Item No.</p>
-            <input
-              type="text"
-              name="item_no"
-              class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
-              //   value={product.item_no}
-            />
-          </div>
-          <div class="grid grid-cols-4">
-            <p class="col-span-1">SKU</p>
-            <input
-              type="text"
-              name="sku"
-              class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
-              //   value={product?.sku}
-            />
-          </div>
-          <div class="grid grid-cols-4">
-            <p class="col-span-1">Quantity on hand</p>
-            <input
-              type="text"
-              name="quantity_on_hand"
-              class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
-              //   value={product?.quantity_on_hand}
-            />
-          </div>
-          <div class="grid grid-cols-4">
-            <p class="col-span-1">Barcode value</p>
-            <input
-              type="text"
-              name="bar_code_value"
-              class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
-              //   value={product?.bar_code_value}
-            />
-          </div>
-          <div class="grid grid-cols-4">
-            <p class="col-span-1">Update Using QuickBooks</p>
-            <input
-              class="form-checkbox h-5 w-5 text-[#7C3AED]"
-              type="checkbox"
-              name="updateQuickBooks"
-              //   checked={product.updateQuickBooks}
-            />
-          </div>
-          <div class="grid grid-cols-4">
-            <p class="col-span-1">Add Variation</p>
-            <div class="flex flex-col gap-2 p-2 variantArray">
-              <p>Variation Name</p>
-              <input
-                type="text"
-                class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                name="variations.1.variation_name"
-              />
-              <p>Variation Image</p>
-              <img
-                src=""
-                class="w-24 h-24"
-                alt=""
-                id={`variantImage-${variantSignal.value}`}
-              />
-              <input
-                type="file"
-                class="file w-full"
-                onChange$={(event: any) => handleFileChange(event, "variant")}
-              />
-              <input type="hidden" name="variations.1.variation_image" />
-              <p>Variation price</p>
-              <input
-                type="text"
-                class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                name="variations.1.price"
-              />
-              <p>Variation quantity</p>
-              <input
-                type="text"
-                class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                name="variations.1.quantity_on_hand"
-              />
-              <hr class="border-[#D1D5DB] mt-5 pb-5" />
-            </div>
-            <div class="flex flex-row justify-end items-center p-2">
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">Item No.</p>
+                <input
+                  type="text"
+                  name="item_no"
+                  class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                />
+              </div>
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">SKU</p>
+                <input
+                  type="text"
+                  name="sku"
+                  class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                />
+              </div>
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">Quantity on hand</p>
+                <input
+                  type="text"
+                  name="quantity_on_hand"
+                  class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                />
+              </div>
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">Barcode value</p>
+                <input
+                  type="text"
+                  name="bar_code_value"
+                  class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                />
+              </div>
+              <div class="grid grid-cols-4">
+                <p class="col-span-1">Update Using QuickBooks</p>
+                <input
+                  class="form-checkbox h-5 w-5 text-[#7C3AED]"
+                  type="checkbox"
+                  name="updateQuickBooks"
+                />
+              </div>
               <button
                 type="button"
-                class="btn btn-primary"
-                onClick$={() => {
-                  document.querySelector(".variantArray")?.insertAdjacentHTML(
-                    "beforeend",
-                    `<p>Variation Name</p>
-                <input
-                  type="text"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                  name="variations.${variantSignal.value - 1}.variation_name"
-                />
-                <p>Variation Image</p>
-                <img
-                  src=""
-                  class="w-24 h-24"
-                  alt=""
-                  id="variantImage-${variantSignal.value + 1}"
-                />
-                <input
-                  type="file"
-                  class="file w-full"
-                />
-                <input type="hidden" name="variations.${
-                  variantSignal.value - 1
-                }.variation_image" />
-                <p>Variation price</p>
-                <input
-                  type="text"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                  name="variations.${variantSignal.value - 1}.price"
-                />
-                <p>Variation quantity</p>
-                <input
-                  type="text"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                  name="variations.${variantSignal.value - 1}.quantity_on_hand"
-                />
-
-                <hr class="border-[#D1D5DB] mt-5 pb-5" />`
-                  );
-                }}
+                onClick$={() => (isVariantOpen.value = !isVariantOpen.value)}
+                class="btn btn-primary w-96"
               >
-                Add
+                Add Variation
               </button>
-            </div>
-          </div>
+              {isVariantOpen.value && (
+                <div class="grid grid-cols-4">
+                  <p class="col-span-1">Add Variation</p>
+                  <div class="flex flex-col gap-2 p-2 variantArray">
+                    <p>Variation Name</p>
+                    <input
+                      type="text"
+                      class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                      name="variations.1.variation_name"
+                    />
+                    <p>Variation Image</p>
+                    <img
+                      src=""
+                      class="w-24 h-24"
+                      alt=""
+                      id={`variantImage-${variantSignal.value}`}
+                    />
+                    <input
+                      type="file"
+                      class="file w-full"
+                      onChange$={(event: any) =>
+                        handleFileChange(event, "variant")
+                      }
+                    />
+                    <input type="hidden" name="variations.1.variation_image" />
+                    <p>Variation price</p>
+                    <input
+                      type="text"
+                      class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                      name="variations.1.price"
+                    />
+                    <p>Variation quantity</p>
+                    <input
+                      type="text"
+                      class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                      name="variations.1.quantity_on_hand"
+                    />
+                    <hr class="border-[#D1D5DB] mt-5 pb-5" />
+                  </div>
+                  <div class="flex flex-row justify-end items-center p-2">
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      onClick$={() => {
+                        document
+                          .querySelector(".variantArray")
+                          ?.insertAdjacentHTML(
+                            "beforeend",
+                            `<p>Variation Name</p>
+                          <input
+                            type="text"
+                            class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                            name="variations.${
+                              variantSignal.value - 1
+                            }.variation_name"
+                          />
+                          <p>Variation Image</p>
+                          <img
+                            src=""
+                            class="w-24 h-24"
+                            alt=""
+                            id="variantImage-${variantSignal.value + 1}"
+                          />
+                          <input
+                            type="file"
+                            class="file w-full"
+                          />
+                          <input type="hidden" name="variations.${
+                            variantSignal.value - 1
+                          }.variation_image" />
+                          <p>Variation price</p>
+                          <input
+                            type="text"
+                            class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                            name="variations.${variantSignal.value - 1}.price"
+                          />
+                          <p>Variation quantity</p>
+                          <input
+                            type="text"
+                            class="input input-md w-full border-[1px] border-[#D1D5DB]"
+                            name="variations.${
+                              variantSignal.value - 1
+                            }.quantity_on_hand"
+                          />
+
+                          <hr class="border-[#D1D5DB] mt-5 pb-5" />`
+                          );
+                      }}
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </Form>
       <div class="bg-[#fff]">
