@@ -31,12 +31,12 @@ import compression from "compression";
 import categorySchema from "./express/schemas/category.schema";
 import brandSchema from "./express/schemas/brand.schema";
 import VoiceResponse from "twilio/lib/twiml/VoiceResponse";
-// import bodyParser from "body-parser";
 import axios from "axios";
 import fs from "fs";
 import { S3 } from "@aws-sdk/client-s3";
 import MessagingResponse from "twilio/lib/twiml/MessagingResponse";
-import { GoogleSpreadsheet } from "google-spreadsheet";
+import { google } from "googleapis";
+import { JWT } from "google-auth-library";
 
 dotenv.config();
 let sitemap: any;
@@ -67,73 +67,36 @@ const app = express();
 // app.use(bodyParser.json());
 app.set("trust proxy", true);
 app.use(cookieParser());
-const delay = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
+// const delay = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
 
-app.get("/api/uploadProducts", async (_, res: any) => {
+app.get("/api/feedShoppingCenter", async (req, res) => {
   await connect();
-  const productsD = await productSchema.find({});
+  const merchantId = "5086882223"; // Replace with your merchant ID
+  const products = await productSchema.find({});
 
-  const doc = new GoogleSpreadsheet(
-    "1315PBG49Tduql9s-pV2IIL_NKa1V6tbuUq9FrYOGCBY"
-  );
-  await doc.useServiceAccountAuth({
-    client_email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL || "",
-    private_key:
-      import.meta.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") || "",
+  const auth = new JWT({
+    email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+    key: import.meta.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+    scopes: ["https://www.googleapis.com/auth/content"],
   });
-  await doc.loadInfo();
-  const allSheets = doc.sheetsByIndex[0];
-  const rows: any[] = [];
-  for (const productD of productsD) {
-    // const merchantId = "5292055509";
-    const product = {
-      id: productD._id.toString(),
-      title: productD.product_name,
-      description: productD?.description?.replace(/<[^>]*>?/gm, "") ?? "",
-      availability:
-        (parseInt(productD?.quantity_on_hand ?? "0") || 0) > 0
-          ? "in_stock"
-          : "out_of_stock",
-      link: `https://xpressbeauty.ca/products/${productD.perfix}`,
-      imageLink: productD.imgs[0],
-      price: {
-        currency: "CAD",
-        value:
-          productD.priceType === "range"
-            ? `${parseFloat(
-                productD?.price?.max?.toString().replace("$", "")
-              )} CAD - ${parseFloat(
-                productD?.price?.min?.toString().replace("$", "")
-              )} CAD`
-            : `${parseFloat(
-                productD?.price?.regular?.toString().replace("$", "")
-              )} CAD`,
-      },
-      "identifier exists": "no",
-      brand: productD.companyName.name,
-      condition: "new",
-      "sell on google quantity": productD?.quantity_on_hand ?? "0",
-    };
-    rows.push({
-      id: product.id,
-      title: product.title ?? "",
-      description: product.description,
-      availability: product.availability,
-      link: product.link,
-      "image link": product.imageLink,
-      price: product.price.value,
-      "identifier exists": product["identifier exists"],
-      brand: product.brand,
-      condition: product.condition,
-      "sell on google quantity": product["sell on google quantity"],
-    });
-  }
-  try {
-    await allSheets.addRows(rows);
-  } catch (error: any) {
-    if (error.response && error.response.status === 429) {
-      console.log("Rate limit exceeded. Waiting for a minute...");
-      await delay(60000); // Wait for a minute (60,000 milliseconds) before continuing.
+  const content = google.content({
+    version: "v2.1",
+    auth: auth,
+  });
+  for (let i = 0; i < products.length; i++) {
+    const product = products[i];
+    try {
+      const request = await content.products.update({
+        merchantId: merchantId,
+        productId: product._id.toString(),
+        updateMask: "link",
+        requestBody: {
+          link: `https://xpressbeauty.ca/products/${product.perfix}/`,
+        },
+      });
+      console.log(request);
+    } catch (error: any) {
+      console.log(error);
     }
   }
   res.send("done");
