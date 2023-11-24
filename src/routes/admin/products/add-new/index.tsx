@@ -82,7 +82,8 @@ export default component$(() => {
   const variantSignal = useSignal<number>(1);
   const typeOfPrice = useSignal<string>("");
 
-  useVisibleTask$(() => {
+  useVisibleTask$(({ track }) => {
+    track(() => productName.value);
     (window as any)?.tinymce?.init({
       selector: "#mytextarea",
       height: 300,
