@@ -49,6 +49,12 @@ export const useFormAction = routeAction$(async function (data, event) {
     } else {
       formData["updateQuickBooks"] = false;
     }
+    formData["perfix"] = encodeURIComponent(
+      formData["product_name"]
+        ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
+        .replace(/ /g, "-")
+        .toLowerCase() ?? ""
+    );
     if (key === "variations") {
       if (
         formData[key].length === 1 &&
@@ -258,16 +264,6 @@ export default component$(() => {
                         class="input input-md w-full border-[1px] border-[#D1D5DB]"
                       />
                     </div>
-                    <input
-                      type="hidden"
-                      name="perfix"
-                      value={encodeURIComponent(
-                        productName.value
-                          ?.replace(/[^a-zA-Z ]/g, "")
-                          .replace(/ /g, "-")
-                          .toLowerCase() ?? ""
-                      )}
-                    />
                   </>
                 )}
                 {typeOfPrice.value === "single" && (
