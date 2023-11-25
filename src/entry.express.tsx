@@ -35,8 +35,6 @@ import axios from "axios";
 import fs from "fs";
 import { S3 } from "@aws-sdk/client-s3";
 import MessagingResponse from "twilio/lib/twiml/MessagingResponse";
-import { google } from "googleapis";
-import { JWT } from "google-auth-library";
 
 dotenv.config();
 let sitemap: any;
@@ -68,53 +66,6 @@ const app = express();
 app.set("trust proxy", true);
 app.use(cookieParser());
 // const delay = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
-
-app.get("/api/feedShoppingCenter", async (req, res) => {
-  await connect();
-  const merchantId = "5086882223"; // Replace with your merchant ID
-  const products = await productSchema.find({});
-
-  const auth = new JWT({
-    email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
-    key: import.meta.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
-    scopes: ["https://www.googleapis.com/auth/content"],
-  });
-  const content = google.content({
-    version: "v2.1",
-    auth: auth,
-  });
-  for (let i = 0; i < products.length; i++) {
-    const productFromDb = products[i];
-    // check if product name contains any number
-    const regex = /\d/g;
-    if (!regex.test(productFromDb?.product_name ?? "")) {
-      continue;
-    }
-    try {
-      const response = await content.products.list({ merchantId: merchantId });
-      // find product by name
-      const product = response?.data?.resources?.find(
-        (item) => item.title === productFromDb.product_name
-      );
-      if (!product) {
-        continue;
-      }
-
-      const request = await content.products.update({
-        merchantId: merchantId,
-        productId: product?.id ?? "",
-        updateMask: "link",
-        requestBody: {
-          link: `https://xpressbeauty.ca/products/${productFromDb.perfix}/`,
-        },
-      });
-      console.log(request);
-    } catch (error: any) {
-      console.log(error);
-    }
-  }
-  res.send("done");
-});
 
 app.get("/sitemap.xml", async (req, res) => {
   await connect();

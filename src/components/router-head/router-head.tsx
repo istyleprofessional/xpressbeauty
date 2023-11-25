@@ -16,6 +16,7 @@ export const RouterHead = component$(() => {
   gtag('js', new Date());
   gtag('config', 'G-TNWNEYMDFJ');
   gtag('config', 'AW-11356703111');
+  gtag('config', 'AW-11167601664');
   `;
 
   const metaScript = `
