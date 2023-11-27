@@ -3,6 +3,7 @@ import { JWT } from "google-auth-library";
 import { google } from "googleapis";
 import { connect } from "~/express/db.connection";
 import { GoogleSpreadsheet } from "google-spreadsheet";
+import productSchema from "~/express/schemas/product.schema";
 
 export const onGet: RequestHandler = async ({ json }) => {
   await connect();
@@ -34,12 +35,17 @@ export const onGet: RequestHandler = async ({ json }) => {
     });
     return jsonRow;
   });
-
   for (let i = 0; i < jsonRows.length; i++) {
     // check if product has number in title
-    if (!/\d/.test(jsonRows[i].title)) {
+    const productFromDb = await productSchema.findOne({ _id: jsonRows[i].id });
+    if (!productFromDb) {
       continue;
     }
+
+    if (productFromDb.priceType === "range") {
+      continue;
+    }
+
     try {
       const content = google.content({
         version: "v2.1",
@@ -50,12 +56,13 @@ export const onGet: RequestHandler = async ({ json }) => {
         productId: `online:en:VI:${jsonRows[i].id}` ?? "",
         requestBody: {
           //   offerId: jsonRows[i].id ?? "",
-          link: `https://xpressbeauty.ca/products/${encodeURIComponent(
-            jsonRows[i].title
-              ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
-              .replace(/ /g, "-")
-              .toLowerCase() ?? ""
-          )}/`,
+          salePrice: {
+            currency: "CAD",
+            value: (
+              parseFloat(productFromDb.price?.regular?.toString()) -
+              parseFloat(productFromDb.price?.regular?.toString()) * 0.2
+            ).toFixed(2),
+          },
         },
       });
       console.log(request.data);

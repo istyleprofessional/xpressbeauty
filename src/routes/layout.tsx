@@ -55,11 +55,6 @@ export const useUserData = routeLoader$(
     const visitPage = url.href;
     const token = cookie.get("token")?.value ?? "";
     const userAgent = request.headers.get("user-agent");
-    if (userAgent?.includes("bot")) {
-      return JSON.stringify({
-        user: null,
-      });
-    }
     const data = {
       generalInfo: {
         address: {
@@ -72,7 +67,9 @@ export const useUserData = routeLoader$(
         userAgent: userAgent ?? "",
       },
     };
-    console.log(data);
+    if (!userAgent?.includes("bot")) {
+      console.log(data);
+    }
     if (!token) {
       const request: any = await addDummyCustomer("", data);
       if (request.status === "success") {
