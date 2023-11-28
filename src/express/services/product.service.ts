@@ -158,7 +158,9 @@ export const get_new_arrivals_products = async (filter?: string) => {
 
 export const get_product_by_name = async (name: string) => {
   try {
-    const result = await Product.findOne({ perfix: name });
+    const result = await Product.findOne({
+      $or: [{ perfix: name }, { oldPerfix: name }],
+    });
     return result;
   } catch (err) {
     return { err: err };
