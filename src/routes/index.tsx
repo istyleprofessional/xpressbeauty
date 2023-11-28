@@ -6,7 +6,7 @@ import { WhyChooseUs } from "~/components/home/why-choose-us/why-choose-us";
 import { connect } from "~/express/db.connection";
 import { get_new_arrivals_products } from "~/express/services/product.service";
 import type { ProductModel } from "~/models/product.model";
-import BannerImage from "~/media/Year.jpg?jsx";
+import BannerImage from "~/media/Year3.jpg?jsx";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();

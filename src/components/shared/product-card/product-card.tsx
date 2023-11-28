@@ -291,7 +291,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
           <>
             <label class="bg-black w-full text-center rounded-md">
               <span class="text-xs md:text-sm text-gray-500 text-center font-bold text-white p-1 normal-case">
-                Black Friday Sale
+                Cyber Week
               </span>
             </label>
 
