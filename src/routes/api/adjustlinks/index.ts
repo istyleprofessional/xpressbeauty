@@ -20,5 +20,20 @@ export const onGet: RequestHandler = async ({ json }) => {
     );
     console.log(update);
   }
+  for (let i = 0; i < products.length; i++) {
+    const product = products[i];
+    product.perfix = `${encodeURIComponent(
+      product.product_name
+        ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
+        .replace(/ /g, "-")
+        .toLowerCase() ?? ""
+    )}-pid-${product._id}`;
+    const update = await productSchema.updateOne(
+      { _id: product._id },
+      { $set: { perfix: product.oldPerfix } },
+      { new: true }
+    );
+    console.log(update);
+  }
   json(200, { message: "done" });
 };
