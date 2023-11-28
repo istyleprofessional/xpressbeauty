@@ -28,8 +28,6 @@ import { getUserById } from "~/express/services/user.service";
 import { WishListContext } from "~/context/wishList.context";
 import { Toast } from "~/components/admin/toast/toast";
 import { getRatingByProductId } from "~/express/services/rating.reviews.service";
-// import productSchema from "~/express/schemas/product.schema";
-// import fs from "fs";
 
 export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();

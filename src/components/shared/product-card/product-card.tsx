@@ -197,7 +197,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
           ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
           .replace(/ /g, "-")
           .toLowerCase() ?? ""
-      )}`}
+      )}-pid-${product._id}/`}
     >
       <Image
         layout="constrained"

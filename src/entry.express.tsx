@@ -67,6 +67,51 @@ app.set("trust proxy", true);
 app.use(cookieParser());
 // const delay = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
 
+app.use(async (req, res, next) => {
+  const url = req.url;
+  if (url.includes("products")) {
+    debugger;
+    const param = url.split("/")[1];
+    console.log(param);
+    if (!param) {
+      next();
+      return;
+    }
+    if (param.includes("qfunc")) {
+      next();
+      return;
+    }
+    const cleanParam = param.replace(/\//g, "");
+    if (cleanParam.includes("filter") || cleanParam.includes("search")) {
+      next();
+      return;
+    }
+    if (cleanParam.includes("pid")) {
+      next();
+      return;
+    }
+    try {
+      console.log(cleanParam);
+      const productDb = await productSchema
+        .findOne({ oldPerfix: cleanParam })
+        .lean();
+      console.log(productDb);
+      if (productDb) {
+        res.redirect(301, `/products/${productDb.perfix}`);
+        return;
+      } else {
+        res.redirect(301, "/products");
+        return;
+      }
+    } catch (error) {
+      res.redirect(301, "/products");
+      return;
+    }
+  } else {
+    next();
+  }
+});
+
 app.get("/sitemap.xml", async (req, res) => {
   await connect();
   res.header("Content-Type", "application/xml");

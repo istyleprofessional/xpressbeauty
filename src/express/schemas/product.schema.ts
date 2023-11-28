@@ -24,6 +24,7 @@ const productsSchema = new Schema(
     perfix: { type: String, default: null },
     priceType: { type: String, default: null },
     updateQuickBooks: { type: Boolean, default: true },
+    oldPerfix: { type: String, default: null },
   },
   { timestamps: true }
 );
