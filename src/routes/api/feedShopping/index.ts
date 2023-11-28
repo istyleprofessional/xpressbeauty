@@ -23,24 +23,11 @@ export const onGet: RequestHandler = async ({ json }) => {
   await doc.loadInfo(); // loads document properties and worksheets
   // get product row by name from spreadsheet
   const sheet = doc.sheetsByIndex[0];
-
-  const rows = await sheet.getRows();
-  const headers = sheet.headerValues;
-  const jsonRows = rows.map((row: any) => {
-    const jsonRow: any = {};
-    headers.forEach((header, index: number) => {
-      jsonRow[header] = row._rawData[index];
-    });
-    return jsonRow;
-  });
   const dataToBeAdd: any[] = [];
-  for (let i = 0; i < jsonRows.length; i++) {
+  const productsFromDb = await productSchema.find({});
+  for (let i = 0; i < productsFromDb.length; i++) {
     // check if product has number in title
-    if (jsonRows[i].id.includes("-")) continue;
-    const productFromDb = await productSchema.findOne({ _id: jsonRows[i].id });
-    if (!productFromDb) {
-      continue;
-    }
+    const productFromDb = productsFromDb[i];
     if (productFromDb.variation_type) {
       for (const variation of productFromDb.variations) {
         const newDate = {
