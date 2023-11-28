@@ -36,6 +36,9 @@ export const Footer = component$(() => {
               <a href="/return-policy" class="text-white font-light text-base">
                 Return Policy
               </a>
+              <a href="/shipping-policy" class="text-white font-light text-base">
+              Shipping Policy
+              </a>
             </div>
           </div>
           <div class="flex flex-col gap-10">
@@ -85,14 +88,14 @@ export const Footer = component$(() => {
                 href="https://www.facebook.com/xpressbeautypro/"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
-                <img src="/Facebook.webp" alt="facebook" class="w-6 h-full" />
+                <img src="/facebook_nlogo.png" alt="facebook" class="w-6 h-full" />
                 <span>Facebook</span>
               </a>
               <a
                 href="https://web.whatsapp.com/send/?phone=12134014667"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
-                <img src="/whatsapp.webp" alt="whatsapp" class="w-6 h-full" />
+                <img src="/whatsapplogo.png" alt="whatsapp" class="w-6 h-full" />
                 <span>What’sApp</span>
               </a>
               <a
@@ -100,7 +103,7 @@ export const Footer = component$(() => {
                 href="https://www.instagram.com/xpressbeauty23"
               >
                 <img
-                  src="/instagram (2).png"
+                  src="/instagram_nlogo.png"
                   alt="instagram"
                   class="w-6 h-full"
                 />

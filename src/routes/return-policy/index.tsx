@@ -13,117 +13,162 @@ export default component$(() => {
         />
       </div>
       <div class="flex flex-col gap-5 p-5 justify-start items-start md:w-1/2">
-        <h1 class="text-4xl font-bold text-center">Return Policy</h1>
-        <div class="w-fit h-fit">
-          <span style="text-zinc-900 text-2xl font-normal leading-loose">
-            Xpress beauty RESERVES THE RIGHT TO CANCEL AND/OR ADJUST ANY ORDERS
-            PLACED DUE TO INCORRECT STOCK OR PRICING.
-            <br />
-            <br />
-          </span>
-          <span style="text-zinc-900 text-4xl font-bold leading-10">
-            Cancellations
-            <br />
-          </span>
-          <span style="text-zinc-900 text-2xl font-normal leading-loose">
-            <br />
-            Any cancellation of orders must be made prior to being shipped.
-            Cancellations can only be made by calling customer service
-            representative at +1(213)-401-4667. NO returns, exchanges, or
-            cancellations on customized and/or special orders. Changes may be
-            permitted on customized and/or special orders if request is made
-            prior to start of production.
-            <br />
-            <br />
-          </span>
-          <span style="text-zinc-900 text-4xl font-bold leading-10">
-            Returns/Exchanges
-            <br />
-          </span>
-          <span style="text-zinc-900 text-2xl font-normal leading-loose">
-            <br />
-            We will accept merchandise for return and/or exchanges only within
-            30 days of receipt. The merchandise must be in original condition
-            along with original materials, accessories, and packaging.
-            Additional fees may apply if shipments are returned damaged or
-            without original packaging. Shipping charges are non-refundable.
-            Customer is responsible for shipping charges incurred for any
-            returns and/or exchanges. Any returns/exchanges without prior
-            authorization will not be accepted. All returns/exchanges may be
-            subject to inspection before approval.
-            <br />
-            <br />
-            Please contact our customer service representative at
-            +1(213)-401-4667 for return authorization. Once your authorization
-            has been established, you will be given a return reference number.
-            Confirm shipping arrangements with the service representative and
-            re-package original merchandise as packaged on delivery. We
-            recommend that insurance is purchased on all returned items because
-            xpressbeauty.ca is not responsible for damages incurred during
-            transit to us. Once returns are accepted, you will receive your
-            refund amount and/or credits within 7 business days.
-            <br />
-            <br />
-          </span>
-          <span style="text-zinc-900 text-4xl font-bold leading-10">
-            Restocking Fee
-            <br />
-          </span>
-          <span style="text-zinc-900 text-2xl font-normal leading-loose">
-            <br />
-            There is a 25% restocking fee all returns.
-            <br />
-            <br />
-          </span>
-          <span style="text-zinc-900 text-4xl font-bold leading-10">
-            Refunds
-            <br />
-          </span>
-          <span style="text-zinc-900 text-2xl font-normal leading-loose">
-            <br />
-            Once returns are received and processed, refunds will be issued to
-            the original form of payment. Credit Card refunds within 5 business
-            days after receipt. Checks and Wires refunds will take up to 7
-            business days.
-            <br />
-            <br />
-          </span>
-          <span style="text-zinc-900 text-4xl font-bold leading-10">
-            Exclusions on Returns and Cancellations
-            <br />
-          </span>
-          <span style="text-zinc-900 text-2xl font-normal leading-loose">
-            <br />
-            Xpress beauty will NOT accept any returns or exchanges for any
-            opened Clippers, Trimmers, Combs, Hair Accessories, Makeup, Brushes,
-            Shears, Blade, Gel/Nail Polishes, and Shampoo Units that have
-            already been installed or connected for plumbing. Returns,
-            exchanges, or cancellations are invalid without prior authorization.
-            There are no returns, exchanges, or cancellations on customized
-            and/or special orders.
-            <br />
-            <br />
-            <br />
-          </span>
-          <span style="text-zinc-900 text-4xl font-bold leading-10">
-            Damaged or Defective Merchandise
-            <br />
-          </span>
-          <span style="text-zinc-900 text-2xl font-normal leading-loose">
-            <br />
-            When receiving products, the customer is responsible to inspect
-            before signing the delivery receipt. If the product is damaged or
-            the packaging is damaged, please notate that on the delivery receipt
-            prior to signing and contact Xpress beauty within 48 hours. We will
-            verify the information and replace the units that are damaged.
-            Please do not dispose of any packaging or the product.
-            <br />
-            If the item is defective, please contact xpressbeauty.ca
-            representative at +1(213)-401-4667 for assistance. A xpressbeauty.ca
-            technician will inspect the item and either fix the cause of the
-            defect or replace the part that is needed, the whole unit, or offer
-            a full refund once the item has been returned within 30 days of
-            receipt.
+        <h1 class="text-4xl font-bold">Return Policy for XpressBeauty - Serving Canadian and American Customers</h1>
+        <div class="text-dark-900 text-left relative w-fit  h-fit">
+          <span>
+            <span >
+              At XpressBeauty we strive to provide you with the best beauty products and exceptional customer
+              service. We understand that sometimes a product may not meet your expectations or may arrive in less
+              than perfect condition. In such cases, we have implemented the following return policy to ensure a
+              smooth and satisfactory experience for our valued American customers.
+            </span>
+            <br>
+            </br>
+            <br>
+            </br>
+            <p>
+              <span><b> 1. Return Eligibility: </b></span>
+              <span>Returns are accepted within 30 days from the date of purchase.</span>
+              <br />
+              <br />
+              <span>The product must be unused, in its original packaging, and in the same condition as received.</span>
+              <br />
+              <br />
+              <span>All original tags and labels must be intact.</span>
+              <br />
+              <br />
+            </p>
+
+            <br>
+            </br>
+
+            <p>
+              <span><b> 2. Return Process: </b></span>
+              <span>To initiate a return, please contact our customer service team at [info@xpressbeauty.ca] with your
+                order number, the item(s) you wish to return, and the reason for the return.</span>
+              <br />
+              <br />
+              <span>Our customer service team will provide you with a Return Authorization (RA) number and detailed
+                instructions on how to proceed. You will also be provided a return address depending on your location.</span>
+              <br />
+              <br />
+
+            </p>
+            <br>
+            </br>
+
+            <p>
+              <span><b> 3. Return Shipping: </b></span>
+              <span>Customers are responsible for the cost of return shipping.</span>
+              <br />
+              <br />
+              <span>We recommend using a trackable and insured shipping method to ensure the safe return of the product.</span>
+              <br />
+              <br />
+              <span>Please clearly mark the RA number on the outside of the package.</span>
+              <br />
+              <br />
+
+            </p>
+            <br>
+            </br>
+
+            <p>
+              <span><b> 4. Refund or Exchange: </b></span>
+              <span>Upon receiving the returned item(s), our team will inspect the product(s) to ensure they meet the return
+                eligibility criteria.</span>
+              <br />
+              <br />
+              <span>Refunds will be processed to the original method of payment within 5 business days.</span>
+              <br />
+              <br />
+              <span>If you prefer an exchange, please indicate the replacement item(s) you would like in your return
+                request. We will do our best to accommodate based on product availability.</span>
+              <br />
+              <br />
+              <span>Unfortunately, due to transportation delays, your refund may require an additional approximate 3-5
+                days to process. Thank you for your patience and understanding.</span>
+              <br />
+              <br />
+
+            </p>
+            <br>
+            </br>
+
+            <p>
+              <span><b> 5. Exceptions: </b></span>
+              <span>We do not accept returns on opened or used beauty products due to hygiene and safety reasons.</span>
+              <br />
+              <br />
+              <span>Final sale items are not eligible for return or exchange.</span>
+              <br />
+              <br />
+
+
+            </p>
+            <br>
+            </br>
+
+            <p>
+              <span><b> 6. Damaged or Defective Products: </b></span>
+              <span>If you receive a damaged or defective product, please contact us immediately with photos of the
+                damaged item and its packaging. We will provide instructions on how to proceed.</span>
+              <br />
+              <br />
+              
+
+
+            </p>
+            <br>
+            </br>
+
+            <p>
+              <span><b> 7. Cancellations: </b></span>
+              <span>Orders cannot be canceled once they have been shipped. If you wish to cancel an order, please contact
+us as soon as possible, and we will do our best to assist you.</span>
+              <br />
+              <br />
+              
+
+
+            </p>
+            <br>
+            </br>
+
+            <p>
+              <span><b> 8. Contact Information: </b></span>
+              <span>Customer Service Email: [info@xpressbeauty.ca]</span>
+              <br />
+              <br />
+              
+
+
+            </p>
+            <br>
+            </br>
+
+            <p>
+              
+              <span>Thank you for choosing XpressBeauty. We appreciate your business and are committed to ensuring your
+satisfaction with our products and services. If you have any questions or concerns, please do not
+hesitate to contact our customer service team.</span>
+              <br />
+              <br />
+              
+
+
+            </p>
+
+
+
+
+
+
+
+
+
+
+
           </span>
         </div>
       </div>

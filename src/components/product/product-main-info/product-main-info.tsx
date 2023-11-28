@@ -31,61 +31,61 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     if (priceType === "single" && sale_price.sale !== "") {
       finalRegularPrice.value = parseFloat(
         price?.regular?.toString()
-      ).toLocaleString("en-US", {
+      )?.toLocaleString("en-US", {
         style: "currency",
         currency: "CAD",
       });
       finalSalePrice.value = parseFloat(
         sale_price.sale.toString()
-      ).toLocaleString("en-US", {
+      )?.toLocaleString("en-US", {
         style: "currency",
         currency: "CAD",
       });
     } else if (priceType === "single" && sale_price.sale === "") {
       finalRegularPrice.value = parseFloat(
         price?.regular?.toString()
-      ).toLocaleString("en-US", {
+      )?.toLocaleString("en-US", {
         style: "currency",
         currency: "CAD",
       });
     } else if (priceType === "range" && sale_price.min === "") {
       finalRegularPrice.value =
-        price.min.toLocaleString("en-US", {
+        price.min?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         }) +
         " - " +
-        price.max.toLocaleString("en-US", {
+        price.max?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         });
     } else if (priceType === "range" && sale_price.min !== "") {
       finalRegularPrice.value =
-        price.min.toLocaleString("en-US", {
+        price.min?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         }) +
         " - " +
-        price.max.toLocaleString("en-US", {
+        price.max?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         });
       finalSalePrice.value =
-        price.max.toLocaleString("en-US", {
+        price.max?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         }) +
         " - " +
-        sale_price.max.toLocaleString("en-US", {
+        sale_price.max?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         });
     } else {
-      finalRegularPrice.value = price.min.toLocaleString("en-US", {
+      finalRegularPrice.value = price.min?.toLocaleString("en-US", {
         style: "currency",
         currency: "CAD",
       });
-      finalSalePrice.value = price.max.toLocaleString("en-US", {
+      finalSalePrice.value = price.max?.toLocaleString("en-US", {
         style: "currency",
         currency: "CAD",
       });
@@ -97,14 +97,14 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
       verifiedPrice.value = (
         parseFloat(price?.regular?.toString()) -
         parseFloat(price?.regular?.toString()) * 0.2
-      ).toLocaleString("en-US", {
+      )?.toLocaleString("en-US", {
         style: "currency",
         currency: "CAD",
       });
       verifiedSalePrice.value = (
         parseFloat(sale_price?.sale?.toString()) -
         parseFloat(sale_price?.sale?.toString()) * 0.2
-      ).toLocaleString("en-US", {
+      )?.toLocaleString("en-US", {
         style: "currency",
         currency: "CAD",
       });
@@ -112,7 +112,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
       verifiedPrice.value = (
         parseFloat(price?.regular?.toString()) -
         parseFloat(price?.regular?.toString()) * 0.2
-      ).toLocaleString("en-US", {
+      )?.toLocaleString("en-US", {
         style: "currency",
         currency: "CAD",
       });
@@ -121,7 +121,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         (
           parseFloat(price?.min?.toString()) -
           parseFloat(price?.min?.toString()) * 0.2
-        ).toLocaleString("en-US", {
+        )?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         }) +
@@ -129,7 +129,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         (
           parseFloat(price?.max?.toString()) -
           parseFloat(price?.max?.toString()) * 0.2
-        ).toLocaleString("en-US", {
+        )?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         });
@@ -138,7 +138,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         (
           parseFloat(price?.min?.toString()) -
           parseFloat(price?.min?.toString()) * 0.2
-        ).toLocaleString("en-US", {
+        )?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         }) +
@@ -146,7 +146,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         (
           parseFloat(price?.max?.toString()) -
           parseFloat(price?.max?.toString()) * 0.2
-        ).toLocaleString("en-US", {
+        )?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         });
@@ -154,7 +154,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         (
           parseFloat(sale_price?.min?.toString()) -
           parseFloat(sale_price?.min?.toString()) * 0.2
-        ).toLocaleString("en-US", {
+        )?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         }) +
@@ -162,7 +162,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         (
           parseFloat(sale_price?.max?.toString()) -
           parseFloat(sale_price?.max?.toString()) * 0.2
-        ).toLocaleString("en-US", {
+        )?.toLocaleString("en-US", {
           style: "currency",
           currency: "CAD",
         });
@@ -170,14 +170,14 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
       verifiedPrice.value = (
         parseFloat(price?.min?.toString()) -
         parseFloat(price?.min?.toString()) * 0.2
-      ).toLocaleString("en-US", {
+      )?.toLocaleString("en-US", {
         style: "currency",
         currency: "CAD",
       });
       verifiedSalePrice.value = (
         parseFloat(price?.max?.toString()) -
         parseFloat(price?.max?.toString()) * 0.2
-      ).toLocaleString("en-US", {
+      )?.toLocaleString("en-US", {
         style: "currency",
         currency: "CAD",
       });
