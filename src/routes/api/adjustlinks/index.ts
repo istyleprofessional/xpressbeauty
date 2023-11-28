@@ -30,7 +30,7 @@ export const onGet: RequestHandler = async ({ json }) => {
     )}-pid-${product._id}`;
     const update = await productSchema.updateOne(
       { _id: product._id },
-      { $set: { perfix: product.oldPerfix } },
+      { $set: { perfix: product.perfix } },
       { new: true }
     );
     console.log(update);
