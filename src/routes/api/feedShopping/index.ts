@@ -17,7 +17,7 @@ export const onGet: RequestHandler = async ({ json }) => {
   });
 
   const doc = new GoogleSpreadsheet(
-    "1315PBG49Tduql9s-pV2IIL_NKa1V6tbuUq9FrYOGCBY",
+    "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
     auth
   );
   await doc.loadInfo(); // loads document properties and worksheets
@@ -39,7 +39,7 @@ export const onGet: RequestHandler = async ({ json }) => {
               ? "in_stock"
               : "out_of_stock",
           link: `https://xpressbeauty.ca/products/${productFromDb.perfix}`,
-          image_link: productFromDb.imgs[0],
+          "image link": productFromDb.imgs[0],
           price: `${parseFloat(
             variation?.price?.toString()?.replace("$", "")
           )?.toFixed(2)} CAD`,
@@ -59,24 +59,29 @@ export const onGet: RequestHandler = async ({ json }) => {
           ? "in_stock"
           : "out_of_stock",
       link: `https://xpressbeauty.ca/products/${productFromDb.perfix}`,
-      image_link: productFromDb.imgs[0],
+      "image link": productFromDb?.imgs[0] ?? "",
       price: `${parseFloat(productFromDb?.price?.regular?.toString())?.toFixed(
         2
       )} CAD`,
-      sale_price: `${(
+      "sale price": `${(
         parseFloat(productFromDb.price?.regular?.toString()) -
         parseFloat(productFromDb.price?.regular?.toString()) * 0.2
       ).toFixed(2)} CAD`,
-      identifier_exists: "no",
+      "identifier exists": "no",
       brand: productFromDb.companyName.name,
       condition: "new",
     };
     dataToBeAdd.push(newDate);
   }
+  console.log(dataToBeAdd[0]);
   // delete all rows expect header
   await sheet.clearRows();
   // add new rows
-  await sheet.addRows(dataToBeAdd);
+  try {
+    await sheet.addRows(dataToBeAdd);
+  } catch (error) {
+    console.log(error);
+  }
 
   json(200, { message: "done" });
 };
