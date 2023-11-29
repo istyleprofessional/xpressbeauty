@@ -1,6 +1,5 @@
 import User from "../schemas/users.schema";
 import Cryptr from "cryptr";
-import jwt from "jsonwebtoken";
 import { generateUniqueInteger } from "~/utils/generateOTP";
 
 export const cryptr = new Cryptr(import.meta.env.VITE_SECRET ?? "");
@@ -86,15 +85,8 @@ export const userLogin = async (userObject: any) => {
   try {
     const result = await User.findOne({ email: userObject.email });
     if (userObject.password === cryptr.decrypt(result?.password ?? "")) {
-      const token = jwt.sign(
-        { user_id: result?._id },
-        import.meta.env.VITE_JWTSECRET ?? "",
-        {
-          expiresIn: "2h",
-        }
-      );
       delete result?.password;
-      return { status: "success", result: result, token: token };
+      return { status: "success", result: result };
     } else {
       return { status: "failed" };
     }

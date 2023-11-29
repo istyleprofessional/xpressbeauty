@@ -26,6 +26,7 @@ export default component$(() => {
 
   useVisibleTask$(
     async () => {
+      localStorage.setItem("prev", "/cart/");
       if (token) {
         await changeToken(token);
         location.href = "/cart/";

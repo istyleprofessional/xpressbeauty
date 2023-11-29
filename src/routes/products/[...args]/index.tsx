@@ -179,6 +179,16 @@ export default component$(() => {
     { strategy: "intersection-observer" }
   );
 
+  useVisibleTask$(
+    () => {
+      localStorage.setItem(
+        "prev",
+        loc.url.pathname + loc.url.searchParams.toString()
+      );
+    },
+    { strategy: "document-idle" }
+  );
+
   const handleCategoryCheckBoxChange = $(async (event: any, name: string) => {
     const value = event.target.checked;
     if (value) {

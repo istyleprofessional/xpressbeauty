@@ -5,6 +5,10 @@ import { InputField } from "~/components/shared/input-field/input-field";
 import { userLogin } from "~/express/services/user.service";
 import { validate } from "~/utils/validate.utils";
 import jwt from "jsonwebtoken";
+import {
+  getCartByUserId,
+  updateUserCart,
+} from "~/express/services/cart.service";
 
 export const useAction = routeAction$(async (data, requestEvent) => {
   const secret_key = requestEvent.env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
@@ -42,6 +46,26 @@ export const useAction = routeAction$(async (data, requestEvent) => {
     };
   }
   if (verifyUser.status === "success") {
+    const prevToken = requestEvent.cookie.get("token");
+    if (prevToken?.value) {
+      const decodeToken: any = jwt.verify(
+        prevToken.value,
+        requestEvent.env.get("VITE_JWTSECRET") ?? ""
+      );
+      if (decodeToken) {
+        const checkForCart: any = await getCartByUserId(
+          decodeToken.user_id ?? ""
+        );
+        if (checkForCart?.status !== "failed") {
+          const data = {
+            userId: verifyUser?.result?._id ?? "",
+            products: checkForCart?.products ?? [],
+          };
+          const updateUserCartReq = await updateUserCart(data);
+          console.log(updateUserCartReq);
+        }
+      }
+    }
     const token = jwt.sign(
       { user_id: verifyUser?.result?._id, isDummy: false },
       requestEvent.env.get("VITE_JWTSECRET") ?? "",
@@ -71,7 +95,8 @@ export default component$(() => {
     ({ track }) => {
       track(() => action.value?.status);
       if (action.value?.status === "success") {
-        location.href = "/";
+        const prevUrl = localStorage.getItem("prev");
+        location.href = prevUrl ?? "/";
       } else {
         message.value = action.value?.err ?? "";
       }

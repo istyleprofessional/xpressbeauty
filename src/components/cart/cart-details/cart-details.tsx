@@ -18,7 +18,7 @@ export const CartDetails = component$(() => {
     if (subTotal.value > 150) {
       shipping.value = 0;
     } else {
-      shipping.value = 15;
+      shipping.value = subTotal.value > 0 ? 15 : 0;
     }
     total.value =
       (cartContext?.cart?.totalPrice ?? 0) + hst.value + shipping.value;

@@ -106,6 +106,10 @@ export default component$(() => {
   const isToastCardOpen = useSignal(false);
   const message = useSignal("");
 
+  useVisibleTask$(() => {
+    localStorage.setItem("prev", `/products/${product.perfix}`);
+  });
+
   const handleAddToCart = $(async (value: number) => {
     isLoading.value = true;
     const productsToAdd: any[] = [];
