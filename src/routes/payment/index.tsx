@@ -335,19 +335,6 @@ export default component$(() => {
         return;
       }
       const elements = stripe.elements();
-      const paymentRequest = stripe.paymentRequest({
-        country: "US",
-        currency: "usd",
-        total: {
-          label: "Demo total",
-          amount: 1099,
-        },
-        requestPayerName: true,
-        requestPayerEmail: true,
-      });
-      const prButton = elements.create("paymentRequestButton", {
-        paymentRequest,
-      });
       let cardNo: any;
       let cardExpiration: any;
       let cardCvc: any;
@@ -358,15 +345,6 @@ export default component$(() => {
         cardExpiration.mount("#card-expiration");
         cardCvc = elements.create("cardCvc");
         cardCvc.mount("#card-cvc");
-        const result = await paymentRequest.canMakePayment();
-        console.log(result);
-        if (result) {
-          prButton.mount("#payment-request-button");
-        } else {
-          document
-            ?.getElementById("payment-request-button")
-            ?.classList.add("hidden");
-        }
       }
       const form = document.querySelector("#payment-form") as HTMLFormElement;
       const errorEl = document.querySelector("#card-errors") as HTMLElement;

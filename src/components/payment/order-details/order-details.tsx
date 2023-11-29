@@ -85,10 +85,6 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
             ></div>
           </>
         )}
-        <div
-          class="flex flex-col gap-2 justify-center p-3"
-          id="payment-request-button"
-        />
         <div class="flex flex-col gap-2 justify-center p-3">
           <div class="grid grid-cols-2 w-full">
             <p class="text-black text-xs font-light">Subtotal</p>
