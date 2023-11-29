@@ -6,15 +6,15 @@ import { getOrderByOrderIdService } from "~/express/services/order.service";
 import { getUserById } from "~/express/services/user.service";
 
 export const useGetMyOrderDetails = routeLoader$(
-  async ({ cookie, redirect, params, env }) => {
+  async ({ cookie, params, env }) => {
     const token = cookie.get("token")?.value;
     if (!token) {
-      throw redirect(301, "/login");
+      return JSON.stringify({ status: "failed", data: {} });
     }
     try {
       const verified: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
       if (!verified) {
-        throw redirect(301, "/login");
+        return JSON.stringify({ status: "failed", data: {} });
       }
       const orderDetails = await getOrderByOrderIdService(params.id);
       const user_id = orderDetails?.request?.userId;
@@ -31,7 +31,7 @@ export const useGetMyOrderDetails = routeLoader$(
       };
       return JSON.stringify({ status: "success", data: data });
     } catch (err) {
-      throw redirect(301, "/login");
+      return JSON.stringify({ status: "failed", data: {} });
     }
   }
 );

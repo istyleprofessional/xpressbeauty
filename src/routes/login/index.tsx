@@ -51,7 +51,8 @@ export const useAction = routeAction$(async (data, requestEvent) => {
       httpOnly: true,
       path: "/",
     });
-    throw requestEvent.redirect(301, "/");
+    return { status: "success" };
+    // throw requestEvent.redirect(301, "/");
   } else {
     return {
       status: "failed",
@@ -70,7 +71,7 @@ export default component$(() => {
     ({ track }) => {
       track(() => action.value?.status);
       if (action.value?.status === "success") {
-        window.location.href = "/";
+        window.history.go(-2);
       } else {
         message.value = action.value?.err ?? "";
       }
