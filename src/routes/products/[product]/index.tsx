@@ -28,6 +28,18 @@ import { getUserById } from "~/express/services/user.service";
 import { WishListContext } from "~/context/wishList.context";
 import { Toast } from "~/components/admin/toast/toast";
 import { getRatingByProductId } from "~/express/services/rating.reviews.service";
+// import Stripe from "stripe";
+
+// export const useTestLoader = routeLoader$(async ({ env }) => {
+//   const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "", {
+//     apiVersion: "2022-11-15",
+//   });
+//   const payout = await stripe.payouts.create({
+//     amount: 1000,
+//     currency: "USD",
+//   });
+//   console.log(payout);
+// });
 
 export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
