@@ -71,7 +71,7 @@ export default component$(() => {
     ({ track }) => {
       track(() => action.value?.status);
       if (action.value?.status === "success") {
-        window.history.go(-2);
+        location.href = "/";
       } else {
         message.value = action.value?.err ?? "";
       }
