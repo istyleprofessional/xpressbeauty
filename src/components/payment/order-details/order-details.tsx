@@ -57,6 +57,8 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
   useTask$(({ track }) => {
     track(() => cart?.totalPrice);
     track(() => currencyObject);
+
+    subTotal.value = cart?.totalPrice;
     if (currencyObject?.country === "1") {
       hst.value = 0;
     } else {

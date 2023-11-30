@@ -8,15 +8,15 @@ import { PerviousArrowIconNoStick } from "~/components/shared/icons/icons";
 import { Steps } from "~/components/shared/steps/steps";
 import { CartDetails } from "~/components/cart/cart-details/cart-details";
 import { ProductList } from "~/components/cart/product-list/product-list";
-import { routeLoader$ } from "@builder.io/qwik-city";
+import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import { CartContext } from "~/context/cart.context";
 
-// export const changeToken = server$(async function (token: string) {
-//   this.cookie.set("token", token, {
-//     path: "/",
-//     httpOnly: true,
-//   });
-// });
+export const changeToken = server$(async function (token: string) {
+  this.cookie.set("token", token, {
+    path: "/",
+    httpOnly: true,
+  });
+});
 
 export const useCurrLoader = routeLoader$(async ({ cookie }) => {
   const country = cookie.get("cur")?.value ?? "";
@@ -26,18 +26,18 @@ export const useCurrLoader = routeLoader$(async ({ cookie }) => {
 
 export default component$(() => {
   const isLoading = useSignal<boolean>(false);
-  // const loc = useLocation();
-  // const token = loc.url.searchParams.get("token");
+  const loc = useLocation();
+  const token = loc.url.searchParams.get("token");
   const context: any = useContext(CartContext);
   const currencyObject = useCurrLoader().value;
 
   useVisibleTask$(
     async () => {
       localStorage.setItem("prev", "/cart/");
-      // if (token) {
-      //   await changeToken(token);
-      //   location.href = "/cart/";
-      // }
+      if (token) {
+        await changeToken(token);
+        location.href = "/cart/";
+      }
     },
     { strategy: "document-idle" }
   );
