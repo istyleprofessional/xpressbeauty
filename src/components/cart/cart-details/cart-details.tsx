@@ -26,12 +26,10 @@ export const CartDetails = component$((props: any) => {
     subTotal.value =
       cartContext.cart?.currency === "USD" &&
       props?.currencyObject?.country === "2"
-        ? cartContext?.cart?.totalPrice /
-          parseFloat(`0.${props.currencyObject.rate + 10}`)
+        ? cartContext?.cart?.totalPrice / 0.9
         : cartContext.cart?.currency === "CAD" &&
           props?.currencyObject?.country === "1"
-        ? cartContext?.cart?.totalPrice *
-          parseFloat(`0.${props.currencyObject?.rate + 10}`)
+        ? cartContext?.cart?.totalPrice * 0.9
         : cartContext?.cart?.totalPrice;
     if (props?.currencyObject?.country === "1") {
       hst.value = 0;

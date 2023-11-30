@@ -60,9 +60,9 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
 
     subTotal.value =
       cart?.currency === "USD" && currencyObject?.country === "2"
-        ? cart?.totalPrice / parseFloat(`0.${currencyObject.rate + 10}`)
+        ? cart?.totalPrice / 0.9
         : cart?.currency === "CAD" && currencyObject?.country === "1"
-        ? cart?.totalPrice * parseFloat(`0.${currencyObject.rate + 10}`)
+        ? cart?.totalPrice * 0.9
         : cart?.totalPrice;
     if (currencyObject?.country === "1") {
       hst.value = 0;

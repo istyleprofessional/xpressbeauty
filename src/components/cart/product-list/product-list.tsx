@@ -85,16 +85,10 @@ export const ProductList = component$((props: any) => {
                             {parseFloat(
                               product.currency === "USD" &&
                                 props.currencyObject.country === "2"
-                                ? product.price /
-                                    parseFloat(
-                                      `0.${props.currencyObject.rate + 10}`
-                                    )
+                                ? product.price / 0.9
                                 : product.currency === "CAD" &&
                                   props.currencyObject.country === "1"
-                                ? product.price *
-                                  parseFloat(
-                                    `0.${props.currencyObject.rate + 10}`
-                                  )
+                                ? product.price * 0.9
                                 : product.price
                             )?.toLocaleString("en-US", {
                               style: "currency",
