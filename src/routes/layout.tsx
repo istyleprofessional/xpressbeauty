@@ -7,7 +7,7 @@ import {
   routeLoader$,
   server$,
   useLocation,
-  useNavigate,
+  // useNavigate,
 } from "@builder.io/qwik-city";
 import { Footer } from "~/components/shared/footer/footer";
 import { Header } from "~/components/shared/header/header";
@@ -47,13 +47,25 @@ export const useUserData = routeLoader$(
     if (url.pathname.includes("admin")) {
       return;
     }
-    const userIP =
-      request.headers.get("do-connecting-ip") ||
-      request.headers.get("X-Real-IP");
-    const { country_name, city } = await ip2location.fetch(userIP);
+    let country_name: string = "";
+    let city: string = "";
+    let userIP: string = "";
+    try {
+      userIP =
+        request.headers.get("do-connecting-ip") ??
+        request.headers.get("X-Real-IP") ??
+        "";
+      const ipObject = await ip2location.fetch(userIP);
+      country_name = ipObject?.country_name;
+      city = ipObject?.city;
+    } catch (error) {
+      console.log(error);
+    }
+
     const referrer = request.headers.get("referer");
     const visitPage = url.href;
     const token = cookie.get("token")?.value ?? "";
+
     const userAgent = request.headers.get("user-agent");
     const data = {
       generalInfo: {
@@ -67,15 +79,20 @@ export const useUserData = routeLoader$(
         userAgent: userAgent ?? "",
       },
     };
-    if (!userAgent?.includes("bot")) {
-      console.log(data);
-    }
+
     if (!token) {
-      const request: any = await addDummyCustomer("", data);
-      if (request.status === "success") {
+      const requestDum: any = await addDummyCustomer("", data);
+      if (requestDum.status === "success") {
+        if (country_name?.toLowerCase()?.includes("united states")) {
+          cookie.set("cur", 1, { path: "/" });
+        } else if (country_name?.toLowerCase()?.includes("canada")) {
+          cookie.set("cur", 2, { path: "/" });
+        } else {
+          cookie.set("cur", 1, { path: "/" });
+        }
         const token = jwt.sign(
           {
-            user_id: request?.result?._id?.toString() ?? "",
+            user_id: requestDum?.result?._id?.toString() ?? "",
             isDummy: true,
           },
           env.get("VITE_JWTSECRET") ?? "",
@@ -86,7 +103,7 @@ export const useUserData = routeLoader$(
           path: "/",
         });
         return JSON.stringify({
-          user: request?.result,
+          user: requestDum?.result,
         });
       }
     }
@@ -102,6 +119,13 @@ export const useUserData = routeLoader$(
       if (!user?.result) {
         cookie.delete("token", { path: "/" });
         const request: any = await addDummyCustomer("", data);
+        if (country_name?.toLowerCase()?.includes("united states")) {
+          cookie.set("cur", 1, { path: "/" });
+        } else if (country_name?.toLowerCase()?.includes("canada")) {
+          cookie.set("cur", 2, { path: "/" });
+        } else {
+          cookie.set("cur", 1, { path: "/" });
+        }
         const newTokentoken = jwt.sign(
           {
             user_id: request?.result?._id?.toString() ?? "",
@@ -118,6 +142,29 @@ export const useUserData = routeLoader$(
           user: request?.result,
         });
       }
+      const checkCur = cookie.get("cur")?.value ?? "";
+      if (!checkCur) {
+        if (
+          user?.result?.generalInfo?.address?.country?.toLowerCase?.includes(
+            "united"
+          )
+        ) {
+          cookie.set("cur", 1, { path: "/" });
+        } else if (
+          user?.result?.generalInfo?.address?.country?.toLowerCase?.includes(
+            "canada"
+          )
+        ) {
+          cookie.set("cur", 2, { path: "/" });
+        } else {
+          cookie.set("cur", 1, { path: "/" });
+        }
+      }
+      const checkRate = cookie.get("curRate")?.value ?? "";
+      if (!checkRate) {
+        cookie.set("curRate", 90, { path: "/" });
+      }
+
       return JSON.stringify({
         user: user?.result,
       });
@@ -169,10 +216,15 @@ export const clearUser = server$(async function () {
   return true;
 });
 
+export const useCurrLoader = routeLoader$(({ cookie }) => {
+  const country = cookie.get("cur")?.value ?? "";
+  return country;
+});
+
 export default component$(() => {
   const user = useUserData().value;
   const userData = JSON.parse(user ?? "{}");
-  const nav = useNavigate();
+  // const nav = useNavigate();
   const cartContextObject = useStore<any>({
     userId: userData._id,
     cart: {},
@@ -190,7 +242,8 @@ export default component$(() => {
   const userValue = useSignal<UserModel | null>();
   const loc = useLocation();
   const url = loc?.url?.pathname;
-
+  const currency = useCurrLoader().value;
+  console.log(currency);
   useTask$(
     async ({ track }) => {
       track(() => userData?.user);
@@ -198,9 +251,23 @@ export default component$(() => {
       cartContextObject.cart = JSON.parse(cart);
       if (cartContextObject?.cart?.products?.length > 0) {
         let totalPrice = 0;
-        cartContextObject.cart.products.forEach((element: any) => {
-          totalPrice += element.price * element.quantity;
-        });
+        if (cartContextObject.cart.currency === "USD" && currency === "2") {
+          console;
+          cartContextObject.cart.products.forEach((element: any) => {
+            totalPrice += (element.price / 0.9) * element.quantity;
+          });
+        } else if (
+          cartContextObject.cart.currency === "CAD" &&
+          currency === "1"
+        ) {
+          cartContextObject.cart.products.forEach((element: any) => {
+            totalPrice += element.price * 0.9 * element.quantity;
+          });
+        } else {
+          cartContextObject.cart.products.forEach((element: any) => {
+            totalPrice += element.price * element.quantity;
+          });
+        }
         cartContextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
       }
     },
@@ -228,7 +295,7 @@ export default component$(() => {
   useContextProvider(WishListContext, wishListContextObject);
 
   const handleOnCartClick = $(() => {
-    nav("/cart");
+    location.href = "/cart/";
   });
 
   const handleLogout = $(async () => {

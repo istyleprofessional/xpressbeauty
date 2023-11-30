@@ -4,7 +4,9 @@ export const sendConfirmationEmail = async (
   email: string,
   name: string,
   shipping_address: any,
-  products: any[]
+  products: any[],
+  currency: string,
+  rate: string
 ) => {
   const transporter = createTransport({
     host: "smtp.zoho.com",
@@ -15,11 +17,19 @@ export const sendConfirmationEmail = async (
       pass: import.meta.env.VITE_EMAIL_PASS ?? "",
     },
   });
-  const hst = 0.13;
+  const hst = currency.toLocaleLowerCase() === "usd" ? 0 : 0.13;
   const total = products.reduce((acc, product) => {
+    // check if the main currency is matched with the product currency if not recalculate the price
+    if (currency.toLocaleLowerCase() !== product.currency.toLocaleLowerCase()) {
+      if (currency.toLocaleLowerCase() === "usd") {
+        product.price = product.price * parseFloat(`0.${parseInt(rate + 10)}`);
+      } else {
+        product.price = product.price / parseFloat(`0.${parseInt(rate + 10)}`);
+      }
+    }
     return acc + product.price * product.quantity;
   }, 0);
-  const shipping = 15;
+  const shipping = total > 150 ? 0 : 15;
   const tax = total * hst;
   const finalTotal = total + tax + shipping;
   const mailOptions = {
@@ -42,9 +52,15 @@ export const sendConfirmationEmail = async (
                 (product) =>
                   `
                <tr>
-                <td style="border: 1px solid #ccc; padding: 8px;">${product.product_name}</td>
-                <td style="border: 1px solid #ccc; padding: 8px;">${product.quantity}</td>
-                <td style="border: 1px solid #ccc; padding: 8px;">$${product.price}</td>
+                <td style="border: 1px solid #ccc; padding: 8px;">${
+                  product.product_name
+                }</td>
+                <td style="border: 1px solid #ccc; padding: 8px;">${
+                  product.quantity
+                }</td>
+                <td style="border: 1px solid #ccc; padding: 8px;">$${parseFloat(
+                  product.price
+                ).toFixed(2)}</td>
                 </tr>
                 `
               )

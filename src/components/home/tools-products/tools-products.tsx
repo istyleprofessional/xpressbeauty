@@ -5,10 +5,11 @@ import type { ProductModel } from "~/models/product.model";
 interface BestSellerProps {
   bestSellerProducts: ProductModel[];
   type: string;
+  currencyObject?: any;
 }
 
 export const FeatureProducts = component$((props: BestSellerProps) => {
-  const { bestSellerProducts, type } = props;
+  const { bestSellerProducts, type, currencyObject } = props;
   const isVisble = useSignal<boolean>(false);
 
   useVisibleTask$(
@@ -27,7 +28,12 @@ export const FeatureProducts = component$((props: BestSellerProps) => {
       {isVisble.value && (
         <div class="m-6 flex flex-row flex-wrap gap-10 justify-center items-center w-full">
           {bestSellerProducts.map((item: ProductModel, i: number) => (
-            <ProductCard product={item} i={i} key={i} />
+            <ProductCard
+              product={item}
+              i={i}
+              key={i}
+              currencyObject={currencyObject}
+            />
           ))}
         </div>
       )}

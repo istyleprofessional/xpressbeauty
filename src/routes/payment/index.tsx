@@ -32,6 +32,7 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   }
   try {
     const verified: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
+    console.log(verified);
     if (!verified) {
       return JSON.stringify({ status: "failed" });
     }
@@ -99,6 +100,7 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
 
 export const paypalServer = server$(async function (data: any) {
   try {
+    // console.log(data);
     paypal.configure({
       mode: import.meta.env.VITE_PAYPAL_MODE, //sandbox or live
       client_id: import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
@@ -113,6 +115,7 @@ export const paypalServer = server$(async function (data: any) {
         return_url: "https://xpressbeauty.ca/payment/success",
         cancel_url: "https://xpressbeauty.ca/payment/cancel",
       },
+
       transactions: [
         {
           item_list: {
@@ -120,25 +123,25 @@ export const paypalServer = server$(async function (data: any) {
               return {
                 name: product.name,
                 sku: product.sku,
-                price: product.price,
-                currency: "CAD",
+                price: parseFloat(product.price).toFixed(2),
+                currency: data.currency ?? "CAD",
                 quantity: product.quantity,
               };
             }),
           },
           amount: {
-            currency: "CAD",
+            currency: data.currency ?? "CAD",
             total: data.order_amount,
             details: {
               subtotal: data.subTotal,
-              shipping: "15.00", // Example shipping cost
-              tax: data.hst, // Example tax amount
+              shipping: parseFloat(data.shipping).toFixed(2), // Example shipping cost
+              tax: data.currency === "USD" ? "0.00" : data.hst, // Example tax amount
             },
           },
         },
       ],
     };
-    return await new Promise((resolve, reject) => {
+    const paypalPromise = await new Promise((resolve, reject) => {
       paypal.payment.create(create_payment_json, (error, payment) => {
         if (error) {
           console.log(error);
@@ -157,6 +160,8 @@ export const paypalServer = server$(async function (data: any) {
         }
       });
     });
+    console.log(paypalPromise);
+    return paypalPromise;
   } catch (e) {
     console.log(e);
   }
@@ -166,7 +171,8 @@ export const callServer = server$(async function (
   paymentId: string,
   id: string,
   total: number,
-  cart: any
+  cart: any,
+  currency?: string
 ) {
   try {
     const stripe: any = new Stripe(
@@ -177,7 +183,7 @@ export const callServer = server$(async function (
     );
     const paymentIntent = await stripe.paymentIntents.create({
       amount: parseInt(total.toString()) * 100,
-      currency: "cad",
+      currency: currency?.toLocaleLowerCase() ?? "CAD",
       customer: id,
       payment_method: paymentId,
       confirm: true,
@@ -198,16 +204,21 @@ export const callServer = server$(async function (
       data.order_status = "Pending";
       data.order_number = generateOrderNumber();
       orderId = data.order_number;
+      const rate = this.cookie.get("curRate")?.value ?? "";
       await sendConfirmationEmail(
         user.result?.email ?? "",
         `${user.result?.firstName} ${user.result?.lastName}`,
         data.shipping_address,
-        data.products
+        data.products,
+        currency?.toLocaleLowerCase() ?? "CAD",
+        rate
       );
       await sendConfirmationOrderForAdmin(
         `${user.result?.firstName} ${user.result?.lastName}`,
         data.shipping_address,
         data.products
+        // currency?.toLocaleLowerCase() ?? "CAD",
+        // rate
       );
       await createOrder(data);
       await deleteCart(verified.user_id);
@@ -216,6 +227,12 @@ export const callServer = server$(async function (
   } catch (e) {
     console.log(e);
   }
+});
+
+export const useCurrLoader = routeLoader$(async ({ cookie }) => {
+  const country = cookie.get("cur")?.value ?? "";
+  const rate = cookie.get("curRate")?.value ?? "";
+  return { country: country, rate: rate };
 });
 
 export default component$(() => {
@@ -228,6 +245,8 @@ export default component$(() => {
   const isExistingPaymentMethod = useSignal<boolean>(false);
   const cards = paymentRoute.cards;
   const acceptSaveCard = useSignal<boolean>(false);
+  const currencyObject = useCurrLoader().value;
+  const subTotal = useSignal<number>(0);
   // console.log(userContext);
   useVisibleTask$(
     () => {
@@ -252,7 +271,7 @@ export default component$(() => {
     async () => {
       const paypalUi = await loadScript({
         "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
-        currency: "CAD",
+        currency: currencyObject?.country === "1" ? "USD" : "CAD",
       });
       (paypalUi as any)
         .Buttons({
@@ -265,9 +284,7 @@ export default component$(() => {
           },
           createOrder: async () => {
             const dataToSend = {
-              subTotal: parseFloat(
-                cartContext.cart?.totalPrice.toString()
-              ).toFixed(2),
+              subTotal: subTotal.value.toFixed(2),
               hst: parseFloat(
                 ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
               ).toFixed(2),
@@ -275,8 +292,11 @@ export default component$(() => {
               order_amount: parseFloat(total.value.toString()).toFixed(2),
               email: userContext?.user?.email,
               products: cartContext?.cart?.products,
+              // shipping:
+              shipping: subTotal.value > 150 ? 0 : 15,
             };
             const paypalReq: any = await paypalServer(dataToSend);
+            console.log(paypalReq);
             const paypalRes = JSON.parse(paypalReq);
             return paypalRes.id;
           },
@@ -293,6 +313,7 @@ export default component$(() => {
                   paymentId: data.paymentID,
                   orderId: data.orderID,
                 },
+                currency: currencyObject?.country === "1" ? "USD" : "CAD",
               };
               const req = await postRequest(
                 "/api/paymentConfirmiation",
@@ -357,6 +378,7 @@ export default component$(() => {
         form?.appendChild(hiddenInput);
         const dataToSend = {
           ...cartContext?.cart,
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
           token: token.id,
           order_amount: parseFloat(total.value.toString()).toFixed(2),
           email: userContext?.user?.email,
@@ -384,7 +406,8 @@ export default component$(() => {
             finalCard.value.id,
             userContext?.user?.stripeCustomerId,
             total.value,
-            cartContext?.cart ?? {}
+            cartContext?.cart ?? {},
+            currencyObject?.country === "1" ? "USD" : "CAD"
           );
           if (pay?.paymentIntent.status === "succeeded") {
             isLoading.value = false;
@@ -425,7 +448,7 @@ export default component$(() => {
           Shopping
         </a>
         <div class="flex flex-col-reverse md:flex-row gap-2 justify-center items-start">
-          <ProductList />
+          <ProductList currencyObject={currencyObject} />
           <div class="h-full w-96 rounded-lg flex flex-col gap-3 p-5 lg:m-5 md:sticky md:top-0">
             <div class="flex flex-col gap-4 items-center lg:items-end w-full">
               <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 mb-5">
@@ -466,12 +489,14 @@ export default component$(() => {
                 )}
 
                 <OrderDetails
+                  subTotal={subTotal}
                   cart={cartContext?.cart}
                   total={total}
                   cards={cards?.value}
                   isExistingPaymentMethod={isExistingPaymentMethod.value}
                   acceptSaveCard={acceptSaveCard}
                   user={userContext?.user}
+                  currencyObject={currencyObject}
                 />
               </div>
             </div>

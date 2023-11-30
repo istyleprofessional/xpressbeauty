@@ -14,10 +14,11 @@ export interface ProductSectionProps {
   products: any;
   currentPage: any;
   handleSorting: PropFunction<(e: any) => void>;
+  currencyObject?: any;
 }
 
 export const ProductsSection = component$((props: ProductSectionProps) => {
-  const { products, currentPage, handleSorting } = props;
+  const { products, currentPage, handleSorting, currencyObject } = props;
   const total = useSignal<number>(0);
   const viewToggle = useSignal<string>("grid");
 
@@ -78,7 +79,12 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
         <div class="flex flex-row flex-wrap justify-center gap-1 md:gap-2 lg:gap-4">
           {products.value?.result?.map((product: any, index: number) => (
             <div key={index}>
-              <ProductCard product={product} i={index} cardSize="sm" />
+              <ProductCard
+                currencyObject={currencyObject}
+                product={product}
+                i={index}
+                cardSize="sm"
+              />
             </div>
           ))}
         </div>

@@ -20,11 +20,11 @@ const productsSchema = new mongoose.Schema(
     rating: { type: Number, default: 0 },
     variation_type: { type: String, default: null },
     variations: { type: Array, default: null },
-    oldPerfix: { type: String, default: null },
     lineName: { type: String, default: null },
-    companyName: { type: String, default: null },
+    companyName: { type: Object, default: null },
     perfix: { type: String, default: null },
     priceType: { type: String, default: null },
+    updateQuickBooks: { type: Boolean, default: true },
     oldPerfix: { type: String, default: null },
   },
   { timestamps: true }

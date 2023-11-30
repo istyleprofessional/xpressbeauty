@@ -1,4 +1,11 @@
-import { component$, useSignal, useTask$ } from "@builder.io/qwik";
+import {
+  component$,
+  useSignal,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
+import { server$ } from "@builder.io/qwik-city";
+import { verify } from "jsonwebtoken";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 
 interface OrderDetailsProps {
@@ -8,25 +15,78 @@ interface OrderDetailsProps {
   isExistingPaymentMethod: boolean;
   acceptSaveCard: any;
   user: any | null;
+  currencyObject?: any;
+  subTotal: any;
 }
 
+export const checker = server$(function () {
+  const token = this.cookie.get("token")?.value;
+  if (!token) {
+    return true;
+  } else {
+    const verifyToken: any = verify(
+      token,
+      this.env.get("VITE_JWTSECRET") ?? ""
+    );
+    if (!verifyToken) {
+      return true;
+    } else {
+      if (!verifyToken.isDummy) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+  }
+});
+
 export const OrderDetails = component$((props: OrderDetailsProps) => {
-  const { cart, total, isExistingPaymentMethod, acceptSaveCard, user } = props;
-  const subTotal = useSignal<number>(0);
+  const {
+    cart,
+    total,
+    isExistingPaymentMethod,
+    acceptSaveCard,
+    currencyObject,
+    subTotal,
+  } = props;
   const hst = useSignal<number>(0);
   const shipping = useSignal<number>(0);
+  const symbol = useSignal<string>("$");
+  const isDummy = useSignal<boolean>(true);
 
   useTask$(({ track }) => {
     track(() => cart?.totalPrice);
-    subTotal.value = cart?.totalPrice ?? 0;
-    hst.value = (cart?.totalPrice ?? 0) * 0.13;
+    track(() => currencyObject);
+
+    subTotal.value =
+      cart?.currency === "USD" && currencyObject?.country === "2"
+        ? cart?.totalPrice / parseFloat(`0.${currencyObject.rate + 10}`)
+        : cart?.currency === "CAD" && currencyObject?.country === "1"
+        ? cart?.totalPrice * parseFloat(`0.${currencyObject.rate + 10}`)
+        : cart?.totalPrice;
+    if (currencyObject?.country === "1") {
+      hst.value = 0;
+    } else {
+      hst.value = (cart?.totalPrice ?? 0) * 0.13;
+    }
     if (subTotal.value > 150) {
       shipping.value = 0;
     } else {
-      shipping.value = 15;
+      shipping.value = subTotal.value > 0 ? 15 : 0;
     }
-    total.value = (cart?.totalPrice ?? 0) + hst.value + shipping.value;
+    total.value = subTotal.value + hst.value + shipping.value;
+    if (currencyObject?.country === "1") {
+      symbol.value = "USD";
+    } else {
+      symbol.value = "CAD";
+    }
   });
+
+  useVisibleTask$(async () => {
+    const check = await checker();
+    isDummy.value = check;
+  });
+
   return (
     <>
       <h2 class="text-white text-xl font-semibold">Card Details</h2>
@@ -91,7 +151,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
             <p class="justify-self-end text-black text-sm font-light">
               {subTotal.value?.toLocaleString("en-US", {
                 style: "currency",
-                currency: "CAD",
+                currency: symbol.value,
               })}
             </p>
           </div>
@@ -100,7 +160,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
             <p class="justify-self-end text-black text-sm font-light">
               {hst.value?.toLocaleString("en-US", {
                 style: "currency",
-                currency: "CAD",
+                currency: symbol.value,
               })}
             </p>
           </div>
@@ -109,7 +169,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
             <p class="justify-self-end text-black text-sm font-light">
               {shipping.value?.toLocaleString("en-US", {
                 style: "currency",
-                currency: "CAD",
+                currency: symbol.value,
               })}
             </p>
           </div>
@@ -118,13 +178,13 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
             <p class="justify-self-end text-black text-sm font-light">
               {total.value?.toLocaleString("en-US", {
                 style: "currency",
-                currency: "CAD",
+                currency: symbol.value,
               })}
             </p>
           </div>
         </div>
         <div class="flex flex-col gap-3 justify-center h-full">
-          {user && !isExistingPaymentMethod && (
+          {!isDummy.value && !isExistingPaymentMethod && (
             <div class="flex flex-row gap-3">
               <input
                 type="checkbox"

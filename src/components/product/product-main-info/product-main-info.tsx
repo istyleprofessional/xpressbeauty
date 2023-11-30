@@ -10,10 +10,12 @@ interface ProductMainInfoProps {
   priceType?: string;
   ratings?: any;
   companyName?: any;
+  currencyObject?: any;
 }
 
 export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
   const {
+    currencyObject,
     product_name,
     price,
     sale_price,
@@ -28,158 +30,37 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
   const verifiedSalePrice = useSignal<string>("");
 
   useTask$(() => {
-    if (priceType === "single" && sale_price.sale !== "") {
-      finalRegularPrice.value = parseFloat(
-        price?.regular?.toString()
-      )?.toLocaleString("en-US", {
-        style: "currency",
-        currency: "CAD",
-      });
-      finalSalePrice.value = parseFloat(
-        sale_price.sale.toString()
-      )?.toLocaleString("en-US", {
-        style: "currency",
-        currency: "CAD",
-      });
-    } else if (priceType === "single" && sale_price.sale === "") {
-      finalRegularPrice.value = parseFloat(
-        price?.regular?.toString()
-      )?.toLocaleString("en-US", {
-        style: "currency",
-        currency: "CAD",
-      });
-    } else if (priceType === "range" && sale_price.min === "") {
-      finalRegularPrice.value =
-        price.min?.toLocaleString("en-US", {
+    if (priceType === "range") {
+      if (price.min !== "" && price.max !== "") {
+        finalRegularPrice.value = `${price.min.toLocaleString("en-US", {
           style: "currency",
-          currency: "CAD",
-        }) +
-        " - " +
-        price.max?.toLocaleString("en-US", {
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        })} - ${price.max.toLocaleString("en-US", {
           style: "currency",
-          currency: "CAD",
-        });
-    } else if (priceType === "range" && sale_price.min !== "") {
-      finalRegularPrice.value =
-        price.min?.toLocaleString("en-US", {
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        })}`;
+        verifiedPrice.value = `${(price.min - price.min * 0.2).toLocaleString(
+          "en-US",
+          {
+            style: "currency",
+            currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          }
+        )} - ${(price.max - price.max * 0.2).toLocaleString("en-US", {
           style: "currency",
-          currency: "CAD",
-        }) +
-        " - " +
-        price.max?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "CAD",
-        });
-      finalSalePrice.value =
-        price.max?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "CAD",
-        }) +
-        " - " +
-        sale_price.max?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "CAD",
-        });
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        })}`;
+      }
     } else {
-      finalRegularPrice.value = price.min?.toLocaleString("en-US", {
+      finalRegularPrice.value = price?.regular?.toLocaleString("en-US", {
         style: "currency",
-        currency: "CAD",
+        currency: currencyObject?.country === "1" ? "USD" : "CAD",
       });
-      finalSalePrice.value = price.max?.toLocaleString("en-US", {
-        style: "currency",
-        currency: "CAD",
-      });
-    }
-  });
-
-  useTask$(() => {
-    if (priceType === "single" && sale_price.sale !== "") {
       verifiedPrice.value = (
-        parseFloat(price?.regular?.toString()) -
-        parseFloat(price?.regular?.toString()) * 0.2
-      )?.toLocaleString("en-US", {
+        price?.regular -
+        price?.regular * 0.2
+      ).toLocaleString("en-US", {
         style: "currency",
-        currency: "CAD",
-      });
-      verifiedSalePrice.value = (
-        parseFloat(sale_price?.sale?.toString()) -
-        parseFloat(sale_price?.sale?.toString()) * 0.2
-      )?.toLocaleString("en-US", {
-        style: "currency",
-        currency: "CAD",
-      });
-    } else if (priceType === "single" && sale_price.sale === "") {
-      verifiedPrice.value = (
-        parseFloat(price?.regular?.toString()) -
-        parseFloat(price?.regular?.toString()) * 0.2
-      )?.toLocaleString("en-US", {
-        style: "currency",
-        currency: "CAD",
-      });
-    } else if (priceType === "range" && sale_price.min === "") {
-      verifiedPrice.value =
-        (
-          parseFloat(price?.min?.toString()) -
-          parseFloat(price?.min?.toString()) * 0.2
-        )?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "CAD",
-        }) +
-        " - " +
-        (
-          parseFloat(price?.max?.toString()) -
-          parseFloat(price?.max?.toString()) * 0.2
-        )?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "CAD",
-        });
-    } else if (priceType === "range" && sale_price.min !== "") {
-      verifiedPrice.value =
-        (
-          parseFloat(price?.min?.toString()) -
-          parseFloat(price?.min?.toString()) * 0.2
-        )?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "CAD",
-        }) +
-        " - " +
-        (
-          parseFloat(price?.max?.toString()) -
-          parseFloat(price?.max?.toString()) * 0.2
-        )?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "CAD",
-        });
-      verifiedSalePrice.value =
-        (
-          parseFloat(sale_price?.min?.toString()) -
-          parseFloat(sale_price?.min?.toString()) * 0.2
-        )?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "CAD",
-        }) +
-        " - " +
-        (
-          parseFloat(sale_price?.max?.toString()) -
-          parseFloat(sale_price?.max?.toString()) * 0.2
-        )?.toLocaleString("en-US", {
-          style: "currency",
-          currency: "CAD",
-        });
-    } else {
-      verifiedPrice.value = (
-        parseFloat(price?.min?.toString()) -
-        parseFloat(price?.min?.toString()) * 0.2
-      )?.toLocaleString("en-US", {
-        style: "currency",
-        currency: "CAD",
-      });
-      verifiedSalePrice.value = (
-        parseFloat(price?.max?.toString()) -
-        parseFloat(price?.max?.toString()) * 0.2
-      )?.toLocaleString("en-US", {
-        style: "currency",
-        currency: "CAD",
+        currency: currencyObject?.country === "1" ? "USD" : "CAD",
       });
     }
   });

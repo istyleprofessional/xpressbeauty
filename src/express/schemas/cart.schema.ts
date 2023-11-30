@@ -7,6 +7,7 @@ const cartSchema = new Schema(
       type: Array,
     },
     totalQuantity: { type: Number, default: 0 },
+    currency: { type: String, default: null },
   },
   { timestamps: true }
 );

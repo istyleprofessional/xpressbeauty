@@ -144,9 +144,6 @@ export default component$(() => {
             {ordersData?.request?.length > 0 &&
               ordersData?.request?.map((order: any, index: number) => {
                 const date = new Date(order.createdAt);
-                // useVisibleTask$(() => {
-                //   console.log(order);
-                // });
                 return (
                   <tr key={index}>
                     <th>

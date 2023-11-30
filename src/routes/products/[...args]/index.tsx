@@ -19,6 +19,12 @@ import { get_all_categories } from "~/express/services/category.service";
 import { get_products_data } from "~/express/services/product.service";
 import { postRequest } from "~/utils/fetch.utils";
 
+export const useCurrLoader = routeLoader$(async ({ cookie }) => {
+  const country = cookie.get("cur")?.value ?? "";
+  const rate = cookie.get("curRate")?.value ?? "";
+  return { country: country, rate: rate };
+});
+
 export const useFilterData = routeLoader$(async () => {
   await connect();
   const requestBrand = await get_all_brands();
@@ -123,6 +129,7 @@ export default component$(() => {
   const productData = useSignal<any[]>(
     JSON.parse(firstRender.value).serverData
   );
+  const currencyObject = useCurrLoader().value;
   const sort = useSignal<string>("");
   const loc = useLocation();
   const page = useSignal<string>(loc.url.searchParams.get("page") ?? "1");
@@ -665,6 +672,7 @@ export default component$(() => {
         <div class="md:col-span-3">
           <div class="md:flex md:flex-col gap-16">
             <ProductsSection
+              currencyObject={currencyObject}
               products={productData}
               currentPage={page.value}
               handleSorting={handleSorting}

@@ -6,15 +6,16 @@ import {
   useSignal,
   Fragment,
   useTask$,
+  useVisibleTask$,
 } from "@builder.io/qwik";
 import { SearchIcon } from "../icons/icons";
 import { getRequest } from "~/utils/fetch.utils";
 import { CartContext } from "~/context/cart.context";
 import type { ProductModel } from "~/models/product.model";
 import { uuid } from "~/utils/uuid";
-import { useLocation } from "@builder.io/qwik-city";
-import { UserContext } from "~/context/user.context";
+import { server$, useLocation } from "@builder.io/qwik-city";
 import { WishListContext } from "~/context/wishList.context";
+import { verify } from "jsonwebtoken";
 
 interface ToolBarProps {
   user?: any;
@@ -22,19 +23,52 @@ interface ToolBarProps {
   handleLogout: PropFunction<() => void>;
 }
 
+export const checker = server$(function () {
+  const token = this.cookie.get("token")?.value;
+  if (!token) {
+    return true;
+  } else {
+    const verifyToken: any = verify(
+      token,
+      this.env.get("VITE_JWTSECRET") ?? ""
+    );
+    if (!verifyToken) {
+      return true;
+    } else {
+      if (!verifyToken.isDummy) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+  }
+});
+
+export const currency = server$(function () {
+  const curr = this.cookie.get("cur")?.value ?? "1";
+  return curr;
+});
+
 export const ToolBar = component$((props: ToolBarProps) => {
   const { handleOnCartClick, handleLogout } = props;
   const isSearchOpen = useSignal<boolean>(false);
   const context: any = useContext(CartContext);
-  const userContext: any = useContext(UserContext);
   const searchResults = useSignal<any[]>([]);
   const quantity = useSignal<string>("0");
   const totalPrice = useSignal<string>("0");
   const loc = useLocation();
   const wishList = useContext(WishListContext);
+  const isDummy = useSignal<boolean>(false);
+  const curr = useSignal<string>("1");
+  useVisibleTask$(async () => {
+    const check = await checker();
+    isDummy.value = check;
+    curr.value = await currency();
+  });
 
   useTask$(({ track }) => {
     track(() => context?.cart?.totalQuantity);
+    console.log(context?.cart?.totalPrice);
     quantity.value = context?.cart?.totalQuantity;
     totalPrice.value = parseFloat(context?.cart?.totalPrice ?? "0").toFixed(2);
   });
@@ -170,7 +204,8 @@ export const ToolBar = component$((props: ToolBarProps) => {
             <div class="card-body">
               <span class="font-bold text-lg">{quantity.value} Items</span>
               <span class="text-info">
-                Subtotal: CA$ {totalPrice.value ? totalPrice.value : 0}
+                Subtotal: {curr.value === "1" ? "$" : "CA$"}{" "}
+                {totalPrice.value ? totalPrice.value : 0}
               </span>
               <div class="card-actions">
                 <button
@@ -245,7 +280,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
             tabIndex={0}
             class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 hidden md:block"
           >
-            {userContext?.user?.email ? (
+            {!isDummy.value ? (
               <>
                 <li>
                   <a class="justify-between" href="/profile">
@@ -271,7 +306,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
             tabIndex={0}
             class="menu menu-sm dropdown-content mt-3 z-50 p-2 shadow bg-base-100 rounded-box w-52 block md:hidden"
           >
-            {userContext?.user?.email ? (
+            {!isDummy.value ? (
               <>
                 <li>
                   <a class="lg:text-lg" href="/" aria-label="home">

@@ -1,9 +1,15 @@
-import { component$, useContext, useSignal, useTask$ } from "@builder.io/qwik";
+import {
+  component$,
+  useContext,
+  useSignal,
+  useTask$,
+  // useVisibleTask$,
+} from "@builder.io/qwik";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 import { CartContext } from "~/context/cart.context";
 import { UserContext } from "~/context/user.context";
 
-export const CartDetails = component$(() => {
+export const CartDetails = component$((props: any) => {
   const cartContext: any = useContext(CartContext);
   const userContext: any = useContext(UserContext);
   const subTotal = useSignal<number>(0);
@@ -11,73 +17,82 @@ export const CartDetails = component$(() => {
   const total = useSignal<number>(0);
   const shipping = useSignal<number>(0);
 
+  const symbol = useSignal<string>("$");
+
   useTask$(({ track }) => {
     track(() => cartContext?.cart?.totalPrice);
-    subTotal.value = cartContext?.cart?.totalPrice ?? 0;
-    hst.value = (cartContext?.cart?.totalPrice ?? 0) * 0.13;
+    track(() => props?.currencyObject);
+
+    subTotal.value =
+      cartContext.cart?.currency === "USD" &&
+      props?.currencyObject?.country === "2"
+        ? cartContext?.cart?.totalPrice /
+          parseFloat(`0.${props.currencyObject.rate + 10}`)
+        : cartContext.cart?.currency === "CAD" &&
+          props?.currencyObject?.country === "1"
+        ? cartContext?.cart?.totalPrice *
+          parseFloat(`0.${props.currencyObject?.rate + 10}`)
+        : cartContext?.cart?.totalPrice;
+    if (props?.currencyObject?.country === "1") {
+      hst.value = 0;
+    } else {
+      hst.value = (cartContext?.cart?.totalPrice ?? 0) * 0.13;
+    }
     if (subTotal.value > 150) {
       shipping.value = 0;
     } else {
       shipping.value = subTotal.value > 0 ? 15 : 0;
     }
-    total.value =
-      (cartContext?.cart?.totalPrice ?? 0) + hst.value + shipping.value;
+    total.value = subTotal.value + hst.value + shipping.value;
+    if (props?.currencyObject?.country === "1") {
+      symbol.value = "USD";
+    } else {
+      symbol.value = "CAD";
+    }
   });
 
   return (
     <>
       <h2 class="text-white text-xl font-semibold">Order Details</h2>
-      {/* <div class="flex flex-row gap-3 justify-center items-end">
-        <div class="form-control w-[50%]">
-          <label class="label">
-            <span class="label-text text-white">Coupon Code</span>
-          </label>
-          <input
-            type="text"
-            placeholder="8888888"
-            class="input input-bordered w-full max-w-xs text-sm h-8 text-black"
-          />
-        </div>
-        <button class="btn bg-[#D4D4D8] max-w-xs btn-sm text-black w-[40%] text-xs">
-          Apply Code
-        </button>
-      </div> */}
-      {/* <div class="divider text-white"></div> */}
       <div class="flex flex-col gap-5 justify-center">
         <div class="grid grid-cols-2 w-full">
           <p class="text-white text-xs font-light">Subtotal</p>
           <p class="justify-self-end text-white text-sm font-light">
-            {subTotal.value?.toLocaleString("en-US", {
-              style: "currency",
-              currency: "CAD",
-            })}
+            {subTotal?.value &&
+              subTotal?.value?.toLocaleString("en-US", {
+                style: "currency",
+                currency: symbol.value,
+              })}
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
           <p class="text-white text-xs font-light">HST</p>
           <p class="justify-self-end text-white text-sm font-light">
-            {hst.value?.toLocaleString("en-US", {
-              style: "currency",
-              currency: "CAD",
-            })}
+            {hst.value &&
+              hst.value?.toLocaleString("en-US", {
+                style: "currency",
+                currency: symbol.value,
+              })}
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
           <p class="text-white text-xs font-light">Shipping</p>
           <p class="justify-self-end text-white text-sm font-light">
-            {shipping.value?.toLocaleString("en-US", {
-              style: "currency",
-              currency: "CAD",
-            })}
+            {shipping.value &&
+              shipping.value?.toLocaleString("en-US", {
+                style: "currency",
+                currency: symbol.value,
+              })}
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
           <p class="text-white text-xs font-light">Total (Tax incl.)</p>
           <p class="justify-self-end text-white text-sm font-light">
-            {total.value?.toLocaleString("en-US", {
-              style: "currency",
-              currency: "CAD",
-            })}
+            {total.value &&
+              total.value?.toLocaleString("en-US", {
+                style: "currency",
+                currency: symbol.value,
+              })}
           </p>
         </div>
       </div>

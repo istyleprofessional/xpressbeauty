@@ -6,6 +6,7 @@ import {
   useVisibleTask$,
   useStore,
   Fragment,
+  useTask$,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
@@ -28,18 +29,6 @@ import { getUserById } from "~/express/services/user.service";
 import { WishListContext } from "~/context/wishList.context";
 import { Toast } from "~/components/admin/toast/toast";
 import { getRatingByProductId } from "~/express/services/rating.reviews.service";
-// import Stripe from "stripe";
-
-// export const useTestLoader = routeLoader$(async ({ env }) => {
-//   const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "", {
-//     apiVersion: "2022-11-15",
-//   });
-//   const payout = await stripe.payouts.create({
-//     amount: 1000,
-//     currency: "USD",
-//   });
-//   console.log(payout);
-// });
 
 export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
@@ -50,6 +39,12 @@ export const useServerData = routeLoader$(async ({ params, redirect }) => {
     throw redirect(301, "/products/");
   }
   return JSON.stringify({ ...result, ratings: ratings });
+});
+
+export const useCurrLoader = routeLoader$(async ({ cookie }) => {
+  const country = cookie.get("cur")?.value ?? "";
+  const rate = cookie.get("curRate")?.value ?? "";
+  return { country: country, rate: rate };
 });
 
 export const useAuth = routeLoader$(async ({ cookie, env }) => {
@@ -105,27 +100,41 @@ export default component$(() => {
   const isLoginCardOpen = useSignal(false);
   const isToastCardOpen = useSignal(false);
   const message = useSignal("");
+  const currencyObject = useCurrLoader().value;
 
   useVisibleTask$(() => {
     localStorage.setItem("prev", `/products/${product.perfix}`);
   });
 
+  useTask$(() => {
+    if (currencyObject?.country === "1") {
+      if (product.priceType === "range") {
+        product.price.min = product.price.min * 0.9;
+        product.price.max = product.price.max * 0.9;
+      } else {
+        product.price.regular = product.price.regular * 0.9;
+        product.sale_price.sale = product.sale_price.sale * 0.9;
+      }
+    }
+  });
+
+  // console.log(product.price);
   const handleAddToCart = $(async (value: number) => {
     isLoading.value = true;
     const productsToAdd: any[] = [];
     let totalQuantity = 0;
     if (Object.values(finalVariationToAdd.value).length > 0) {
       Object.values(finalVariationToAdd.value).forEach((element: any) => {
+        element.price =
+          currencyObject?.country === "2" ? element.price : element.price * 0.9;
         const productToAdd = {
           id: `${product._id}.${element.variation_id}`,
           product_name: product.product_name,
           variation_name: element.variation_name,
           product_img: (product?.imgs ?? [])[0] ?? "",
-          price: (
-            parseFloat(element?.price.toString().replace("$", "")) -
-            parseFloat(element?.price.toString().replace("$", "")) * 0.2
-          ).toFixed(2),
+          price: parseFloat(element?.price) - parseFloat(element?.price) * 0.2,
           quantity: element.quantity,
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
         };
         totalQuantity += element.quantity;
         productsToAdd.push(productToAdd);
@@ -136,30 +145,17 @@ export default component$(() => {
         product_name: product.product_name,
         product_img: (product?.imgs ?? [])[0] ?? "",
         price:
-          // cartContext.isVerified
-          //   ?
-          (product.sale_price.sale !== ""
-            ? parseFloat(product.sale_price.sale.toString().replace("$", "")) -
-              parseFloat(product.sale_price.sale.toString().replace("$", "")) *
-                0.2
-            : parseFloat(
-                product?.price?.regular?.toString().replace("$", "") ?? "0"
-              ) -
-              parseFloat(
-                product?.price?.regular?.toString().replace("$", "") ?? "0"
-              ) *
-                0.2
-          ).toFixed(2),
-        // : (product.sale_price.sale !== ""
-        //     ? parseFloat(
-        //         product.sale_price?.sale?.toString().replace("$", "")
-        //       )
-        //     : parseFloat(
-        //         product?.price?.regular?.toString().replace("$", "") ?? "0"
-        //       )
-        //   ).toFixed(2),
+          product.sale_price.sale !== 0 && product.sale_price.sale !== ""
+            ? (product.sale_price.sale - product.sale_price.sale * 0.2).toFixed(
+                2
+              )
+            : (product?.price?.regular - product?.price?.regular * 0.2).toFixed(
+                2
+              ),
         quantity: value,
+        currency: currencyObject?.country === "1" ? "USD" : "CAD",
       };
+
       totalQuantity += value;
       productsToAdd.push(productToAdd);
     }
@@ -167,6 +163,7 @@ export default component$(() => {
       browserId: cartContext.id,
       products: productsToAdd,
       totalQuantity: totalQuantity,
+      currency: currencyObject?.country === "1" ? "USD" : "CAD",
     };
     const result = await postRequest("/api/cart", JSON.stringify(data));
     const response = await result.json();
@@ -179,7 +176,9 @@ export default component$(() => {
       products: response.products,
       totalQuantity: response.totalQuantity,
       totalPrice: totalPrice,
+      currency: currencyObject?.country === "1" ? "USD" : "CAD",
     };
+    console.log(cartContext.cart);
     setTimeout(() => {
       isLoading.value = false;
     }, 1000);
@@ -314,6 +313,7 @@ export default component$(() => {
               <meta itemProp="name" content={product.product_name ?? ""} />
               <ProductMainInfo
                 ratings={ratings}
+                currencyObject={currencyObject}
                 product_name={product.product_name ?? ""}
                 price={product?.price ?? ""}
                 sale_price={product?.sale_price ?? ""}

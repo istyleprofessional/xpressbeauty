@@ -10,16 +10,16 @@ const categories = require("./backups/categories.json");
 const brand_data = require("./backups/brands.json");
 const Admin = models.Admin;
 require("dotenv").config();
-const NEXT_APP_MONGO_URL = process.env.QWIK_APP_MONGO_CONNECTION;
+const NEXT_APP_MONGO_URL = process.env.VITE_QWIK_APP_MONGO_CONNECTION;
 const Cryptr = require("cryptr");
 
-const cryptr = new Cryptr(process.env.SECRET ?? "");
+const cryptr = new Cryptr(process.env.VITE_SECRET ?? "");
 
 set("strictQuery", false);
 const mongoUrl = NEXT_APP_MONGO_URL || "";
 connect(mongoUrl, {
-  user: process.env.QWIK_APP_MONGO_USERNAME,
-  pass: process.env.QWIK_APP_MONGO_PWD,
+  // user: process.env.QWIK_APP_MONGO_USERNAME,
+  // pass: process.env.QWIK_APP_MONGO_PWD,
 })
   .then(() => {
     const seederDb = async () => {

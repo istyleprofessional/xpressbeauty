@@ -8,29 +8,36 @@ import { PerviousArrowIconNoStick } from "~/components/shared/icons/icons";
 import { Steps } from "~/components/shared/steps/steps";
 import { CartDetails } from "~/components/cart/cart-details/cart-details";
 import { ProductList } from "~/components/cart/product-list/product-list";
-import { server$, useLocation } from "@builder.io/qwik-city";
+import { routeLoader$ } from "@builder.io/qwik-city";
 import { CartContext } from "~/context/cart.context";
 
-export const changeToken = server$(async function (token: string) {
-  this.cookie.set("token", token, {
-    path: "/",
-    httpOnly: true,
-  });
+// export const changeToken = server$(async function (token: string) {
+//   this.cookie.set("token", token, {
+//     path: "/",
+//     httpOnly: true,
+//   });
+// });
+
+export const useCurrLoader = routeLoader$(async ({ cookie }) => {
+  const country = cookie.get("cur")?.value ?? "";
+  const rate = cookie.get("curRate")?.value ?? "";
+  return { country: country, rate: rate };
 });
 
 export default component$(() => {
   const isLoading = useSignal<boolean>(false);
-  const loc = useLocation();
-  const token = loc.url.searchParams.get("token");
+  // const loc = useLocation();
+  // const token = loc.url.searchParams.get("token");
   const context: any = useContext(CartContext);
+  const currencyObject = useCurrLoader().value;
 
   useVisibleTask$(
     async () => {
       localStorage.setItem("prev", "/cart/");
-      if (token) {
-        await changeToken(token);
-        location.href = "/cart/";
-      }
+      // if (token) {
+      //   await changeToken(token);
+      //   location.href = "/cart/";
+      // }
     },
     { strategy: "document-idle" }
   );
@@ -64,9 +71,9 @@ export default component$(() => {
           </p>
         </div>
         <div class="flex flex-col-reverse md:flex-row gap-2 justify-center items-start">
-          <ProductList />
+          <ProductList currencyObject={currencyObject} />
           <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 lg:m-5 md:sticky md:top-0">
-            <CartDetails />
+            <CartDetails currencyObject={currencyObject} />
           </div>
         </div>
       </div>

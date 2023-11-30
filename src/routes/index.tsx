@@ -44,6 +44,12 @@ export const checkIfDisplayCard = server$(async function () {
   }
 });
 
+export const useCurrLoader = routeLoader$(async ({ cookie }) => {
+  const country = cookie.get("cur")?.value ?? "";
+  const rate = cookie.get("curRate")?.value ?? "";
+  return { country: country, rate: rate };
+});
+
 export default component$(() => {
   const status = import.meta.env.VITE_STATUS;
   const newArrivalProducts: ProductModel[] = JSON.parse(
@@ -56,6 +62,7 @@ export default component$(() => {
   const bestSellerProducts2: ProductModel[] = JSON.parse(
     useBestSellerProducts().value
   );
+  const currencyObject = useCurrLoader().value;
 
   return (
     <>
@@ -76,6 +83,7 @@ export default component$(() => {
           </div>
           {/* <ShopByBrand /> */}
           <FeatureProducts
+            currencyObject={currencyObject}
             bestSellerProducts={bestSellerProducts2}
             type="Top Selling Products"
           />
@@ -89,6 +97,7 @@ export default component$(() => {
             </a>
           </div>
           <FeatureProducts
+            currencyObject={currencyObject}
             bestSellerProducts={newArrivalProducts}
             type="Hair Products"
           />
@@ -102,6 +111,7 @@ export default component$(() => {
             </a>
           </div>
           <FeatureProducts
+            currencyObject={currencyObject}
             bestSellerProducts={bestSellerProducts}
             type="Clippers & Trimmers"
           />

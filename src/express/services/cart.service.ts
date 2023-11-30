@@ -20,6 +20,7 @@ export const updateUserCart = async (data: any) => {
         (acc: any, curr: any) => acc + curr.quantity,
         0
       );
+      result.currency = data.currency;
       await result.save();
       return result;
     } else {
@@ -27,6 +28,7 @@ export const updateUserCart = async (data: any) => {
         userId: data.userId,
         products: data.products,
         totalQuantity: data.totalQuantity,
+        currency: data.currency,
       });
       return result;
     }

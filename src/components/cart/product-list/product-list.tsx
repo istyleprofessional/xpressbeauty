@@ -13,7 +13,7 @@ import { ItemQuantity } from "../item-quantity/item-quantity";
 import { deleteRequest } from "~/utils/fetch.utils";
 import { uuid } from "~/utils/uuid";
 
-export const ProductList = component$(() => {
+export const ProductList = component$((props: any) => {
   const currentQuantityValue = useStore<any>({});
   const context: any = useContext(CartContext);
   const totalQuantity = useSignal<number>(0);
@@ -82,16 +82,33 @@ export const ProductList = component$(() => {
                       <div class="flex flex-row w-full justify-center items-center">
                         <div class="flex flex-col gap-1">
                           <p class="text-black md:text-sm text-xs">
-                            CA${" "}
                             {parseFloat(
-                              product?.price.replace("$", "")
-                            ).toFixed(2)}
+                              product.currency === "USD" &&
+                                props.currencyObject.country === "2"
+                                ? product.price /
+                                    parseFloat(
+                                      `0.${props.currencyObject.rate + 10}`
+                                    )
+                                : product.currency === "CAD" &&
+                                  props.currencyObject.country === "1"
+                                ? product.price *
+                                  parseFloat(
+                                    `0.${props.currencyObject.rate + 10}`
+                                  )
+                                : product.price
+                            )?.toLocaleString("en-US", {
+                              style: "currency",
+                              currency:
+                                props.currencyObject?.country === "1"
+                                  ? "USD"
+                                  : "CAD",
+                            })}
                           </p>
-                          {context.isVerified && (
+                          {/* {context.isVerified && (
                             <p class="text-xs md:text-sm font-bold text-[red]">
                               +20% off
                             </p>
-                          )}
+                          )} */}
                         </div>
                         <button
                           class="btn text-[#CC0000] m-2 ml-auto"
