@@ -436,7 +436,7 @@ export default component$(() => {
       )}
       <div class="flex flex-col gap-5 md:p-10 justify-start">
         <div class="flex flex-col gap-3 justify-center items-center">
-          <Steps pageType="cart" />
+          <Steps pageType="payment" />
         </div>
         <a
           class="text-black font-bold text-base lg:text-3xl flex flex-row gap-1 items-center cursor-pointer"

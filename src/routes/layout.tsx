@@ -252,14 +252,22 @@ export default component$(() => {
         let totalPrice = 0;
         if (cartContextObject.cart.currency === "USD" && currency === "2") {
           cartContextObject.cart.products.forEach((element: any) => {
-            totalPrice += (element.price / 0.9) * element.quantity;
+            element.price = element.price / 0.9;
+            element.currency = "CAD";
+          });
+          cartContextObject.cart.products.forEach((element: any) => {
+            totalPrice += element.price * element.quantity;
           });
         } else if (
           cartContextObject.cart.currency === "CAD" &&
           currency === "1"
         ) {
           cartContextObject.cart.products.forEach((element: any) => {
-            totalPrice += element.price * 0.9 * element.quantity;
+            element.price = element.price * 0.9;
+            element.currency = "USD";
+          });
+          cartContextObject.cart.products.forEach((element: any) => {
+            totalPrice += element.price * element.quantity;
           });
         } else {
           cartContextObject.cart.products.forEach((element: any) => {
@@ -267,6 +275,7 @@ export default component$(() => {
           });
         }
         cartContextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
+        cartContextObject.cart.currency = currency === "1" ? "USD" : "CAD";
       }
     },
     { eagerness: "idle" }

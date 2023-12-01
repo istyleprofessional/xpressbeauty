@@ -180,11 +180,11 @@ export default component$(() => {
             width="224"
             height="220"
           />
-          <div class="flex flex-col gap-4">
-            <div class="text-zinc-900 text-5xl font-bold leading-[48px]">
+          <div class="flex flex-col gap-4 pl-3">
+            <div class="text-zinc-900 text-xl lg:text-5xl font-bold leading-[48px]">
               Get in touch today
             </div>
-            <div class="w-96 text-zinc-600 text-lg font-normal leading-7">
+            <div class="w-96 text-zinc-600 text-md font-normal leading-7">
               Our team is here to help you. Get in touch today and let's start a
               conversation.
             </div>
@@ -204,61 +204,56 @@ export default component$(() => {
           action={action}
           reloadDocument={false}
           onSubmit$={handleFormSubmit}
+          class="card w-full lg:w-[90%] md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5"
         >
-          <div class="card w-[90%] md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
-            {errorMessage.value && (
-              <div class="w-full">
-                <Toast
-                  status="e"
-                  handleClose={handleAlertClose}
-                  message={errorMessage.value}
-                  index={1}
-                />
-              </div>
-            )}
-            {successMessage.value && (
-              <div class="w-full">
-                <Toast
-                  status="s"
-                  handleClose={handleAlertClose}
-                  message={successMessage.value}
-                  index={1}
-                />
-              </div>
-            )}
-            <InputField
-              label="Name"
-              placeholder="John George"
-              validation={action.value?.validation?.name ?? true}
-              type="text"
-              identifier="name"
-            />
-            <InputField
-              label="Email"
-              placeholder="example@gmail.com"
-              validation={action.value?.validation?.email ?? true}
-              type="text"
-              identifier="email"
-            />
-            <textarea
-              class=" textarea w-full h-40"
-              placeholder="Message"
-              name="clientMessage"
-            ></textarea>
-            <input
-              type="hidden"
-              name="recaptcha"
-              value={recaptchaToken.value}
-            />
-            <button
-              class={`btn w-full bg-black text-white text-lg`}
-              type="submit"
-              onClick$={() => (isLoading.value = true)}
-            >
-              {isLoading.value && <span class="loading loading-spinner"></span>}
-              Send Message
-            </button>
-          </div>
+          {errorMessage.value && (
+            <div class="w-full">
+              <Toast
+                status="e"
+                handleClose={handleAlertClose}
+                message={errorMessage.value}
+                index={1}
+              />
+            </div>
+          )}
+          {successMessage.value && (
+            <div class="w-full">
+              <Toast
+                status="s"
+                handleClose={handleAlertClose}
+                message={successMessage.value}
+                index={1}
+              />
+            </div>
+          )}
+          <InputField
+            label="Name"
+            placeholder="John George"
+            validation={action.value?.validation?.name ?? true}
+            type="text"
+            identifier="name"
+          />
+          <InputField
+            label="Email"
+            placeholder="example@gmail.com"
+            validation={action.value?.validation?.email ?? true}
+            type="text"
+            identifier="email"
+          />
+          <textarea
+            class=" textarea w-full h-40"
+            placeholder="Message"
+            name="clientMessage"
+          ></textarea>
+          <input type="hidden" name="recaptcha" value={recaptchaToken.value} />
+          <button
+            class={`btn w-full bg-black text-white text-lg`}
+            type="submit"
+            onClick$={() => (isLoading.value = true)}
+          >
+            {isLoading.value && <span class="loading loading-spinner"></span>}
+            Send Message
+          </button>
         </Form>
       </div>
     </div>

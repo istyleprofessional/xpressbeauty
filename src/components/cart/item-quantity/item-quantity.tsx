@@ -7,6 +7,7 @@ import { putRequest } from "~/utils/fetch.utils";
 
 interface ItemQuantityProps {
   product: ProductModel;
+  country?: string;
 }
 
 export const getTotalQuantity = server$(async (id: string, desiredQuantity) => {
@@ -40,8 +41,19 @@ export const ItemQuantity = component$((props: ItemQuantityProps) => {
     };
     const request = await putRequest("/api/cart", JSON.stringify(data));
     const response = await request.json();
+    // if (context.cart.currency === "USD" && country === "2") {
+    //   response.products.map((product: any) => {
+    //     product.price = product.price / 0.9;
+    //   });
+    // }
+    // if (context.cart.currency === "CAD" && country === "1") {
+    //   response.products.map((product: any) => {
+    //     product.price = product.price * 0.9;
+    //   });
+    // }
     context.cart.products = response.products;
     context.cart.totalQuantity = response.totalQuantity;
+
     const totalPrice = response?.products?.reduce(
       (acc: number, curr: any) => acc + curr.price * curr.quantity,
       0
@@ -74,8 +86,8 @@ export const ItemQuantity = component$((props: ItemQuantityProps) => {
   });
 
   return (
-    <div class="flex flex-col items-center justify-center w-full">
-      <label class="input-group input-group-xs md:input-group-lg w-44">
+    <div class="flex flex-row items-center justify-center w-full">
+      <label class="input-group input-group-xs md:input-group-lg w-44 flex flex-row gap-2">
         <span
           class={`btn btn-sm md:btn-sm text-sm md:text-xl text-black bg-[#F4F4F5] ${
             quantity.value === 0 ? "btn-disabled" : ""
