@@ -79,7 +79,7 @@ export const useUserData = routeLoader$(
         userAgent: userAgent ?? "",
       },
     };
-
+    console.log(data);
     if (!token) {
       const requestDum: any = await addDummyCustomer("", data);
       if (requestDum.status === "success") {
@@ -243,7 +243,6 @@ export default component$(() => {
   const loc = useLocation();
   const url = loc?.url?.pathname;
   const currency = useCurrLoader().value;
-  console.log(currency);
   useTask$(
     async ({ track }) => {
       track(() => userData?.user);

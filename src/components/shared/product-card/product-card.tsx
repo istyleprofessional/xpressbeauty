@@ -86,7 +86,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
   return (
     <a
       class={`btn btn-ghost flex flex-row lg:flex-col ${
-        cardSize === "sm" ? "lg:w-96 lg:h-96" : "lg:w-96 lg:h-96"
+        cardSize === "sm" ? "lg:w-80 lg:h-80" : "lg:w-96 lg:h-96"
       } w-40 h-72 bg-[#FFFFFF] shadow-sm
        shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center items-center normal-case`}
       href={`/products/${encodeURIComponent(
