@@ -252,7 +252,6 @@ export default component$(() => {
       if (cartContextObject?.cart?.products?.length > 0) {
         let totalPrice = 0;
         if (cartContextObject.cart.currency === "USD" && currency === "2") {
-          console;
           cartContextObject.cart.products.forEach((element: any) => {
             totalPrice += (element.price / 0.9) * element.quantity;
           });
