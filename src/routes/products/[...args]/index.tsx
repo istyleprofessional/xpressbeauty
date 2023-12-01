@@ -712,6 +712,24 @@ export const head: DocumentHead = ({ resolveValue }) => {
     metaDescription += ` in all beauty categories and more at XpressBeauty`;
   }
   return {
+    links: [
+      {
+        rel: "canonical",
+        href: `https://xpressbeauty.ca/products/${
+          json.finalFilterBrandsArray.length > 0
+            ? `filterBrands/${json.finalFilterBrandsArray.join("+")}/`
+            : ""
+        }${
+          json.finalFilterCategoriesArray.length > 0
+            ? `filterCategories/${json.finalFilterCategoriesArray.join("+")}/`
+            : ""
+        }${
+          json.filterPricesArray.length > 0
+            ? `filterPrices/${json.filterPricesArray.join("+")}/`
+            : ""
+        }`,
+      },
+    ],
     title: `${
       mainFilter
         ? `${mainFilter} products`

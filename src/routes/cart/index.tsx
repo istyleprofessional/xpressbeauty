@@ -8,6 +8,7 @@ import { PerviousArrowIconNoStick } from "~/components/shared/icons/icons";
 import { Steps } from "~/components/shared/steps/steps";
 import { CartDetails } from "~/components/cart/cart-details/cart-details";
 import { ProductList } from "~/components/cart/product-list/product-list";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import { CartContext } from "~/context/cart.context";
 
@@ -80,3 +81,19 @@ export default component$(() => {
     </>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Xpress Beauty | Cart",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/cart/",
+    },
+  ],
+  meta: [
+    {
+      name: "description",
+      content: "Cart - XpressBeauty",
+    },
+  ],
+};

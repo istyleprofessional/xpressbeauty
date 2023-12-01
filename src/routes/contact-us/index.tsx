@@ -1,4 +1,5 @@
 import { component$, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import { Form, routeAction$ } from "@builder.io/qwik-city";
 import { Toast } from "~/components/admin/toast/toast";
 import { InputField } from "~/components/shared/input-field/input-field";
@@ -263,3 +264,20 @@ export default component$(() => {
     </div>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Xpress Beauty | Contact Us",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/contact-us/",
+    },
+  ],
+  meta: [
+    {
+      name: "description",
+      content:
+        "Reach out customer support at info@xpressbeauty.ca - XpressBeauty",
+    },
+  ],
+};

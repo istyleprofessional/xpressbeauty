@@ -5,7 +5,12 @@ import {
   useSignal,
   useVisibleTask$,
 } from "@builder.io/qwik";
-import { Form, routeAction$, server$ } from "@builder.io/qwik-city";
+import {
+  DocumentHead,
+  Form,
+  routeAction$,
+  server$,
+} from "@builder.io/qwik-city";
 import { UserContext } from "~/context/user.context";
 import { generateUniqueInteger } from "~/utils/generateOTP";
 
@@ -607,3 +612,19 @@ export default component$(() => {
     </>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Xpress Beauty | My Account",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/profile/",
+    },
+  ],
+  meta: [
+    {
+      name: "description",
+      content: "Account Details - XpressBeauty",
+    },
+  ],
+};

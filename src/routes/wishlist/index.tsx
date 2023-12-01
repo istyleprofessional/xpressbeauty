@@ -1,4 +1,5 @@
 import { component$, useSignal } from "@builder.io/qwik";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import { PerviousArrowIconNoStick } from "~/components/shared/icons/icons";
 import { ProductList } from "~/components/wishlist/product-list";
 
@@ -29,3 +30,20 @@ export default component$(() => {
     </>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Xpress Beauty | My Wishlist",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/wishlist/",
+    },
+  ],
+  meta: [
+    {
+      name: "description",
+      content:
+        "Discover the epitome of luxury beauty at XpressBeauty – your premier destination for exquisite haircare, trimmers, and precision tools. Elevate your grooming routine with our curated selection of premium products with the cheapest price, meticulously crafted to meet the needs of the modern connoisseur. Explore the art of refinement with XpressBeauty today.",
+    },
+  ],
+};

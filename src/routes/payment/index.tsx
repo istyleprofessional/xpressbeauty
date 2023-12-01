@@ -32,7 +32,6 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   }
   try {
     const verified: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
-    console.log(verified);
     if (!verified) {
       return JSON.stringify({ status: "failed" });
     }
@@ -296,7 +295,6 @@ export default component$(() => {
               shipping: subTotal.value > 150 ? 0 : 15,
             };
             const paypalReq: any = await paypalServer(dataToSend);
-            console.log(paypalReq);
             const paypalRes = JSON.parse(paypalReq);
             return paypalRes.id;
           },

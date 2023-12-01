@@ -1,4 +1,5 @@
 import { component$ } from "@builder.io/qwik";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { Steps } from "~/components/shared/steps/steps";
 import { getDummyCustomer } from "~/express/services/dummy.user.service";
@@ -136,3 +137,19 @@ export default component$(() => {
     </div>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Xpress Beauty | Thank you for your order!",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/payment/success",
+    },
+  ],
+  meta: [
+    {
+      name: "description",
+      content: "Thank you for your order - XpressBeauty",
+    },
+  ],
+};

@@ -1,4 +1,5 @@
 import { component$ } from "@builder.io/qwik";
+import type { DocumentHead } from "@builder.io/qwik-city";
 
 export default component$(() => {
   return (
@@ -190,3 +191,19 @@ export default component$(() => {
     </div>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Xpress Beauty | Privacy Policy",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/privacy-policy/",
+    },
+  ],
+  meta: [
+    {
+      name: "description",
+      content: "Privacy Policy - XpressBeauty",
+    },
+  ],
+};

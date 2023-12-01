@@ -63,6 +63,13 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         currency: currencyObject?.country === "1" ? "USD" : "CAD",
       });
     }
+    verifiedSalePrice.value = (
+      sale_price?.sale -
+      sale_price?.sale * 0.2
+    )?.toLocaleString("en-US", {
+      style: "currency",
+      currency: currencyObject?.country === "1" ? "USD" : "CAD",
+    });
   });
 
   return (

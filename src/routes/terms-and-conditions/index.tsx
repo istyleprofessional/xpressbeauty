@@ -1,4 +1,5 @@
 import { component$ } from "@builder.io/qwik";
+import type { DocumentHead } from "@builder.io/qwik-city";
 
 export default component$(() => {
   return (
@@ -342,3 +343,19 @@ export default component$(() => {
     </div>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Xpress Beauty | Terms and Conditions",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/terms-and-conditions/",
+    },
+  ],
+  meta: [
+    {
+      name: "description",
+      content: "Terms and Conditions - XpressBeauty",
+    },
+  ],
+};

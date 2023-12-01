@@ -114,6 +114,7 @@ export default component$(() => {
       } else {
         product.price.regular = product.price.regular * 0.9;
         product.sale_price.sale = product.sale_price.sale * 0.9;
+        console.log(product.sale_price);
       }
     }
   });
@@ -392,7 +393,14 @@ export const head: DocumentHead = ({ resolveValue }) => {
   const doc = resolveValue(useServerData);
 
   const jsonData = JSON.parse(doc)._doc;
+
   return {
+    links: [
+      {
+        rel: "canonical",
+        href: `https://xpressbeauty.ca/products/${jsonData?.perfix ?? ""}`,
+      },
+    ],
     title: `${jsonData?.product_name ?? ""} | ${
       jsonData.companyName.name && jsonData.companyName.name !== ""
         ? `${jsonData.companyName.name} |`

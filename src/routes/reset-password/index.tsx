@@ -1,4 +1,5 @@
 import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import { Form, routeAction$, useLocation } from "@builder.io/qwik-city";
 import { Toast } from "~/components/admin/toast/toast";
 import { InputField } from "~/components/shared/input-field/input-field";
@@ -169,3 +170,19 @@ export default component$(() => {
     </>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Xpress Beauty | Reset Password",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/forget-password/",
+    },
+  ],
+  meta: [
+    {
+      name: "description",
+      content: "Reset Password - XpressBeauty",
+    },
+  ],
+};

@@ -1,6 +1,7 @@
 import { component$, useSignal, $, useVisibleTask$ } from "@builder.io/qwik";
 import { InputField } from "~/components/shared/input-field/input-field";
 import { Toast } from "~/components/admin/toast/toast";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import { Form, routeAction$, server$ } from "@builder.io/qwik-city";
 import { generateUniqueInteger } from "~/utils/generateOTP";
 import { userRegistration } from "~/express/services/user.service";
@@ -301,3 +302,19 @@ export default component$(() => {
     </>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Xpress Beauty | Register",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/register/",
+    },
+  ],
+  meta: [
+    {
+      name: "description",
+      content: "Create Account - XpressBeauty",
+    },
+  ],
+};

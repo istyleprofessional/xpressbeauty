@@ -135,6 +135,12 @@ export default component$(() => {
 
 export const head: DocumentHead = {
   title: "Xpress Beauty | Home",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/",
+    },
+  ],
   meta: [
     {
       name: "description",

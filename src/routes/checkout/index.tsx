@@ -1,4 +1,5 @@
 import { component$, useSignal, useVisibleTask$, $ } from "@builder.io/qwik";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import { Form, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
 import { InputField } from "~/components/shared/input-field/input-field";
 import { Steps } from "~/components/shared/steps/steps";
@@ -451,3 +452,19 @@ export default component$(() => {
     </div>
   );
 });
+
+export const head: DocumentHead = {
+  title: "Xpress Beauty | Checkout",
+  links: [
+    {
+      rel: "canonical",
+      href: "https://xpressbeauty.ca/checkout/",
+    },
+  ],
+  meta: [
+    {
+      name: "description",
+      content: "Checkout - XpressBeauty",
+    },
+  ],
+};
