@@ -33,7 +33,8 @@ export const ProductCard = component$((props: ProductCardProps) => {
     }
   });
 
-  useVisibleTask$(() => {
+  useVisibleTask$(({ track }) => {
+    track(() => product);
     if (product.priceType === "range") {
       if (product.price.min !== "" && product.price.max !== "") {
         finalRegularPrice.value = `${product.price.min.toLocaleString("en-US", {
