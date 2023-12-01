@@ -54,18 +54,18 @@ export const Header = component$(() => {
             <div class="modal-box flex flex-col gap-5">
               <h3 class="font-bold text-lg">Choose the currency!</h3>
               <button
-                class="w-full text-sm btn"
+                class="w-full text-sm btn btn-ghost flex flex-row gap-2 items-center"
                 onClick$={async () => {
                   country.value = "CAD";
                   await changeCountry("2");
                   location.reload();
                 }}
               >
-                <CanadaImage class="w-full h-full md:w-12 md:h-12 object-contain" />{" "}
+                <CanadaImage class="w-12 h-12 md:w-12 md:h-12 object-contain" />{" "}
                 <p class="text-xs lg:text-md">Canada (CAD)</p>
               </button>
               <button
-                class=" text-sm w-full btn"
+                class=" text-sm w-full btn flex flex-row gap-2 items-center"
                 onClick$={async () => {
                   country.value = "USD";
                   await changeCountry("1");
