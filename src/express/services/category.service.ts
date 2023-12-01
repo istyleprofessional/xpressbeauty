@@ -17,7 +17,6 @@ export const get_all_categories_per_page = async (
     const perPage = 20;
     const pageNumber = page;
     const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
-    console.log(search);
     const aggregationPipeline = [
       {
         $group: {

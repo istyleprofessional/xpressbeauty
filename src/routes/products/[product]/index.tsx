@@ -178,7 +178,6 @@ export default component$(() => {
       totalPrice: totalPrice,
       currency: currencyObject?.country === "1" ? "USD" : "CAD",
     };
-    console.log(cartContext.cart);
     setTimeout(() => {
       isLoading.value = false;
     }, 1000);

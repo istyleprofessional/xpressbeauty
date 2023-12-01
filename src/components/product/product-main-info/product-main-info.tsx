@@ -32,40 +32,49 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
   useTask$(() => {
     if (priceType === "range") {
       if (price.min !== "" && price.max !== "") {
-        finalRegularPrice.value = `${price.min.toLocaleString("en-US", {
-          style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
-        })} - ${price.max.toLocaleString("en-US", {
-          style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
-        })}`;
-        verifiedPrice.value = `${(price.min - price.min * 0.2).toLocaleString(
+        finalRegularPrice.value = `${parseFloat(price.min).toLocaleString(
           "en-US",
           {
             style: "currency",
             currency: currencyObject?.country === "1" ? "USD" : "CAD",
           }
-        )} - ${(price.max - price.max * 0.2).toLocaleString("en-US", {
+        )} - ${parseFloat(price.max).toLocaleString("en-US", {
+          style: "currency",
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        })}`;
+        verifiedPrice.value = `${(
+          parseFloat(price.min) -
+          parseFloat(price.min) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        })} - ${(
+          parseFloat(price.max) -
+          parseFloat(price.max) * 0.2
+        ).toLocaleString("en-US", {
           style: "currency",
           currency: currencyObject?.country === "1" ? "USD" : "CAD",
         })}`;
       }
     } else {
-      finalRegularPrice.value = price?.regular?.toLocaleString("en-US", {
-        style: "currency",
-        currency: currencyObject?.country === "1" ? "USD" : "CAD",
-      });
+      finalRegularPrice.value = parseFloat(price?.regular)?.toLocaleString(
+        "en-US",
+        {
+          style: "currency",
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        }
+      );
       verifiedPrice.value = (
-        price?.regular -
-        price?.regular * 0.2
+        parseFloat(price?.regular) -
+        parseFloat(price?.regular) * 0.2
       ).toLocaleString("en-US", {
         style: "currency",
         currency: currencyObject?.country === "1" ? "USD" : "CAD",
       });
     }
     verifiedSalePrice.value = (
-      sale_price?.sale -
-      sale_price?.sale * 0.2
+      parseFloat(sale_price?.sale) -
+      parseFloat(sale_price?.sale) * 0.2
     )?.toLocaleString("en-US", {
       style: "currency",
       currency: currencyObject?.country === "1" ? "USD" : "CAD",

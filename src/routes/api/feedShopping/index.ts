@@ -73,7 +73,6 @@ export const onGet: RequestHandler = async ({ json }) => {
     };
     dataToBeAdd.push(newDate);
   }
-  console.log(dataToBeAdd[0]);
   // delete all rows expect header
   await sheet.clearRows();
   // add new rows

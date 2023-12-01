@@ -14,7 +14,6 @@ export interface SuccessProps {
 
 export const useLoaderSuccess = routeLoader$(async ({ params, cookie }) => {
   const orderId = params.args.split("/")[0];
-  console.log(orderId);
   const token = cookie.get("token")?.value;
   if (!token) {
     return null;
@@ -30,7 +29,6 @@ export const useLoaderSuccess = routeLoader$(async ({ params, cookie }) => {
     }
   }
   verifiedToken = verifyToken.data;
-  console.log(verifiedToken);
   const deliveryDate = new Date();
   deliveryDate.setDate(deliveryDate.getDate() + 5);
   const deliveryDateInFormat = `${deliveryDate.getFullYear()}-${
@@ -41,7 +39,6 @@ export const useLoaderSuccess = routeLoader$(async ({ params, cookie }) => {
   if (getOrderById.status === "failed") {
     return null;
   }
-  console.log(getOrderById);
   let user: any;
 
   if (verifiedToken.isDummy) {

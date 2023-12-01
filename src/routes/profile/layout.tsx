@@ -13,7 +13,6 @@ export default component$(() => {
   const nav = useNavigate();
 
   useVisibleTask$(() => {
-    console.log(userData);
     if (!userData?.user?.email) {
       nav("/login");
       return;

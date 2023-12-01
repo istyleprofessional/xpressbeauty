@@ -69,7 +69,6 @@ export const get_all_products_with_item_no = async () => {
       item_no: 1,
       _id: 0,
     });
-    console.log(result);
     const products: any[] = result;
     return products;
   } catch (err) {

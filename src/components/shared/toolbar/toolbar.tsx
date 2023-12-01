@@ -68,7 +68,6 @@ export const ToolBar = component$((props: ToolBarProps) => {
 
   useTask$(({ track }) => {
     track(() => context?.cart?.totalQuantity);
-    console.log(context?.cart?.totalPrice);
     quantity.value = context?.cart?.totalQuantity;
     totalPrice.value = parseFloat(context?.cart?.totalPrice ?? "0").toFixed(2);
   });

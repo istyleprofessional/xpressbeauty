@@ -62,8 +62,7 @@ export const useAction = routeAction$(async (data, requestEvent) => {
             userId: verifyUser?.result?._id ?? "",
             products: checkForCart?.products ?? [],
           };
-          const updateUserCartReq = await updateUserCart(data);
-          console.log(updateUserCartReq);
+          await updateUserCart(data);
         }
       }
     }

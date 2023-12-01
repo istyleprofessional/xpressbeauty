@@ -13,12 +13,11 @@ export const onGet: RequestHandler = async ({ json }) => {
         .replace(/ /g, "-")
         .toLowerCase() ?? ""
     )}`;
-    const update = await productSchema.updateOne(
+    await productSchema.updateOne(
       { _id: product._id },
       { $set: { oldPerfix: product.oldPerfix } },
       { new: true }
     );
-    console.log(update);
   }
   for (let i = 0; i < products.length; i++) {
     const product = products[i];
@@ -28,12 +27,11 @@ export const onGet: RequestHandler = async ({ json }) => {
         .replace(/ /g, "-")
         .toLowerCase() ?? ""
     )}-pid-${product._id}`;
-    const update = await productSchema.updateOne(
+    await productSchema.updateOne(
       { _id: product._id },
       { $set: { perfix: product.perfix } },
       { new: true }
     );
-    console.log(update);
   }
   json(200, { message: "done" });
 };

@@ -20,7 +20,6 @@ export const useFormAction = routeAction$(async function (data, event) {
     throw event.redirect(301, "/admin-login");
   }
   const formData: any = data;
-  console.log(formData);
   Object.keys(formData).forEach((key: string) => {
     if (key === "category") {
       formData.categories = [
