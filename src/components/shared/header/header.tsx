@@ -42,45 +42,47 @@ export const Header = component$(() => {
       </div>
       <div class="flex w-full justify-center lg:justify-end flex-1 px-2">
         <div class="flex items-stretch">
-          <div class="dropdown dropdown-bottom lg:dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              class="btn btn-ghost rounded-btn text-white normal-case z-50"
-            >
-              {country.value ? country.value : "Country"}
+          <button
+            class="btn"
+            onClick$={() =>
+              (document as any)?.getElementById("my_modal_1")?.showModal()
+            }
+          >
+            {country.value ? country.value : "Country"}
+          </button>
+          <dialog id="my_modal_1" class="modal">
+            <div class="modal-box flex flex-col gap-5">
+              <h3 class="font-bold text-lg">Choose the currency!</h3>
+              <button
+                class="w-full text-sm btn"
+                onClick$={async () => {
+                  country.value = "CAD";
+                  await changeCountry("2");
+                  location.reload();
+                }}
+              >
+                <CanadaImage class="w-full h-full md:w-12 md:h-12 object-contain" />{" "}
+                <p class="text-xs lg:text-md">Canada (CAD)</p>
+              </button>
+              <button
+                class=" text-sm w-full btn"
+                onClick$={async () => {
+                  country.value = "USD";
+                  await changeCountry("1");
+                  location.reload();
+                }}
+              >
+                <USAImage class="w-12 h-12 md:w-12 md:h-12 object-contain" />
+                <p class="text-xs lg:text-md">United States of America (USD)</p>
+              </button>
+              <div class="modal-action">
+                <form method="dialog">
+                  {/* if there is a button in form, it will close the modal */}
+                  <button class="btn">Close</button>
+                </form>
+              </div>
             </div>
-            <ul class="menu dropdown-content z-50 p-2 shadow bg-base-100 rounded-box w-36 lg:w-96 mt-4">
-              <li class="flex flex-row gap-1 w-full">
-                <button
-                  class="w-full text-sm"
-                  onClick$={async () => {
-                    country.value = "CAD";
-                    await changeCountry("2");
-                    location.reload();
-                  }}
-                >
-                  <CanadaImage class="w-full h-full md:w-12 md:h-12 object-contain" />{" "}
-                  <p class="text-xs lg:text-md">Canada (CAD)</p>
-                </button>
-              </li>
-              <li class="flex flex-row gap-1 w-full">
-                <button
-                  class=" text-sm w-full"
-                  onClick$={async () => {
-                    country.value = "USD";
-                    await changeCountry("1");
-                    location.reload();
-                  }}
-                >
-                  <USAImage class="w-12 h-12 md:w-12 md:h-12 object-contain" />
-                  <p class="text-xs lg:text-md">
-                    United States of America (USD)
-                  </p>
-                </button>
-              </li>
-            </ul>
-          </div>
+          </dialog>
         </div>
       </div>
     </div>
