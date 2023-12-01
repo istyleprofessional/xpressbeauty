@@ -5,12 +5,8 @@ import {
   useSignal,
   useVisibleTask$,
 } from "@builder.io/qwik";
-import {
-  DocumentHead,
-  Form,
-  routeAction$,
-  server$,
-} from "@builder.io/qwik-city";
+import type { DocumentHead } from "@builder.io/qwik-city";
+import { Form, routeAction$, server$ } from "@builder.io/qwik-city";
 import { UserContext } from "~/context/user.context";
 import { generateUniqueInteger } from "~/utils/generateOTP";
 

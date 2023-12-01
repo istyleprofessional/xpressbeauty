@@ -114,7 +114,6 @@ export default component$(() => {
       } else {
         product.price.regular = product.price.regular * 0.9;
         product.sale_price.sale = product.sale_price.sale * 0.9;
-        console.log(product.sale_price);
       }
     }
   });

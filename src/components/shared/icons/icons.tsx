@@ -829,14 +829,14 @@ export const WalletProfileIcon = component$(() => {
   );
 });
 
-export const OrderProfileIcon = component$(() => {
+export const OrderProfileIcon = component$((props: any) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
       viewBox="0 0 24 24"
-      fill="none"
+      fill={props.color}
     >
       <path
         d="M19 21L12 16L5 21V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 6.46957 3 7 3H17C17.5304 3 18.0391 3.21071 18.4142 3.58579C18.7893 3.96086 19 4.46957 19 5V21Z"
@@ -849,14 +849,14 @@ export const OrderProfileIcon = component$(() => {
   );
 });
 
-export const EditProfileIcon = component$(() => {
+export const EditProfileIcon = component$((props: any) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
       viewBox="0 0 24 24"
-      fill="none"
+      fill={props.color}
     >
       <path
         d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
