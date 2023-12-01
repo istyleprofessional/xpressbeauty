@@ -72,6 +72,12 @@ export const ProductCard = component$((props: ProductCardProps) => {
         style: "currency",
         currency: currencyObject?.country === "1" ? "USD" : "CAD",
       });
+      verifiedSalePrice.value = (
+        product.sale_price?.sale * 0.2
+      )?.toLocaleString("en-US", {
+        style: "currency",
+        currency: currencyObject?.country === "1" ? "USD" : "CAD",
+      });
     }
   });
 
