@@ -15,18 +15,14 @@ import {
 export const useCategories = routeLoader$(async ({ url }) => {
   await connect();
   const page = url.searchParams.get("page") ?? "1";
-  const searchValue = url.searchParams.get("search") ?? "";
-  const categories = await get_all_categories_per_page(
-    parseInt(page),
-    searchValue
-  );
+  const categories = await get_all_categories_per_page(parseInt(page));
   return JSON.stringify(categories);
 });
 
-export const getCategoriesServer = server$(async function (value: string) {
+export const getCategoriesServer = server$(async function () {
   await connect();
   const page = this.url.searchParams.get("page") ?? "1";
-  const categories = await get_all_categories_per_page(parseInt(page), value);
+  const categories = await get_all_categories_per_page(parseInt(page));
   return JSON.stringify(categories);
 });
 
