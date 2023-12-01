@@ -39,17 +39,10 @@ export const Header = component$(() => {
             <TruckShippingIcon />
           </span>
         </p>
-
-        <a
-          href="mailto:info@xpressbeauty.ca"
-          class="text-white text-xs lg:text-base flex flex-row gap-3 font-normal"
-        >
-          info@xpressbeauty.ca
-        </a>
       </div>
-      <div class="flex justify-start w-full lg:justify-end flex-1 px-2">
+      <div class="flex w-full justify-center lg:justify-end flex-1 px-2">
         <div class="flex items-stretch">
-          <div class="dropdown lg:dropdown-end">
+          <div class="dropdown dropdown-bottom lg:dropdown-end">
             <div
               tabIndex={0}
               role="button"
@@ -57,7 +50,7 @@ export const Header = component$(() => {
             >
               {country.value ? country.value : "Country"}
             </div>
-            <ul class="menu dropdown-content z-50 p-2 shadow bg-base-100 rounded-box w-96 mt-4">
+            <ul class="menu dropdown-content z-50 p-2 shadow bg-base-100 rounded-box w-36 lg:w-96 mt-4">
               <li class="flex flex-row gap-1 w-full">
                 <button
                   class="w-full text-sm"
@@ -67,7 +60,8 @@ export const Header = component$(() => {
                     location.reload();
                   }}
                 >
-                  <CanadaImage class="w-12 h-12 object-contain" /> Canada (CAD){" "}
+                  <CanadaImage class="w-full h-full md:w-12 md:h-12 object-contain" />{" "}
+                  <p class="text-xs lg:text-md">Canada (CAD)</p>
                 </button>
               </li>
               <li class="flex flex-row gap-1 w-full">
@@ -79,8 +73,10 @@ export const Header = component$(() => {
                     location.reload();
                   }}
                 >
-                  <USAImage class="w-12 h-12 object-contain" />
-                  United States of America (USD)
+                  <USAImage class="w-12 h-12 md:w-12 md:h-12 object-contain" />
+                  <p class="text-xs lg:text-md">
+                    United States of America (USD)
+                  </p>
                 </button>
               </li>
             </ul>
