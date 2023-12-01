@@ -9,10 +9,7 @@ export const get_all_categories = async () => {
   }
 };
 
-export const get_all_categories_per_page = async (
-  page: number,
-  search?: string
-) => {
+export const get_all_categories_per_page = async (page: number) => {
   try {
     const perPage = 20;
     const pageNumber = page;
