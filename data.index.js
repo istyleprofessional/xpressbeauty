@@ -28,6 +28,9 @@ async function changeCurrency() {
       product.price.regular = parseFloat(
         product?.price?.regular?.toString()?.replace("$", "")
       ).toFixed(2);
+      product.sale_price.sale = parseFloat(
+        product?.price?.regular?.toString()?.replace("$", "")
+      ).toFixed(2);
     }
     await product.save();
   }
