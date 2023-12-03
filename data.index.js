@@ -11,6 +11,8 @@ const mongoUrl = NEXT_APP_MONGO_URL || "";
 async function changeCurrency() {
   await connect(mongoUrl);
   const products = await Product.find({});
+
+  console.log(products);
   for (const product of products) {
     if (product.priceType === "range") {
       for (const variant of product.variations) {
@@ -32,7 +34,12 @@ async function changeCurrency() {
         product?.price?.regular?.toString()?.replace("$", "")
       ).toFixed(2);
     }
-    await product.save();
+    const updateProduct = await Product.findByIdAndUpdate(
+      product._id,
+      product,
+      { new: true }
+    );
+    console.log(updateProduct);
   }
   await connection.close();
 }
