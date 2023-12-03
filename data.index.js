@@ -14,15 +14,15 @@ async function changeCurrency() {
   for (const product of products) {
     if (product.priceType === "range") {
       for (const variant of product.variations) {
-        variant.price =
-          parseFloat(variant?.price?.toString()?.replace("$", "")) *
-          (100).toFixed(2);
+        variant.price = parseFloat(
+          variant?.price?.toString()?.replace("$", "")
+        ).toFixed(2);
       }
-      product.price.max =
-        parseFloat(product?.price?.max?.toString()?.replace("$", "")) *
-        (100).toFixed(2);
-      product.price.min = (
-        parseFloat(product?.price?.min?.toString()?.replace("$", "")) * 100
+      product.price.max = parseFloat(
+        product?.price?.max?.toString()?.replace("$", "")
+      ).toFixed(2);
+      product.price.min = parseFloat(
+        product?.price?.min?.toString()?.replace("$", "")
       ).toFixed(2);
     } else {
       product.price.regular = parseFloat(
