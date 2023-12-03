@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { connect, set } = require("mongoose");
+const { connect, set, connection } = require("mongoose");
 const models = require("./model");
 const Product = models.Product;
 require("dotenv").config();
@@ -31,6 +31,7 @@ async function changeCurrency() {
     }
     await product.save();
   }
+  await connection.close();
 }
 
 changeCurrency();
