@@ -3,9 +3,7 @@ import {
   useContext,
   useSignal,
   useVisibleTask$,
-  //  useContext
 } from "@builder.io/qwik";
-// import { CartContext } from "~/context/cart.context";
 import type { ProductModel } from "~/models/product.model";
 import { Image } from "@unpic/qwik";
 import { UserContext } from "~/context/user.context";
@@ -25,24 +23,34 @@ export const ProductCard = component$((props: ProductCardProps) => {
   const userObj: any = useContext(UserContext);
   const user = userObj?.user ?? {};
 
-  useVisibleTask$(() => {
-    if (currencyObject?.country === "1") {
-      if (product.priceType === "range") {
-        product.price.min = product.price.min * 0.9;
-        product.price.max = product.price.max * 0.9;
-      } else {
-        product.price.regular = product.price.regular * 0.9;
-        product.sale_price.sale = product.sale_price.sale * 0.9;
+  useVisibleTask$(
+    ({ track }) => {
+      track(() => currencyObject?.country);
+      if (currencyObject?.country === "1") {
+        if (product.priceType === "range") {
+          product.price.min = parseFloat(product?.price?.min?.toString()) * 0.9;
+
+          product.price.max = parseFloat(product.price?.max?.toString()) * 0.9;
+        } else {
+          product.price.regular =
+            parseFloat(product.price?.regular?.toString()) * 0.9;
+          product.sale_price.sale = isNaN(
+            parseFloat(product?.sale_price?.sale?.toString()) * 0.9
+          )
+            ? ""
+            : parseFloat(product?.sale_price?.sale?.toString()) * 0.9;
+        }
       }
-    }
-  });
+    },
+    { strategy: "intersection-observer" }
+  );
 
   useVisibleTask$(({ track }) => {
     track(() => product);
     if (product.priceType === "range") {
       if (product.price.min !== "" && product.price.max !== "") {
         finalRegularPrice.value = `${parseFloat(
-          product.price.min
+          product.price?.min
         ).toLocaleString("en-US", {
           style: "currency",
           currency: currencyObject?.country === "1" ? "USD" : "CAD",
