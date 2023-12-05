@@ -147,24 +147,13 @@ export const ProductCard = component$((props: ProductCardProps) => {
                     : verifiedPrice.value}
                 </span>
               )}
-            {product.priceType === "range" &&
-              product.sale_price.min === "" &&
-              product.sale_price.max === "" && (
-                <span class="text-xs text-neutral-800">
-                  {!(user.isEmailVerified && user.isPhoneVerified)
-                    ? finalRegularPrice.value
-                    : verifiedPrice.value}
-                </span>
-              )}
-            {product.priceType === "range" &&
-              product.sale_price.min !== "" &&
-              product.sale_price.max !== "" && (
-                <span class="text-xs text-neutral-800">
-                  {!(user.isEmailVerified && user.isPhoneVerified)
-                    ? finalRegularPrice
-                    : verifiedSalePrice.value}
-                </span>
-              )}
+            {product.priceType === "range" && (
+              <span class="text-xs text-neutral-800">
+                {!(user.isEmailVerified && user.isPhoneVerified)
+                  ? finalRegularPrice.value
+                  : verifiedPrice.value}
+              </span>
+            )}
           </p>
           {!(user.isEmailVerified && user.isPhoneVerified) && (
             <>
@@ -183,16 +172,6 @@ export const ProductCard = component$((props: ProductCardProps) => {
                           <span class="text-error" itemProp="price">
                             {verifiedSalePrice.value}
                           </span>
-                          {/* <span class="text-error ml-2" itemProp="price">
-                          {(
-                            parseFloat(product?.sale_price?.sale?.toString()) -
-                            parseFloat(product?.sale_price?.sale?.toString()) *
-                              0.2
-                          ).toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "CAD",
-                          })}
-                        </span> */}
                         </>
                       )}
                     {product?.priceType === "single" &&
@@ -204,45 +183,16 @@ export const ProductCard = component$((props: ProductCardProps) => {
                           {verifiedPrice.value}
                         </span>
                       )}
-                    {product?.priceType === "range" &&
-                      product?.sale_price?.min === "" &&
-                      product?.sale_price?.max === "" && (
+                    {product?.priceType === "range" && (
+                      <div class="flex flex-col gap-2">
                         <span
                           class="text-error text-sm lg:text-lg"
                           itemProp="price"
                         >
                           {verifiedPrice.value}
                         </span>
-                      )}
-                    {product?.priceType === "range" &&
-                      product?.sale_price?.min !== "" &&
-                      product?.sale_price?.max !== "" && (
-                        <div class="flex flex-col gap-2">
-                          <span
-                            class="text-error text-sm lg:text-lg"
-                            itemProp="price"
-                          >
-                            {verifiedSalePrice.value}
-                          </span>
-                          {/* <span class="text-error" itemProp="price">
-                          {(
-                            product?.sale_price?.min -
-                            product?.sale_price?.min * 0.2
-                          ).toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "CAD",
-                          })}{" "}
-                          -{" "}
-                          {(
-                            product?.sale_price?.max -
-                            product?.sale_price?.max * 0.2
-                          ).toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "CAD",
-                          })}
-                        </span> */}
-                        </div>
-                      )}
+                      </div>
+                    )}
                   </h2>
                 </div>
               </div>
