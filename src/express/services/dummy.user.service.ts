@@ -2,6 +2,12 @@ import DummyUser from "../schemas/dummy.user.schema";
 
 export const addDummyCustomer = async (id: string, data: any) => {
   try {
+    if (!id) {
+      const result = await DummyUser.create({
+        ...data,
+      });
+      return { status: "success", result: result };
+    }
     const result = await DummyUser.findOneAndUpdate(
       { _id: id },
       {
