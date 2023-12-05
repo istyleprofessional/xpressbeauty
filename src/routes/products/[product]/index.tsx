@@ -33,6 +33,13 @@ import { getRatingByProductId } from "~/express/services/rating.reviews.service"
 export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
   const product = params.product;
+  if (!product.includes("pid")) {
+    const result: any = await get_product_by_name(product);
+    if (result?.err) {
+      throw redirect(301, `/products/`);
+    }
+    throw redirect(301, `/products/${result?.perfix}`);
+  }
   const result: any = await get_product_by_name(product);
   const ratings = await getRatingByProductId(result?._id ?? "");
   if (!result) {
