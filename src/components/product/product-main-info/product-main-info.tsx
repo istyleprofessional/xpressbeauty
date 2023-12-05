@@ -24,7 +24,6 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     ratings,
     companyName,
   } = props;
-  const finalSalePrice = useSignal<string>("");
   const finalRegularPrice = useSignal<string>("");
   const verifiedPrice = useSignal<string>("");
   const verifiedSalePrice = useSignal<string>("");
@@ -111,37 +110,28 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
               <span class="text-gray-400 line-through" itemProp="price">
                 {finalRegularPrice.value}
               </span>
+              <span class="text-error ml-2" itemProp="price">
+                {!isVerified ? sale_price.sale : verifiedSalePrice.value}
+              </span>
             </>
           )}
           {priceType === "single" && sale_price.sale === "" && (
             <span class="text-black" itemProp="price">
-              {finalRegularPrice.value}
+              {!isVerified ? finalRegularPrice.value : verifiedPrice.value}
             </span>
           )}
-          {priceType === "range" &&
-            sale_price.min === "" &&
-            sale_price.max === "" && (
-              <span class="text-black" itemProp="price">
-                {finalRegularPrice.value}
-              </span>
-            )}
-          {priceType === "range" &&
-            sale_price.min !== "" &&
-            sale_price.max !== "" && (
-              <>
-                <span class="text-gray-400 line-through">
-                  {finalRegularPrice.value}
-                </span>
-                <span class="text-error ml-2">{finalSalePrice.value}</span>
-              </>
-            )}
+          {priceType === "range" && (
+            <span class="text-black" itemProp="price">
+              {!isVerified ? finalRegularPrice.value : verifiedPrice.value}
+            </span>
+          )}
         </h2>
 
         {!isVerified && (
           <div class="card shadow-lg w-96 hover:bg-base-300">
             <label class="card-header bg-warning text-center">
               <span class="text-md text-gray-500 text-center font-bold">
-                Black Friday Sale
+                Join our Saver Club
               </span>
             </label>
             <a class="cursor-pointer" href="/login">
@@ -150,17 +140,17 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
                   <div class="flex flex-col gap-1">
                     <p class="text-sm text-gray-500">
                       Login or Register and verify Phone Number and Email
-                      Address to get an extra 20% off
+                      Address to get up to 40% off
                     </p>
                     <h2 class="flex flex-row gap-2 text-xl lg:text-3xl">
                       {priceType === "single" && sale_price.sale !== "" && (
                         <>
-                          <span
+                          {/* <span
                             class="text-gray-400 line-through"
                             itemProp="price"
                           >
                             {verifiedPrice.value}
-                          </span>
+                          </span> */}
                           <span class="text-error ml-2" itemProp="price">
                             {verifiedSalePrice.value}
                           </span>
@@ -182,12 +172,12 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
                         sale_price.min !== "" &&
                         sale_price.max !== "" && (
                           <div class="flex flex-col gap-2">
-                            <span
+                            {/* <span
                               class="text-gray-400 line-through"
                               itemProp="price"
                             >
                               {verifiedPrice.value}
-                            </span>
+                            </span> */}
                             <span class="text-error" itemProp="price">
                               {verifiedSalePrice.value}
                             </span>

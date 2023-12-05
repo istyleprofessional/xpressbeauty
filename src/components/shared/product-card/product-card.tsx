@@ -1,5 +1,6 @@
 import {
   component$,
+  useContext,
   useSignal,
   useVisibleTask$,
   //  useContext
@@ -7,6 +8,7 @@ import {
 // import { CartContext } from "~/context/cart.context";
 import type { ProductModel } from "~/models/product.model";
 import { Image } from "@unpic/qwik";
+import { UserContext } from "~/context/user.context";
 
 interface ProductCardProps {
   product: ProductModel;
@@ -20,6 +22,8 @@ export const ProductCard = component$((props: ProductCardProps) => {
   const finalRegularPrice = useSignal<string>("");
   const verifiedPrice = useSignal<string>("");
   const verifiedSalePrice = useSignal<string>("");
+  const userObj: any = useContext(UserContext);
+  const user = userObj?.user ?? {};
 
   useVisibleTask$(() => {
     if (currencyObject?.country === "1") {
@@ -128,81 +132,58 @@ export const ProductCard = component$((props: ProductCardProps) => {
             {product.priceType === "single" &&
               product.sale_price.sale !== "" && (
                 <>
-                  <span class="text-xs text-neutral-800 line-through">
-                    {finalRegularPrice.value}
+                  <span class="text-xs text-neutral-800">
+                    {!(user.isEmailVerified && user.isPhoneVerified)
+                      ? finalRegularPrice.value
+                      : verifiedSalePrice.value}
                   </span>
                 </>
               )}
             {product.priceType === "single" &&
               product.sale_price.sale === "" && (
-                <span class="text-xs text-neutral-800 line-through">
-                  {finalRegularPrice.value}
+                <span class="text-xs text-neutral-800">
+                  {!(user.isEmailVerified && user.isPhoneVerified)
+                    ? finalRegularPrice.value
+                    : verifiedPrice.value}
                 </span>
               )}
             {product.priceType === "range" &&
               product.sale_price.min === "" &&
               product.sale_price.max === "" && (
-                <span class="text-xs text-neutral-800 line-through">
-                  {finalRegularPrice.value}
+                <span class="text-xs text-neutral-800">
+                  {!(user.isEmailVerified && user.isPhoneVerified)
+                    ? finalRegularPrice.value
+                    : verifiedPrice.value}
                 </span>
               )}
-            {/* {product.priceType === "range" &&
+            {product.priceType === "range" &&
               product.sale_price.min !== "" &&
               product.sale_price.max !== "" && (
-                <div class="flex flex-col gap-2">
-                  <span class="text-xs text-gray-400 line-through">
-                    {parseFloat(
-                      product?.sale_price?.min?.toString()
-                    )?.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}{" "}
-                    -{" "}
-                    {parseFloat(
-                      product?.sale_price?.max?.toString()
-                    )?.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}
-                  </span>
-                  <span class="text-xs text-error">
-                    {parseFloat(
-                      product?.sale_price?.min?.toString()
-                    )?.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}{" "}
-                    -{" "}
-                    {parseFloat(
-                      product?.sale_price?.max?.toString()
-                    )?.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "CAD",
-                    })}
-                  </span>
-                </div>
-              )} */}
+                <span class="text-xs text-neutral-800">
+                  {!(user.isEmailVerified && user.isPhoneVerified)
+                    ? finalRegularPrice
+                    : verifiedSalePrice.value}
+                </span>
+              )}
           </p>
-          {/* {context.isVerified && ( */}
-          {/* )} */}
-          {/* {!context.isVerified && ( */}
-          <>
-            <label class="bg-black w-full text-center rounded-md">
-              <span class="text-xs md:text-sm text-gray-500 text-center font-bold text-white p-1 normal-case">
-                Cyber Week
-              </span>
-            </label>
+          {!(user.isEmailVerified && user.isPhoneVerified) && (
+            <>
+              <label class=" bg-warning w-full text-center rounded-md">
+                <span class="text-xs md:text-sm text-gray-500 text-center font-bold text-black p-1 normal-case">
+                  Saver Club
+                </span>
+              </label>
 
-            <div class="flex flex-row gap-2 justify-center">
-              <div class="flex flex-col gap-1">
-                <h2 class="flex flex-row gap-2 text-xs">
-                  {product.priceType === "single" &&
-                    product?.sale_price?.sale !== "" && (
-                      <>
-                        <span class="text-error" itemProp="price">
-                          {verifiedSalePrice.value}
-                        </span>
-                        {/* <span class="text-error ml-2" itemProp="price">
+              <div class="flex flex-row gap-2 justify-center">
+                <div class="flex flex-col gap-1">
+                  <h2 class="flex flex-row gap-2 text-xs">
+                    {product.priceType === "single" &&
+                      product?.sale_price?.sale !== "" && (
+                        <>
+                          <span class="text-error" itemProp="price">
+                            {verifiedSalePrice.value}
+                          </span>
+                          {/* <span class="text-error ml-2" itemProp="price">
                           {(
                             parseFloat(product?.sale_price?.sale?.toString()) -
                             parseFloat(product?.sale_price?.sale?.toString()) *
@@ -212,38 +193,38 @@ export const ProductCard = component$((props: ProductCardProps) => {
                             currency: "CAD",
                           })}
                         </span> */}
-                      </>
-                    )}
-                  {product?.priceType === "single" &&
-                    product?.sale_price?.sale === "" && (
-                      <span
-                        class="text-error text-sm lg:text-lg"
-                        itemProp="price"
-                      >
-                        {verifiedPrice.value}
-                      </span>
-                    )}
-                  {product?.priceType === "range" &&
-                    product?.sale_price?.min === "" &&
-                    product?.sale_price?.max === "" && (
-                      <span
-                        class="text-error text-sm lg:text-lg"
-                        itemProp="price"
-                      >
-                        {verifiedPrice.value}
-                      </span>
-                    )}
-                  {product?.priceType === "range" &&
-                    product?.sale_price?.min !== "" &&
-                    product?.sale_price?.max !== "" && (
-                      <div class="flex flex-col gap-2">
+                        </>
+                      )}
+                    {product?.priceType === "single" &&
+                      product?.sale_price?.sale === "" && (
                         <span
                           class="text-error text-sm lg:text-lg"
                           itemProp="price"
                         >
-                          {verifiedSalePrice.value}
+                          {verifiedPrice.value}
                         </span>
-                        {/* <span class="text-error" itemProp="price">
+                      )}
+                    {product?.priceType === "range" &&
+                      product?.sale_price?.min === "" &&
+                      product?.sale_price?.max === "" && (
+                        <span
+                          class="text-error text-sm lg:text-lg"
+                          itemProp="price"
+                        >
+                          {verifiedPrice.value}
+                        </span>
+                      )}
+                    {product?.priceType === "range" &&
+                      product?.sale_price?.min !== "" &&
+                      product?.sale_price?.max !== "" && (
+                        <div class="flex flex-col gap-2">
+                          <span
+                            class="text-error text-sm lg:text-lg"
+                            itemProp="price"
+                          >
+                            {verifiedSalePrice.value}
+                          </span>
+                          {/* <span class="text-error" itemProp="price">
                           {(
                             product?.sale_price?.min -
                             product?.sale_price?.min * 0.2
@@ -260,13 +241,18 @@ export const ProductCard = component$((props: ProductCardProps) => {
                             currency: "CAD",
                           })}
                         </span> */}
-                      </div>
-                    )}
-                </h2>
+                        </div>
+                      )}
+                  </h2>
+                </div>
               </div>
-            </div>
-          </>
-          {/* )} */}
+            </>
+          )}
+          {user.isEmailVerified && user.isPhoneVerified && (
+            <p class="text-xs text-gray-500 text-center font-bold text-info p-1 normal-case">
+              You are a Saver Club Member
+            </p>
+          )}
         </div>
       </div>
     </a>

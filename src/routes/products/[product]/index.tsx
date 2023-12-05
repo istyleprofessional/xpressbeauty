@@ -24,11 +24,10 @@ import {
 } from "~/express/services/product.service";
 import type { ProductModel } from "~/models/product.model";
 import { postRequest } from "~/utils/fetch.utils";
-import jwt from "jsonwebtoken";
-import { getUserById } from "~/express/services/user.service";
 import { WishListContext } from "~/context/wishList.context";
 import { Toast } from "~/components/admin/toast/toast";
 import { getRatingByProductId } from "~/express/services/rating.reviews.service";
+import { UserContext } from "~/context/user.context";
 
 export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
@@ -54,20 +53,20 @@ export const useCurrLoader = routeLoader$(async ({ cookie }) => {
   return { country: country, rate: rate };
 });
 
-export const useAuth = routeLoader$(async ({ cookie, env }) => {
-  await connect();
-  const token = cookie.get("token")?.value ?? "";
-  const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
-  if (verify.isDummy) {
-    return JSON.stringify({});
-  }
+// export const useAuth = routeLoader$(async ({ cookie, env }) => {
+//   await connect();
+//   const token = cookie.get("token")?.value ?? "";
+//   const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
+//   if (verify.isDummy) {
+//     return JSON.stringify({});
+//   }
 
-  const user = await getUserById(verify.user_id);
-  if (user.status === "failed") {
-    return JSON.stringify({});
-  }
-  return JSON.stringify(user.result);
-});
+//   const user = await getUserById(verify.user_id);
+//   if (user.status === "failed") {
+//     return JSON.stringify({});
+//   }
+//   return JSON.stringify(user.result);
+// });
 
 export const getAllRelatedProductsServer = server$(async (data) => {
   const req = await getRelatedProducts(data.category, data.name);
@@ -83,13 +82,14 @@ export default component$(() => {
   const variationValue = useStore<any>({}, { deep: true });
   const src = product?.product_name?.replace(/[^A-Za-z0-9]+/g, "");
   const finalVariationToAdd = useSignal<any>({});
-  const user = JSON.parse(useAuth().value ?? "");
+  // const user = JSON.parse(useAuth().value ?? "");
+  const userObj: any = useContext(UserContext);
+  const user = userObj?.user ?? {};
   const wishList = useContext(WishListContext);
   const isLoginCardOpen = useSignal(false);
   const isToastCardOpen = useSignal(false);
   const message = useSignal("");
   const currencyObject = useCurrLoader().value;
-
   useVisibleTask$(() => {
     localStorage.setItem("prev", `/products/${product.perfix}`);
   });
@@ -120,7 +120,10 @@ export default component$(() => {
           product_name: product.product_name,
           variation_name: element.variation_name,
           product_img: (product?.imgs ?? [])[0] ?? "",
-          price: parseFloat(element?.price) - parseFloat(element?.price) * 0.2,
+          price:
+            user.isEmailVerified && user.isPhoneVerified
+              ? parseFloat(element?.price) - parseFloat(element?.price) * 0.2
+              : parseFloat(element?.price),
           quantity: element.quantity,
           currency: currencyObject?.country === "1" ? "USD" : "CAD",
         };
@@ -133,13 +136,17 @@ export default component$(() => {
         product_name: product.product_name,
         product_img: (product?.imgs ?? [])[0] ?? "",
         price:
-          product.sale_price.sale !== 0 && product.sale_price.sale !== ""
-            ? (product.sale_price.sale - product.sale_price.sale * 0.2).toFixed(
-                2
-              )
-            : (product?.price?.regular - product?.price?.regular * 0.2).toFixed(
-                2
-              ),
+          user.isEmailVerified && user.isPhoneVerified
+            ? product.sale_price.sale !== 0 && product.sale_price.sale !== ""
+              ? (
+                  parseFloat(product?.sale_price?.sale?.toString()) -
+                  parseFloat(product?.sale_price?.sale?.toString()) * 0.2
+                ).toFixed(2)
+              : (
+                  parseFloat(product?.price?.regular?.toString()) -
+                  parseFloat(product?.price?.regular.toString()) * 0.2
+                ).toFixed(2)
+            : parseFloat(product?.price?.regular),
         quantity: value,
         currency: currencyObject?.country === "1" ? "USD" : "CAD",
       };
@@ -306,7 +313,7 @@ export default component$(() => {
                 sale_price={product?.sale_price ?? ""}
                 priceType={product?.priceType ?? ""}
                 isVariant={true}
-                isVerified={cartContext.isVerified}
+                isVerified={user.isEmailVerified && user.isPhoneVerified}
                 companyName={product?.companyName ?? ""}
               />
               <ProductActions

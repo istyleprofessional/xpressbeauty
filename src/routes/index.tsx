@@ -6,7 +6,7 @@ import { WhyChooseUs } from "~/components/home/why-choose-us/why-choose-us";
 import { connect } from "~/express/db.connection";
 import { get_new_arrivals_products } from "~/express/services/product.service";
 import type { ProductModel } from "~/models/product.model";
-import BannerImage from "~/media/Year3.jpg?jsx";
+import BannerImage from "~/media/Year5.jpg?jsx";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();
@@ -69,7 +69,7 @@ export default component$(() => {
       {status === "1" && (
         <div class="flex flex-col gap-10">
           <div
-            class="flex relative cursor-pointer justify-center items-center w-full h-[40vh] lg:h-[60vh] bg-[#000103]"
+            class="flex flex-col relative cursor-pointer justify-center items-center w-full h-[30vh] lg:h-[70vh] bg-[#E8E8E8]"
             onClick$={() => {
               nav("/products");
             }}
