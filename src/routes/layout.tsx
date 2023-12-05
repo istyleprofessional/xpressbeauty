@@ -79,6 +79,7 @@ export const useUserData = routeLoader$(
         userAgent: userAgent ?? "",
       },
     };
+    console.log(data);
     if (!token) {
       const requestDum: any = await addDummyCustomer("", data);
       if (requestDum.status === "success") {
@@ -279,7 +280,6 @@ export default component$(() => {
             (total: any, item: any) => total + item.quantity,
             0
           );
-        console.log(cartContextObject.cart.totalQuantity);
         cartContextObject.cart.currency = currency === "1" ? "USD" : "CAD";
       }
     },
