@@ -28,18 +28,18 @@ import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 import ip2location from "ip-to-location";
 
-export const onGet: RequestHandler = async ({ cacheControl }) => {
-  cacheControl({
-    staleWhileRevalidate: 60 * 60 * 24 * 7,
-    maxAge: 5,
-  });
-};
+// export const onGet: RequestHandler = async ({ cacheControl }) => {
+//   cacheControl({
+//     staleWhileRevalidate: 60 * 60 * 24 * 7,
+//     maxAge: 5,
+//   });
+// };
 
-export const useServerTimeLoader = routeLoader$(() => {
-  return {
-    date: new Date().toISOString(),
-  };
-});
+// export const useServerTimeLoader = routeLoader$(() => {
+//   return {
+//     date: new Date().toISOString(),
+//   };
+// });
 
 export const useUserData = routeLoader$(
   async ({ cookie, env, request, url }) => {
@@ -243,6 +243,7 @@ export default component$(() => {
   const loc = useLocation();
   const url = loc?.url?.pathname;
   const currency = useCurrLoader().value;
+
   useTask$(
     async ({ track }) => {
       track(() => userData?.user);
