@@ -24,6 +24,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     ratings,
     companyName,
   } = props;
+  const finalSalePrice = useSignal<string>("");
   const finalRegularPrice = useSignal<string>("");
   const verifiedPrice = useSignal<string>("");
   const verifiedSalePrice = useSignal<string>("");
@@ -63,6 +64,13 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           currency: currencyObject?.country === "1" ? "USD" : "CAD",
         }
       );
+      finalSalePrice.value = parseFloat(sale_price?.sale)?.toLocaleString(
+        "en-US",
+        {
+          style: "currency",
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        }
+      );
       verifiedPrice.value = (
         parseFloat(price?.regular) -
         parseFloat(price?.regular) * 0.2
@@ -79,7 +87,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
       currency: currencyObject?.country === "1" ? "USD" : "CAD",
     });
   });
-
+  // console.log("product", sale_price);
   return (
     <div class="flex flex-col gap-10">
       <div class="flex flex-col gap-3">
@@ -107,11 +115,8 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         <h2 class="flex flex-row gap-2 text-xl lg:text-3xl">
           {priceType === "single" && sale_price.sale !== "" && (
             <>
-              <span class="text-gray-400 line-through" itemProp="price">
-                {finalRegularPrice.value}
-              </span>
-              <span class="text-error ml-2" itemProp="price">
-                {!isVerified ? sale_price.sale : verifiedSalePrice.value}
+              <span class="text-gray-400" itemProp="price">
+                {!isVerified ? finalRegularPrice.value : verifiedPrice.value}
               </span>
             </>
           )}
