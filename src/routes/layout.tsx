@@ -274,6 +274,12 @@ export default component$(() => {
           });
         }
         cartContextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
+        cartContextObject.cart.totalQuantity =
+          cartContextObject.cart.products.reduce(
+            (total: any, item: any) => total + item.quantity,
+            0
+          );
+        console.log(cartContextObject.cart.totalQuantity);
         cartContextObject.cart.currency = currency === "1" ? "USD" : "CAD";
       }
     },
