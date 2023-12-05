@@ -2,33 +2,20 @@ import DummyUser from "../schemas/dummy.user.schema";
 
 export const addDummyCustomer = async (id: string, data: any) => {
   try {
-    if (!id) {
-      if (data?.generalInfo?.ip) {
-        const findDummyUser = await DummyUser.findOne({
-          "generalInfo.ip": data?.generalInfo?.ip,
-        });
-        if (findDummyUser) {
-          return { status: "success", result: findDummyUser };
-        }
-      }
-      const result = await DummyUser.create({ generalInfo: data?.generalInfo });
-      return { status: "success", result: result };
-    } else {
-      const result = await DummyUser.findOneAndUpdate(
-        { _id: id },
-        {
-          $set: {
-            generalInfo: data?.generalInfo,
-            firstName: data?.firstName,
-            lastName: data?.lastName,
-            email: data?.email,
-            phoneNumber: data?.phoneNumber,
-          },
+    const result = await DummyUser.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          generalInfo: data?.generalInfo,
+          firstName: data?.firstName,
+          lastName: data?.lastName,
+          email: data?.email,
+          phoneNumber: data?.phoneNumber,
         },
-        { upsert: true, new: true, runValidators: true }
-      );
-      return { status: "success", result: result };
-    }
+      },
+      { upsert: true, new: true, runValidators: true }
+    );
+    return { status: "success", result: result };
   } catch (err) {
     return { status: "failed", err: err };
   }
