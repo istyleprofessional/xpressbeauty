@@ -50,35 +50,16 @@ export const useCurrLoader = routeLoader$(async ({ cookie }) => {
 export const useAuth = routeLoader$(async ({ cookie, env }) => {
   await connect();
   const token = cookie.get("token")?.value ?? "";
-
-  try {
-    const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
-    if (verify.isDummy) {
-      return JSON.stringify({});
-    }
-
-    const user = await getUserById(verify.user_id);
-    if (user.status === "failed") {
-      return JSON.stringify({});
-    }
-    return JSON.stringify(user.result);
-  } catch (error: any) {
-    if (error.message === "jwt expired") {
-      const decode: any = jwt.decode(token);
-      const newToken = jwt.sign(
-        {
-          user_id: decode.user_id,
-        },
-        env.get("VITE_JWTSECRET") ?? "",
-        { expiresIn: "1h" }
-      );
-      cookie.set("token", newToken, {
-        httpOnly: true,
-        path: "/",
-      });
-    }
+  const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
+  if (verify.isDummy) {
     return JSON.stringify({});
   }
+
+  const user = await getUserById(verify.user_id);
+  if (user.status === "failed") {
+    return JSON.stringify({});
+  }
+  return JSON.stringify(user.result);
 });
 
 export const getAllRelatedProductsServer = server$(async (data) => {

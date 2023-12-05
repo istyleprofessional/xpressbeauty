@@ -1,6 +1,12 @@
-import { component$, useSignal, useVisibleTask$, $ } from "@builder.io/qwik";
+import {
+  component$,
+  useSignal,
+  useVisibleTask$,
+  $,
+  useContext,
+} from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { Form, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
+import { Form, routeAction$ } from "@builder.io/qwik-city";
 import { InputField } from "~/components/shared/input-field/input-field";
 import { Steps } from "~/components/shared/steps/steps";
 import jwt from "jsonwebtoken";
@@ -16,50 +22,51 @@ import {
 } from "~/express/services/dummy.user.service";
 import { validate } from "~/utils/validate.utils";
 import { validatePhone } from "../register";
+import { UserContext } from "~/context/user.context";
 
-export const useCheckoutData = routeLoader$(async ({ cookie, env }) => {
-  const token = cookie.get("token")?.value;
-  if (!token) {
-    return JSON.stringify({
-      request: { status: "failed" },
-    });
-  }
-  try {
-    const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
-    if (verify.isDummy) {
-      const request = await getDummyCustomer(verify?.user_id ?? "");
-      if (request.status === "success") {
-        return JSON.stringify({
-          status: "success",
-          request: request.result,
-        });
-      }
-      return JSON.stringify({
-        request: {
-          status: "failed",
-        },
-      });
-    }
-    const request = await findUserByUserId(verify?.user_id ?? "");
-    if (request.status === "success") {
-      return JSON.stringify({
-        request: request.result,
-      });
-    } else {
-      return JSON.stringify({
-        request: {
-          status: "failed",
-        },
-      });
-    }
-  } catch (error) {
-    return JSON.stringify({
-      request: {
-        status: "failed",
-      },
-    });
-  }
-});
+// export const useCheckoutData = routeLoader$(async ({ cookie, env }) => {
+//   const token = cookie.get("token")?.value;
+//   if (!token) {
+//     return JSON.stringify({
+//       request: { status: "failed" },
+//     });
+//   }
+//   try {
+//     const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
+//     if (verify.isDummy) {
+//       const request = await getDummyCustomer(verify?.user_id ?? "");
+//       if (request.status === "success") {
+//         return JSON.stringify({
+//           status: "success",
+//           request: request.result,
+//         });
+//       }
+//       return JSON.stringify({
+//         request: {
+//           status: "failed",
+//         },
+//       });
+//     }
+//     const request = await findUserByUserId(verify?.user_id ?? "");
+//     if (request.status === "success") {
+//       return JSON.stringify({
+//         request: request.result,
+//       });
+//     } else {
+//       return JSON.stringify({
+//         request: {
+//           status: "failed",
+//         },
+//       });
+//     }
+//   } catch (error) {
+//     return JSON.stringify({
+//       request: {
+//         status: "failed",
+//       },
+//     });
+//   }
+// });
 
 export const useAddUser = routeAction$(async (data, requestEvent) => {
   const token = requestEvent.cookie.get("token")?.value;
@@ -164,8 +171,8 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
 
 export default component$(() => {
   const isLoading = useSignal(false);
-  const userData = JSON.parse(useCheckoutData().value);
-  const info: UserModel = userData?.request;
+  const userData: any = useContext(UserContext);
+  const info: UserModel = userData?.user ?? {};
   const action = useAddUser();
   const verifyCardRef = useSignal<Element>();
   const messageToast = useSignal<string>("");
