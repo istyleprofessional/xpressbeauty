@@ -315,6 +315,16 @@ export default component$(() => {
     location.reload();
   });
 
+  useVisibleTask$(() => {
+    const christmasAnimation = document.getElementById("christmasAnimation");
+    if (christmasAnimation) {
+      christmasAnimation.classList.remove("hidden");
+      setTimeout(() => {
+        christmasAnimation.classList.add("hidden");
+      }, 3000);
+    }
+  });
+
   return (
     <div class="page flex flex-col gap-6 h-screen">
       <main>

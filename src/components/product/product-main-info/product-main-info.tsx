@@ -198,9 +198,11 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           </div>
         )}
       </div>
-      <span class="text-sm text-gray-500 font-bold">
-        You're automatically getting up to 40% off !!!
-      </span>
+      {isVerified && (
+        <span class="text-sm text-gray-500 font-bold">
+          You're automatically getting up to 40% off !!!
+        </span>
+      )}
     </div>
   );
 });
