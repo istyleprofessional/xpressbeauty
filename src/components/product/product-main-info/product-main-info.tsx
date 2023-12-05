@@ -71,13 +71,23 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           currency: currencyObject?.country === "1" ? "USD" : "CAD",
         }
       );
-      verifiedPrice.value = (
-        parseFloat(price?.regular) -
-        parseFloat(price?.regular) * 0.2
-      ).toLocaleString("en-US", {
-        style: "currency",
-        currency: currencyObject?.country === "1" ? "USD" : "CAD",
-      });
+      if (sale_price.sale !== "") {
+        verifiedPrice.value = (
+          parseFloat(sale_price?.sale) -
+          parseFloat(sale_price?.sale) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        });
+      } else {
+        verifiedPrice.value = (
+          parseFloat(price?.regular) -
+          parseFloat(price?.regular) * 0.2
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        });
+      }
     }
     verifiedSalePrice.value = (
       parseFloat(sale_price?.sale) -
