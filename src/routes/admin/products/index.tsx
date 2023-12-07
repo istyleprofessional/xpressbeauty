@@ -4,6 +4,7 @@ import { connect } from "~/express/db.connection";
 import {
   getAllProductForDownload,
   getProductBySearchAdmin,
+  updateVisibility,
 } from "~/express/services/product.service";
 import {
   CheckOrderIcon,
@@ -29,6 +30,11 @@ export const getProductsServer = server$(async function (value: string) {
   return JSON.stringify(products);
 });
 
+export const updateProductVisibility = server$(async function (data: any) {
+  const update = await updateVisibility(data._id, !data.isHidden);
+  return JSON.stringify(update);
+});
+
 export const getAllProductsServer = server$(async function () {
   await connect();
   const products = await getAllProductForDownload();
@@ -48,15 +54,17 @@ export default component$(() => {
 
   const handleVisibilityChange = $((product: any) => {
     (document?.getElementById("my_modal_1") as any)?.showModal();
-    currentProduct.value = product;
+    if(product){
+      currentProduct.value = product;
+    }
+    
   });
 
   const handleConfirmStatusChange = $(async () => {
     (document?.getElementById("my_modal_1") as any)?.close();
     const data = currentProduct.value;
-    const url = `/api/admin/product/hide`;
-    const request = await putRequest(url, data);
-    const response = await request.json();
+    const request = await updateProductVisibility(data);
+    const response = JSON.parse(request);
     if (response.status !== "success") {
       return;
     }
@@ -64,9 +72,22 @@ export default component$(() => {
       if (product._id === data._id) {
         product.isHidden = response.result.isHidden;
       }
-      return product;
+      return productData;
     });
-    currentProduct.value = {};
+    //console.log(data);
+    // const url = `/api/admin/product/hide`;
+    // const request = await putRequest(url, data);
+    // const response = await request.json();
+    // if (response.status !== "success") {
+    //   return;
+    // }
+    // productData.value = productData.value.map((product: any) => {
+    //   if (product._id === data._id) {
+    //     product.isHidden = response.result.isHidden;
+    //   }
+    //   return product;
+    // });
+    // currentProduct.value = {};
   });
 
   const handleSearchProducts = $(async (e: any) => {
@@ -183,7 +204,7 @@ export default component$(() => {
                   </th>
                   <th>
                     <img
-                      src={product.imgs[0]}
+                      src={(product?.imgs as any[])[0] ?? ""}
                       class="w-12 h-12 object-contain"
                       onError$={(_, element: HTMLImageElement) => {
                         element.src = "/placeholder.webp";

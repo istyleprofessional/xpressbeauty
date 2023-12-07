@@ -556,3 +556,18 @@ export const getAllProductForDownload = async () => {
     return { err: err };
   }
 };
+
+export const updateVisibility = async (id: string, isHidden: boolean) => {
+  try {
+    const result = await Product.findByIdAndUpdate(
+      id,
+      { isHidden: isHidden },
+      { new: true }
+    );
+    return { status: "success", result: result };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
+
+

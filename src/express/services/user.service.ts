@@ -326,7 +326,9 @@ export const updatePaymentMethod = async (
 
 export const getUsers = async (page: number) => {
   try {
-    const result = await User.find({}, { password: 0 })
+    const result = await User.find({
+
+    }, { password: 0 })
       .sort({ createdAt: -1 })
       .skip((page - 1) * 20)
       .limit(20);
@@ -345,3 +347,35 @@ export const getAllRegisteredUsersCount = async () => {
     return { status: "failed", err: err };
   }
 };
+
+export const getuserBySearchAdmin = async (search: string, page: number) => {
+  
+  try {
+    const perPage = 20;
+    const pageNumber = page;
+    const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
+    const result = await User.find({
+      $or: [
+        { firstName
+          : { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { phoneNumber: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ],
+    })
+      .skip(skip)
+      .limit(perPage);
+    const total = await User.count({
+      $or: [
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { phoneNumber: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ],
+    });
+    return { result: result, total: total };
+  } catch (err) {
+    return { err: err };
+  }
+};
+
