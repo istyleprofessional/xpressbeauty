@@ -37,7 +37,7 @@ export const onPost: RequestHandler = async ({
   } else {
     verifiedToken = verifyToken.data;
   }
-  const rate = cookie.get("curRate")?.value;
+  // const rate = cookie.get("curRate")?.value;
   if (verifiedToken.isDummy) {
     if (data.paymentSource !== "PAYPAL") {
       const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "", {
@@ -63,13 +63,13 @@ export const onPost: RequestHandler = async ({
     const email = request?.result?.email;
     const name = `${request?.result?.firstName} ${request?.result?.lastName}`;
     const shipping_address = request.result?.generalInfo.address;
+    const totalInfo = data.totalInfo;
     await sendConfirmationEmail(
       email ?? "",
       name,
       shipping_address,
       data.products,
-      data.currency,
-      rate ?? "0"
+      totalInfo
     );
     await sendConfirmationOrderForAdmin(name, shipping_address, data.products);
     data.userId = verifiedToken.user_id;
@@ -112,13 +112,13 @@ export const onPost: RequestHandler = async ({
           );
         }
       }
+      const totalInfo = data.totalInfo;
       await sendConfirmationEmail(
         email ?? "",
         name,
         shipping_address,
         data.products,
-        data.currency,
-        rate ?? "0"
+        totalInfo
       );
       await sendConfirmationOrderForAdmin(
         name,

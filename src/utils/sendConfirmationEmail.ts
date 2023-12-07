@@ -5,8 +5,12 @@ export const sendConfirmationEmail = async (
   name: string,
   shipping_address: any,
   products: any[],
-  currency: string,
-  rate: string
+  totalInfo: {
+    shipping: number;
+    tax: number;
+    finalTotal: number;
+    currency: string;
+  }
 ) => {
   const transporter = createTransport({
     host: "smtp.zoho.com",
@@ -17,21 +21,10 @@ export const sendConfirmationEmail = async (
       pass: import.meta.env.VITE_EMAIL_PASS ?? "",
     },
   });
-  const hst = currency.toLocaleLowerCase() === "usd" ? 0 : 0.13;
-  const total = products.reduce((acc, product) => {
-    // check if the main currency is matched with the product currency if not recalculate the price
-    if (currency.toLocaleLowerCase() !== product.currency.toLocaleLowerCase()) {
-      if (currency.toLocaleLowerCase() === "usd") {
-        product.price = product.price * parseFloat(`0.${parseInt(rate + 10)}`);
-      } else {
-        product.price = product.price / parseFloat(`0.${parseInt(rate + 10)}`);
-      }
-    }
-    return acc + product.price * product.quantity;
-  }, 0);
-  const shipping = total > 150 ? 0 : 15;
-  const tax = total * hst;
-  const finalTotal = total + tax + shipping;
+  const shipping = totalInfo?.shipping ?? 0;
+  const tax = totalInfo?.tax ?? 0;
+  const finalTotal = totalInfo?.finalTotal ?? 0;
+  console.log("email", totalInfo);
   const mailOptions = {
     from: import.meta.env.VITE_EMAIL ?? "",
     to: email,

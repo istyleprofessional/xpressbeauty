@@ -203,14 +203,19 @@ export const callServer = server$(async function (
       data.order_status = "Pending";
       data.order_number = generateOrderNumber();
       orderId = data.order_number;
-      const rate = this.cookie.get("curRate")?.value ?? "";
+      // const rate = this.cookie.get("curRate")?.value ?? "";
+      const totalInfo = {
+        shipping: data.shipping,
+        tax: data.tax,
+        finalTotal: data.finalTotal,
+        currency: data.currency,
+      };
       await sendConfirmationEmail(
         user.result?.email ?? "",
         `${user.result?.firstName} ${user.result?.lastName}`,
         data.shipping_address,
         data.products,
-        currency?.toLocaleLowerCase() ?? "CAD",
-        rate
+        totalInfo
       );
       await sendConfirmationOrderForAdmin(
         `${user.result?.firstName} ${user.result?.lastName}`,
@@ -293,6 +298,14 @@ export default component$(() => {
               products: cartContext?.cart?.products,
               // shipping:
               shipping: subTotal.value > 150 ? 0 : 15,
+              totalInfo: {
+                shipping: subTotal.value > 150 ? 0 : 15,
+                tax: parseFloat(
+                  ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
+                ).toFixed(2),
+                finalTotal: parseFloat(total.value.toString()).toFixed(2),
+                currency: currencyObject?.country === "1" ? "USD" : "CAD",
+              },
             };
             const paypalReq: any = await paypalServer(dataToSend);
             const paypalRes = JSON.parse(paypalReq);
@@ -312,7 +325,16 @@ export default component$(() => {
                   orderId: data.orderID,
                 },
                 currency: currencyObject?.country === "1" ? "USD" : "CAD",
+                totalInfo: {
+                  shipping: subTotal.value > 150 ? 0 : 15,
+                  tax: parseFloat(
+                    ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
+                  ).toFixed(2),
+                  finalTotal: parseFloat(total.value.toString()).toFixed(2),
+                  currency: currencyObject?.country === "1" ? "USD" : "CAD",
+                },
               };
+              console.log(dataToSend);
               const req = await postRequest(
                 "/api/paymentConfirmiation",
                 dataToSend
@@ -383,6 +405,14 @@ export default component$(() => {
           products: cartContext?.cart?.products,
           acceptSaveCard: acceptSaveCard.value,
           paymentSource: "STRIPE",
+          totalInfo: {
+            shipping: subTotal.value > 150 ? 0 : 15,
+            tax: parseFloat(
+              ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
+            ).toFixed(2),
+            finalTotal: parseFloat(total.value.toString()).toFixed(2),
+            currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          },
         };
 
         const req = await postRequest("/api/paymentConfirmiation", dataToSend);
