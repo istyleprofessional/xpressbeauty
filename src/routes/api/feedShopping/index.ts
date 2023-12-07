@@ -28,8 +28,11 @@ export const onGet: RequestHandler = async ({ json }) => {
   for (const row of rows) {
     if (row.toObject().gtin !== "") {
       try {
+        const id = row.toObject().id.includes("-")
+          ? row.toObject().id.split("-")[0]
+          : row.toObject().id.toString();
         const product = await productSchema.findOneAndUpdate(
-          { _id: new ObjectId(row.toObject().id) },
+          { _id: new ObjectId(id) },
           { gtin: row.toObject().gtin },
           { new: true }
         );
