@@ -58,7 +58,6 @@ export const onGet: RequestHandler = async ({ json }) => {
     } else {
       row.set("availability", "out_of_stock");
     }
-    await row.save();
   }
 
   // for (const row of rows) {
