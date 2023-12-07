@@ -4,6 +4,7 @@ import { JWT } from "google-auth-library";
 import { connect } from "~/express/db.connection";
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import productSchema from "~/express/schemas/product.schema";
+import { ObjectId } from "mongodb";
 // import { title } from "node:process";
 
 export const onGet: RequestHandler = async ({ json }) => {
@@ -27,7 +28,7 @@ export const onGet: RequestHandler = async ({ json }) => {
   for (const row of rows) {
     if (row.toObject().gtin !== "") {
       const product = await productSchema.findOneAndUpdate(
-        { _id: row.toObject().id },
+        { _id: new ObjectId(row.toObject().id) },
         { gtin: row.toObject().gtin },
         { new: true }
       );
