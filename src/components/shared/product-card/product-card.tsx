@@ -125,7 +125,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
       <div class="p-0 m-0 flex flex-col items-left gap-3 w-full">
         <h2
           class={`overflow-hidden truncate ${
-            cardSize === "sm" ? "lg:text-xs" : "lg:text-lg"
+            cardSize === "sm" ? "lg:text-lg" : "lg:text-lg"
           } text-sm text-black`}
           itemProp="name"
         >
@@ -134,13 +134,13 @@ export const ProductCard = component$((props: ProductCardProps) => {
         <div class="flex flex-col gap-2">
           <p
             class={`${
-              cardSize === "sm" ? "lg:text-xs" : "lg:text-lg"
+              cardSize === "sm" ? "lg:text-lg" : "lg:text-lg"
             } text-xs text-black font-semibold`}
           >
             {product.priceType === "single" &&
               product.sale_price.sale !== "" && (
                 <>
-                  <span class="text-xs text-neutral-800">
+                  <span class="text-lg text-neutral-800">
                     {!(user.isEmailVerified && user.isPhoneVerified)
                       ? finalRegularPrice.value
                       : verifiedSalePrice.value}
@@ -149,14 +149,14 @@ export const ProductCard = component$((props: ProductCardProps) => {
               )}
             {product.priceType === "single" &&
               product.sale_price.sale === "" && (
-                <span class="text-xs text-neutral-800">
+                <span class="text-lg text-neutral-800">
                   {!(user.isEmailVerified && user.isPhoneVerified)
                     ? finalRegularPrice.value
                     : verifiedPrice.value}
                 </span>
               )}
             {product.priceType === "range" && (
-              <span class="text-xs text-neutral-800">
+              <span class="text-lg text-neutral-800">
                 {!(user.isEmailVerified && user.isPhoneVerified)
                   ? finalRegularPrice.value
                   : verifiedPrice.value}

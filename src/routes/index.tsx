@@ -1,4 +1,4 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$, useNavigate } from "@builder.io/qwik-city";
 import { FeatureProducts } from "~/components/home/tools-products/tools-products";
@@ -44,15 +44,8 @@ export const checkIfDisplayCard = server$(async function () {
   }
 });
 
-export const currLoader = server$(async function () {
-  const country = this.cookie.get("cur")?.value ?? "";
-  const rate = this.cookie.get("curRate")?.value ?? "";
-  return { country: country, rate: rate };
-});
-
 export default component$(() => {
   const status = import.meta.env.VITE_STATUS;
-  const currencyObject = useSignal<any>({ country: "1", rate: "1" });
   const newArrivalProducts: ProductModel[] = JSON.parse(
     useHairProducts().value
   );
@@ -63,11 +56,6 @@ export default component$(() => {
   const bestSellerProducts2: ProductModel[] = JSON.parse(
     useBestSellerProducts().value
   );
-
-  useVisibleTask$(async () => {
-    currencyObject.value = await currLoader();
-    console.log(currencyObject.value);
-  });
 
   return (
     <>
@@ -86,9 +74,7 @@ export default component$(() => {
               </button>
             </div>
           </div>
-          {/* <ShopByBrand /> */}
           <FeatureProducts
-            currencyObject={currencyObject.value}
             bestSellerProducts={bestSellerProducts2}
             type="Top Selling Products"
           />
@@ -102,7 +88,6 @@ export default component$(() => {
             </a>
           </div>
           <FeatureProducts
-            currencyObject={currencyObject.value}
             bestSellerProducts={newArrivalProducts}
             type="Hair Products"
           />
@@ -116,7 +101,6 @@ export default component$(() => {
             </a>
           </div>
           <FeatureProducts
-            currencyObject={currencyObject.value}
             bestSellerProducts={bestSellerProducts}
             type="Clippers & Trimmers"
           />

@@ -164,14 +164,14 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
                         </>
                       )}
                       {priceType === "single" && sale_price.sale === "" && (
-                        <span class="text-black" itemProp="price">
+                        <span class="text-error" itemProp="price">
                           {verifiedPrice.value}
                         </span>
                       )}
                       {priceType === "range" &&
                         sale_price.min === "" &&
                         sale_price.max === "" && (
-                          <span class="text-black" itemProp="price">
+                          <span class="text-error" itemProp="price">
                             {verifiedPrice.value}
                           </span>
                         )}

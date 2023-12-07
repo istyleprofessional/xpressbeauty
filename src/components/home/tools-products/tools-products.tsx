@@ -1,21 +1,29 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { server$ } from "@builder.io/qwik-city";
 import { ProductCard } from "~/components/shared/product-card/product-card";
 import type { ProductModel } from "~/models/product.model";
 
 interface BestSellerProps {
   bestSellerProducts: ProductModel[];
   type: string;
-  currencyObject?: any;
 }
 
+export const currLoader = server$(async function () {
+  const country = this.cookie.get("cur")?.value ?? "";
+  const rate = this.cookie.get("curRate")?.value ?? "";
+  return { country: country, rate: rate };
+});
+
 export const FeatureProducts = component$((props: BestSellerProps) => {
-  const { bestSellerProducts, type, currencyObject } = props;
+  const { bestSellerProducts, type } = props;
   const isVisble = useSignal<boolean>(false);
+  const currencyObject = useSignal<any>({});
 
   useVisibleTask$(
-    ({ track }) => {
+    async ({ track }) => {
       track(() => isVisble.value);
       isVisble.value = true;
+      currencyObject.value = await currLoader();
     },
     { strategy: "intersection-observer" }
   );
@@ -32,7 +40,7 @@ export const FeatureProducts = component$((props: BestSellerProps) => {
               product={item}
               i={i}
               key={i}
-              currencyObject={currencyObject}
+              currencyObject={currencyObject.value}
             />
           ))}
         </div>

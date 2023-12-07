@@ -12,7 +12,6 @@ import {
   HideAdminIcon,
   OrderFilterIcon,
 } from "~/components/shared/icons/icons";
-import { putRequest } from "~/utils/fetch.utils";
 
 export const useProductData = routeLoader$(async (ev) => {
   const pageNumber = parseInt(ev.url.searchParams.get("page") ?? "1");
@@ -24,7 +23,6 @@ export const useProductData = routeLoader$(async (ev) => {
 
 export const getProductsServer = server$(async function (value: string) {
   await connect();
-  // const token = this.cookie.get("token")?.value;
   const page = this.url.searchParams.get("page") ?? "1";
   const products = await getProductBySearchAdmin(value, parseInt(page));
   return JSON.stringify(products);
@@ -42,7 +40,6 @@ export const getAllProductsServer = server$(async function () {
 });
 
 export default component$(() => {
-  // const productData = useSignal(JSON.parse(useProductData().value)?.);
   const json = JSON.parse(useProductData().value);
   const productData = useSignal(json.result);
   const count = useSignal(json.total);
@@ -54,10 +51,9 @@ export default component$(() => {
 
   const handleVisibilityChange = $((product: any) => {
     (document?.getElementById("my_modal_1") as any)?.showModal();
-    if(product){
+    if (product) {
       currentProduct.value = product;
     }
-    
   });
 
   const handleConfirmStatusChange = $(async () => {
@@ -68,26 +64,14 @@ export default component$(() => {
     if (response.status !== "success") {
       return;
     }
-    productData.value = productData.value.map((product: any) => {
+    const newArray = productData.value.map((product: any) => {
       if (product._id === data._id) {
         product.isHidden = response.result.isHidden;
       }
-      return productData;
+      return product;
     });
-    //console.log(data);
-    // const url = `/api/admin/product/hide`;
-    // const request = await putRequest(url, data);
-    // const response = await request.json();
-    // if (response.status !== "success") {
-    //   return;
-    // }
-    // productData.value = productData.value.map((product: any) => {
-    //   if (product._id === data._id) {
-    //     product.isHidden = response.result.isHidden;
-    //   }
-    //   return product;
-    // });
-    // currentProduct.value = {};
+    productData.value = newArray;
+    currentProduct.value = {};
   });
 
   const handleSearchProducts = $(async (e: any) => {
