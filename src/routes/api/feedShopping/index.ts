@@ -27,12 +27,16 @@ export const onGet: RequestHandler = async ({ json }) => {
   const rows = await sheet.getRows();
   for (const row of rows) {
     if (row.toObject().gtin !== "") {
-      const product = await productSchema.findOneAndUpdate(
-        { _id: new ObjectId(row.toObject().id) },
-        { gtin: row.toObject().gtin },
-        { new: true }
-      );
-      console.log(product);
+      try {
+        const product = await productSchema.findOneAndUpdate(
+          { _id: new ObjectId(row.toObject().id) },
+          { gtin: row.toObject().gtin },
+          { new: true }
+        );
+        console.log(product);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
   json(200, { message: "done" });
