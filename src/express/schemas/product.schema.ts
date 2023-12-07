@@ -26,6 +26,7 @@ const productsSchema = new Schema(
     updateQuickBooks: { type: Boolean, default: true },
     oldPerfix: { type: String, default: null },
     currency: { type: String, default: null },
+    gtin: { type: String, default: null },
   },
   { timestamps: true }
 );

@@ -23,64 +23,15 @@ export const onGet: RequestHandler = async ({ json }) => {
   await doc.loadInfo(); // loads document properties and worksheets
   // get product row by name from spreadsheet
   const sheet = doc.sheetsByIndex[0];
-  const dataToBeAdd: any[] = [];
-  const productsFromDb = await productSchema.find({});
-  for (let i = 0; i < productsFromDb.length; i++) {
-    // check if product has number in title
-    const productFromDb = productsFromDb[i];
-    if (productFromDb.variation_type) {
-      for (const variation of productFromDb.variations) {
-        const newDate = {
-          id: `${productFromDb._id}-${variation.variation_id}`,
-          title: `${productFromDb.product_name}-${variation.variation_name}`,
-          description: productFromDb.description,
-          availability:
-            parseInt(variation?.quantity_on_hand?.toString() ?? "0") > 0
-              ? "in_stock"
-              : "out_of_stock",
-          link: `https://xpressbeauty.ca/products/${productFromDb.perfix}`,
-          "image link": productFromDb.imgs[0],
-          price: `${parseFloat(
-            variation?.price?.toString()?.replace("$", "")
-          )?.toFixed(2)} CAD`,
-          identifier_exists: "no",
-          brand: productFromDb.companyName.name ?? "",
-          condition: "new",
-        };
-        dataToBeAdd.push(newDate);
-      }
+  const rows = await sheet.getRows();
+  for (const row of rows) {
+    if (row.toObject().gtin !== "") {
+      const product = await productSchema.findOneAndUpdate(
+        { _id: row.toObject().id },
+        { gtin: row.toObject().gtin }
+      );
+      console.log(product);
     }
-    const newDate: any = {
-      id: productFromDb._id,
-      title: productFromDb.product_name,
-      description: productFromDb.description,
-      availability:
-        parseInt(productFromDb?.quantity_on_hand ?? "0") > 0
-          ? "in_stock"
-          : "out_of_stock",
-      link: `https://xpressbeauty.ca/products/${productFromDb.perfix}`,
-      "image link": productFromDb?.imgs[0] ?? "",
-      price: `${parseFloat(productFromDb?.price?.regular?.toString())?.toFixed(
-        2
-      )} CAD`,
-      "sale price": `${(
-        parseFloat(productFromDb.price?.regular?.toString()) -
-        parseFloat(productFromDb.price?.regular?.toString()) * 0.2
-      ).toFixed(2)} CAD`,
-      "identifier exists": "no",
-      brand: productFromDb.companyName.name,
-      condition: "new",
-    };
-    dataToBeAdd.push(newDate);
   }
-  // delete all rows expect header
-  await sheet.clearRows();
-  // add new rows
-  try {
-    await sheet.addRows(dataToBeAdd);
-  } catch (error) {
-    console.log(error);
-  }
-
   json(200, { message: "done" });
 };
