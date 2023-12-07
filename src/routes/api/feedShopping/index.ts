@@ -28,7 +28,8 @@ export const onGet: RequestHandler = async ({ json }) => {
     if (row.toObject().gtin !== "") {
       const product = await productSchema.findOneAndUpdate(
         { _id: row.toObject().id },
-        { gtin: row.toObject().gtin }
+        { gtin: row.toObject().gtin },
+        { new: true }
       );
       console.log(product);
     }
