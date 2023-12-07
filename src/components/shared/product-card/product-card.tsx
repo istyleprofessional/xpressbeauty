@@ -124,9 +124,8 @@ export const ProductCard = component$((props: ProductCardProps) => {
       />
       <div class="p-0 m-0 flex flex-col items-left gap-3 w-full">
         <h2
-          class={`overflow-hidden truncate ${
-            cardSize === "sm" ? "lg:text-lg" : "lg:text-lg"
-          } text-sm text-black`}
+          class={`overflow-hidden truncate 
+          text-lg text-black`}
           itemProp="name"
         >
           {product.product_name}
@@ -173,7 +172,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
 
               <div class="flex flex-row gap-2 justify-center">
                 <div class="flex flex-col gap-1">
-                  <h2 class="flex flex-row gap-2 text-xs">
+                  <h2 class="flex flex-row gap-2">
                     {product.priceType === "single" &&
                       product?.sale_price?.sale !== "" && (
                         <>
