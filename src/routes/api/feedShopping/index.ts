@@ -25,22 +25,58 @@ export const onGet: RequestHandler = async ({ json }) => {
   // get product row by name from spreadsheet
   const sheet = doc.sheetsByIndex[0];
   const rows = await sheet.getRows();
+  // update in stock column in spreadsheet by product id in sheet
+
   for (const row of rows) {
-    if (row.toObject().gtin !== "") {
-      try {
-        const id = row.toObject().id.includes("-")
-          ? row.toObject().id.split("-")[0]
-          : row.toObject().id.toString();
-        const product = await productSchema.findOneAndUpdate(
-          { _id: new ObjectId(id) },
-          { gtin: row.toObject().gtin },
-          { new: true }
+    const id = row.toObject().id.includes("-")
+      ? row.toObject().id.split("-")[0]
+      : row.toObject().id.toString();
+    const productFromDb = await productSchema.findOne({
+      _id: new ObjectId(id),
+    });
+    if (!productFromDb) continue;
+    if (row.toObject().id.includes("-")) {
+      const variation_id = row.toObject().id.split("-")[1];
+      const variation = productFromDb.variations?.find(
+        (v) => v?.variation_id === variation_id
+      );
+      if (variation) {
+        row.set(
+          "availability",
+          parseInt(variation?.quantity_on_hand.toString() ?? "0") > 0
+            ? "in_stock"
+            : "out_of_stock"
         );
-        console.log(product);
-      } catch (error) {
-        console.log(error);
       }
+      continue;
     }
+    if (
+      productFromDb &&
+      parseInt(productFromDb?.quantity_on_hand?.toString() ?? "0") > 0
+    ) {
+      row.set("availability", "in_stock");
+    } else {
+      row.set("availability", "out_of_stock");
+    }
+    await row.save();
   }
+
+  // for (const row of rows) {
+  //   if (row.toObject().gtin !== "") {
+  //     try {
+  //       const id = row.toObject().id.includes("-")
+  //         ? row.toObject().id.split("-")[0]
+  //         : row.toObject().id.toString();
+  //       const product = await productSchema.findOneAndUpdate(
+  //         { _id: new ObjectId(id) },
+  //         { gtin: row.toObject().gtin },
+  //         { new: true }
+  //       );
+  //       console.log(product);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  // }
   json(200, { message: "done" });
 };
