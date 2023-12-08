@@ -271,7 +271,7 @@ export default component$(() => {
   const subTotal = useSignal<number>(0);
   const taxRate = useSignal<number>(0);
   // console.log(userContext?.user);
-  useTask$(
+  useVisibleTask$(
     async () => {
       const tax = await SalesTax.getSalesTax(
         paymentRoute.shortCoCode ?? "CA",
