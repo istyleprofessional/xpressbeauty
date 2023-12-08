@@ -17,6 +17,7 @@ interface OrderDetailsProps {
   user: any | null;
   currencyObject?: any;
   subTotal: any;
+  taxRate: number;
 }
 
 export const checker = server$(function () {
@@ -47,7 +48,9 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     isExistingPaymentMethod,
     acceptSaveCard,
     currencyObject,
+    user,
     subTotal,
+    taxRate,
   } = props;
   const hst = useSignal<number>(0);
   const shipping = useSignal<number>(0);
@@ -59,11 +62,11 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     track(() => currencyObject);
 
     subTotal.value = cart?.totalPrice;
-    if (currencyObject?.country === "1") {
-      hst.value = 0;
-    } else {
-      hst.value = (cart?.totalPrice ?? 0) * 0.13;
-    }
+    hst.value = !user?.generalInfo?.address?.country
+      ?.toLowerCase()
+      ?.includes("united")
+      ? (cart?.totalPrice ?? 0) * taxRate
+      : 0;
     if (subTotal.value > 150) {
       shipping.value = 0;
     } else {
@@ -153,10 +156,14 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
           <div class="grid grid-cols-2 w-full">
             <p class="text-black text-xs font-light">HST</p>
             <p class="justify-self-end text-black text-sm font-light">
-              {hst.value?.toLocaleString("en-US", {
-                style: "currency",
-                currency: symbol.value,
-              })}
+              {!user?.generalInfo?.address?.country
+                ?.toLowerCase()
+                ?.includes("united")
+                ? hst.value?.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: symbol.value,
+                  })
+                : "0.00"}
             </p>
           </div>
           <div class="grid grid-cols-2 w-full">

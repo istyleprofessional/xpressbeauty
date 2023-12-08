@@ -24,51 +24,7 @@ import { validate } from "~/utils/validate.utils";
 import { validatePhone } from "../register";
 import { UserContext } from "~/context/user.context";
 
-// export const useCheckoutData = routeLoader$(async ({ cookie, env }) => {
-//   const token = cookie.get("token")?.value;
-//   if (!token) {
-//     return JSON.stringify({
-//       request: { status: "failed" },
-//     });
-//   }
-//   try {
-//     const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
-//     if (verify.isDummy) {
-//       const request = await getDummyCustomer(verify?.user_id ?? "");
-//       if (request.status === "success") {
-//         return JSON.stringify({
-//           status: "success",
-//           request: request.result,
-//         });
-//       }
-//       return JSON.stringify({
-//         request: {
-//           status: "failed",
-//         },
-//       });
-//     }
-//     const request = await findUserByUserId(verify?.user_id ?? "");
-//     if (request.status === "success") {
-//       return JSON.stringify({
-//         request: request.result,
-//       });
-//     } else {
-//       return JSON.stringify({
-//         request: {
-//           status: "failed",
-//         },
-//       });
-//     }
-//   } catch (error) {
-//     return JSON.stringify({
-//       request: {
-//         status: "failed",
-//       },
-//     });
-//   }
-// });
-
-export const useAddUser = routeAction$(async (data, requestEvent) => {
+export const useAddUser = routeAction$(async (data: any, requestEvent) => {
   const token = requestEvent.cookie.get("token")?.value;
   if (!token) {
     return { status: "failed" };
@@ -80,13 +36,34 @@ export const useAddUser = routeAction$(async (data, requestEvent) => {
       token,
       requestEvent.env.get("VITE_JWTSECRET") ?? ""
     );
+    if (!data.generalInfo?.address?.shortCountryCode) {
+      const apiKey = "AIzaSyCaw8TltqjUfM0QyLnGGo8sQzRI8NtHqus";
+      const components = "country:US|country:CA";
+      const urls = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${data.generalInfo?.address?.postalCode}&key=${apiKey}&components=${components}`;
+      const response = await fetch(urls);
+      const jsonRes = await response.json();
+      const details = await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${jsonRes.predictions[0].place_id}&key=${apiKey}`
+      );
+      const jsonDetails = await details.json();
+      data.generalInfo.address.shortCountryCode =
+        jsonDetails.result.address_components.find((comp: any) => {
+          return comp.types.includes("country");
+        })?.short_name;
+      data.generalInfo.address.shortStateCode =
+        jsonDetails.result.address_components.find((comp: any) => {
+          return comp.types.includes("administrative_area_level_1");
+        })?.short_name;
+    }
     if (verify.isDummy) {
       isDummy = true;
       user = await getDummyCustomer(verify?.user_id ?? "");
+
       if (user.status !== "success") {
         data.phoneNumber = data.phoneNumber.toString().startsWith("1")
           ? `+${data.phoneNumber}`
           : `+1${data.phoneNumber}`;
+
         user = await addDummyCustomer(verify?.user_id ?? "", data);
         if (user.status !== "success") {
           return { status: "failed" };
@@ -184,6 +161,8 @@ export default component$(() => {
   const postalCode = useSignal<string>("");
   const isPhoneValid = useSignal<boolean>(false);
   const message = useSignal<string>("");
+  const shortCountryCode = useSignal<string>("");
+  const shortStateCode = useSignal<string>("");
 
   useVisibleTask$(({ track }) => {
     track(() => action.value);
@@ -216,6 +195,7 @@ export default component$(() => {
   const handlePlacesFetch = $(async (e: any) => {
     const input = e.target.value;
     const url = "/api/places/?input=" + input;
+
     const req = await fetch(url);
     const data = await req.json();
     placesPredictions.value = data.predictions;
@@ -362,6 +342,20 @@ export default component$(() => {
                               );
                             }
                           )?.long_name;
+                          shortCountryCode.value =
+                            addressResult.address_components.find(
+                              (comp: any) => {
+                                return comp.types.includes("country");
+                              }
+                            )?.short_name;
+                          shortStateCode.value =
+                            addressResult.address_components.find(
+                              (comp: any) => {
+                                return comp.types.includes(
+                                  "administrative_area_level_1"
+                                );
+                              }
+                            )?.short_name;
                           city.value = addressResult.address_components.find(
                             (comp: any) => {
                               return comp.types.includes("locality");
@@ -395,6 +389,16 @@ export default component$(() => {
                 </ul>
               )}
             </div>
+            <input
+              class="hidden"
+              name="generalInfo.address.shortCountryCode"
+              value={shortCountryCode.value}
+            />
+            <input
+              class="hidden"
+              name="generalInfo.address.shortStateCode"
+              value={shortStateCode.value}
+            />
             <InputField
               label="Town / City"
               type="text"

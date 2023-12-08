@@ -24,6 +24,7 @@ import { sendConfirmationOrderForAdmin } from "~/utils/sendConfirmationOrderForA
 import { createOrder } from "~/express/services/order.service";
 import { loadScript } from "@paypal/paypal-js";
 import paypal from "paypal-rest-sdk";
+import SalesTax from "sales-tax";
 
 export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   const token = cookie.get("token")?.value;
@@ -97,7 +98,7 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   }
 });
 
-export const paypalServer = server$(async function (data: any) {
+export const paypalServer = server$(async function (data: any, user: any) {
   try {
     // console.log(data);
     paypal.configure({
@@ -134,7 +135,11 @@ export const paypalServer = server$(async function (data: any) {
             details: {
               subtotal: data.subTotal,
               shipping: parseFloat(data.shipping).toFixed(2), // Example shipping cost
-              tax: data.currency === "USD" ? "0.00" : data.hst, // Example tax amount
+              tax: user?.generalInfo?.address?.country
+                ?.toLowerCase()
+                ?.includes("united")
+                ? "0.00"
+                : data.hst, // Example tax amount
             },
           },
         },
@@ -171,7 +176,8 @@ export const callServer = server$(async function (
   id: string,
   total: number,
   cart: any,
-  currency?: string
+  currency?: string,
+  totalInfo?: any
 ) {
   try {
     const stripe: any = new Stripe(
@@ -204,12 +210,6 @@ export const callServer = server$(async function (
       data.order_number = generateOrderNumber();
       orderId = data.order_number;
       // const rate = this.cookie.get("curRate")?.value ?? "";
-      const totalInfo = {
-        shipping: data.shipping,
-        tax: data.tax,
-        finalTotal: data.finalTotal,
-        currency: data.currency,
-      };
       await sendConfirmationEmail(
         user.result?.email ?? "",
         `${user.result?.firstName} ${user.result?.lastName}`,
@@ -251,6 +251,21 @@ export default component$(() => {
   const acceptSaveCard = useSignal<boolean>(false);
   const currencyObject = useCurrLoader().value;
   const subTotal = useSignal<number>(0);
+  const taxRate = useSignal<number>(0);
+  // console.log(userContext?.user);
+  useTask$(
+    async () => {
+      const tax = await SalesTax.getSalesTax(
+        userContext?.user?.generalInfo?.address?.shortCountryCode ?? "CA",
+        userContext.user?.generalInfo?.address?.shortStateCode ?? "ON"
+      );
+      console.log(userContext?.user?.generalInfo?.address?.shortCountryCode);
+      console.log(userContext?.user?.generalInfo?.address?.shortStateCode);
+      taxRate.value = tax.rate;
+    }
+    // { strategy: "document-idle" }
+  );
+
   // console.log(userContext);
   useVisibleTask$(
     () => {
@@ -290,7 +305,7 @@ export default component$(() => {
             const dataToSend = {
               subTotal: subTotal.value.toFixed(2),
               hst: parseFloat(
-                ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
+                ((cartContext.cart?.totalPrice ?? 0) * taxRate.value).toString()
               ).toFixed(2),
               ...cartContext?.cart,
               order_amount: parseFloat(total.value.toString()).toFixed(2),
@@ -300,14 +315,21 @@ export default component$(() => {
               shipping: subTotal.value > 150 ? 0 : 15,
               totalInfo: {
                 shipping: subTotal.value > 150 ? 0 : 15,
-                tax: parseFloat(
-                  ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
-                ).toFixed(2),
+                tax: userContext?.user?.generalInfo?.address?.country
+                  ?.toLowerCase()
+                  ?.includes("united")
+                  ? parseFloat(
+                      ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
+                    ).toFixed(2)
+                  : "0.00",
                 finalTotal: parseFloat(total.value.toString()).toFixed(2),
                 currency: currencyObject?.country === "1" ? "USD" : "CAD",
               },
             };
-            const paypalReq: any = await paypalServer(dataToSend);
+            const paypalReq: any = await paypalServer(
+              dataToSend,
+              userContext.user
+            );
             const paypalRes = JSON.parse(paypalReq);
             return paypalRes.id;
           },
@@ -327,9 +349,15 @@ export default component$(() => {
                 currency: currencyObject?.country === "1" ? "USD" : "CAD",
                 totalInfo: {
                   shipping: subTotal.value > 150 ? 0 : 15,
-                  tax: parseFloat(
-                    ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
-                  ).toFixed(2),
+                  tax: userContext?.user?.generalInfo?.address?.country
+                    ?.toLowerCase()
+                    ?.includes("united")
+                    ? parseFloat(
+                        (
+                          (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                        ).toString()
+                      ).toFixed(2)
+                    : "0.00",
                   finalTotal: parseFloat(total.value.toString()).toFixed(2),
                   currency: currencyObject?.country === "1" ? "USD" : "CAD",
                 },
@@ -407,9 +435,15 @@ export default component$(() => {
           paymentSource: "STRIPE",
           totalInfo: {
             shipping: subTotal.value > 150 ? 0 : 15,
-            tax: parseFloat(
-              ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
-            ).toFixed(2),
+            tax: userContext?.user?.generalInfo?.address?.country
+              ?.toLowerCase()
+              ?.includes("united")
+              ? parseFloat(
+                  (
+                    (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                  ).toString()
+                ).toFixed(2)
+              : "0.00",
             finalTotal: parseFloat(total.value.toString()).toFixed(2),
             currency: currencyObject?.country === "1" ? "USD" : "CAD",
           },
@@ -430,12 +464,27 @@ export default component$(() => {
         e.preventDefault();
         isLoading.value = true;
         if (finalCard.value && isExistingPaymentMethod.value) {
+          const totalInfo = {
+            shipping: subTotal.value > 150 ? 0 : 15,
+            tax: userContext?.user?.generalInfo?.address?.country
+              ?.toLowerCase()
+              ?.includes("united")
+              ? parseFloat(
+                  (
+                    (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                  ).toString()
+                ).toFixed(2)
+              : "0.00",
+            finalTotal: parseFloat(total.value.toString()).toFixed(2),
+            currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          };
           const pay = await callServer(
             finalCard.value.id,
             userContext?.user?.stripeCustomerId,
             total.value,
             cartContext?.cart ?? {},
-            currencyObject?.country === "1" ? "USD" : "CAD"
+            currencyObject?.country === "1" ? "USD" : "CAD",
+            totalInfo
           );
           if (pay?.paymentIntent.status === "succeeded") {
             isLoading.value = false;
@@ -517,13 +566,14 @@ export default component$(() => {
                 )}
 
                 <OrderDetails
+                  taxRate={taxRate.value}
+                  user={userContext?.user}
                   subTotal={subTotal}
                   cart={cartContext?.cart}
                   total={total}
                   cards={cards?.value}
                   isExistingPaymentMethod={isExistingPaymentMethod.value}
                   acceptSaveCard={acceptSaveCard}
-                  user={userContext?.user}
                   currencyObject={currencyObject}
                 />
               </div>

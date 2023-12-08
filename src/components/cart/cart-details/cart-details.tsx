@@ -13,7 +13,6 @@ export const CartDetails = component$((props: any) => {
   const cartContext: any = useContext(CartContext);
   const userContext: any = useContext(UserContext);
   const subTotal = useSignal<number>(0);
-  const hst = useSignal<number>(0);
   const total = useSignal<number>(0);
   const shipping = useSignal<number>(0);
 
@@ -24,17 +23,12 @@ export const CartDetails = component$((props: any) => {
     track(() => props?.currencyObject);
 
     subTotal.value = cartContext?.cart?.totalPrice;
-    if (props?.currencyObject?.country === "1") {
-      hst.value = 0;
-    } else {
-      hst.value = (cartContext?.cart?.totalPrice ?? 0) * 0.13;
-    }
     if (subTotal.value > 150) {
       shipping.value = 0;
     } else {
-      shipping.value = subTotal.value > 0 ? 15 : 0;
+      shipping.value = subTotal.value > 150 ? 0 : 15;
     }
-    total.value = subTotal.value + hst.value + shipping.value;
+    total.value = subTotal.value + shipping.value;
     if (props?.currencyObject?.country === "1") {
       symbol.value = "USD";
     } else {
@@ -58,12 +52,8 @@ export const CartDetails = component$((props: any) => {
         </div>
         <div class="grid grid-cols-2 w-full">
           <p class="text-white text-xs font-light">HST</p>
-          <p class="justify-self-end text-white text-sm font-light">
-            {hst.value &&
-              hst.value?.toLocaleString("en-US", {
-                style: "currency",
-                currency: symbol.value,
-              })}
+          <p class="justify-self-end text-white text-xs font-light w-full">
+            Continue To Calculate Tax...
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
