@@ -1,12 +1,13 @@
 import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { routeLoader$, server$, useNavigate } from "@builder.io/qwik-city";
+import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import { FeatureProducts } from "~/components/home/tools-products/tools-products";
 import { WhyChooseUs } from "~/components/home/why-choose-us/why-choose-us";
 import { connect } from "~/express/db.connection";
 import { get_new_arrivals_products } from "~/express/services/product.service";
 import type { ProductModel } from "~/models/product.model";
-import BannerImage from "~/media/Year6.jpg?jsx";
+// import BannerImage from "~/media/Year6.jpg?jsx";
+import { Hero } from "~/components/home/hero/hero";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();
@@ -52,7 +53,7 @@ export default component$(() => {
   const bestSellerProducts: ProductModel[] = JSON.parse(
     useToolsProducts().value
   );
-  const nav = useNavigate();
+  // const nav = useNavigate();
   const bestSellerProducts2: ProductModel[] = JSON.parse(
     useBestSellerProducts().value
   );
@@ -61,7 +62,8 @@ export default component$(() => {
     <>
       {status === "1" && (
         <div class="flex flex-col gap-10">
-          <div
+          <Hero />
+          {/* <div
             class="flex flex-col relative cursor-pointer justify-center items-center w-full h-[40vh] lg:h-[60vh] bg-[#E8E8E8]"
             onClick$={() => {
               nav("/products");
@@ -73,7 +75,7 @@ export default component$(() => {
                 Shop Now
               </button>
             </div>
-          </div>
+          </div> */}
           <FeatureProducts
             bestSellerProducts={bestSellerProducts2}
             type="Top Selling Products"

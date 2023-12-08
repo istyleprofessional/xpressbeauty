@@ -4,7 +4,12 @@ import {
   PerviousArrowIconNoStick,
 } from "../../shared/icons/icons";
 import styles from "./hero.css?inline";
-import { Image } from "@unpic/qwik";
+import OfferOneImage from "~/media/offer1.jpg?jsx";
+import OfferTwoImage from "~/media/offer2.jpg?jsx";
+import OfferThreeImage from "~/media/offer3.jpg?jsx";
+import OfferFourImage from "~/media/offer4.jpg?jsx";
+import OfferFiveImage from "~/media/offer5.jpg?jsx";
+import OfferSixImage from "~/media/offer6.jpg?jsx";
 
 export const Hero = component$(() => {
   useStylesScoped$(styles);
@@ -32,20 +37,15 @@ export const Hero = component$(() => {
         <div class="flex flex-col gap-8 items-center w-full z-0">
           <div class="carousel carousel-center w-full p-4 space-x-4 bg-white rounded-box">
             <div class="carousel-item gap-4">
-              <a href="/products/filter/Tools" class="carousel-item w-fit">
+              <a
+                href="/products/filterBrands/Olaplex/"
+                class="carousel-item w-fit"
+              >
                 <div class="flex flex-col gap-2">
-                  <Image
-                    layout="constrained"
-                    src="/hero-images/Barbering-Products.webp"
+                  <OfferOneImage
                     alt="barber products"
                     class="rounded-box w-80 h-80 lg:w-96 lg:h-96"
                   />
-                  <h2 class="font-bold text-lg pl-3 text-black">
-                    Barbering Products
-                  </h2>
-                  <p class="font-normal text-xs pl-3 text-black">
-                    Shop now for premium barbering products.
-                  </p>
                   <p
                     aria-label="barbering link"
                     class="pl-3 flex flex-row items-center font-bold text-black underline"
@@ -57,20 +57,15 @@ export const Hero = component$(() => {
                   </p>
                 </div>
               </a>
-              <a href="/products/filter/Hair" class="carousel-item">
+              <a
+                href="/products/filterBrands/BABYLISSPRO/"
+                class="carousel-item"
+              >
                 <div class="flex flex-col gap-2">
-                  <Image
-                    layout="constrained"
-                    src="/hero-images/Hair-Care-Products.webp"
+                  <OfferTwoImage
                     alt="hair care products"
                     class="rounded-box w-80 h-80 lg:w-96 lg:h-96"
                   />
-                  <h2 class="font-bold text-lg pl-3 text-black">
-                    Hair Care Products
-                  </h2>
-                  <p class="font-normal text-xs pl-3 text-black">
-                    Discover the Ultimate Hair Care Experience.
-                  </p>
                   <p
                     aria-label="barbering link"
                     class="pl-3 flex flex-row items-center font-bold text-black underline"
@@ -82,20 +77,15 @@ export const Hero = component$(() => {
                   </p>
                 </div>
               </a>
-              <a href="/products/filter/Hair" class="carousel-item">
+              <a
+                href="/products/filterBrands/Schwarzkopf-Professional/"
+                class="carousel-item"
+              >
                 <div class="flex flex-col gap-2">
-                  <Image
-                    layout="constrained"
-                    src="/hero-images/Hair-Color-Products.webp"
+                  <OfferThreeImage
                     alt="hair color products"
                     class="rounded-box w-80 h-80 lg:w-96 lg:h-96"
                   />
-                  <h2 class="font-bold text-lg pl-3 text-black">
-                    Hair Color Products
-                  </h2>
-                  <p class="font-normal text-xs pl-3 text-black">
-                    Transform your look with our hair colors.
-                  </p>
                   <p
                     aria-label="barbering link"
                     class="pl-3 flex flex-row items-center font-bold text-black underline"
@@ -107,20 +97,12 @@ export const Hero = component$(() => {
                   </p>
                 </div>
               </a>
-              <a href="/products/filter/Tools" class="carousel-item">
+              <a href="/products/filterBrands/Wella/" class="carousel-item">
                 <div class="flex flex-col gap-2">
-                  <Image
-                    layout="constrained"
-                    src="/hero-images/Hair-tools-Brushes.webp"
+                  <OfferFourImage
                     alt="hair tools brushes"
                     class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
                   />
-                  <h2 class="font-bold text-lg pl-3 text-black">
-                    Hair tools & Brushes Products
-                  </h2>
-                  <p class="font-normal text-xs pl-3 text-black">
-                    Unlock your hair's potential with hair tools.
-                  </p>
                   <p
                     aria-label="barbering link"
                     class="pl-3 flex flex-row items-center font-bold text-black underline"
@@ -132,20 +114,12 @@ export const Hero = component$(() => {
                   </p>
                 </div>
               </a>
-              <a href="/products/filter/Hair" class="carousel-item">
+              <a href="/products/filterBrands/ANDIS/" class="carousel-item">
                 <div class="flex flex-col gap-2">
-                  <Image
-                    layout="constrained"
-                    src="/hero-images/Men's-Grooming-Products.webp"
+                  <OfferFiveImage
                     alt="Men's grooming products"
                     class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
                   />
-                  <h2 class="font-bold text-lg pl-3 text-black">
-                    Men's Grooming Products
-                  </h2>
-                  <p class="font-normal text-xs pl-3 text-black">
-                    Refine your grooming routine with us.
-                  </p>
                   <p
                     aria-label="barbering link"
                     class="pl-3 flex flex-row items-center font-bold text-black underline"
@@ -157,20 +131,15 @@ export const Hero = component$(() => {
                   </p>
                 </div>
               </a>
-              <a href="/products/filter/Hair" class="carousel-item">
+              <a
+                href="/products/filterBrands/American-Crew/"
+                class="carousel-item"
+              >
                 <div class="flex flex-col gap-2">
-                  <Image
-                    layout="constrained"
-                    src="/hero-images/Textured-Hair-Products.webp"
+                  <OfferSixImage
                     alt="Textured Hair Products"
                     class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
                   />
-                  <h2 class="font-bold text-lg pl-3 text-black">
-                    Textured Hair Products
-                  </h2>
-                  <p class="font-normal text-xs pl-3 text-black">
-                    Pick Textured Hair Products to nourish and style your hair.
-                  </p>
                   <p
                     aria-label="barbering link"
                     class="pl-3 flex flex-row items-center font-bold text-black underline"
