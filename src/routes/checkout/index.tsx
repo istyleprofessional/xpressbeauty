@@ -36,25 +36,6 @@ export const useAddUser = routeAction$(async (data: any, requestEvent) => {
       token,
       requestEvent.env.get("VITE_JWTSECRET") ?? ""
     );
-    if (!data.generalInfo?.address?.shortCountryCode) {
-      const apiKey = "AIzaSyCaw8TltqjUfM0QyLnGGo8sQzRI8NtHqus";
-      const components = "country:US|country:CA";
-      const urls = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${data.generalInfo?.address?.postalCode}&key=${apiKey}&components=${components}`;
-      const response = await fetch(urls);
-      const jsonRes = await response.json();
-      const details = await fetch(
-        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${jsonRes.predictions[0].place_id}&key=${apiKey}`
-      );
-      const jsonDetails = await details.json();
-      data.generalInfo.address.shortCountryCode =
-        jsonDetails.result.address_components.find((comp: any) => {
-          return comp.types.includes("country");
-        })?.short_name;
-      data.generalInfo.address.shortStateCode =
-        jsonDetails.result.address_components.find((comp: any) => {
-          return comp.types.includes("administrative_area_level_1");
-        })?.short_name;
-    }
     if (verify.isDummy) {
       isDummy = true;
       user = await getDummyCustomer(verify?.user_id ?? "");

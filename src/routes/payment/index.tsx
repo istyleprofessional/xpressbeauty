@@ -25,12 +25,15 @@ import { createOrder } from "~/express/services/order.service";
 import { loadScript } from "@paypal/paypal-js";
 import paypal from "paypal-rest-sdk";
 import SalesTax from "sales-tax";
+import { getDummyCustomer } from "~/express/services/dummy.user.service";
 
 export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   const token = cookie.get("token")?.value;
   if (!token) {
     return JSON.stringify({ status: "failed" });
   }
+  let shortCoCode: string = "";
+  let shortStateCode: string = "";
   try {
     const verified: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
     if (!verified) {
@@ -40,6 +43,26 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
     const cards = [];
     if (!verified.isDummy) {
       const user = await getUserById(verified.user_id);
+      const apiKey = "AIzaSyCaw8TltqjUfM0QyLnGGo8sQzRI8NtHqus";
+      const components = "country:US|country:CA";
+      const urls = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${user.result?.generalInfo?.address?.postalCode}&key=${apiKey}&components=${components}`;
+      const response = await fetch(urls);
+      const jsonRes = await response.json();
+      const details = await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${jsonRes.predictions[0].place_id}&key=${apiKey}`
+      );
+      const jsonDetails = await details.json();
+      if (!user.result) {
+        return JSON.stringify({ status: "failed" });
+      }
+      shortCoCode = jsonDetails.result.address_components.find((comp: any) => {
+        return comp.types.includes("country");
+      })?.short_name;
+      shortStateCode = jsonDetails.result.address_components.find(
+        (comp: any) => {
+          return comp.types.includes("administrative_area_level_1");
+        }
+      )?.short_name;
       const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "", {
         apiVersion: "2022-11-15",
       });
@@ -50,6 +73,29 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
           card: pay.card,
         });
       }
+    } else {
+      const dummyUser = await getDummyCustomer(verified.user_id);
+      console.log(dummyUser.result?.generalInfo?.address?.postalCode);
+      const apiKey = "AIzaSyCaw8TltqjUfM0QyLnGGo8sQzRI8NtHqus";
+      const components = "country:US|country:CA";
+      const urls = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${dummyUser.result?.generalInfo?.address?.postalCode}&key=${apiKey}&components=${components}`;
+      const response = await fetch(urls);
+      const jsonRes = await response.json();
+      const details = await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${jsonRes.predictions[0].place_id}&key=${apiKey}`
+      );
+      const jsonDetails = await details.json();
+      if (!dummyUser.result) {
+        return JSON.stringify({ status: "failed" });
+      }
+      shortCoCode = jsonDetails.result.address_components.find((comp: any) => {
+        return comp.types.includes("country");
+      })?.short_name;
+      shortStateCode = jsonDetails.result.address_components.find(
+        (comp: any) => {
+          return comp.types.includes("administrative_area_level_1");
+        }
+      )?.short_name;
     }
     if (!getCart) {
       return JSON.stringify({ status: "failed" });
@@ -57,44 +103,15 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
     if (getCart.products.length === 0) {
       return JSON.stringify({ status: "failed" });
     }
-    return JSON.stringify({ status: "success", cards: cards ?? [] });
-  } catch (e: any) {
-    if (e.message === "jwt expired") {
-      const decoded: any = jwt.decode(token);
-      const newToken = jwt.sign(
-        { user_id: decoded.user_id, isDummy: decoded.isDummy },
-        env.get("VITE_JWTSECRET") ?? "",
-        { expiresIn: "1h" }
-      );
-      cookie.set("token", newToken, { httpOnly: true, path: "/" });
-      const getCart: any = await getCartByUserId(decoded.user_id);
-      const cards = [];
-      if (!decoded.isDummy) {
-        const user = await getUserById(decoded.user_id);
-        const stripe = new Stripe(
-          env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "",
-          {
-            apiVersion: "2022-11-15",
-          }
-        );
-        for (const id of user.result?.paymentMethod ?? []) {
-          const pay = await stripe.paymentMethods.retrieve(id);
-          cards.push({
-            id: id,
-            card: pay.card,
-          });
-        }
-      }
-      if (!getCart) {
-        return JSON.stringify({ status: "failed" });
-      }
-      if (getCart.products.length === 0) {
-        return JSON.stringify({ status: "failed" });
-      }
-      return JSON.stringify({ status: "success", cards: cards ?? [] });
-    } else {
-      return JSON.stringify({ status: "failed" });
-    }
+    return JSON.stringify({
+      status: "success",
+      cards: cards ?? [],
+      shortCoCode,
+      shortStateCode,
+    });
+  } catch (e) {
+    console.log(e);
+    return JSON.stringify({ status: "failed" });
   }
 });
 
@@ -242,6 +259,7 @@ export const useCurrLoader = routeLoader$(async ({ cookie }) => {
 export default component$(() => {
   const isLoading = useSignal<boolean>(false);
   const paymentRoute = JSON.parse(usePaymentRoute().value);
+  console.log(paymentRoute);
   const userContext: any = useContext(UserContext);
   const cartContext: any = useContext(CartContext);
   const total = useSignal<number>(0);
@@ -256,11 +274,9 @@ export default component$(() => {
   useTask$(
     async () => {
       const tax = await SalesTax.getSalesTax(
-        userContext?.user?.generalInfo?.address?.shortCountryCode ?? "CA",
-        userContext.user?.generalInfo?.address?.shortStateCode ?? "ON"
+        paymentRoute.shortCoCode ?? "CA",
+        paymentRoute.shortStateCode ?? "ON"
       );
-      console.log(userContext?.user?.generalInfo?.address?.shortCountryCode);
-      console.log(userContext?.user?.generalInfo?.address?.shortStateCode);
       taxRate.value = tax.rate;
     }
     // { strategy: "document-idle" }
