@@ -106,11 +106,13 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
           </p>
         </div>
       ) : (
-        <Pagination
-          page={currentPage}
-          totalProductsNo={total.value}
-          perPage={20}
-        />
+        <div class="flex flex-col items-center justify-center">
+          <Pagination
+            page={currentPage}
+            totalProductsNo={total.value}
+            perPage={20}
+          />
+        </div>
       )}
     </div>
   );
