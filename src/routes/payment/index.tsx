@@ -435,7 +435,7 @@ export default component$(() => {
           paymentSource: "STRIPE",
           totalInfo: {
             shipping: subTotal.value > 150 ? 0 : 15,
-            tax: userContext?.user?.generalInfo?.address?.country
+            tax: !userContext?.user?.generalInfo?.address?.country
               ?.toLowerCase()
               ?.includes("united")
               ? parseFloat(
@@ -466,7 +466,7 @@ export default component$(() => {
         if (finalCard.value && isExistingPaymentMethod.value) {
           const totalInfo = {
             shipping: subTotal.value > 150 ? 0 : 15,
-            tax: userContext?.user?.generalInfo?.address?.country
+            tax: !userContext?.user?.generalInfo?.address?.country
               ?.toLowerCase()
               ?.includes("united")
               ? parseFloat(
