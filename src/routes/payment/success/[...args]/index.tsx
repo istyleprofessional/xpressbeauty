@@ -1,4 +1,4 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useVisibleTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import { Steps } from "~/components/shared/steps/steps";
@@ -36,20 +36,21 @@ export const useLoaderSuccess = routeLoader$(async ({ params, cookie }) => {
   }-${deliveryDate.getDate()}`;
 
   const getOrderById = await getOrderByOrderNumberService(orderId ?? "");
-  if (getOrderById.status === "failed") {
+  console.log(getOrderById);
+  if (!getOrderById.request) {
     return null;
   }
   let user: any;
 
-  if (verifiedToken.isDummy) {
-    const dummy = await getDummyCustomer(verifiedToken.user_id);
+  if (verifiedToken?.isDummy) {
+    const dummy = await getDummyCustomer(verifiedToken?.user_id);
     if (dummy.status === "failed") {
       return null;
     }
     user = dummy.result;
     return {
       dataForSurvey: {
-        email: user.email,
+        email: user?.email,
         order_id: orderId,
         country:
           getOrderById.request?.shippingAddress.country === "Canada"
@@ -59,14 +60,14 @@ export const useLoaderSuccess = routeLoader$(async ({ params, cookie }) => {
       },
     };
   } else {
-    const real = await findUserByUserId(verifiedToken.user_id);
+    const real = await findUserByUserId(verifiedToken?.user_id);
     if (real.status === "failed") {
       return null;
     }
     user = real.result;
     return {
       dataForSurvey: {
-        email: user.email,
+        email: user?.email,
         order_id: orderId,
         country:
           getOrderById.request?.shippingAddress.country === "Canada"
@@ -95,6 +96,13 @@ export default component$(() => {
         });
     });
   }`;
+
+  useVisibleTask$(({ track }) => {
+    track(() => data?.dataForSurvey?.order_id);
+    if (!data?.dataForSurvey?.order_id) {
+      location.href = "/";
+    }
+  });
 
   return (
     <div class="flex flex-col justify-center items-center gap-10 mb-10">
@@ -135,18 +143,40 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = {
-  title: "Xpress Beauty | Thank you for your order!",
-  links: [
-    {
-      rel: "canonical",
-      href: "https://xpressbeauty.ca/payment/success",
-    },
-  ],
-  meta: [
-    {
-      name: "description",
-      content: "Thank you for your order - XpressBeauty",
-    },
-  ],
+export const head: DocumentHead = ({ resolveValue }) => {
+  const data = resolveValue(useLoaderSuccess);
+  const successScript = `
+  gtag('event', 'conversion', {
+      'send_to': 'AW-11167601664/EaRpCMn-5f0YEICokM0p',
+      'transaction_id': '${data?.dataForSurvey?.order_id}',
+`;
+  return {
+    scripts: [
+      {
+        script: successScript,
+        key: "gtag",
+      },
+      {
+        src: "/gtag.js",
+        async: true,
+      },
+      {
+        src: "/ads.js",
+        async: true,
+      },
+    ],
+    title: "Xpress Beauty | Thank you for your order!",
+    links: [
+      {
+        rel: "canonical",
+        href: "https://xpressbeauty.ca/payment/success",
+      },
+    ],
+    meta: [
+      {
+        name: "description",
+        content: "Thank you for your order - XpressBeauty",
+      },
+    ],
+  };
 };
