@@ -29,6 +29,7 @@ export const useRegisterForm = routeAction$(async (data, { env }) => {
   newData.phoneNumber = newData?.phoneNumber?.toString()?.startsWith("1")
     ? `+${newData?.phoneNumber}`
     : `+1${newData?.phoneNumber}`;
+  console.log(newData);
   const validationObject = {
     email: validate(newData?.email, "email"),
     password:
@@ -141,6 +142,7 @@ export default component$(() => {
     ({ track }) => {
       track(() => action.value?.status);
       if (action.value?.status === "failed") {
+        console.log(action.value?.err);
         message.value = action.value?.err ?? "";
       }
 
