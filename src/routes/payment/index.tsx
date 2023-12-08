@@ -24,7 +24,7 @@ import { sendConfirmationOrderForAdmin } from "~/utils/sendConfirmationOrderForA
 import { createOrder } from "~/express/services/order.service";
 import { loadScript } from "@paypal/paypal-js";
 import paypal from "paypal-rest-sdk";
-import SalesTax from "sales-tax";
+// import SalesTax from "sales-tax";
 import { getDummyCustomer } from "~/express/services/dummy.user.service";
 
 export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
@@ -273,16 +273,7 @@ export default component$(() => {
   // console.log(userContext?.user);
   useTask$(
     async () => {
-      try {
-        const tax = await SalesTax.getSalesTax(
-          paymentRoute.shortCoCode ?? "CA",
-          paymentRoute.shortStateCode ?? "ON"
-        );
-        taxRate.value = tax.rate;
-      } catch (err: any) {
-        console.log(err);
-        taxRate.value = 0.13;
-      }
+      taxRate.value = 0.13;
     }
     // { strategy: "document-idle" }
   );
