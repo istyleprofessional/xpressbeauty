@@ -79,7 +79,7 @@ export const useUserData = routeLoader$(
         userAgent: userAgent ?? "",
       },
     };
-    // console.log(data);
+    console.log(data);
     if (!token) {
       const requestDum: any = await addDummyCustomer("", data);
       if (requestDum.status === "success") {
