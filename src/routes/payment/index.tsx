@@ -271,13 +271,18 @@ export default component$(() => {
   const subTotal = useSignal<number>(0);
   const taxRate = useSignal<number>(0);
   // console.log(userContext?.user);
-  useVisibleTask$(
+  useTask$(
     async () => {
-      const tax = await SalesTax.getSalesTax(
-        paymentRoute.shortCoCode ?? "CA",
-        paymentRoute.shortStateCode ?? "ON"
-      );
-      taxRate.value = tax.rate;
+      try {
+        const tax = await SalesTax.getSalesTax(
+          paymentRoute.shortCoCode ?? "CA",
+          paymentRoute.shortStateCode ?? "ON"
+        );
+        taxRate.value = tax.rate;
+      } catch (err: any) {
+        console.log(err);
+        taxRate.value = 0.13;
+      }
     }
     // { strategy: "document-idle" }
   );
