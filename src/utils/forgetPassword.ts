@@ -28,7 +28,7 @@ export const sendForgetPasswordEmail = async (email: string, token: string) => {
               }/reset-password/?token=${token}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
           </div>
           <div style="text-align: center; padding-top: 20px; color: #777777;">
-              <p>If you have any questions, please contact us at <a href="mailto:xpressbeautysupplier@gmail.com">xpressbeautysupplier@gmail.com</a>.</p>
+              <p>If you have any questions, please contact us at <a href="mailto:info@xpressbeauty.ca">info@xpressbeauty.ca</a>.</p>
           </div>
       </div>
     </body>`,
