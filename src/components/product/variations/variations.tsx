@@ -28,7 +28,7 @@ export const Variations = component$((props: VariationsProps) => {
     <div class="flex flex-row w-full justify-center items-center">
       {variationQuantity !== 0 && (
         <>
-          <label class="input-group md:w-96">
+          <label class="input-group md:w-96 w-full">
             <span
               class={`btn text-sm md:text-xl text-black bg-[#F4F4F5] ${
                 value[index] === 0 ? "btn-disabled" : ""
@@ -55,7 +55,7 @@ export const Variations = component$((props: VariationsProps) => {
               min="0"
               max={variationQuantity.toString()}
               readOnly
-              class="input input-bordered w-12 md:w-20 text-black text-xs lg:text-lg"
+              class="input input-bordered w-16 md:w-20 text-black text-xs lg:text-lg"
             />
             <span
               class={`btn text-sm md:text-xl text-black bg-[#F4F4F5] ${
