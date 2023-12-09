@@ -9,7 +9,7 @@ export const onGet: RequestHandler = async ({ json }) => {
     if (product.variations.length > 0) {
       product.variations.forEach((variation) => {
         if (variation.price) {
-          variation.price = variation.price.toString().replace("$", "");
+          variation.price = variation?.price?.toString()?.replace("$", "");
         }
       });
     }
