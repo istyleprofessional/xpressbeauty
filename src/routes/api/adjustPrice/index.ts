@@ -12,22 +12,6 @@ export const onGet: RequestHandler = async ({ json }) => {
           variation.price = variation.price.toString().replace("$", "");
         }
       });
-    } else {
-      if (product.priceType === "range") {
-        product.price.min = product.price.min.toString().replace("$", "");
-        product.price.max = product.price.max.toString().replace("$", "");
-        product.sale_price.min = product.sale_price.min
-          .toString()
-          .replace("$", "");
-        product.sale_price.max = product.sale_price.max
-          .toString()
-          .replace("$", "");
-      } else {
-        product.price.regular = product.price.regular
-          .toString()
-          .replace("$", "");
-        product.price.sale = product.price.sale.toString().replace("$", "");
-      }
     }
     const updatedProduct = await productSchema.findByIdAndUpdate(
       product._id,
