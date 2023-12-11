@@ -29,38 +29,9 @@ import { Toast } from "~/components/admin/toast/toast";
 import { getRatingByProductId } from "~/express/services/rating.reviews.service";
 import { UserContext } from "~/context/user.context";
 import { CurContext } from "~/context/cur.context";
-import Stripe from "stripe";
 
-export const useServerData = routeLoader$(async ({ params, redirect, env }) => {
+export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
-  const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "", {
-    apiVersion: "2022-11-15",
-  });
-  const calculation = await stripe.tax.calculations.create({
-    currency: "usd",
-    line_items: [
-      {
-        amount: 1000,
-        reference: "L1",
-        tax_behavior: "exclusive",
-        tax_code: "txcd_99999999",
-      },
-    ],
-    shipping_cost: {
-      amount: 500,
-      tax_behavior: "exclusive",
-    },
-    customer_details: {
-      address: {
-        city: "Springfield",
-        state: "IL",
-        postal_code: "62704",
-        country: "US",
-      },
-      address_source: "billing",
-    },
-  });
-  console.log(calculation.tax_breakdown);
   const product = params.product;
   if (!product.includes("pid")) {
     const result: any = await get_product_by_name(product);
