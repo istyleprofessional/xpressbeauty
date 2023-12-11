@@ -13,16 +13,15 @@ interface ProductCardProps {
 export const ProductCard = component$((props: ProductCardProps) => {
   const { product, i, cardSize, userObj, currencyObject } = props;
   const finalRegularPrice = useSignal<string>("");
-  const finalSalePrice = useSignal<string>("");
-  // const verifiedPrice = useSignal<string>("");
-  // const verifiedSalePrice = useSignal<string>("");
+  const verifiedPrice = useSignal<string>("");
+  const verifiedSalePrice = useSignal<string>("");
   const user = userObj?.user ?? {};
 
   useVisibleTask$(
     ({ track }) => {
-      track(() => currencyObject?.cur);
+      track(() => currencyObject.cur);
       if (currencyObject.cur === "1") {
-        if (product?.priceType === "range") {
+        if (product.priceType === "range") {
           product.price.min = parseFloat(product?.price?.min?.toString()) * 0.9;
 
           product.price.max = parseFloat(product.price?.max?.toString()) * 0.9;
@@ -41,8 +40,8 @@ export const ProductCard = component$((props: ProductCardProps) => {
   );
 
   useVisibleTask$(() => {
-    if (product?.priceType === "range") {
-      if (product?.price?.min !== "" && product?.price?.max !== "") {
+    if (product.priceType === "range") {
+      if (product.price.min !== "" && product.price.max !== "") {
         finalRegularPrice.value = `${parseFloat(
           product.price?.min
         ).toLocaleString("en-US", {
@@ -52,12 +51,16 @@ export const ProductCard = component$((props: ProductCardProps) => {
           style: "currency",
           currency: currencyObject === "1" ? "USD" : "CAD",
         })}`;
-        finalSalePrice.value = `${parseFloat(
-          product.sale_price?.min
+        verifiedPrice.value = `${(
+          parseFloat(product.price.min) -
+          parseFloat(product.price.min) * 0.2
         ).toLocaleString("en-US", {
           style: "currency",
           currency: currencyObject === "1" ? "USD" : "CAD",
-        })} - ${parseFloat(product.sale_price.max).toLocaleString("en-US", {
+        })} - ${(
+          parseFloat(product.price.max) -
+          parseFloat(product.price.max) * 0.2
+        ).toLocaleString("en-US", {
           style: "currency",
           currency: currencyObject === "1" ? "USD" : "CAD",
         })}`;
@@ -69,8 +72,16 @@ export const ProductCard = component$((props: ProductCardProps) => {
         style: "currency",
         currency: currencyObject === "1" ? "USD" : "CAD",
       });
-      finalSalePrice.value = parseFloat(
-        product.sale_price?.sale
+      verifiedPrice.value = (
+        parseFloat(product.price?.regular) -
+        parseFloat(product.price?.regular) * 0.2
+      ).toLocaleString("en-US", {
+        style: "currency",
+        currency: currencyObject === "1" ? "USD" : "CAD",
+      });
+      verifiedSalePrice.value = (
+        parseFloat(product.sale_price?.sale) -
+        parseFloat(product.sale_price?.sale) * 0.2
       )?.toLocaleString("en-US", {
         style: "currency",
         currency: currencyObject === "1" ? "USD" : "CAD",
@@ -123,22 +134,31 @@ export const ProductCard = component$((props: ProductCardProps) => {
               product.sale_price.sale !== "" && (
                 <>
                   <span class=" text-neutral-800">
-                    {finalRegularPrice.value}
+                    {!(user.isEmailVerified && user.isPhoneVerified)
+                      ? finalRegularPrice.value
+                      : verifiedSalePrice.value}
                   </span>
-                  <span class=" text-error">{finalSalePrice.value}</span>
                 </>
               )}
             {product.priceType === "single" &&
               product.sale_price.sale === "" && (
-                <span class=" text-neutral-800">{finalRegularPrice.value}</span>
+                <span class=" text-neutral-800">
+                  {!(user.isEmailVerified && user.isPhoneVerified)
+                    ? finalRegularPrice.value
+                    : verifiedPrice.value}
+                </span>
               )}
             {product.priceType === "range" && (
-              <span class=" text-neutral-800">{finalRegularPrice.value}</span>
+              <span class=" text-neutral-800">
+                {!(user.isEmailVerified && user.isPhoneVerified)
+                  ? finalRegularPrice.value
+                  : verifiedPrice.value}
+              </span>
             )}
           </p>
           {!(user.isEmailVerified && user.isPhoneVerified) && (
             <>
-              {/* <label class=" bg-warning w-full text-center rounded-md">
+              <label class=" bg-warning w-full text-center rounded-md">
                 <span class="text-xs md:text-sm text-gray-500 text-center font-bold text-black p-1 normal-case">
                   Saver Club
                 </span>
@@ -176,14 +196,13 @@ export const ProductCard = component$((props: ProductCardProps) => {
                     )}
                   </h2>
                 </div>
-              </div> */}
+              </div>
             </>
           )}
           {user.isEmailVerified && user.isPhoneVerified && (
-            <></>
-            // <p class="text-xs text-gray-500 text-center font-bold text-info p-1 normal-case">
-            //   You are a Saver Club Member
-            // </p>
+            <p class="text-xs text-gray-500 text-center font-bold text-info p-1 normal-case">
+              You are a Saver Club Member
+            </p>
           )}
         </div>
       </div>
