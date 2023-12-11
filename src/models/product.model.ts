@@ -24,4 +24,5 @@ export interface ProductModel {
   lineName?: string;
   perfix?: string;
   priceType?: string;
+  currency?: string;
 }

@@ -1,14 +1,9 @@
-import { useSignal, useVisibleTask$, $, useTask$ } from "@builder.io/qwik";
+import { useVisibleTask$, $, useTask$ } from "@builder.io/qwik";
 import { useStore } from "@builder.io/qwik";
 import { useContextProvider } from "@builder.io/qwik";
 import { component$, Slot } from "@builder.io/qwik";
 import type { RequestHandler } from "@builder.io/qwik-city";
-import {
-  routeLoader$,
-  server$,
-  useLocation,
-  // useNavigate,
-} from "@builder.io/qwik-city";
+import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import { Footer } from "~/components/shared/footer/footer";
 import { Header } from "~/components/shared/header/header";
 import { NavBar } from "~/components/shared/navbar/navbar";
@@ -21,12 +16,12 @@ import {
   getDummyCustomer,
 } from "~/express/services/dummy.user.service";
 import { findUserByUserId } from "~/express/services/user.service";
-import type { UserModel } from "~/models/user.model";
 import jwt from "jsonwebtoken";
 import { UserContext } from "~/context/user.context";
 import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 import ip2location from "ip-to-location";
+import { CurContext } from "~/context/cur.context";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
   cacheControl({
@@ -80,16 +75,22 @@ export const useUserData = routeLoader$(
       },
     };
     console.log(data);
+    let curr: string = cookie.get("cur")?.value ?? "1";
+    if (!curr) {
+      if (country_name?.toLowerCase()?.includes("united")) {
+        curr = "1";
+        cookie.set("cur", 1, { path: "/" });
+      } else if (country_name?.toLowerCase()?.includes("canada")) {
+        curr = "2";
+        cookie.set("cur", 2, { path: "/" });
+      } else {
+        curr = "1";
+        cookie.set("cur", 1, { path: "/" });
+      }
+    }
     if (!token) {
       const requestDum: any = await addDummyCustomer("", data);
       if (requestDum.status === "success") {
-        if (country_name?.toLowerCase()?.includes("united states")) {
-          cookie.set("cur", 1, { path: "/" });
-        } else if (country_name?.toLowerCase()?.includes("canada")) {
-          cookie.set("cur", 2, { path: "/" });
-        } else {
-          cookie.set("cur", 1, { path: "/" });
-        }
         const token = jwt.sign(
           {
             user_id: requestDum?.result?._id?.toString() ?? "",
@@ -104,6 +105,7 @@ export const useUserData = routeLoader$(
         });
         return JSON.stringify({
           user: requestDum?.result,
+          cur: curr,
         });
       }
     }
@@ -119,13 +121,6 @@ export const useUserData = routeLoader$(
       if (!user?.result) {
         cookie.delete("token", { path: "/" });
         const request: any = await addDummyCustomer("", data);
-        if (country_name?.toLowerCase()?.includes("united states")) {
-          cookie.set("cur", 1, { path: "/" });
-        } else if (country_name?.toLowerCase()?.includes("canada")) {
-          cookie.set("cur", 2, { path: "/" });
-        } else {
-          cookie.set("cur", 1, { path: "/" });
-        }
         const newTokentoken = jwt.sign(
           {
             user_id: request?.result?._id?.toString() ?? "",
@@ -140,26 +135,10 @@ export const useUserData = routeLoader$(
         });
         return JSON.stringify({
           user: request?.result,
+          cur: curr,
         });
       }
-      const checkCur = cookie.get("cur")?.value ?? "";
-      if (!checkCur) {
-        if (
-          user?.result?.generalInfo?.address?.country?.toLowerCase?.includes(
-            "united"
-          )
-        ) {
-          cookie.set("cur", 1, { path: "/" });
-        } else if (
-          user?.result?.generalInfo?.address?.country?.toLowerCase?.includes(
-            "canada"
-          )
-        ) {
-          cookie.set("cur", 2, { path: "/" });
-        } else {
-          cookie.set("cur", 1, { path: "/" });
-        }
-      }
+
       const checkRate = cookie.get("curRate")?.value ?? "";
       if (!checkRate) {
         cookie.set("curRate", 90, { path: "/" });
@@ -167,6 +146,7 @@ export const useUserData = routeLoader$(
 
       return JSON.stringify({
         user: user?.result,
+        cur: curr,
       });
     } catch (error: any) {
       if (error.message === "jwt expired") {
@@ -190,13 +170,28 @@ export const useUserData = routeLoader$(
         } else {
           user = await findUserByUserId(decode.user_id);
         }
+        let curr: string = cookie.get("cur")?.value ?? "1";
+        if (!curr) {
+          if (country_name?.toLowerCase()?.includes("united")) {
+            curr = "1";
+            cookie.set("cur", 1, { path: "/" });
+          } else if (country_name?.toLowerCase()?.includes("canada")) {
+            curr = "2";
+            cookie.set("cur", 2, { path: "/" });
+          } else {
+            curr = "1";
+            cookie.set("cur", 1, { path: "/" });
+          }
+        }
         return JSON.stringify({
           user: user?.result,
+          cur: curr,
         });
       }
     }
     return JSON.stringify({
       user: null,
+      cur: curr,
     });
   }
 );
@@ -216,15 +211,9 @@ export const clearUser = server$(async function () {
   return true;
 });
 
-export const useCurrLoader = routeLoader$(({ cookie }) => {
-  const country = cookie.get("cur")?.value ?? "";
-  return country;
-});
-
 export default component$(() => {
   const user = useUserData().value;
   const userData = JSON.parse(user ?? "{}");
-  // const nav = useNavigate();
   const cartContextObject = useStore<any>({
     userId: userData._id,
     cart: {},
@@ -239,10 +228,12 @@ export default component$(() => {
     },
     { deep: true }
   );
-  const userValue = useSignal<UserModel | null>();
+  const curContextObject = useStore<any>({
+    cur: userData?.cur,
+  });
   const loc = useLocation();
   const url = loc?.url?.pathname;
-  const currency = useCurrLoader().value;
+
   useTask$(
     async ({ track }) => {
       track(() => userData?.user);
@@ -250,7 +241,10 @@ export default component$(() => {
       cartContextObject.cart = JSON.parse(cart);
       if (cartContextObject?.cart?.products?.length > 0) {
         let totalPrice = 0;
-        if (cartContextObject.cart.currency === "USD" && currency === "2") {
+        if (
+          cartContextObject.cart.currency === "USD" &&
+          curContextObject.cur === "2"
+        ) {
           cartContextObject.cart.products.forEach((element: any) => {
             element.price = element.price / 0.9;
             element.currency = "CAD";
@@ -260,7 +254,7 @@ export default component$(() => {
           });
         } else if (
           cartContextObject.cart.currency === "CAD" &&
-          currency === "1"
+          curContextObject.cur === "1"
         ) {
           cartContextObject.cart.products.forEach((element: any) => {
             element.price = element.price * 0.9;
@@ -280,7 +274,8 @@ export default component$(() => {
             (total: any, item: any) => total + item.quantity,
             0
           );
-        cartContextObject.cart.currency = currency === "1" ? "USD" : "CAD";
+        cartContextObject.cart.currency =
+          curContextObject.cur === "1" ? "USD" : "CAD";
       }
     },
     { eagerness: "idle" }
@@ -295,16 +290,10 @@ export default component$(() => {
     { eagerness: "idle" }
   );
 
-  useVisibleTask$(({ track }) => {
-    track(() => userData);
-    if (typeof userData !== "undefined") {
-      userValue.value = userData?.request;
-    }
-  });
-
   useContextProvider(CartContext, cartContextObject);
   useContextProvider(UserContext, userContextObject);
   useContextProvider(WishListContext, wishListContextObject);
+  useContextProvider(CurContext, curContextObject);
 
   const handleOnCartClick = $(() => {
     location.href = "/cart/";
@@ -333,7 +322,7 @@ export default component$(() => {
           !url.includes("admin") &&
           !url.includes("Verify") && (
             <>
-              <Header />
+              <Header countryProp={curContextObject.cur} />
               <ToolBar
                 handleLogout={handleLogout}
                 user={userData?.cart}

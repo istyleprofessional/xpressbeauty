@@ -89,18 +89,19 @@ export const useAddUser = routeAction$(async (data: any, requestEvent) => {
       state: (newData?.generalInfo?.address?.state?.length ?? 0) > 0,
       postalCode: (newData?.generalInfo?.address?.postalCode?.length ?? 0) > 0,
       firstName:
-        validate(newData?.firstName ?? "", "firstName") &&
+        validate(newData?.firstName?.trim() ?? "", "firstName") &&
         newData?.firstName.length > 0,
       lastName:
-        validate(newData?.lastName ?? "", "lastName") &&
+        validate(newData?.lastName?.trim() ?? "", "lastName") &&
         newData?.lastName.length > 0,
       email:
-        validate(newData?.email ?? "", "email") && newData?.email.length > 0,
+        validate(newData?.email?.trim() ?? "", "email") &&
+        newData?.email.length > 0,
       phoneNumber:
         validate(
           (newData?.phoneNumber.toString().startsWith("1")
-            ? `+${newData?.phoneNumber}`
-            : `+1${newData.phoneNumber}`) ?? "",
+            ? `+${newData?.phoneNumber?.trim()}`
+            : `+1${newData.phoneNumber?.trim()}`) ?? "",
           "phoneNumber"
         ) && newData?.phoneNumber.length >= 10,
     };

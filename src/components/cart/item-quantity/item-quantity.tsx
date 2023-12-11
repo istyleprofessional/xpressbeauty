@@ -22,7 +22,7 @@ export const getTotalQuantity = server$(async (id: string, desiredQuantity) => {
 });
 
 export const ItemQuantity = component$((props: ItemQuantityProps) => {
-  const { product } = props;
+  const { product, country } = props;
   const context: any = useContext(CartContext);
   const quantity = useSignal<number>(product.quantity ?? 0);
 
@@ -35,22 +35,18 @@ export const ItemQuantity = component$((props: ItemQuantityProps) => {
     quantity.value = quantity.value - 1;
     context.cart.totalQuantity = context.cart.totalQuantity - 1;
     product.quantity = quantity.value;
+    if (product.currency === "CAD" && country === "1") {
+      product.price = product.price * 0.9;
+    } else if (product.currency === "USD" && country === "2") {
+      product.price = product.price * 1.1;
+    }
+    product.currency = country === "2" ? "CAD" : "USD";
     const data = {
       product: product,
       totalQuantity: context.cart.totalQuantity,
     };
     const request = await putRequest("/api/cart", JSON.stringify(data));
     const response = await request.json();
-    // if (context.cart.currency === "USD" && country === "2") {
-    //   response.products.map((product: any) => {
-    //     product.price = product.price / 0.9;
-    //   });
-    // }
-    // if (context.cart.currency === "CAD" && country === "1") {
-    //   response.products.map((product: any) => {
-    //     product.price = product.price * 0.9;
-    //   });
-    // }
     context.cart.products = response.products;
     context.cart.totalQuantity = response.totalQuantity;
 
@@ -70,6 +66,12 @@ export const ItemQuantity = component$((props: ItemQuantityProps) => {
     quantity.value = quantity.value + 1;
     context.cart.totalQuantity = context.cart.totalQuantity + 1;
     product.quantity = quantity.value;
+    if (product.currency === "CAD" && country === "1") {
+      product.price = product.price * 0.9;
+    } else if (product.currency === "USD" && country === "2") {
+      product.price = product.price / 0.9;
+    }
+    product.currency = country === "2" ? "CAD" : "USD";
     const data = {
       product: product,
       totalQuantity: context.cart.totalQuantity,

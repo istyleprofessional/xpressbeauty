@@ -181,7 +181,6 @@ export const paypalServer = server$(async function (data: any, user: any) {
         }
       });
     });
-    console.log(paypalPromise);
     return paypalPromise;
   } catch (e) {
     console.log(e);

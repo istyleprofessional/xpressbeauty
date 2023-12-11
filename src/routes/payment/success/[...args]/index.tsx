@@ -36,7 +36,6 @@ export const useLoaderSuccess = routeLoader$(async ({ params, cookie }) => {
   }-${deliveryDate.getDate()}`;
 
   const getOrderById = await getOrderByOrderNumberService(orderId ?? "");
-  console.log(getOrderById);
   if (!getOrderById.request) {
     return null;
   }
@@ -81,7 +80,6 @@ export const useLoaderSuccess = routeLoader$(async ({ params, cookie }) => {
 
 export default component$(() => {
   const data = useLoaderSuccess().value;
-  console.log(data);
   const scriptToLoad = `
   window.renderOptIn = function() {
     window.gapi.load('surveyoptin', function() {

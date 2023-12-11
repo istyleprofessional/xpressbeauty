@@ -1,32 +1,26 @@
-import {
-  component$,
-  useContext,
-  useSignal,
-  useVisibleTask$,
-} from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import type { ProductModel } from "~/models/product.model";
 import { Image } from "@unpic/qwik";
-import { UserContext } from "~/context/user.context";
 
 interface ProductCardProps {
   product: ProductModel;
   i: number;
   cardSize?: string;
+  userObj?: any;
   currencyObject?: any;
 }
 
 export const ProductCard = component$((props: ProductCardProps) => {
-  const { product, i, cardSize, currencyObject } = props;
+  const { product, i, cardSize, userObj, currencyObject } = props;
   const finalRegularPrice = useSignal<string>("");
   const verifiedPrice = useSignal<string>("");
   const verifiedSalePrice = useSignal<string>("");
-  const userObj: any = useContext(UserContext);
   const user = userObj?.user ?? {};
 
   useVisibleTask$(
     ({ track }) => {
-      track(() => currencyObject?.country);
-      if (currencyObject?.country === "1") {
+      track(() => currencyObject.cur);
+      if (currencyObject.cur === "1") {
         if (product.priceType === "range") {
           product.price.min = parseFloat(product?.price?.min?.toString()) * 0.9;
 
@@ -45,31 +39,30 @@ export const ProductCard = component$((props: ProductCardProps) => {
     { strategy: "intersection-observer" }
   );
 
-  useVisibleTask$(({ track }) => {
-    track(() => product);
+  useVisibleTask$(() => {
     if (product.priceType === "range") {
       if (product.price.min !== "" && product.price.max !== "") {
         finalRegularPrice.value = `${parseFloat(
           product.price?.min
         ).toLocaleString("en-US", {
           style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
         })} - ${parseFloat(product.price.max).toLocaleString("en-US", {
           style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
         })}`;
         verifiedPrice.value = `${(
           parseFloat(product.price.min) -
           parseFloat(product.price.min) * 0.2
         ).toLocaleString("en-US", {
           style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
         })} - ${(
           parseFloat(product.price.max) -
           parseFloat(product.price.max) * 0.2
         ).toLocaleString("en-US", {
           style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
         })}`;
       }
     } else {
@@ -77,21 +70,21 @@ export const ProductCard = component$((props: ProductCardProps) => {
         product.price?.regular
       )?.toLocaleString("en-US", {
         style: "currency",
-        currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        currency: currencyObject === "1" ? "USD" : "CAD",
       });
       verifiedPrice.value = (
         parseFloat(product.price?.regular) -
         parseFloat(product.price?.regular) * 0.2
       ).toLocaleString("en-US", {
         style: "currency",
-        currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        currency: currencyObject === "1" ? "USD" : "CAD",
       });
       verifiedSalePrice.value = (
         parseFloat(product.sale_price?.sale) -
         parseFloat(product.sale_price?.sale) * 0.2
       )?.toLocaleString("en-US", {
         style: "currency",
-        currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        currency: currencyObject === "1" ? "USD" : "CAD",
       });
     }
   });

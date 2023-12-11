@@ -31,9 +31,6 @@ import compression from "compression";
 import categorySchema from "./express/schemas/category.schema";
 import brandSchema from "./express/schemas/brand.schema";
 import VoiceResponse from "twilio/lib/twiml/VoiceResponse";
-import axios from "axios";
-import fs from "fs";
-import { S3 } from "@aws-sdk/client-s3";
 import MessagingResponse from "twilio/lib/twiml/MessagingResponse";
 
 dotenv.config();
@@ -161,66 +158,6 @@ app.post("/api/twilioVoice", (req, res) => {
 
   res.set("Content-Type", "text/xml");
   res.send(response.toString());
-});
-
-app.post("/api/recordedMessage", async (req, res) => {
-  try {
-    const response = await axios.get(req.body.RecordingUrl, {
-      responseType: "stream", // Stream the response data
-      auth: {
-        username: process?.env?.TWILIO_ACCOUNT_SID ?? "",
-        password: process?.env?.TWILIO_AUTH_TOKEN ?? "",
-      },
-    });
-
-    // Prepare AWS S3
-    const awsS3 = new S3({
-      credentials: {
-        accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID ?? "",
-        secretAccessKey: import.meta.env.VITE_AWS_SECRET_KEY ?? "",
-      },
-      region: "ca-central-1",
-    });
-
-    // Define the file path where you want to save the audio temporarily
-    const filePath = `temp_${Date.now()}.wav`;
-    const fileStream = fs.createWriteStream(filePath);
-
-    // Pipe the response data directly to a file
-    response.data.pipe(fileStream);
-
-    fileStream.on("close", async () => {
-      const fileName = filePath;
-      // Upload the downloaded file to AWS S3
-      const fileStreamForUpload = fs.createReadStream(filePath);
-      const params = {
-        Bucket: import.meta.env.VITE_AWS_BUCKET_NAME ?? "",
-        Key: `voicemail/${fileName}`,
-        Body: fileStreamForUpload,
-        ContentType: "audio/wav",
-        ACL: "public-read",
-      };
-
-      try {
-        await awsS3.putObject(params);
-      } catch (error) {
-        console.error("Error uploading file to S3:", error);
-      }
-
-      // Clean up: Delete the temporary file
-      fs.unlinkSync(filePath);
-
-      // Respond with a success status
-      res.sendStatus(200);
-    });
-  } catch (error) {
-    console.error("Error downloading audio:", error);
-    res.sendStatus(500); // Send a server error response
-  }
-});
-
-app.post("/api/transcriptionCallback", (req, res) => {
-  res.send(200);
 });
 
 // Enable gzip compression

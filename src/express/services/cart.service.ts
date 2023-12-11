@@ -83,7 +83,9 @@ export const handleDecIncVariationProducts = async (data: any) => {
     const update = {
       [`products.$.quantity`]: data.product.quantity,
       totalQuantity: data.totalQuantity,
-      currency: data.country === "1" ? "USD" : "CAD",
+      currency: data.product.currency,
+      [`products.$.price`]: data.product.price,
+      [`products.$.currency`]: data.product.currency,
     };
     const result = await Cart.findOneAndUpdate(filter, update, {
       new: true,

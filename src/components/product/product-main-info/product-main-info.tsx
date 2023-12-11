@@ -36,24 +36,24 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           "en-US",
           {
             style: "currency",
-            currency: currencyObject?.country === "1" ? "USD" : "CAD",
+            currency: currencyObject === "1" ? "USD" : "CAD",
           }
         )} - ${parseFloat(price.max).toLocaleString("en-US", {
           style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
         })}`;
         verifiedPrice.value = `${(
           parseFloat(price.min) -
           parseFloat(price.min) * 0.2
         ).toLocaleString("en-US", {
           style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
         })} - ${(
           parseFloat(price.max) -
           parseFloat(price.max) * 0.2
         ).toLocaleString("en-US", {
           style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
         })}`;
       }
     } else {
@@ -61,14 +61,14 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         "en-US",
         {
           style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
         }
       );
       finalSalePrice.value = parseFloat(sale_price?.sale)?.toLocaleString(
         "en-US",
         {
           style: "currency",
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
         }
       );
       verifiedPrice.value = (
@@ -76,14 +76,14 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         parseFloat(price?.regular) * 0.2
       ).toLocaleString("en-US", {
         style: "currency",
-        currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        currency: currencyObject === "1" ? "USD" : "CAD",
       });
       verifiedSalePrice.value = (
         parseFloat(sale_price?.sale) -
         parseFloat(sale_price?.sale) * 0.2
       )?.toLocaleString("en-US", {
         style: "currency",
-        currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        currency: currencyObject === "1" ? "USD" : "CAD",
       });
     }
   });

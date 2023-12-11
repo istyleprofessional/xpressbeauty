@@ -4,11 +4,6 @@ import CanadaImage from "~/media/canada_1.jpg?jsx";
 import USAImage from "~/media/USA.jpg?jsx";
 import { server$ } from "@builder.io/qwik-city";
 
-export const checkCountry = server$(async function () {
-  const country = this.cookie.get("cur")?.value ?? "";
-  return country;
-});
-
 export const changeCountry = server$(async function (country: string) {
   this.cookie.set("cur", country, {
     httpOnly: true,
@@ -17,17 +12,21 @@ export const changeCountry = server$(async function (country: string) {
   return true;
 });
 
-export const Header = component$(() => {
+interface HeaderProps {
+  countryProp?: string;
+}
+
+export const Header = component$((props: HeaderProps) => {
+  const { countryProp } = props;
   const country = useSignal<string>("");
 
-  useVisibleTask$(async () => {
-    const checkCountryReq = await checkCountry();
-    if (checkCountryReq === "1") {
-      country.value = "USD";
-    } else {
-      country.value = "CAD";
-    }
-  });
+  useVisibleTask$(
+    () => {
+      if (countryProp === "1") country.value = "USD";
+      if (countryProp === "2") country.value = "CAD";
+    },
+    { strategy: "document-idle" }
+  );
 
   return (
     <div class="bg-black navbar flex flex-col lg:flex-row justify-center gap-3 items-center  h-fit lg:h-12">

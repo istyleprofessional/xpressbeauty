@@ -66,14 +66,14 @@ export const ProductList = component$((props: any) => {
                   </p>
                   <ItemQuantity
                     product={product}
-                    country={props.currencyObject.country}
+                    country={props.currencyObject.cur}
                   />
                   <div class="flex flex-col gap-1">
                     <p class="text-black md:text-sm text-xs">
                       {parseFloat(product.price)?.toLocaleString("en-US", {
                         style: "currency",
                         currency:
-                          props.currencyObject?.country === "1" ? "USD" : "CAD",
+                          props.currencyObject?.cur === "1" ? "USD" : "CAD",
                       })}
                     </p>
                   </div>
@@ -89,64 +89,6 @@ export const ProductList = component$((props: any) => {
                   </div>
                 </div>
               </div>
-              // <div class="card w-52 h-52" key={uuid()}>
-              //   <div class="card-body">
-              //     <div class="flex flex-col gap-2 w-full p-5 ">
-              //       <a href={`/products/${product?.perfix}`} class="w-32 h-32 ">
-              //         <img
-              //           src={product?.product_img}
-              //           alt={product?.product_name}
-              //           class=" object-contain self-center w-full h-full"
-              //         />
-              //       </a>
-              //       <div class="flex flex-row gap-3 w-full justify-center items-center">
-              //         <div class="flex flex-col gap-3 w-full justify-center items-center">
-              //           <h2 class="text-black text-sm md:text-md">
-              //             {product?.product_name}
-              //           </h2>
-              //           <p class="text-black text-xs md:text-sm">
-              //             {product?.variation_name ?? ""}
-              //           </p>
-              //           <ItemQuantity product={product} />
-              //           <div class="flex flex-row w-full justify-center items-center">
-              //             <div class="flex flex-col gap-1">
-              //               <p class="text-black md:text-sm text-xs">
-              //                 {parseFloat(
-              //                   product.currency === "USD" &&
-              //                     props.currencyObject.country === "2"
-              //                     ? product.price / 0.9
-              //                     : product.currency === "CAD" &&
-              //                       props.currencyObject.country === "1"
-              //                     ? product.price * 0.9
-              //                     : product.price
-              //                 )?.toLocaleString("en-US", {
-              //                   style: "currency",
-              //                   currency:
-              //                     props.currencyObject?.country === "1"
-              //                       ? "USD"
-              //                       : "CAD",
-              //                 })}
-              //               </p>
-              //               {/* {context.isVerified && (
-              //               <p class="text-xs md:text-sm font-bold text-[red]">
-              //                 +20% off
-              //               </p>
-              //             )} */}
-              //             </div>
-              //             <button
-              //               class="btn text-[#CC0000] m-2 ml-auto"
-              //               onClick$={() => {
-              //                 handleDeleteItemClick(product);
-              //               }}
-              //             >
-              //               <TrashIcon classes="md:w-5 md:h-5 w-4 h-4" />
-              //             </button>
-              //           </div>
-              //         </div>
-              //       </div>
-              //     </div>
-              //   </div>
-              // </div>
             ))}
           </>
         )}

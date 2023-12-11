@@ -9,12 +9,12 @@ export const userRegistration = async (userObject: any) => {
   const encryptedString = cryptr.encrypt(userObject.password);
   try {
     const result: any = await User.create({
-      email: userObject.email,
+      email: userObject.email?.trim(),
       password: encryptedString,
-      firstName: userObject.firstName,
-      lastName: userObject.lastName,
-      phoneNumber: userObject.phoneNumber,
-      EmailVerifyToken: userObject.EmailVerifyToken,
+      firstName: userObject.firstName?.trim(),
+      lastName: userObject.lastName?.trim(),
+      phoneNumber: userObject.phoneNumber?.trim(),
+      EmailVerifyToken: userObject.EmailVerifyToken?.trim(),
       PhoneVerifyToken: phoneVerifyToken,
       stripeCustomerId: userObject.stripeCustomerId,
     });

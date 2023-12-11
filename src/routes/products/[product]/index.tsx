@@ -28,6 +28,7 @@ import { WishListContext } from "~/context/wishList.context";
 import { Toast } from "~/components/admin/toast/toast";
 import { getRatingByProductId } from "~/express/services/rating.reviews.service";
 import { UserContext } from "~/context/user.context";
+import { CurContext } from "~/context/cur.context";
 
 export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
@@ -53,21 +54,6 @@ export const useCurrLoader = routeLoader$(async ({ cookie }) => {
   return { country: country, rate: rate };
 });
 
-// export const useAuth = routeLoader$(async ({ cookie, env }) => {
-//   await connect();
-//   const token = cookie.get("token")?.value ?? "";
-//   const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
-//   if (verify.isDummy) {
-//     return JSON.stringify({});
-//   }
-
-//   const user = await getUserById(verify.user_id);
-//   if (user.status === "failed") {
-//     return JSON.stringify({});
-//   }
-//   return JSON.stringify(user.result);
-// });
-
 export const getAllRelatedProductsServer = server$(async (data) => {
   const req = await getRelatedProducts(data.category, data.name);
   return JSON.stringify(req);
@@ -82,20 +68,21 @@ export default component$(() => {
   const variationValue = useStore<any>({}, { deep: true });
   const src = product?.product_name?.replace(/[^A-Za-z0-9]+/g, "");
   const finalVariationToAdd = useSignal<any>({});
-  // const user = JSON.parse(useAuth().value ?? "");
   const userObj: any = useContext(UserContext);
   const user = userObj?.user ?? {};
   const wishList = useContext(WishListContext);
   const isLoginCardOpen = useSignal(false);
   const isToastCardOpen = useSignal(false);
   const message = useSignal("");
-  const currencyObject = useCurrLoader().value;
+  const currObject: any = useContext(CurContext);
+  const currencyObject = currObject?.cur;
+
   useVisibleTask$(() => {
     localStorage.setItem("prev", `/products/${product.perfix}`);
   });
 
   useTask$(() => {
-    if (currencyObject?.country === "1") {
+    if (currencyObject === "1") {
       if (product.priceType === "range") {
         product.price.min = product.price.min * 0.9;
         product.price.max = product.price.max * 0.9;
@@ -106,7 +93,6 @@ export default component$(() => {
     }
   });
 
-  // console.log(product.price);
   const handleAddToCart = $(async (value: number) => {
     isLoading.value = true;
     const productsToAdd: any[] = [];
@@ -114,7 +100,7 @@ export default component$(() => {
     if (Object.values(finalVariationToAdd.value).length > 0) {
       Object.values(finalVariationToAdd.value).forEach((element: any) => {
         element.price =
-          currencyObject?.country === "2" ? element.price : element.price * 0.9;
+          currencyObject === "2" ? element.price : element.price * 0.9;
         const productToAdd = {
           id: `${product._id}.${element.variation_id}`,
           product_name: product.product_name,
@@ -125,7 +111,7 @@ export default component$(() => {
               ? parseFloat(element?.price) - parseFloat(element?.price) * 0.2
               : parseFloat(element?.price),
           quantity: element.quantity,
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
         };
         totalQuantity += element.quantity;
         productsToAdd.push(productToAdd);
@@ -148,7 +134,7 @@ export default component$(() => {
                 ).toFixed(2)
             : parseFloat(product?.price?.regular),
         quantity: value,
-        currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        currency: currencyObject === "1" ? "USD" : "CAD",
       };
 
       totalQuantity += value;
@@ -158,7 +144,7 @@ export default component$(() => {
       browserId: cartContext.id,
       products: productsToAdd,
       totalQuantity: totalQuantity,
-      currency: currencyObject?.country === "1" ? "USD" : "CAD",
+      currency: currencyObject === "1" ? "USD" : "CAD",
     };
     const result = await postRequest("/api/cart", JSON.stringify(data));
     const response = await result.json();
@@ -171,7 +157,7 @@ export default component$(() => {
       products: response.products,
       totalQuantity: response.totalQuantity,
       totalPrice: totalPrice,
-      currency: currencyObject?.country === "1" ? "USD" : "CAD",
+      currency: currencyObject === "1" ? "USD" : "CAD",
     };
     setTimeout(() => {
       isLoading.value = false;

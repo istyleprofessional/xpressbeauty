@@ -1,4 +1,4 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useContext } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import { FeatureProducts } from "~/components/home/tools-products/tools-products";
@@ -8,6 +8,8 @@ import { get_new_arrivals_products } from "~/express/services/product.service";
 import type { ProductModel } from "~/models/product.model";
 // import BannerImage from "~/media/Year6.jpg?jsx";
 import { Hero } from "~/components/home/hero/hero";
+import { UserContext } from "~/context/user.context";
+import { CurContext } from "~/context/cur.context";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();
@@ -57,6 +59,8 @@ export default component$(() => {
   const bestSellerProducts2: ProductModel[] = JSON.parse(
     useBestSellerProducts().value
   );
+  const userObj: any = useContext(UserContext);
+  const currencyObject: any = useContext(CurContext);
 
   return (
     <>
@@ -79,6 +83,8 @@ export default component$(() => {
           <FeatureProducts
             bestSellerProducts={bestSellerProducts2}
             type="Top Selling Products"
+            userObj={userObj}
+            currencyObject={currencyObject}
           />
           <div class="flex justify-center items-center">
             <a
@@ -92,6 +98,8 @@ export default component$(() => {
           <FeatureProducts
             bestSellerProducts={newArrivalProducts}
             type="Hair Products"
+            userObj={userObj}
+            currencyObject={currencyObject}
           />
           <div class="flex justify-center items-center">
             <a
@@ -105,6 +113,8 @@ export default component$(() => {
           <FeatureProducts
             bestSellerProducts={bestSellerProducts}
             type="Clippers & Trimmers"
+            userObj={userObj}
+            currencyObject={currencyObject}
           />
           <div class="flex justify-center items-center">
             <a

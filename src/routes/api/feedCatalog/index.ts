@@ -13,7 +13,6 @@ export const onGet: RequestHandler = async ({ json }) => {
       },
     }
   );
-  const jsons = await cataalog.json();
-  console.log(jsons);
+  await cataalog.json();
   json(200, { message: "Hello World!" });
 };

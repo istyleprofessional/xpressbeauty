@@ -13,11 +13,7 @@ export const onGet: RequestHandler = async ({ json }) => {
         }
       });
     }
-    const updatedProduct = await productSchema.findByIdAndUpdate(
-      product._id,
-      product
-    );
-    console.log(updatedProduct);
+    await productSchema.findByIdAndUpdate(product._id, product);
   }
   json(200, { message: "Hello World!" });
 };

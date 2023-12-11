@@ -1,32 +1,26 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import { server$ } from "@builder.io/qwik-city";
 import { ProductCard } from "~/components/shared/product-card/product-card";
 import type { ProductModel } from "~/models/product.model";
 
 interface BestSellerProps {
   bestSellerProducts: ProductModel[];
   type: string;
+  userObj?: any;
+  currencyObject?: any;
 }
 
-export const currLoader = server$(async function () {
-  const country = this.cookie.get("cur")?.value ?? "";
-  const rate = this.cookie.get("curRate")?.value ?? "";
-  return { country: country, rate: rate };
-});
-
 export const FeatureProducts = component$((props: BestSellerProps) => {
-  const { bestSellerProducts, type } = props;
+  const { bestSellerProducts, type, userObj, currencyObject } = props;
   const isVisble = useSignal<boolean>(false);
-  const currencyObject = useSignal<any>({});
 
   useVisibleTask$(
     async ({ track }) => {
       track(() => isVisble.value);
       isVisble.value = true;
-      currencyObject.value = await currLoader();
     },
     { strategy: "intersection-observer" }
   );
+
   return (
     <div
       class="flex flex-col justify-center items-center gap-7 pt-20"
@@ -40,7 +34,8 @@ export const FeatureProducts = component$((props: BestSellerProps) => {
               product={item}
               i={i}
               key={i}
-              currencyObject={currencyObject.value}
+              userObj={userObj}
+              currencyObject={currencyObject.cur}
             />
           ))}
         </div>

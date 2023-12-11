@@ -20,7 +20,7 @@ export const CartDetails = component$((props: any) => {
 
   useTask$(({ track }) => {
     track(() => cartContext?.cart?.totalPrice);
-    track(() => props?.currencyObject);
+    track(() => props?.currencyObject.cur);
 
     subTotal.value = cartContext?.cart?.totalPrice;
     if (subTotal.value > 150) {
@@ -29,7 +29,7 @@ export const CartDetails = component$((props: any) => {
       shipping.value = subTotal.value > 150 ? 0 : 15;
     }
     total.value = subTotal.value + shipping.value;
-    if (props?.currencyObject?.country === "1") {
+    if (props?.currencyObject?.cur === "1") {
       symbol.value = "USD";
     } else {
       symbol.value = "CAD";
