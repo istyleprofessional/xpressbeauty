@@ -4,6 +4,7 @@ import {
   useSignal,
   useTask$,
   useVisibleTask$,
+  useVisibleTask$,
 } from "@builder.io/qwik";
 import { PerviousArrowIconNoStick } from "~/components/shared/icons/icons";
 import { Steps } from "~/components/shared/steps/steps";
@@ -24,7 +25,7 @@ import { sendConfirmationOrderForAdmin } from "~/utils/sendConfirmationOrderForA
 import { createOrder } from "~/express/services/order.service";
 import { loadScript } from "@paypal/paypal-js";
 import paypal from "paypal-rest-sdk";
-// import SalesTax from "sales-tax";
+import SalesTax from "sales-tax";
 import { getDummyCustomer } from "~/express/services/dummy.user.service";
 
 export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
@@ -32,8 +33,7 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   if (!token) {
     return JSON.stringify({ status: "failed" });
   }
-  let shortCoCode: string = "";
-  let shortStateCode: string = "";
+  let rate: number = 0.13;
   try {
     const verified: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
     if (!verified) {
@@ -55,14 +55,23 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
       if (!user.result) {
         return JSON.stringify({ status: "failed" });
       }
-      shortCoCode = jsonDetails.result.address_components.find((comp: any) => {
-        return comp.types.includes("country");
-      })?.short_name;
-      shortStateCode = jsonDetails.result.address_components.find(
+      const shortCoCode = jsonDetails.result.address_components.find(
+        (comp: any) => {
+          return comp.types.includes("country");
+        }
+      )?.short_name;
+      const shortStateCode = jsonDetails.result.address_components.find(
         (comp: any) => {
           return comp.types.includes("administrative_area_level_1");
         }
       )?.short_name;
+      try {
+        const sales = await SalesTax.getSalesTax(shortCoCode, shortStateCode);
+        rate = sales?.rate ?? 0.13;
+      } catch (e) {
+        console.log(e);
+        rate = 0.13;
+      }
       const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "", {
         apiVersion: "2022-11-15",
       });
@@ -75,7 +84,6 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
       }
     } else {
       const dummyUser = await getDummyCustomer(verified.user_id);
-      console.log(dummyUser.result?.generalInfo?.address?.postalCode);
       const apiKey = "AIzaSyCaw8TltqjUfM0QyLnGGo8sQzRI8NtHqus";
       const components = "country:US|country:CA";
       const urls = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${dummyUser.result?.generalInfo?.address?.postalCode}&key=${apiKey}&components=${components}`;
@@ -88,14 +96,23 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
       if (!dummyUser.result) {
         return JSON.stringify({ status: "failed" });
       }
-      shortCoCode = jsonDetails.result.address_components.find((comp: any) => {
-        return comp.types.includes("country");
-      })?.short_name;
-      shortStateCode = jsonDetails.result.address_components.find(
+      const shortCoCode = jsonDetails.result.address_components.find(
+        (comp: any) => {
+          return comp.types.includes("country");
+        }
+      )?.short_name;
+      const shortStateCode = jsonDetails.result.address_components.find(
         (comp: any) => {
           return comp.types.includes("administrative_area_level_1");
         }
       )?.short_name;
+      try {
+        const sales = await SalesTax.getSalesTax(shortCoCode, shortStateCode);
+        rate = sales?.rate ?? 0.13;
+      } catch (e) {
+        console.log(e);
+        rate = 0.13;
+      }
     }
     if (!getCart) {
       return JSON.stringify({ status: "failed" });
@@ -106,8 +123,7 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
     return JSON.stringify({
       status: "success",
       cards: cards ?? [],
-      shortCoCode,
-      shortStateCode,
+      rate: rate,
     });
   } catch (e) {
     console.log(e);
@@ -258,7 +274,6 @@ export const useCurrLoader = routeLoader$(async ({ cookie }) => {
 export default component$(() => {
   const isLoading = useSignal<boolean>(false);
   const paymentRoute = JSON.parse(usePaymentRoute().value);
-  console.log(paymentRoute);
   const userContext: any = useContext(UserContext);
   const cartContext: any = useContext(CartContext);
   const total = useSignal<number>(0);
@@ -269,15 +284,11 @@ export default component$(() => {
   const currencyObject = useCurrLoader().value;
   const subTotal = useSignal<number>(0);
   const taxRate = useSignal<number>(0);
-  // console.log(userContext?.user);
-  useTask$(
-    async () => {
-      taxRate.value = 0.13;
-    }
-    // { strategy: "document-idle" }
-  );
 
-  // console.log(userContext);
+  useTask$(async () => {
+    taxRate.value = paymentRoute?.rate ?? 0.13;
+  });
+
   useVisibleTask$(
     () => {
       if (paymentRoute.status === "failed") {
