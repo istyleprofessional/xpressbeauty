@@ -1,5 +1,6 @@
 import { component$ } from "@builder.io/qwik";
-import { DocumentHead, routeLoader$, useNavigate } from "@builder.io/qwik-city";
+import type { DocumentHead } from "@builder.io/qwik-city";
+import { routeLoader$, useNavigate } from "@builder.io/qwik-city";
 import jwt from "jsonwebtoken";
 import { getMyOrdersService } from "~/express/services/order.service";
 

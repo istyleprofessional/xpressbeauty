@@ -138,6 +138,7 @@ export const paypalServer = server$(async function (data: any, user: any) {
       client_id: import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
       client_secret: import.meta.env.VITE_PAYPAL_APP_SECRET ?? "",
     });
+    console.log(data);
     const create_payment_json = {
       intent: "sale",
       payer: {
@@ -153,7 +154,7 @@ export const paypalServer = server$(async function (data: any, user: any) {
           item_list: {
             items: data.products.map((product: any) => {
               return {
-                name: product.name,
+                name: product.product_name,
                 sku: product.sku,
                 price: parseFloat(product.price).toFixed(2),
                 currency: data.currency ?? "CAD",
@@ -177,6 +178,7 @@ export const paypalServer = server$(async function (data: any, user: any) {
         },
       ],
     };
+    console.log(create_payment_json);
     const paypalPromise = await new Promise((resolve, reject) => {
       paypal.payment.create(create_payment_json, (error, payment) => {
         if (error) {
@@ -333,9 +335,9 @@ export default component$(() => {
               email: userContext?.user?.email,
               products: cartContext?.cart?.products,
               // shipping:
-              shipping: subTotal.value > 150 ? 0 : 15,
+              shipping: subTotal.value > 200 ? 0 : 15,
               totalInfo: {
-                shipping: subTotal.value > 150 ? 0 : 15,
+                shipping: subTotal.value > 200 ? 0 : 15,
                 tax: userContext?.user?.generalInfo?.address?.country
                   ?.toLowerCase()
                   ?.includes("united")
@@ -369,7 +371,7 @@ export default component$(() => {
                 },
                 currency: currencyObject?.country === "1" ? "USD" : "CAD",
                 totalInfo: {
-                  shipping: subTotal.value > 150 ? 0 : 15,
+                  shipping: subTotal.value > 200 ? 0 : 15,
                   tax: userContext?.user?.generalInfo?.address?.country
                     ?.toLowerCase()
                     ?.includes("united")
@@ -455,7 +457,7 @@ export default component$(() => {
           acceptSaveCard: acceptSaveCard.value,
           paymentSource: "STRIPE",
           totalInfo: {
-            shipping: subTotal.value > 150 ? 0 : 15,
+            shipping: subTotal.value > 200 ? 0 : 15,
             tax: !userContext?.user?.generalInfo?.address?.country
               ?.toLowerCase()
               ?.includes("united")
@@ -486,7 +488,7 @@ export default component$(() => {
         isLoading.value = true;
         if (finalCard.value && isExistingPaymentMethod.value) {
           const totalInfo = {
-            shipping: subTotal.value > 150 ? 0 : 15,
+            shipping: subTotal.value > 200 ? 0 : 15,
             tax: !userContext?.user?.generalInfo?.address?.country
               ?.toLowerCase()
               ?.includes("united")

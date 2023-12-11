@@ -41,9 +41,9 @@ export default component$(() => {
   const myOrderDetailsData = JSON.parse(myOrderDetails.value ?? "[]");
   const order = myOrderDetailsData.data._doc;
   const subTotal =
-    parseFloat(order.totalPrice) > 150
+    parseFloat(order.totalPrice) > 200
       ? parseFloat(order.totalPrice) - parseFloat(order.totalPrice) * 0.13
-      : parseFloat(order.totalPrice) - 15 - parseFloat(order.totalPrice) * 0.13;
+      : parseFloat(order.totalPrice) - parseFloat(order.totalPrice) * 0.13;
   const hst = parseFloat(order.totalPrice) * 0.13;
   const date = new Date(order.createdAt);
   return (

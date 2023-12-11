@@ -87,9 +87,13 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
 
   return (
     <>
-      <h2 class="text-white text-xl font-semibold">Card Details</h2>
-      <div class="flex flex-row gap-3 justify-center items-end"></div>
       {/** ask the user if he wants to use the perivious payment method */}
+      {!isExistingPaymentMethod && (
+        <>
+          <h2 class="text-white text-xl font-semibold">Card Details</h2>
+          <div class="flex flex-row gap-3 justify-center items-end"></div>
+        </>
+      )}
 
       <form
         id="payment-form"
