@@ -27,18 +27,19 @@ export const useRegisterForm = routeAction$(async (data, { env }) => {
     };
   }
   newData.phoneNumber = newData?.phoneNumber?.toString()?.startsWith("1")
-    ? `+${newData?.phoneNumber}`
-    : `+1${newData?.phoneNumber}`;
-  console.log(newData);
+    ? `+${newData?.phoneNumber?.trim()}`
+    : `+1${newData?.phoneNumber?.trim()}`;
   const validationObject = {
-    email: validate(newData?.email, "email"),
+    email: validate(newData?.email?.trim(), "email"),
     password:
-      validate(newData?.password, "password") && newData?.password?.length >= 8,
-    confirmPassword: newData?.confirmPassword === newData?.password,
-    lastName: validate(newData?.lastName, "lastName"),
-    firstName: validate(newData?.firstName, "firstName"),
+      validate(newData?.password?.trim(), "password") &&
+      newData?.password?.length >= 8,
+    confirmPassword:
+      newData?.confirmPassword?.trim() === newData?.password?.trim(),
+    lastName: validate(newData?.lastName?.trim(), "lastName"),
+    firstName: validate(newData?.firstName?.trim(), "firstName"),
     phoneNumber:
-      validate(newData?.phoneNumber, "phoneNumber") &&
+      validate(newData?.phoneNumber?.trim(), "phoneNumber") &&
       newData?.phoneNumber?.length === 12 &&
       newData.isPhoneValid === "true",
   };
@@ -268,7 +269,7 @@ export default component$(() => {
                 identifier="password"
                 handleOnChange={$((e: any) => {
                   const value = e.target.value;
-                  if (value.length < 8) {
+                  if (value.length < 2) {
                     passwordValidation.value = true;
                     return;
                   }
