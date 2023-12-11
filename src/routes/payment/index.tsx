@@ -1,11 +1,4 @@
-import {
-  component$,
-  useContext,
-  useSignal,
-  useTask$,
-  useVisibleTask$,
-  useVisibleTask$,
-} from "@builder.io/qwik";
+import { component$, useContext, useSignal, useTask$ } from "@builder.io/qwik";
 import { PerviousArrowIconNoStick } from "~/components/shared/icons/icons";
 import { Steps } from "~/components/shared/steps/steps";
 import { ProductList } from "~/components/cart/product-list/product-list";
