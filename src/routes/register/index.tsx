@@ -186,9 +186,7 @@ export default component$(() => {
               </div>
             )}
             <div class="flex flex-col gap-6 justify-center items-center p-5">
-              <h1 class="text-black text-lg font-bold">
-                Sign up now and receive 20% off on your order
-              </h1>
+              <h1 class="text-black text-lg font-bold">Sign up now</h1>
               <p class="text-black font-light text-base">
                 If you don't yet have an online account on xpressbeauty.ca ,
                 Create one now to shop online, access special promotions,
