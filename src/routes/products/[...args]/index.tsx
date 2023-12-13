@@ -668,7 +668,7 @@ export default component$(() => {
         <div class="md:col-span-3">
           <div class="md:flex md:flex-col gap-16">
             <ProductsSection
-              currencyObject={currencyObject}
+              currencyObject={currencyObject.cur}
               products={productData}
               currentPage={page.value}
               handleSorting={handleSorting}

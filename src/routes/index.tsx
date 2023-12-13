@@ -114,7 +114,7 @@ export default component$(() => {
             bestSellerProducts={bestSellerProducts}
             type="Clippers & Trimmers"
             userObj={userObj}
-            currencyObject={currencyObject.cur}
+            currencyObject={currencyObject}
           />
           <div class="flex justify-center items-center">
             <a
