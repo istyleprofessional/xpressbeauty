@@ -75,7 +75,7 @@ export const useUserData = routeLoader$(
       },
     };
     console.log(data);
-    let curr: string = cookie.get("cur")?.value ?? "1";
+    let curr: any = cookie.get("cur")?.value;
     if (userAgent?.includes("bot")) {
       cookie.delete("token", { path: "/" });
       return JSON.stringify({
