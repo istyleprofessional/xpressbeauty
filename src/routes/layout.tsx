@@ -76,6 +76,13 @@ export const useUserData = routeLoader$(
     };
     console.log(data);
     let curr: string = cookie.get("cur")?.value ?? "1";
+    if (userAgent?.includes("bot")) {
+      cookie.delete("token", { path: "/" });
+      return JSON.stringify({
+        user: null,
+        cur: curr,
+      });
+    }
     if (!curr) {
       if (country_name?.toLowerCase()?.includes("united")) {
         curr = "1";
