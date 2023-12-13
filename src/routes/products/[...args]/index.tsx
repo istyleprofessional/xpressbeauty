@@ -6,6 +6,7 @@ import {
   useTask$,
   useVisibleTask$,
   $,
+  useContext,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, useLocation, useNavigate } from "@builder.io/qwik-city";
@@ -13,17 +14,12 @@ import { BrandFilter } from "~/components/products-page/brand-filter/brand-filte
 import { CategoryFilter } from "~/components/products-page/category-filter/category-filter";
 import { PriceFilter } from "~/components/products-page/price-filter/price-filter";
 import { ProductsSection } from "~/components/products-page/products-section/products-section";
+import { CurContext } from "~/context/cur.context";
 import { connect } from "~/express/db.connection";
 import { get_all_brands } from "~/express/services/brand.service";
 import { get_all_categories } from "~/express/services/category.service";
 import { get_products_data } from "~/express/services/product.service";
 import { postRequest } from "~/utils/fetch.utils";
-
-export const useCurrLoader = routeLoader$(async ({ cookie }) => {
-  const country = cookie.get("cur")?.value ?? "";
-  const rate = cookie.get("curRate")?.value ?? "";
-  return { country: country, rate: rate };
-});
 
 export const useFilterData = routeLoader$(async () => {
   await connect();
@@ -129,7 +125,6 @@ export default component$(() => {
   const productData = useSignal<any[]>(
     JSON.parse(firstRender.value).serverData
   );
-  const currencyObject = useCurrLoader().value;
   const sort = useSignal<string>("");
   const loc = useLocation();
   const page = useSignal<string>(loc.url.searchParams.get("page") ?? "1");
@@ -137,6 +132,7 @@ export default component$(() => {
   const filterCategoriessArray = useStore<any>({ value: [] }, { deep: true });
   const filterPrices = useSignal<any[]>([]);
   const query = useSignal<string>(loc.url.searchParams.get("search") ?? "");
+  const currencyObject: any = useContext(CurContext);
   const isChecked = useStore<any>(
     {
       Hair: false,
@@ -672,7 +668,7 @@ export default component$(() => {
         <div class="md:col-span-3">
           <div class="md:flex md:flex-col gap-16">
             <ProductsSection
-              currencyObject={currencyObject}
+              currencyObject={currencyObject.cur}
               products={productData}
               currentPage={page.value}
               handleSorting={handleSorting}

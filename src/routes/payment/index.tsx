@@ -372,7 +372,7 @@ export default component$(() => {
                 currency: currencyObject?.country === "1" ? "USD" : "CAD",
                 totalInfo: {
                   shipping: subTotal.value > 200 ? 0 : 15,
-                  tax: userContext?.user?.generalInfo?.address?.country
+                  tax: !userContext?.user?.generalInfo?.address?.country
                     ?.toLowerCase()
                     ?.includes("united")
                     ? parseFloat(

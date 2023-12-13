@@ -112,6 +112,7 @@ export const onPost: RequestHandler = async ({
           );
         }
       }
+      console.log("data", data);
       const totalInfo = data.totalInfo;
       await sendConfirmationEmail(
         email ?? "",
