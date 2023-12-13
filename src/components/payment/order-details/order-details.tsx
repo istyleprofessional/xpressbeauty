@@ -67,10 +67,10 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
       ?.includes("united")
       ? (cart?.totalPrice ?? 0) * taxRate
       : 0;
-    if (subTotal.value > 150) {
+    if (subTotal.value > 200) {
       shipping.value = 0;
     } else {
-      shipping.value = subTotal.value > 0 ? 15 : 0;
+      shipping.value = 0;
     }
     total.value = subTotal.value + hst.value + shipping.value;
     if (currencyObject?.country === "1") {
