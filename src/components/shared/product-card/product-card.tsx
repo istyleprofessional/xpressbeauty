@@ -134,31 +134,21 @@ export const ProductCard = component$((props: ProductCardProps) => {
               product.sale_price.sale !== "" && (
                 <>
                   <span class=" text-neutral-800">
-                    {!(user.isEmailVerified && user.isPhoneVerified)
-                      ? finalRegularPrice.value
-                      : verifiedSalePrice.value}
+                    {finalRegularPrice.value}
                   </span>
                 </>
               )}
             {product.priceType === "single" &&
               product.sale_price.sale === "" && (
-                <span class=" text-neutral-800">
-                  {!(user.isEmailVerified && user.isPhoneVerified)
-                    ? finalRegularPrice.value
-                    : verifiedPrice.value}
-                </span>
+                <span class=" text-neutral-800">{finalRegularPrice.value}</span>
               )}
             {product.priceType === "range" && (
-              <span class=" text-neutral-800">
-                {!(user.isEmailVerified && user.isPhoneVerified)
-                  ? finalRegularPrice.value
-                  : verifiedPrice.value}
-              </span>
+              <span class=" text-neutral-800">{finalRegularPrice.value}</span>
             )}
           </p>
           {!(user.isEmailVerified && user.isPhoneVerified) && (
             <>
-              <label class=" bg-warning w-full text-center rounded-md">
+              {/* <label class=" bg-warning w-full text-center rounded-md">
                 <span class="text-xs md:text-sm text-gray-500 text-center font-bold text-black p-1 normal-case">
                   Saver Club
                 </span>
@@ -196,13 +186,14 @@ export const ProductCard = component$((props: ProductCardProps) => {
                     )}
                   </h2>
                 </div>
-              </div>
+              </div> */}
             </>
           )}
           {user.isEmailVerified && user.isPhoneVerified && (
-            <p class="text-xs text-gray-500 text-center font-bold text-info p-1 normal-case">
-              You are a Saver Club Member
-            </p>
+            <></>
+            // <p class="text-xs text-gray-500 text-center font-bold text-info p-1 normal-case">
+            //   You are a Saver Club Member
+            // </p>
           )}
         </div>
       </div>

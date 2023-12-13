@@ -23,10 +23,10 @@ export const CartDetails = component$((props: any) => {
     track(() => props?.currencyObject.cur);
 
     subTotal.value = cartContext?.cart?.totalPrice;
-    if (subTotal.value > 150) {
+    if (subTotal.value > 200) {
       shipping.value = 0;
     } else {
-      shipping.value = subTotal.value > 150 ? 0 : 15;
+      shipping.value = 15;
     }
     total.value = subTotal.value + shipping.value;
     if (props?.currencyObject?.cur === "1") {

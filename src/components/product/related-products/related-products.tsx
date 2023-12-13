@@ -7,10 +7,11 @@ import {
 
 export interface RelatedProductsProps {
   relatedProducts?: any[];
+  currencyObject?: any;
 }
 
 export const RelatedProducts = component$((props: RelatedProductsProps) => {
-  const { relatedProducts } = props;
+  const { relatedProducts, currencyObject } = props;
 
   const handleNextSlideClick = $(() => {
     const carousel = document.querySelector<HTMLElement>(".carousel")!;
@@ -41,7 +42,12 @@ export const RelatedProducts = component$((props: RelatedProductsProps) => {
               <>
                 {relatedProducts?.map((item: any, i: number) => (
                   <div class="carousel-item" key={i}>
-                    <ProductCard product={item} i={i} cardSize="sm" />
+                    <ProductCard
+                      product={item}
+                      i={i}
+                      cardSize="sm"
+                      currencyObject={currencyObject}
+                    />
                   </div>
                 ))}
               </>

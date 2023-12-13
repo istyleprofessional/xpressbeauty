@@ -106,10 +106,7 @@ export default component$(() => {
           product_name: product.product_name,
           variation_name: element.variation_name,
           product_img: (product?.imgs ?? [])[0] ?? "",
-          price:
-            user.isEmailVerified && user.isPhoneVerified
-              ? parseFloat(element?.price) - parseFloat(element?.price) * 0.2
-              : parseFloat(element?.price),
+          price: parseFloat(element?.price),
           quantity: element.quantity,
           currency: currencyObject === "1" ? "USD" : "CAD",
         };
@@ -121,18 +118,7 @@ export default component$(() => {
         id: product._id,
         product_name: product.product_name,
         product_img: (product?.imgs ?? [])[0] ?? "",
-        price:
-          user.isEmailVerified && user.isPhoneVerified
-            ? product.sale_price.sale !== 0 && product.sale_price.sale !== ""
-              ? (
-                  parseFloat(product?.sale_price?.sale?.toString()) -
-                  parseFloat(product?.sale_price?.sale?.toString()) * 0.2
-                ).toFixed(2)
-              : (
-                  parseFloat(product?.price?.regular?.toString()) -
-                  parseFloat(product?.price?.regular.toString()) * 0.2
-                ).toFixed(2)
-            : parseFloat(product?.price?.regular),
+        price: parseFloat(product?.price?.regular?.toString()).toFixed(2),
         quantity: value,
         currency: currencyObject === "1" ? "USD" : "CAD",
       };
@@ -360,7 +346,10 @@ export default component$(() => {
             />
           </div>
           {relatedProducts.value?.length > 0 && (
-            <RelatedProducts relatedProducts={relatedProducts.value || null} />
+            <RelatedProducts
+              relatedProducts={relatedProducts.value || null}
+              currencyObject={currencyObject}
+            />
           )}
         </div>
       </div>
