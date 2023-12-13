@@ -35,7 +35,7 @@ export const useServerData = routeLoader$(async ({ params, redirect }) => {
   const product = params.product;
   if (!product.includes("pid")) {
     const result: any = await get_product_by_name(product);
-    if (result?.err) {
+    if (!result || result?.err || result?.perfix === "") {
       throw redirect(301, `/products/`);
     }
     throw redirect(301, `/products/${result?.perfix}`);
@@ -127,10 +127,12 @@ export default component$(() => {
       productsToAdd.push(productToAdd);
     }
     const data = {
-      browserId: cartContext.id,
       products: productsToAdd,
       totalQuantity: totalQuantity,
       currency: currencyObject === "1" ? "USD" : "CAD",
+      isSaverClub: !(user.isEmailVerified && user.isPhoneVerified)
+        ? true
+        : false,
     };
     const result = await postRequest("/api/cart", JSON.stringify(data));
     const response = await result.json();
