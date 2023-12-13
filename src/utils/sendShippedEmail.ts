@@ -40,9 +40,15 @@ export const sendShippedEmail = async (
                 (product) =>
                   `
                <tr>
-                <td style="border: 1px solid #ccc; padding: 8px;">${product.product_name}</td>
-                <td style="border: 1px solid #ccc; padding: 8px;">${product.quantity}</td>
-                <td style="border: 1px solid #ccc; padding: 8px;">$${product.price}</td>
+                <td style="border: 1px solid #ccc; padding: 8px;">${
+                  product.product_name
+                }</td>
+                <td style="border: 1px solid #ccc; padding: 8px;">${
+                  product.quantity
+                }</td>
+                <td style="border: 1px solid #ccc; padding: 8px;">$${parseFloat(
+                  product?.price?.toString()
+                ).toFixed(2)}</td>
                 </tr>
                 `
               )
