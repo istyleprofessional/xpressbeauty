@@ -426,8 +426,8 @@ export default component$(() => {
                   </p>
                   <p class="text-xs">
                     Customer Phone:{" "}
-                    {orderDetail.value?.user?.phone ??
-                      orderDetail.value?.dummyUser?.phone ??
+                    {orderDetail.value?.user?.phoneNumber ??
+                      orderDetail.value?.dummyUser?.phoneNumber ??
                       "Not Found"}
                   </p>
                 </div>
