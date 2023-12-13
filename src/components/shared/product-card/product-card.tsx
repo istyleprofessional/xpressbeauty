@@ -19,8 +19,8 @@ export const ProductCard = component$((props: ProductCardProps) => {
 
   useVisibleTask$(
     ({ track }) => {
-      track(() => currencyObject.cur);
-      if (currencyObject.cur === "1") {
+      track(() => currencyObject);
+      if (currencyObject === "1") {
         if (product.priceType === "range") {
           product.price.min = parseFloat(product?.price?.min?.toString()) * 0.9;
 
