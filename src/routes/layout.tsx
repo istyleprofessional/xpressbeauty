@@ -22,6 +22,7 @@ import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 import ip2location from "ip-to-location";
 import { CurContext } from "~/context/cur.context";
+// import GmailFactory from "gmail-js";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
   cacheControl({

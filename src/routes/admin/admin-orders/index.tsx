@@ -133,7 +133,7 @@ export default component$(() => {
               <th></th>
               <th>User</th>
               <th>Order No.</th>
-              
+
               <th>Address</th>
               <th>Total</th>
               <th>Date</th>
@@ -167,6 +167,8 @@ export default component$(() => {
                       <span>{order?.shippingAddress?.city}</span>
                       {", "}
                       <span>{order?.shippingAddress?.country}</span>
+                      {", "}
+                      <span>{order?.shippingAddress?.postalCode}</span>
                     </td>
                     <td>
                       {order.totalPrice.toLocaleString("en-US", {
@@ -420,6 +422,12 @@ export default component$(() => {
                     Customer Email:{" "}
                     {orderDetail.value?.user?.email ??
                       orderDetail.value?.dummyUser?.email ??
+                      "Not Found"}
+                  </p>
+                  <p class="text-xs">
+                    Customer Phone:{" "}
+                    {orderDetail.value?.user?.phone ??
+                      orderDetail.value?.dummyUser?.phone ??
                       "Not Found"}
                   </p>
                 </div>

@@ -76,6 +76,7 @@
     "fb": "^2.0.0",
     "flowbite": "^1.8.1",
     "geoip-lite": "^1.4.7",
+    "gmail-js": "^1.1.11",
     "google-auth-library": "^9.2.0",
     "google-spreadsheet": "^4.1.1",
     "googleapis": "^128.0.0",
