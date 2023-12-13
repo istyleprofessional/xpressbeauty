@@ -133,6 +133,7 @@ export default component$(() => {
               <th></th>
               <th>User</th>
               <th>Order No.</th>
+              
               <th>Address</th>
               <th>Total</th>
               <th>Date</th>
@@ -436,6 +437,7 @@ export default component$(() => {
                       <tr class="bg-[#F1F5F9]">
                         <th>Image</th>
                         <th>Product</th>
+                        <th>Product Id</th>
                         <th>Price</th>
                         <th>Quantity</th>
                         <th>Sub Total</th>
@@ -460,6 +462,7 @@ export default component$(() => {
                                 />
                               </td>
                               <td>{product?.product_name}</td>
+                              <td>{product?.id}</td>
                               <td>{product?.price}</td>
                               <td>{product?.quantity}</td>
                               <td>{subTotal}</td>
