@@ -70,7 +70,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     if (subTotal.value > 200) {
       shipping.value = 0;
     } else {
-      shipping.value = 0;
+      shipping.value = 15;
     }
     total.value = subTotal.value + hst.value + shipping.value;
     if (currencyObject?.country === "1") {
