@@ -144,6 +144,7 @@ export default component$(() => {
   );
   const nav = useNavigate();
   const filterType = useSignal<string>("");
+  const isLoading = useSignal<boolean>(false);
 
   useTask$(() => {
     const filters = loc.params.args.split("/");
@@ -193,6 +194,7 @@ export default component$(() => {
   );
 
   const handleCategoryCheckBoxChange = $(async (event: any, name: string) => {
+    isLoading.value = true;
     const value = event.target.checked;
     if (value) {
       filterCategoriessArray.value.push(`${name}`);
@@ -248,6 +250,7 @@ export default component$(() => {
       replaceState: false,
       scroll: false,
     });
+    isLoading.value = false;
   });
 
   useTask$(() => {
@@ -260,6 +263,7 @@ export default component$(() => {
   });
 
   const handleClearFilter = $(async () => {
+    isLoading.value = true;
     const url = new URL(window.location.href);
     filterBrandsArray.value = [];
     filterCategoriessArray.value = [];
@@ -289,9 +293,11 @@ export default component$(() => {
     productData.value = JSON.parse(data);
     query.value = "";
     filtersNo.value = 0;
+    isLoading.value = false;
   });
 
   const handleSearchInput = $(async (e: any) => {
+    isLoading.value = true;
     const value = e.target.value;
     query.value = value;
     const url = new URL(window.location.href);
@@ -314,9 +320,11 @@ export default component$(() => {
     });
     const result = await request.json();
     productData.value = JSON.parse(result);
+    isLoading.value = false;
   });
 
   const handleSorting = $(async (e: any) => {
+    isLoading.value = true;
     const url = new URL(window.location.href);
     sort.value = e.target.value;
     let newFilterBrands = [];
@@ -367,10 +375,12 @@ export default component$(() => {
       replaceState: false,
       scroll: false,
     });
+    isLoading.value = false;
   });
 
   const handleBrandCheckBoxChange = $(
     async (e: QwikChangeEvent<HTMLInputElement>, brandName: string) => {
+      isLoading.value = true;
       const value = e.target.checked;
       const url = loc.url;
       if (value) {
@@ -423,10 +433,12 @@ export default component$(() => {
       });
       const data = await result.json();
       productData.value = JSON.parse(data);
+      isLoading.value = false;
     }
   );
 
   const handlePricesCheckBoxChange = $(async (event: any, valueEl: any) => {
+    isLoading.value = true;
     const value = event.target.checked;
     const url = loc.url;
     if (value) {
@@ -483,6 +495,7 @@ export default component$(() => {
     });
     const data = await result.json();
     productData.value = JSON.parse(data);
+    isLoading.value = false;
   });
 
   return (
@@ -667,12 +680,19 @@ export default component$(() => {
         </div>
         <div class="md:col-span-3">
           <div class="md:flex md:flex-col gap-16">
-            <ProductsSection
-              currencyObject={currencyObject.cur}
-              products={productData}
-              currentPage={page.value}
-              handleSorting={handleSorting}
-            />
+            {isLoading.value && (
+              <div class="flex flex-col items-center justify-center gap-3 p-3 bg-white rounded-lg shadow-lg">
+                <h2 class="text-lg font-bold">Loading...</h2>
+              </div>
+            )}
+            {!isLoading.value && (
+              <ProductsSection
+                currencyObject={currencyObject.cur}
+                products={productData}
+                currentPage={page.value}
+                handleSorting={handleSorting}
+              />
+            )}
           </div>
         </div>
       </div>

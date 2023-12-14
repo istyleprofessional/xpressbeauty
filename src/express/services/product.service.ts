@@ -316,54 +316,27 @@ export const get_products_data = async (
       }
     }
     if (query && query !== "") {
-      const queryArr = query.split(" ");
-      if (queryArr.length > 1) {
-        for (const qur of queryArr) {
-          buildQuery["$or"].push(
-            ...[
-              {
-                variations: {
-                  $elemMatch: {
-                    variation_name: { $regex: qur, $options: "i" },
-                  },
-                },
-              },
-              {
-                categories: {
-                  $elemMatch: {
-                    main: { $regex: qur, $options: "i" },
-                    name: { $regex: qur, $options: "i" },
-                  },
-                },
-              },
-              { product_name: { $regex: qur, $options: "i" } },
-              { "companyName.name": { $regex: qur, $options: "i" } },
-            ]
-          );
-        }
-      } else {
-        buildQuery["$or"].push(
-          ...[
-            {
-              variations: {
-                $elemMatch: {
-                  variation_name: { $regex: query, $options: "i" },
-                },
+      buildQuery["$or"].push(
+        ...[
+          {
+            variations: {
+              $elemMatch: {
+                variation_name: { $regex: query, $options: "i" },
               },
             },
-            {
-              categories: {
-                $elemMatch: {
-                  main: { $regex: query, $options: "i" },
-                  name: { $regex: query, $options: "i" },
-                },
+          },
+          {
+            categories: {
+              $elemMatch: {
+                main: { $regex: query, $options: "i" },
+                name: { $regex: query, $options: "i" },
               },
             },
-            { product_name: { $regex: query, $options: "i" } },
-            { "companyName.name": { $regex: query, $options: "i" } },
-          ]
-        );
-      }
+          },
+          { product_name: { $regex: query, $options: "i" } },
+          { "companyName.name": { $regex: query, $options: "i" } },
+        ]
+      );
     }
     if (buildQuery["$or"].length === 0) {
       delete buildQuery["$or"];
