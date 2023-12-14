@@ -331,11 +331,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
                   </a>
                 </li>
                 <li>
-                  <a
-                    class="lg:text-lg"
-                    href="/products/filter/Brands"
-                    aria-label="Brands"
-                  >
+                  <a class="lg:text-lg" href="/brands" aria-label="Brands">
                     Brands
                   </a>
                 </li>
@@ -374,11 +370,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
                   </a>
                 </li>
                 <li>
-                  <a
-                    class="lg:text-lg"
-                    href="/products/filter/Brands"
-                    aria-label="Brands"
-                  >
+                  <a class="lg:text-lg" href="/brands" aria-label="Brands">
                     Brands
                   </a>
                 </li>
