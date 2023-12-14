@@ -60,11 +60,10 @@ export default component$(() => {
       )}
       <div class="flex flex-wrap gap-3 justify-center">
         {JSON.parse(brands).brands.map(async (brand: any, index: number) => {
-          console.log();
           return (
             <a
               key={index}
-              class="flex flex-col items-center justify-center gap-3 p-3 bg-white rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out cursor-pointer"
+              class="flex flex-col items-center justify-center gap-3 p-3 bg-white rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out cursor-pointer w-44 h-44"
               href={`/products/filterBrands/${brand.name}`}
             >
               <Image
@@ -73,7 +72,7 @@ export default component$(() => {
                 alt={brand.name}
               />
 
-              <h2 class="text-lg font-bold">{brand.name}</h2>
+              <h2 class="text-sm font-bold">{brand.name}</h2>
             </a>
           );
         })}
