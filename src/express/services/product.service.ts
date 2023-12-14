@@ -232,6 +232,7 @@ export const get_products_data = async (
     const pageNumber = page;
     const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
     const buildQuery: any = {};
+
     if (filterByBrand.length > 0) {
       buildQuery["companyName.name"] = { $in: filterByBrand };
     }
@@ -245,7 +246,6 @@ export const get_products_data = async (
       };
     }
     // debugger;
-
     buildQuery["$or"] = [];
     if (filter && filter !== "") {
       buildQuery["$or"].push(

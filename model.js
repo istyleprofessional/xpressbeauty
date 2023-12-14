@@ -73,6 +73,8 @@ const dummyUserSchema = new mongoose.Schema(
 const brandSchema = new mongoose.Schema(
   {
     name: { type: String, unique: true },
+    isHidden: { type: Boolean, default: false },
+    image: { type: String },
   },
   { timestamps: true }
 );

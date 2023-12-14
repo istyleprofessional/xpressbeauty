@@ -4,7 +4,7 @@ const { connect, connection, set } = require("mongoose");
 const models = require("./model");
 const Product = models.Product;
 const Brand = models.Brand;
-const Cart = models.Cart;
+// const Cart = models.Cart;
 const Category = models.Category;
 const categories = require("./backups/categories.json");
 const brand_data = require("./backups/brands.json");
@@ -23,38 +23,39 @@ connect(mongoUrl, {
 })
   .then(() => {
     const seederDb = async () => {
-      await Product.deleteMany({});
-      await Product.insertMany(
-        final.map((item) => {
-          delete item["_id"];
-          item.updatedAt = new Date(
-            item.updatedAt ? item.updatedAt.$date : Date.now()
-          );
-          item.createdAt = new Date(
-            item.createdAt ? item.createdAt.$date : Date.now()
-          );
-          return { ...item };
-        })
-      );
-      await connection.db.dropCollection("carts");
-      await connection.db.dropCollection("users");
+      // await Product.deleteMany({});
+      // await Product.insertMany(
+      //   final.map((item) => {
+      //     delete item["_id"];
+      //     item.updatedAt = new Date(
+      //       item.updatedAt ? item.updatedAt.$date : Date.now()
+      //     );
+      //     item.createdAt = new Date(
+      //       item.createdAt ? item.createdAt.$date : Date.now()
+      //     );
+      //     return { ...item };
+      //   })
+      // );
+      // await connection.db.dropCollection("carts");
+      // await connection.db.dropCollection("users");
       await Brand.deleteMany({});
       await Brand.insertMany(
         brand_data.map((item) => {
           return {
-            name: item,
-          };
-        })
-      );
-      await Category.deleteMany({});
-      await Category.insertMany(
-        categories.map((item) => {
-          return {
             name: item.name,
-            main: item.main,
+            image: item.image,
           };
         })
       );
+      // await Category.deleteMany({});
+      // await Category.insertMany(
+      //   categories.map((item) => {
+      //     return {
+      //       name: item.name,
+      //       main: item.main,
+      //     };
+      //   })
+      // );
       const password = "Xpressbeauty@23";
       const password_1 = "Xpressbeauty@21";
       const password_2 = "Xpressbeauty@22";

@@ -1,80 +1,294 @@
 [
-  "My Amazing Secret",
-  "Reuzel",
-  "SexyHair",
-  "Burmax Company Inc",
-  "ACTiiV Hair Science",
-  "Beauty & Pin-Ups",
-  "STYLECRAFT",
-  "Framar",
-  "3VERSINCE",
-  "Aquage",
-  "Ouidad",
-  "Be Care Love",
-  "Its A 10",
-  "Marianna",
-  "Kenra Professional",
-  "John Paul Mitchell Systems",
-  "ColorMotion+",
-  "JRL",
-  "Celeb Luxury",
-  "INVIGO",
-  "Framesi",
-  "Colortrak Betty Dain",
-  "Colortrak",
-  "Refectocil",
-  "Deva Curl",
-  "CHI",
-  "Wella",
-  "Mydentity",
-  "OSTER PRO",
-  "Danger Jones",
-  "CALIBER PRO",
-  "IDEAL",
-  "BosleyMD",
-  "Piidea-Quantum",
-  "Biolage",
-  "Wet Brush",
-  "Farouk",
-  "PHILTHYBLENDZ",
-  "Scalp and Hair Care",
-  "Sebastian",
-  "Woodys",
-  "Slick Gorilla",
-  "BioSilk",
-  "KMS",
-  "Piidea",
-  "BABYLISSPRO",
-  "Dannyco Sundries",
-  "Dennis Bernard",
-  "Kerasilk",
-  "Malibu C",
-  "amika",
-  "WAHL",
-  "Salon Care",
-  "Product Club",
-  "Redavid",
-  "Olaplex",
-  "BlueCo Brands",
-  "Rusk",
-  "AG Care",
-  "GIBS Grooming",
-  "System",
-  "L'Oreal Professionnel",
-  "BaBylissPRO",
-  "Pureology",
-  "Maria Nila",
-  "Urban Alchemy",
-  "American Crew",
-  "GAMMA+",
-  "ELV8",
-  "Joico",
-  "FHI Heat",
-  "ANDIS",
-  "Flair Beauty",
-  "Goldwell USA",
-  "Nioxin",
-  "Bosley Professional",
-  "Matrix",
-  "TIGI"
+  {
+    "name": "My Amazing Secret",
+    "image": "/public/brands-images/My Amazing Secret.png"
+  },
+  {
+    "name": "Reuzel",
+    "image": "/public/brands-images/Reuzel.webp"
+  },
+  {
+    "name": "SexyHair",
+    "image": "/public/brands-images/SexyHair.jpg"
+  },
+  {
+    "name": "Burmax Company Inc",
+    "image": "/public/brands-images/Burmax Company Inc.png"
+  },
+  {
+    "name": "ACTiiV Hair Science",
+    "image": "/public/brands-images/ACTiiV Hair Science.webp"
+  },
+  {
+    "name": "Beauty & Pin-Ups",
+    "image": "/public/brands-images/Beauty & Pin-Ups.png"
+  },
+  {
+    "name": "STYLECRAFT",
+    "image": "/public/brands-images/STYLECRAFT.png"
+  },
+  {
+    "name": "Framar",
+    "image": "/public/brands-images/Framar.webp"
+  },
+  {
+    "name": "Aquage",
+    "image": "/public/brands-images/Aquage.webp"
+  },
+  {
+    "name": "Ouidad",
+    "image": "/public/brands-images/Ouidad.webp"
+  },
+  {
+    "name": "Be Care Love",
+    "image": "/public/brands-images/Be Care Love.jpg"
+  },
+  {
+    "name": "Its A 10",
+    "image": "/public/brands-images/Its A 10.webp"
+  },
+  {
+    "name": "Marianna",
+    "image": "/public/brands-images/Marianna.jpg"
+  },
+  {
+    "name": "Kenra Professional",
+    "image": "/public/brands-images/Kenra Professional.webp"
+  },
+  {
+    "name": "John Paul Mitchell Systems",
+    "image": "/public/brands-images/John Paul Mitchell Systems.webp"
+  },
+  {
+    "name": "ColorMotion+",
+    "image": "/public/brands-images/ColorMotion+.jpg"
+  },
+  {
+    "name": "JRL",
+    "image": "/public/brands-images/JRL.jpg"
+  },
+  {
+    "name": "Celeb Luxury",
+    "image": "/public/brands-images/Celeb Luxury.png"
+  },
+  {
+    "name": "INVIGO",
+    "image": "/public/brands-images/INVIGO.png"
+  },
+  {
+    "name": "Framesi",
+    "image": "/public/brands-images/Framesi.png"
+  },
+  {
+    "name": "Colortrak Betty Dain",
+    "image": "/public/brands-images/Colortrak Betty Dain.jpg"
+  },
+  {
+    "name": "Colortrak",
+    "image": "/public/brands-images/Colortrak.webp"
+  },
+  {
+    "name": "Refectocil",
+    "image": "/public/brands-images/Refectocil.png"
+  },
+  {
+    "name": "Deva Curl",
+    "image": "/public/brands-images/Deva Curl.jpg"
+  },
+  {
+    "name": "CHI",
+    "image": "/public/brands-images/CHI.png"
+  },
+  {
+    "name": "Wella",
+    "image": "/public/brands-images/Wella.png"
+  },
+  {
+    "name": "Mydentity",
+    "image": "/public/brands-images/Mydentity.png"
+  },
+  {
+    "name": "OSTER PRO",
+    "image": "/public/brands-images/OSTER PRO.webp"
+  },
+  {
+    "name": "Danger Jones",
+    "image": "/public/brands-images/Danger Jones.png"
+  },
+  {
+    "name": "CALIBER PRO",
+    "image": "/public/brands-images/CALIBER PRO.webp"
+  },
+  {
+    "name": "IDEAL",
+    "image": "/public/brands-images/IDEAL.png"
+  },
+  {
+    "name": "BosleyMD",
+    "image": "/public/brands-images/BosleyMD.png"
+  },
+  {
+    "name": "Piidea-Quantum",
+    "image": "/public/brands-images/Piidea-Quantum"
+  },
+  {
+    "name": "Biolage",
+    "image": "/public/brands-images/Biolage.png"
+  },
+  {
+    "name": "Wet Brush",
+    "image": "/public/brands-images/Wet Brush.jpg"
+  },
+  {
+    "name": "Farouk",
+    "image": "/public/brands-images/Farouk.png"
+  },
+  {
+    "name": "PHILTHYBLENDZ",
+    "image": "/public/brands-images/PHILTHYBLENDZ.png"
+  },
+  {
+    "name": "Sebastian",
+    "image": "/public/brands-images/Sebastian.png"
+  },
+  {
+    "name": "Woodys",
+    "image": "/public/brands-images/Woodys.png"
+  },
+  {
+    "name": "Slick Gorilla",
+    "image": "/public/brands-images/Slick Gorilla.webp"
+  },
+  {
+    "name": "BioSilk",
+    "image": "/public/brands-images/BioSilk.jpg"
+  },
+  {
+    "name": "KMS",
+    "image": "/public/brands-images/KMS.png"
+  },
+  {
+    "name": "BABYLISSPRO",
+    "image": "/public/brands-images/BABYLISSPRO.jpg"
+  },
+  {
+    "name": "Dannyco Sundries",
+    "image": "/public/brands-images/Dannyco Sundries.png"
+  },
+  {
+    "name": "Dennis Bernard",
+    "image": "/public/brands-images/Dennis Bernard.webp"
+  },
+  {
+    "name": "Kerasilk",
+    "image": "/public/brands-images/Kerasilk.png"
+  },
+  {
+    "name": "Malibu C",
+    "image": "/public/brands-images/Malibu C.jpg"
+  },
+  {
+    "name": "amika",
+    "image": "/public/brands-images/amika.png"
+  },
+  {
+    "name": "WAHL",
+    "image": "/public/brands-images/WAHL.png"
+  },
+  {
+    "name": "Salon Care",
+    "image": "/public/brands-images/Salon Care.jpg"
+  },
+  {
+    "name": "Product Club",
+    "image": "/public/brands-images/Product Club.png"
+  },
+  {
+    "name": "Redavid",
+    "image": "/public/brands-images/Redavid.png"
+  },
+  {
+    "name": "Olaplex",
+    "image": "/public/brands-images/Olaplex.jpg"
+  },
+  {
+    "name": "BlueCo Brands",
+    "image": "/public/brands-images/BlueCo Brands.webp"
+  },
+  {
+    "name": "Rusk",
+    "image": "/public/brands-images/Rusk.webp"
+  },
+  {
+    "name": "AG Care",
+    "image": "/public/brands-images/AG Care.webp"
+  },
+  {
+    "name": "GIBS Grooming",
+    "image": "/public/brands-images/GIBS Grooming.webp"
+  },
+  {
+    "name": "L'Oreal Professionnel",
+    "image": "/public/brands-images/L'Oreal Professionnel.png"
+  },
+  {
+    "name": "Pureology",
+    "image": "/public/brands-images/Pureology.png"
+  },
+  {
+    "name": "Maria Nila",
+    "image": "/public/brands-images/Maria Nila.png"
+  },
+  {
+    "name": "Urban Alchemy",
+    "image": "/public/brands-images/Urban Alchemy.png"
+  },
+  {
+    "name": "American Crew",
+    "image": "/public/brands-images/American Crew.jpg"
+  },
+  {
+    "name": "GAMMA+",
+    "image": "/public/brands-images/GAMMA.png"
+  },
+  {
+    "name": "Joico",
+    "image": "/public/brands-images/Joico.png"
+  },
+  {
+    "name": "FHI Heat",
+    "image": "/public/brands-images/FHI Heat.webp"
+  },
+  {
+    "name": "ANDIS",
+    "image": "/public/brands-images/ANDIS.png"
+  },
+  {
+    "name": "Goldwell USA",
+    "image": "/public/brands-images/Goldwell USA.jpg"
+  },
+  {
+    "name": "Nioxin",
+    "image": "/public/brands-images/Nioxin.png"
+  },
+  {
+    "name": "Bosley Professional",
+    "image": "/public/brands-images/Bosley Professional.png"
+  },
+  {
+    "name": "Matrix",
+    "image": "/public/brands-images/Matrix.webp"
+  },
+  {
+    "name": "TIGI",
+    "image": "/public/brands-images/TIGI.png"
+  },
+  {
+    "name": "Schwarzkopf Professional",
+    "image": "/public/brands-images/Schwarzkopf Professional.png"
+  },
+  {
+    "name": "Moroccanoil",
+    "image": "/public/brands-images/Moroccanoil.png"
+  }
 ]
