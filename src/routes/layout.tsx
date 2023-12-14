@@ -157,6 +157,7 @@ export const useUserData = routeLoader$(
         cur: curr,
       });
     } catch (error: any) {
+      console.log(token);
       if (error.message === "jwt expired") {
         const decode: any = jwt.decode(token);
         const newToken = jwt.sign(
@@ -195,12 +196,26 @@ export const useUserData = routeLoader$(
           user: user?.result,
           cur: curr,
         });
+      } else {
+        const request: any = await addDummyCustomer("", data);
+        const newTokentoken = jwt.sign(
+          {
+            user_id: request?.result?._id?.toString() ?? "",
+            isDummy: true,
+          },
+          env.get("VITE_JWTSECRET") ?? "",
+          { expiresIn: "1h" }
+        );
+        cookie.set("token", newTokentoken, {
+          httpOnly: true,
+          path: "/",
+        });
+        return JSON.stringify({
+          user: request?.result,
+          cur: curr,
+        });
       }
     }
-    return JSON.stringify({
-      user: null,
-      cur: curr,
-    });
   }
 );
 

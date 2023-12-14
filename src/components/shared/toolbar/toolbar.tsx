@@ -13,7 +13,7 @@ import { getRequest } from "~/utils/fetch.utils";
 import { CartContext } from "~/context/cart.context";
 import type { ProductModel } from "~/models/product.model";
 import { uuid } from "~/utils/uuid";
-import { server$, useLocation } from "@builder.io/qwik-city";
+import { server$ } from "@builder.io/qwik-city";
 import { WishListContext } from "~/context/wishList.context";
 import { verify } from "jsonwebtoken";
 
@@ -56,10 +56,10 @@ export const ToolBar = component$((props: ToolBarProps) => {
   const searchResults = useSignal<any[]>([]);
   const quantity = useSignal<string>("0");
   const totalPrice = useSignal<string>("0");
-  const loc = useLocation();
   const wishList = useContext(WishListContext);
   const isDummy = useSignal<boolean>(false);
   const curr = useSignal<string>("1");
+
   useVisibleTask$(async () => {
     const check = await checker();
     isDummy.value = check;
@@ -73,14 +73,14 @@ export const ToolBar = component$((props: ToolBarProps) => {
   });
 
   const handleSearchInput = $(async (event: any) => {
+    const value = event.target.value;
     if (event.key === "Enter") {
       const searchValue = event.target.value;
       if (searchValue.length > 2) {
-        loc.url.pathname = `/products/search/${searchValue}`;
-        location.href = loc.url.toString();
+        location.href = `/products/search/${searchValue}`;
       }
     }
-    const value = event.target.value;
+
     if (value.length > 2) {
       const request: any = await getRequest(`/api/search?query=${value}`);
       const response: any = await request.json();
