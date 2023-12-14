@@ -2,7 +2,7 @@ import csv
 import json
 import re
 import time
-from PIL import Image
+# from PIL import Image
 import os
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -440,7 +440,7 @@ def updateQuantity():
                                 new_quantity = variant['availability']['estimatedQty']
                                 data = {
                                     "secret": "myTotallySecretKey",
-                                    "id": d['perfix'],
+                                    "product_name": d['product_name'],
                                     "variation_id": variant['id'],
                                     "quantity": new_quantity,
                                     "isVariation": True,
@@ -455,7 +455,7 @@ def updateQuantity():
                             else:
                                 data = {
                                     "secret": "myTotallySecretKey",
-                                    "id": d['perfix'],
+                                    "product_name": d['product_name'],
                                     "variation_id": variant['id'],
                                     "quantity": 0,
                                     "isVariation": True,
@@ -472,7 +472,7 @@ def updateQuantity():
                             new_quantity = parsed_json['products'][0]['availability']['estimatedQty']
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "id": d['perfix'],
+                                    "product_name": d['product_name'],
                                     "variation_id": parsed_json['products'][0]['id'],
                                     "quantity": new_quantity,
                                     "isVariation": False,
@@ -486,7 +486,7 @@ def updateQuantity():
                         else:
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "id": d['perfix'],
+                                    "product_name": d['product_name'],
                                     "variation_id": parsed_json['products'][0]['id'],
                                     "quantity": 0,
                                     "isVariation": False,
@@ -517,7 +517,7 @@ def updateQuantity():
                                 new_quantity = variant['availability']['estimatedQty']
                                 data = {
                                     "secret": "myTotallySecretKey",
-                                    "id": d['perfix'],
+                                    "product_name": d['product_name'],
                                     "variation_id": variant['id'],
                                     "quantity": new_quantity,
                                     "isVariation": True,
@@ -527,7 +527,7 @@ def updateQuantity():
                             else:
                                 data = {
                                     "secret": "myTotallySecretKey",
-                                    "id": d['perfix'],
+                                    "product_name": d['product_name'],
                                     "variation_id": variant['id'],
                                     "quantity": 0,
                                     "isVariation": True,
@@ -539,7 +539,7 @@ def updateQuantity():
                             new_quantity = parsed_json['products'][0]['availability']['estimatedQty']
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "id": d['perfix'],
+                                    "product_name": d['product_name'],
                                     "variation_id": variant['id'],
                                     "quantity": new_quantity,
                                     "isVariation": True,
@@ -549,7 +549,7 @@ def updateQuantity():
                         else:
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "id": d['perfix'],
+                                    "product_name": d['product_name'],
                                     "variation_id": variant['id'],
                                     "quantity": 0,
                                     "isVariation": True,

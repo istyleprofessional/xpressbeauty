@@ -474,14 +474,14 @@ export const updateProductRating = async (body: any) => {
 };
 
 export const update_hair_product_service = async (
-  id: string,
+  product_name: string,
   quantity: string,
   variation_id?: string,
   isVariation?: boolean
 ) => {
   try {
     if (isVariation) {
-      const result = await Product.findOne({ perfix: id });
+      const result = await Product.findOne({ product_name: product_name });
       const variations = result?.variations;
       const newVariations = variations?.map((variation: any) => {
         if (variation.variation_id === variation_id) {
@@ -490,13 +490,13 @@ export const update_hair_product_service = async (
         return variation;
       });
       const updated = await Product.findOneAndUpdate(
-        { perfix: id },
+        { product_name: product_name },
         { variations: newVariations }
       );
       return { status: "success", result: updated };
     } else {
       const result = await Product.findOneAndUpdate(
-        { perfix: id },
+        { product_name: product_name },
         { quantity_on_hand: quantity }
       );
       return { status: "success", result: result };

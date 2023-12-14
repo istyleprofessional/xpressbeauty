@@ -15,9 +15,9 @@ export const onPut: RequestHandler = async ({ json, parseBody }) => {
     json(200, { status: "failed", result: "Something went wrong" });
     return;
   }
-  const { id, quantity, variation_id, isVariation } = body;
+  const { product_name, quantity, variation_id, isVariation } = body;
   const req = await update_hair_product_service(
-    id,
+    product_name,
     quantity,
     variation_id,
     isVariation
