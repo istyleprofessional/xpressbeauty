@@ -47,10 +47,7 @@ export const onGet: RequestHandler = async ({ json }) => {
             ? "in_stock"
             : "out_of_stock"
         );
-        row.set(
-          "price",
-          `${parseFloat(variation?.price.toString()).toFixed(2)} CAD` ?? "0"
-        );
+        row.set("price", `${variation?.price} CAD` ?? "0");
       }
     }
     if (
@@ -58,12 +55,7 @@ export const onGet: RequestHandler = async ({ json }) => {
       parseInt(productFromDb?.quantity_on_hand?.toString() ?? "0") > 0
     ) {
       row.set("availability", "in_stock");
-      row.set(
-        "price",
-        `${parseFloat(productFromDb?.price.regular.toString()).toFixed(
-          2
-        )} CAD` ?? "0"
-      );
+      row.set("price", `${productFromDb?.price?.regular} CAD` ?? "0");
     } else {
       row.set("availability", "out_of_stock");
     }
@@ -74,23 +66,5 @@ export const onGet: RequestHandler = async ({ json }) => {
       row.set("shipping label", "free shipping");
     }
   }
-
-  // for (const row of rows) {
-  //   if (row.toObject().gtin !== "") {
-  //     try {
-  //       const id = row.toObject().id.includes("-")
-  //         ? row.toObject().id.split("-")[0]
-  //         : row.toObject().id.toString();
-  //       const product = await productSchema.findOneAndUpdate(
-  //         { _id: new ObjectId(id) },
-  //         { gtin: row.toObject().gtin },
-  //         { new: true }
-  //       );
-  //       console.log(product);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  // }
   json(200, { message: "done" });
 };

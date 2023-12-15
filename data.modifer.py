@@ -533,7 +533,6 @@ def updateQuantity():
                                 update = requests.put(
                                     'https://xpressbeauty.ca/api/products/update/', data=data, 
                                     headers=headers)
-                                print(update.json())
                             else:
                                 data = {
                                     "secret": "myTotallySecretKey",
@@ -548,7 +547,6 @@ def updateQuantity():
                                 }
                                 update = requests.put(
                                     'https://xpressbeauty.ca/api/products/update/', data=data, headers=headers)
-                                print(update.json())
                     else:
                         if "estimatedQty" in parsed_json['products'][0]['availability']:
                             new_quantity = parsed_json['products'][0]['availability']['estimatedQty']
@@ -565,7 +563,6 @@ def updateQuantity():
                             }
                             update = requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=data, headers=headers)
-                            print(update.json())
                         else:
                             data = {
                                     "secret": "myTotallySecretKey",
@@ -580,7 +577,6 @@ def updateQuantity():
                             }
                             update = requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=data,  headers=headers)
-                            print(update.json())
                 continue
         
 def delete_cache(driver):
