@@ -72,8 +72,9 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     } else {
       shipping.value = 15;
     }
+    console.log(currencyObject);
     total.value = subTotal.value + hst.value + shipping.value;
-    if (currencyObject?.country === "1") {
+    if (currencyObject === "1") {
       symbol.value = "USD";
     } else {
       symbol.value = "CAD";

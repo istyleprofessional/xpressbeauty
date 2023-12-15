@@ -26,6 +26,7 @@ import { loadScript } from "@paypal/paypal-js";
 import paypal from "paypal-rest-sdk";
 import SalesTax from "sales-tax";
 import { getDummyCustomer } from "~/express/services/dummy.user.service";
+import { CurContext } from "~/context/cur.context";
 
 export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   const token = cookie.get("token")?.value;
@@ -267,12 +268,6 @@ export const callServer = server$(async function (
   }
 });
 
-export const useCurrLoader = routeLoader$(async ({ cookie }) => {
-  const country = cookie.get("cur")?.value ?? "";
-  const rate = cookie.get("curRate")?.value ?? "";
-  return { country: country, rate: rate };
-});
-
 export default component$(() => {
   const isLoading = useSignal<boolean>(false);
   const paymentRoute = JSON.parse(usePaymentRoute().value);
@@ -283,7 +278,8 @@ export default component$(() => {
   const isExistingPaymentMethod = useSignal<boolean>(false);
   const cards = paymentRoute.cards;
   const acceptSaveCard = useSignal<boolean>(false);
-  const currencyObject = useCurrLoader().value;
+  const currencyObjectConx: any = useContext(CurContext);
+  const currencyObject = currencyObjectConx?.cur;
   const subTotal = useSignal<number>(0);
   const taxRate = useSignal<number>(0);
 
@@ -314,7 +310,7 @@ export default component$(() => {
     async () => {
       const paypalUi = await loadScript({
         "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
-        currency: currencyObject?.country === "1" ? "USD" : "CAD",
+        currency: currencyObject === "1" ? "USD" : "CAD",
       });
       (paypalUi as any)
         .Buttons({
@@ -355,7 +351,7 @@ export default component$(() => {
                     ).toFixed(2)
                   : "0.00",
                 finalTotal: parseFloat(total.value.toString()).toFixed(2),
-                currency: currencyObject?.country === "1" ? "USD" : "CAD",
+                currency: currencyObject === "1" ? "USD" : "CAD",
               },
             };
             const paypalReq: any = await paypalServer(
@@ -379,7 +375,7 @@ export default component$(() => {
                   paymentId: data.paymentID,
                   orderId: data.orderID,
                 },
-                currency: currencyObject?.country === "1" ? "USD" : "CAD",
+                currency: currencyObject === "1" ? "USD" : "CAD",
                 totalInfo: {
                   shipping: subTotal.value > 200 ? 0 : 15,
                   tax: !userContext?.user?.generalInfo?.address?.country
@@ -392,7 +388,7 @@ export default component$(() => {
                       ).toFixed(2)
                     : "0.00",
                   finalTotal: parseFloat(total.value.toString()).toFixed(2),
-                  currency: currencyObject?.country === "1" ? "USD" : "CAD",
+                  currency: currencyObject === "1" ? "USD" : "CAD",
                 },
               };
               console.log(dataToSend);
@@ -459,7 +455,7 @@ export default component$(() => {
         form?.appendChild(hiddenInput);
         const dataToSend = {
           ...cartContext?.cart,
-          currency: currencyObject?.country === "1" ? "USD" : "CAD",
+          currency: currencyObject === "1" ? "USD" : "CAD",
           token: token.id,
           order_amount: parseFloat(total.value.toString()).toFixed(2),
           email: userContext?.user?.email,
@@ -478,7 +474,7 @@ export default component$(() => {
                 ).toFixed(2)
               : "0.00",
             finalTotal: parseFloat(total.value.toString()).toFixed(2),
-            currency: currencyObject?.country === "1" ? "USD" : "CAD",
+            currency: currencyObject === "1" ? "USD" : "CAD",
           },
         };
 
@@ -509,14 +505,14 @@ export default component$(() => {
                 ).toFixed(2)
               : "0.00",
             finalTotal: parseFloat(total.value.toString()).toFixed(2),
-            currency: currencyObject?.country === "1" ? "USD" : "CAD",
+            currency: currencyObject === "1" ? "USD" : "CAD",
           };
           const pay = await callServer(
             finalCard.value.id,
             userContext?.user?.stripeCustomerId,
             total.value,
             cartContext?.cart ?? {},
-            currencyObject?.country === "1" ? "USD" : "CAD",
+            currencyObject === "1" ? "USD" : "CAD",
             totalInfo
           );
           if (pay?.paymentIntent.status === "succeeded") {
@@ -558,7 +554,7 @@ export default component$(() => {
           Shopping
         </a>
         <div class="flex flex-col-reverse md:flex-row gap-2 justify-center items-start">
-          <ProductList currencyObject={currencyObject} />
+          <ProductList currencyObject={currencyObjectConx} />
           <div class="h-full w-96 rounded-lg flex flex-col gap-3 p-5 lg:m-5 md:sticky md:top-0">
             <div class="flex flex-col gap-4 items-center lg:items-end w-full">
               <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 mb-5">
