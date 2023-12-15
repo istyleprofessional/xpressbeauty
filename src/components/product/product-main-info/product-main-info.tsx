@@ -1,4 +1,9 @@
-import { component$, useSignal, useTask$ } from "@builder.io/qwik";
+import {
+  component$,
+  useSignal,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
 import { Rating } from "~/components/shared/rating/rating";
 
 interface ProductMainInfoProps {
@@ -11,6 +16,7 @@ interface ProductMainInfoProps {
   ratings?: any;
   companyName?: any;
   currencyObject?: any;
+  categories?: any;
 }
 
 export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
@@ -23,11 +29,26 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     priceType,
     ratings,
     companyName,
+    categories,
   } = props;
   const finalSalePrice = useSignal<string>("");
   const finalRegularPrice = useSignal<string>("");
   const verifiedPrice = useSignal<string>("");
   const verifiedSalePrice = useSignal<string>("");
+  const isCond = useSignal<boolean>(false);
+
+  useVisibleTask$(
+    () => {
+      if (categories) {
+        for (const cat of categories) {
+          if (cat.name.includes("Trimmers") || cat.name.includes("Clippers")) {
+            isCond.value = true;
+          }
+        }
+      }
+    },
+    { strategy: "document-idle" }
+  );
 
   useTask$(() => {
     if (priceType === "range") {
@@ -131,7 +152,14 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
             </span>
           )}
         </h2>
-
+        {isCond.value && (
+          <div class="flex flex-col gap-2">
+            <span class="text-sm text-error font-bold">
+              Enjoy Free Shipping on all clippers and trimmers for a limited
+              time only !!!
+            </span>
+          </div>
+        )}
         {!isVerified && (
           <></>
           // <div class="card shadow-lg w-96 hover:bg-base-300">

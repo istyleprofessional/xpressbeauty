@@ -289,6 +289,7 @@ export default component$(() => {
                 isVariant={true}
                 isVerified={user.isEmailVerified && user.isPhoneVerified}
                 companyName={product?.companyName ?? ""}
+                categories={product?.categories ?? []}
               />
               <ProductActions
                 handleAddToCart={handleAddToCart}

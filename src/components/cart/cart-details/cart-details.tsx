@@ -54,7 +54,6 @@ export const CartDetails = component$((props: any) => {
     } else {
       symbol.value = "CAD";
     }
-    console.log("subTotal", shipping.value);
   });
 
   return (
