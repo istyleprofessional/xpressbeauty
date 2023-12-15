@@ -1,4 +1,5 @@
 import { component$ } from "@builder.io/qwik";
+import MySavingImage from "~/media/31.png?jsx";
 
 export const WhyChooseUs = component$(() => {
   return (
@@ -7,26 +8,27 @@ export const WhyChooseUs = component$(() => {
         WHY CHOOSE XPRESS BEAUTY FOR YOUR SALON NEEDS?
       </h2>
       <div
-        class="flex flex-col justify-center items-center gap-20 pt-5"
+        class="flex flex-col justify-center items-center gap-20 pt-5 bg-contain"
         style="background-image: url(/Dash-lines.webp); background-repeat:no-repeat; background-position-y: center; background-position-x: center;"
       >
         <div class="flex justify-center items-center flex-col w-80 lg:w-[35%] gap-3">
-          <img
-            src="/truck.webp"
-            class="lg:w-42 w-24 lg:h-42 h-24 object-contain"
-            alt="shipping section"
+          <MySavingImage
+            class="lg:w-42 w-24 h-24 lg:h-42 object-contain rounded-full"
+            alt="award section"
           />
           <h2 class="font-bold text-base text-center lg:text-3xl text-black">
-            FAST CANADA WIDE SHIPPING
+            Direct-to-You Savings!
           </h2>
-          <p class="text-sm lg:text-2xl font-light text-center text-black">
-            To ensure you receive your products as quickly and reliably as
-            possible, we ship via UPS and Canpar. Once your order is placed, you
-            will receive an email from us with your tracking number.
+          <p class="lg:text-2xl text-sm font-light text-center text-black">
+            By cutting out the middleman, we've streamlined our process to bring
+            you top-notch products at unbeatable prices. This translates
+            directly into lower prices for you without compromising on the
+            quality of our products
           </p>
         </div>
-        <div class="flex flex-col lg:flex-row gap-16 lg:gap-[38%] justify-center items-start">
-          <div class="flex justify-center items-center flex-col lg:w-[35%] gap-3">
+
+        <div class="flex flex-col lg:flex-row gap-16 justify-center items-start">
+          <div class="flex justify-center items-center flex-col lg:w-[35%] gap-3 1">
             <img
               src="/support.webp"
               class="lg:w-42 w-24 h-24 lg:h-42 object-contain"
@@ -42,7 +44,22 @@ export const WhyChooseUs = component$(() => {
               business hours.
             </p>
           </div>
-          <div class="flex justify-center items-center flex-col lg:w-[35%] gap-3">
+          <div class="flex justify-center items-center flex-col lg:w-[35%] gap-3 2">
+            <img
+              src="/truck.webp"
+              class="lg:w-42 w-24 lg:h-42 h-24 object-contain"
+              alt="shipping section"
+            />
+            <h2 class="font-bold text-base text-center lg:text-3xl text-black">
+              FAST USA AND CANADA WIDE SHIPPING
+            </h2>
+            <p class="text-sm lg:text-2xl font-light text-center text-black">
+              To ensure you receive your products as quickly and reliably as
+              possible, we ship via UPS and Canpar. Once your order is placed,
+              you will receive an email from us with your tracking number.
+            </p>
+          </div>
+          <div class="flex justify-center items-center flex-col lg:w-[35%] gap-3 3">
             <img
               src="/secure.webp"
               class="lg:w-42 w-24 h-24 lg:h-42 object-contain"

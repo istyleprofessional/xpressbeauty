@@ -10,6 +10,7 @@ import OfferThreeImage from "~/media/offer3.jpg?jsx";
 import OfferFourImage from "~/media/offer4.jpg?jsx";
 import OfferFiveImage from "~/media/offer5.jpg?jsx";
 import OfferSixImage from "~/media/offer6.jpg?jsx";
+import OfferSevenImage from "~/media/Why Choose Us.jpg?jsx";
 
 export const Hero = component$(() => {
   useStylesScoped$(styles);
@@ -37,6 +38,23 @@ export const Hero = component$(() => {
         <div class="flex flex-col gap-8 items-center w-full z-0">
           <div class="carousel carousel-center w-full p-4 space-x-4 bg-white rounded-box">
             <div class="carousel-item gap-4">
+              <a href="/products/filter/Tools" class="carousel-item w-fit">
+                <div class="flex flex-col gap-2">
+                  <OfferSevenImage
+                    alt="barber products"
+                    class="rounded-box w-80 h-80 lg:w-96 lg:h-96"
+                  />
+                  <p
+                    aria-label="barbering link"
+                    class="pl-3 flex flex-row items-center font-bold text-black underline"
+                  >
+                    <span>SHOP NOW </span>{" "}
+                    <span>
+                      <NextArrowIconNoStick color="black" width="8%" />
+                    </span>
+                  </p>
+                </div>
+              </a>
               <a
                 href="/products/filterBrands/Olaplex/"
                 class="carousel-item w-fit"

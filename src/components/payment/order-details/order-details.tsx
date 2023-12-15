@@ -7,6 +7,7 @@ import {
 import { server$ } from "@builder.io/qwik-city";
 import { verify } from "jsonwebtoken";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
+import productSchema from "~/express/schemas/product.schema";
 
 interface OrderDetailsProps {
   cart: any;
@@ -18,6 +19,7 @@ interface OrderDetailsProps {
   currencyObject?: any;
   subTotal: any;
   taxRate: number;
+  shipping: any;
 }
 
 export const checker = server$(function () {
@@ -41,6 +43,21 @@ export const checker = server$(function () {
   }
 });
 
+export const checkCatServer = server$(async function (products: any) {
+  for (const prod of products) {
+    const req = await productSchema.find({ _id: prod.id });
+    if (req.length !== 0) {
+      const cat = req[0].categories;
+      if (
+        cat[0].name.includes("Trimmers") ||
+        cat[0].name.includes("Clippers")
+      ) {
+        return true;
+      }
+    }
+  }
+});
+
 export const OrderDetails = component$((props: OrderDetailsProps) => {
   const {
     cart,
@@ -51,13 +68,13 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     user,
     subTotal,
     taxRate,
+    shipping,
   } = props;
   const hst = useSignal<number>(0);
-  const shipping = useSignal<number>(0);
-  const symbol = useSignal<string>("$");
+  const symbol = useSignal<string>("CAD");
   const isDummy = useSignal<boolean>(true);
 
-  useTask$(({ track }) => {
+  useTask$(async ({ track }) => {
     track(() => cart?.totalPrice);
     track(() => currencyObject);
 
@@ -67,12 +84,15 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
       ?.includes("united")
       ? (cart?.totalPrice ?? 0) * taxRate
       : 0;
-    if (subTotal.value > 200) {
+
+    const checker = await checkCatServer(cart?.products);
+    if (checker) {
+      shipping.value = 0;
+    } else if (subTotal.value > 200) {
       shipping.value = 0;
     } else {
       shipping.value = 15;
     }
-    console.log(currencyObject);
     total.value = subTotal.value + hst.value + shipping.value;
     if (currencyObject === "1") {
       symbol.value = "USD";
@@ -168,7 +188,10 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
                     style: "currency",
                     currency: symbol.value,
                   })
-                : "0.00"}
+                : (0.0).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: symbol.value,
+                  })}
             </p>
           </div>
           <div class="grid grid-cols-2 w-full">

@@ -222,7 +222,7 @@ export const callServer = server$(async function (
       }
     );
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: parseInt(total.toString()) * 100,
+      amount: Math.round(parseFloat(total.toString()) * 100),
       currency: currency?.toLocaleLowerCase() ?? "CAD",
       customer: id,
       payment_method: paymentId,
@@ -282,6 +282,7 @@ export default component$(() => {
   const currencyObject = currencyObjectConx?.cur;
   const subTotal = useSignal<number>(0);
   const taxRate = useSignal<number>(0);
+  const shipping = useSignal<number>(0);
 
   useTask$(async () => {
     taxRate.value = paymentRoute?.rate ?? 0.13;
@@ -338,9 +339,9 @@ export default component$(() => {
               email: userContext?.user?.email,
               products: cartContext?.cart?.products,
               // shipping:
-              shipping: subTotal.value > 200 ? 0 : 15,
+              shipping: shipping.value,
               totalInfo: {
-                shipping: subTotal.value > 200 ? 0 : 15,
+                shipping: shipping.value,
                 tax: !userContext?.user?.generalInfo?.address?.country
                   ?.toLowerCase()
                   ?.includes("united")
@@ -377,7 +378,7 @@ export default component$(() => {
                 },
                 currency: currencyObject === "1" ? "USD" : "CAD",
                 totalInfo: {
-                  shipping: subTotal.value > 200 ? 0 : 15,
+                  shipping: shipping.value,
                   tax: !userContext?.user?.generalInfo?.address?.country
                     ?.toLowerCase()
                     ?.includes("united")
@@ -463,7 +464,7 @@ export default component$(() => {
           acceptSaveCard: acceptSaveCard.value,
           paymentSource: "STRIPE",
           totalInfo: {
-            shipping: subTotal.value > 200 ? 0 : 15,
+            shipping: shipping.value,
             tax: !userContext?.user?.generalInfo?.address?.country
               ?.toLowerCase()
               ?.includes("united")
@@ -494,7 +495,7 @@ export default component$(() => {
         isLoading.value = true;
         if (finalCard.value && isExistingPaymentMethod.value) {
           const totalInfo = {
-            shipping: subTotal.value > 200 ? 0 : 15,
+            shipping: shipping.value,
             tax: !userContext?.user?.generalInfo?.address?.country
               ?.toLowerCase()
               ?.includes("united")
@@ -604,6 +605,7 @@ export default component$(() => {
                   isExistingPaymentMethod={isExistingPaymentMethod.value}
                   acceptSaveCard={acceptSaveCard}
                   currencyObject={currencyObject}
+                  shipping={shipping}
                 />
               </div>
             </div>

@@ -5,9 +5,26 @@ import {
   useTask$,
   // useVisibleTask$,
 } from "@builder.io/qwik";
+import { server$ } from "@builder.io/qwik-city";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 import { CartContext } from "~/context/cart.context";
 import { UserContext } from "~/context/user.context";
+import productSchema from "~/express/schemas/product.schema";
+
+export const checkCatServer = server$(async function (products: any) {
+  for (const prod of products) {
+    const req = await productSchema.find({ _id: prod.id });
+    if (req.length !== 0) {
+      const cat = req[0].categories;
+      if (
+        cat[0].name.includes("Trimmers") ||
+        cat[0].name.includes("Clippers")
+      ) {
+        return true;
+      }
+    }
+  }
+});
 
 export const CartDetails = component$((props: any) => {
   const cartContext: any = useContext(CartContext);
@@ -16,15 +33,18 @@ export const CartDetails = component$((props: any) => {
   const total = useSignal<number>(0);
   const shipping = useSignal<number>(0);
 
-  const symbol = useSignal<string>("$");
+  const symbol = useSignal<string>("CAD");
 
-  useTask$(({ track }) => {
+  useTask$(async ({ track }) => {
     track(() => cartContext?.cart?.totalPrice);
     track(() => props?.currencyObject.cur);
 
     subTotal.value = cartContext?.cart?.totalPrice;
-    if (subTotal.value > 200) {
-      shipping.value = 0;
+    const checker = await checkCatServer(cartContext?.cart?.products);
+    if (checker) {
+      shipping.value = 0.0;
+    } else if (subTotal.value > 200) {
+      shipping.value = 0.0;
     } else {
       shipping.value = 15;
     }
@@ -34,6 +54,7 @@ export const CartDetails = component$((props: any) => {
     } else {
       symbol.value = "CAD";
     }
+    console.log("subTotal", shipping.value);
   });
 
   return (
@@ -60,7 +81,7 @@ export const CartDetails = component$((props: any) => {
           <p class="text-white text-xs font-light">Shipping</p>
           <p class="justify-self-end text-white text-sm font-light">
             {shipping.value &&
-              shipping.value?.toLocaleString("en-US", {
+              shipping.value.toLocaleString("en-US", {
                 style: "currency",
                 currency: symbol.value,
               })}
