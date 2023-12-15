@@ -17,7 +17,7 @@ export const sendVerficationMail = async (
   });
   const mailOptions = {
     from: import.meta.env.VITE_EMAIL ?? "",
-    to: email,
+    to: email.trim(),
     subject: "Xpress Beauty Verification",
     html: `
     <body style="margin: 0; padding: 0; background-color: #f7f7f7; font-family: Arial, sans-serif;">

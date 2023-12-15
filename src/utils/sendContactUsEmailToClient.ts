@@ -13,7 +13,7 @@ export const sendContactUsEmailToClient = async (data: any) => {
 
   const mailOptions = {
     from: import.meta.env.VITE_EMAIL ?? "",
-    to: data.email,
+    to: data.email.trim(),
     subject: "Thank you for contacting us!",
     html: `
     <body style="margin: 0; padding: 0; background-color: #f7f7f7; font-family: Arial, sans-serif;">

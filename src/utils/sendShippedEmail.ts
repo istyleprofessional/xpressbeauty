@@ -22,7 +22,7 @@ export const sendShippedEmail = async (
 
   const mailOptions = {
     from: import.meta.env.VITE_EMAIL ?? "",
-    to: email,
+    to: email.trim(),
     subject: `Your order ${orderNumber} has been shipped!`,
     html: `<body>
     <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
