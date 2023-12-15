@@ -270,7 +270,7 @@ export default component$(() => {
         ) {
           cartContextObject.cart.products.forEach((element: any) => {
             const price = element.price / 0.9;
-            element.price = parseFloat(price.toFixed(2));
+            element.price = Math.round(price * 100) / 100;
             element.currency = "CAD";
           });
           cartContextObject.cart.products.forEach((element: any) => {
@@ -282,14 +282,17 @@ export default component$(() => {
         ) {
           cartContextObject.cart.products.forEach((element: any) => {
             const price = element.price * 0.9;
-            element.price = parseFloat(price.toFixed(2));
+            element.price = Math.round(price * 100) / 100;
             element.currency = "USD";
           });
           cartContextObject.cart.products.forEach((element: any) => {
+            element.price = Math.round(element.price * 100) / 100;
             totalPrice += element.price * element.quantity;
           });
         } else {
           cartContextObject.cart.products.forEach((element: any) => {
+            // make sure the price is 2 decimal using math
+            element.price = Math.round(element.price * 100) / 100;
             totalPrice += element.price * element.quantity;
           });
         }
