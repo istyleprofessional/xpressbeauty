@@ -178,7 +178,8 @@ export const paypalServer = server$(async function (data: any, user: any) {
         },
       ],
     };
-    console.log(create_payment_json);
+    // console.log(create_payment_json.transactions[0].item_list);
+    // console.log(create_payment_json.transactions[0].amount);
     const paypalPromise = await new Promise((resolve, reject) => {
       paypal.payment.create(create_payment_json, (error, payment) => {
         if (error) {
@@ -199,8 +200,8 @@ export const paypalServer = server$(async function (data: any, user: any) {
       });
     });
     return paypalPromise;
-  } catch (e) {
-    console.log(e);
+  } catch (e: any) {
+    console.log(e.response);
   }
 });
 
@@ -362,6 +363,7 @@ export default component$(() => {
               userContext.user
             );
             const paypalRes = JSON.parse(paypalReq);
+
             return paypalRes.id;
           },
           onApprove: async (data: any, actions: any) => {
