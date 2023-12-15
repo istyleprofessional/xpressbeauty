@@ -263,6 +263,7 @@ export default component$(() => {
       const cart = await getCart(userData?.user?._id ?? "");
       cartContextObject.cart = JSON.parse(cart);
       if (cartContextObject?.cart?.products?.length > 0) {
+        let totalPrice = 0;
         if (
           cartContextObject.cart.currency === "USD" &&
           curContextObject.cur === "2"
@@ -272,11 +273,9 @@ export default component$(() => {
             element.price = parseFloat(price.toFixed(2));
             element.currency = "CAD";
           });
-          cartContextObject.cart.totalPrice =
-            cartContextObject.cart.products.reduce(
-              (total: any, item: any) => total + item.price * item.quantity,
-              0
-            );
+          cartContextObject.cart.products.forEach((element: any) => {
+            totalPrice += element.price * element.quantity;
+          });
         } else if (
           cartContextObject.cart.currency === "CAD" &&
           curContextObject.cur === "1"
@@ -286,20 +285,16 @@ export default component$(() => {
             element.price = parseFloat(price.toFixed(2));
             element.currency = "USD";
           });
-          cartContextObject.cart.totalPrice =
-            cartContextObject.cart.products.reduce(
-              (total: any, item: any) => total + item.price * item.quantity,
-              0
-            );
+          cartContextObject.cart.products.forEach((element: any) => {
+            totalPrice += element.price * element.quantity;
+          });
         } else {
-          cartContextObject.cart.totalPrice =
-            cartContextObject.cart.products.reduce(
-              (total: any, item: any) => total + item.price * item.quantity,
-              0
-            );
+          cartContextObject.cart.products.forEach((element: any) => {
+            totalPrice += element.price * element.quantity;
+          });
         }
-        console.log(cartContextObject.cart.totalPrice);
-        // cartContextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
+
+        cartContextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
         cartContextObject.cart.totalQuantity =
           cartContextObject.cart.products.reduce(
             (total: any, item: any) => total + item.quantity,
