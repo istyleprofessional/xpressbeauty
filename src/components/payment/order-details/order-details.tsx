@@ -45,6 +45,7 @@ export const checker = server$(function () {
 
 export const checkCatServer = server$(async function (products: any) {
   for (const prod of products) {
+    if (prod.id.includes(".")) continue;
     const req = await productSchema.find({ _id: prod.id });
     if (req.length !== 0) {
       const cat = req[0].categories;

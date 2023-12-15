@@ -47,7 +47,12 @@ export const onGet: RequestHandler = async ({ json }) => {
             ? "in_stock"
             : "out_of_stock"
         );
+        row.set(
+          "price",
+          `${parseFloat(variation?.price.toString()).toFixed(2)}` ?? "0"
+        );
       }
+
       continue;
     }
     if (
