@@ -327,9 +327,15 @@ export default component$(() => {
           createOrder: async () => {
             const dataToSend = {
               subTotal: subTotal.value.toFixed(2),
-              hst: parseFloat(
-                ((cartContext.cart?.totalPrice ?? 0) * taxRate.value).toString()
-              ).toFixed(2),
+              hst: !userContext?.user?.generalInfo?.address?.country
+                ?.toLowerCase()
+                ?.includes("united")
+                ? parseFloat(
+                    (
+                      (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                    ).toString()
+                  ).toFixed(2)
+                : "0.00",
               ...cartContext?.cart,
               order_amount: parseFloat(total.value.toString()).toFixed(2),
               email: userContext?.user?.email,
@@ -338,11 +344,13 @@ export default component$(() => {
               shipping: subTotal.value > 200 ? 0 : 15,
               totalInfo: {
                 shipping: subTotal.value > 200 ? 0 : 15,
-                tax: userContext?.user?.generalInfo?.address?.country
+                tax: !userContext?.user?.generalInfo?.address?.country
                   ?.toLowerCase()
                   ?.includes("united")
                   ? parseFloat(
-                      ((cartContext.cart?.totalPrice ?? 0) * 0.13).toString()
+                      (
+                        (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                      ).toString()
                     ).toFixed(2)
                   : "0.00",
                 finalTotal: parseFloat(total.value.toString()).toFixed(2),

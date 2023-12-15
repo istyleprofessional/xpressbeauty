@@ -449,8 +449,9 @@ def updateQuantity():
                                     "Content-Type": "application/json",
                                     # Add any other headers required by the API
                                 }
-                                requests.put(
+                                update = requests.put(
                                     'https://xpressbeauty.ca/api/products/update/', json=data, headers=headers)
+                                print(update)
                                 print(variant['id'])
                             else:
                                 data = {

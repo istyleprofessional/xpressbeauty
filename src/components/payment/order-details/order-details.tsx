@@ -158,7 +158,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
             </p>
           </div>
           <div class="grid grid-cols-2 w-full">
-            <p class="text-black text-xs font-light">HST</p>
+            <p class="text-black text-xs font-light">Tax</p>
             <p class="justify-self-end text-black text-sm font-light">
               {!user?.generalInfo?.address?.country
                 ?.toLowerCase()
