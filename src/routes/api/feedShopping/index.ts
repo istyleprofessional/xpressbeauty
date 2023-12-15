@@ -18,53 +18,59 @@ export const onGet: RequestHandler = async ({ json }) => {
   });
 
   const doc = new GoogleSpreadsheet(
-    "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
+    "1xU9hEvn07XCucptK-gRI3xQn_XEVd4jzkP0bjpWCASU",
     auth
   );
   await doc.loadInfo(); // loads document properties and worksheets
   // get product row by name from spreadsheet
   const sheet = doc.sheetsByIndex[0];
   const rows = await sheet.getRows();
+  console.log(doc.sheetsByTitle);
   // update in stock column in spreadsheet by product id in sheet
-
-  for (const row of rows) {
-    const id = row.toObject().id.includes("-")
-      ? row.toObject().id.split("-")[0]
-      : row.toObject().id.toString();
-    const productFromDb = await productSchema.findOne({
-      _id: new ObjectId(id),
-    });
-    if (!productFromDb) continue;
-    if (row.toObject().id.includes("-")) {
-      const variation_id = row.toObject().id.split("-")[1];
-      const variation = productFromDb.variations?.find(
-        (v) => v?.variation_id === variation_id
-      );
-      if (variation) {
-        row.set(
-          "availability",
-          parseInt(variation?.quantity_on_hand.toString() ?? "0") > 0
-            ? "in_stock"
-            : "out_of_stock"
+  try {
+    for (const row of rows) {
+      const id = row.toObject()?.id?.includes("-")
+        ? row.toObject().id?.split("-")[0]
+        : row.toObject().id?.toString();
+      const productFromDb = await productSchema.findOne({
+        _id: new ObjectId(id),
+      });
+      if (!productFromDb) continue;
+      if (row.toObject()?.id?.includes("-")) {
+        const variation_id = row.toObject().id.split("-")[1];
+        const variation = productFromDb.variations?.find(
+          (v) => v?.variation_id === variation_id
         );
-        row.set("price", `${variation?.price} CAD` ?? "0");
+        if (variation) {
+          row.set(
+            "availability",
+            parseInt(variation?.quantity_on_hand?.toString() ?? "0") > 0
+              ? "in_stock"
+              : "out_of_stock"
+          );
+          row.set("price", `${variation?.price} CAD` ?? "0");
+        }
       }
+      if (
+        productFromDb &&
+        parseInt(productFromDb?.quantity_on_hand?.toString() ?? "0") > 0
+      ) {
+        row.set("availability", "in_stock");
+        row.set("price", `${productFromDb?.price?.regular} CAD` ?? "0");
+      } else {
+        row.set("availability", "out_of_stock");
+      }
+      const checkIfCat = productFromDb.categories?.find(
+        (cat) => cat?.name === "Trimmers" || cat?.name === "Clippers"
+      );
+      if (checkIfCat) {
+        row.set("shipping label", "free shipping");
+      }
+      await row.save();
     }
-    if (
-      productFromDb &&
-      parseInt(productFromDb?.quantity_on_hand?.toString() ?? "0") > 0
-    ) {
-      row.set("availability", "in_stock");
-      row.set("price", `${productFromDb?.price?.regular} CAD` ?? "0");
-    } else {
-      row.set("availability", "out_of_stock");
-    }
-    const checkIfCat = productFromDb.categories?.find(
-      (cat) => cat?.name === "Trimmers" || cat?.name === "Clippers"
-    );
-    if (checkIfCat) {
-      row.set("shipping label", "free shipping");
-    }
+  } catch (error) {
+    console.log(error);
   }
+
   json(200, { message: "done" });
 };
