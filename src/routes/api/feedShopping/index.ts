@@ -18,7 +18,7 @@ export const onGet: RequestHandler = async ({ json }) => {
   });
 
   const doc = new GoogleSpreadsheet(
-    "1xU9hEvn07XCucptK-gRI3xQn_XEVd4jzkP0bjpWCASU",
+    "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
     auth
   );
   await doc.loadInfo(); // loads document properties and worksheets
