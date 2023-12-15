@@ -526,6 +526,10 @@ def updateQuantity():
                                     "quantity": new_quantity,
                                     "isVariation": True,
                                 }
+                                headers = {
+                                    "Content-Type": "application/json",
+                                    # Add any other headers required by the API
+                                }
                                 update = requests.put(
                                     'https://xpressbeauty.ca/api/products/update/', data=data, 
                                     headers=headers)
@@ -537,6 +541,10 @@ def updateQuantity():
                                     "variation_id": variant['id'],
                                     "quantity": 0,
                                     "isVariation": True,
+                                }
+                                headers = {
+                                    "Content-Type": "application/json",
+                                    # Add any other headers required by the API
                                 }
                                 update = requests.put(
                                     'https://xpressbeauty.ca/api/products/update/', data=data, headers=headers)
@@ -551,6 +559,10 @@ def updateQuantity():
                                     "quantity": new_quantity,
                                     "isVariation": False,
                                 }
+                            headers = {
+                                    "Content-Type": "application/json",
+                                    # Add any other headers required by the API
+                            }
                             update = requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=data, headers=headers)
                             print(update.json())
@@ -562,6 +574,10 @@ def updateQuantity():
                                     "quantity": 0,
                                     "isVariation": False,
                                 }
+                            headers = {
+                                "Content-Type": "application/json",
+                                # Add any other headers required by the API
+                            }
                             update = requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=data,  headers=headers)
                             print(update.json())

@@ -49,19 +49,29 @@ export const onGet: RequestHandler = async ({ json }) => {
         );
         row.set(
           "price",
-          `${parseFloat(variation?.price.toString()).toFixed(2)}` ?? "0"
+          `${parseFloat(variation?.price.toString()).toFixed(2)} CAD` ?? "0"
         );
       }
-
-      continue;
     }
     if (
       productFromDb &&
       parseInt(productFromDb?.quantity_on_hand?.toString() ?? "0") > 0
     ) {
       row.set("availability", "in_stock");
+      row.set(
+        "price",
+        `${parseFloat(productFromDb?.price.regular.toString()).toFixed(
+          2
+        )} CAD` ?? "0"
+      );
     } else {
       row.set("availability", "out_of_stock");
+    }
+    const checkIfCat = productFromDb.categories?.find(
+      (cat) => cat?.name === "Trimmers" || cat?.name === "Clippers"
+    );
+    if (checkIfCat) {
+      row.set("shipping label", "free shipping");
     }
   }
 
