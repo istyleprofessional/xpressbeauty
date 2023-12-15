@@ -276,7 +276,7 @@ export default component$(() => {
           });
           cartContextObject.cart.products.forEach((element: any) => {
             totalPrice +=
-              parseFloat(element.price.toFixed(2)) * element.quantity;
+              parseFloat(element?.price?.toFixed(2)) * element.quantity;
           });
         } else if (
           cartContextObject.cart.currency === "CAD" &&
@@ -289,12 +289,12 @@ export default component$(() => {
           });
           cartContextObject.cart.products.forEach((element: any) => {
             totalPrice +=
-              parseFloat(element.price.toFixed(2)) * element.quantity;
+              parseFloat(element?.price?.toFixed(2)) * element.quantity;
           });
         } else {
           cartContextObject.cart.products.forEach((element: any) => {
             totalPrice +=
-              parseFloat(element.price.toFixed(2)) * element.quantity;
+              parseFloat(element?.price?.toFixed(2)) * element.quantity;
           });
         }
 
