@@ -22,7 +22,6 @@ import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 import ip2location from "ip-to-location";
 import { CurContext } from "~/context/cur.context";
-
 // import GmailFactory from "gmail-js";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
@@ -275,9 +274,7 @@ export default component$(() => {
             element.currency = "CAD";
           });
           cartContextObject.cart.products.forEach((element: any) => {
-            totalPrice +=
-              parseFloat(element?.price?.toString()?.toFixed(2)) *
-              element.quantity;
+            totalPrice += element.price * element.quantity;
           });
         } else if (
           cartContextObject.cart.currency === "CAD" &&
@@ -289,18 +286,13 @@ export default component$(() => {
             element.currency = "USD";
           });
           cartContextObject.cart.products.forEach((element: any) => {
-            totalPrice +=
-              parseFloat(element?.price?.toString()?.toFixed(2)) *
-              element.quantity;
+            totalPrice += element.price * element.quantity;
           });
         } else {
           cartContextObject.cart.products.forEach((element: any) => {
-            totalPrice +=
-              parseFloat(element?.price?.toString()?.toFixed(2)) *
-              element.quantity;
+            totalPrice += element.price * element.quantity;
           });
         }
-
         cartContextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
         cartContextObject.cart.totalQuantity =
           cartContextObject.cart.products.reduce(
