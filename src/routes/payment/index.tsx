@@ -235,6 +235,7 @@ export const callServer = server$(async function (
         token ?? "",
         this.env.get("VITE_JWTSECRET") ?? ""
       );
+
       const user = await getUserById(verified.user_id);
       const data: any = cart;
       data.order_amount = total;
@@ -259,6 +260,7 @@ export const callServer = server$(async function (
         // currency?.toLocaleLowerCase() ?? "CAD",
         // rate
       );
+      console.log(data);
       await createOrder(data);
       await deleteCart(verified.user_id);
     }

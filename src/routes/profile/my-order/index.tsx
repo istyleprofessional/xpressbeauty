@@ -61,7 +61,7 @@ export default component$(() => {
                   <td>
                     {order.totalPrice.toLocaleString("en-US", {
                       style: "currency",
-                      currency: "CAD",
+                      currency: order?.currency ?? "USD",
                     })}
                   </td>
                   <td>

@@ -15,6 +15,7 @@ export const createOrder = async (data: any) => {
       userId: data.userId,
       order_number: data.order_number,
       paypalObj: data.paypalObj,
+      currency: data.currency,
     });
     return { status: "success", request: request };
   } catch (error: any) {

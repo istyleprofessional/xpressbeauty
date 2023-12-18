@@ -78,6 +78,7 @@ export const onPost: RequestHandler = async ({
     data.paymentStatus = "Paid";
     data.order_status = "Pending";
     data.order_number = generateOrderNumber();
+    console.log("data", data);
     await createOrder(data);
     await deleteCart(verifiedToken.user_id);
     json(200, { status: "success", orderId: data.order_number });
@@ -133,7 +134,7 @@ export const onPost: RequestHandler = async ({
       data.paymentStatus = "Paid";
       data.order_status = "Pending";
       data.order_number = generateOrderNumber();
-
+      console.log("data", data);
       await createOrder(data);
       await deleteCart(verifiedToken.user_id);
       json(200, { status: "success", orderId: data.order_number });

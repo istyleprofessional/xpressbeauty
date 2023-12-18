@@ -13,6 +13,8 @@ const orderSchema = new Schema(
     orderStatus: { type: String, default: null },
     paymentId: { type: String, default: null },
     order_number: { type: String, default: null },
+    currency: { type: String, default: null },
+    paypalObj: { type: Object, default: null },
   },
   { timestamps: true }
 );

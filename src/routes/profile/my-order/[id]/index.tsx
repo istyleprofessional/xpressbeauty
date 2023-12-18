@@ -113,7 +113,7 @@ export default component$(() => {
               <span class="font-bold">
                 {subTotal.toLocaleString("en-US", {
                   style: "currency",
-                  currency: "CAD",
+                  currency: order?.currency ?? "USD",
                 })}
               </span>
             </div>
@@ -124,10 +124,17 @@ export default component$(() => {
             </div>
             <div class="">
               <span class="font-bold">
-                {hst.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "CAD",
-                })}
+                {!order?.shippingAddress?.country
+                  ?.toLowerCase()
+                  ?.includes("united")
+                  ? hst.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: order?.currency ?? "USD",
+                    })
+                  : (0.0).toLocaleString("en-US", {
+                      style: "currency",
+                      currency: order?.currency ?? "USD",
+                    })}
               </span>
             </div>
           </div>
@@ -137,7 +144,12 @@ export default component$(() => {
             </div>
             <div class="">
               <span class="font-bold">
-                {parseFloat(order.totalPrice) > 150 ? "Free" : "CA$15.00"}
+                {parseFloat(order.totalPrice) > 200
+                  ? "Free"
+                  : (15.0).toLocaleString("en-US", {
+                      style: "currency",
+                      currency: order?.currency ?? "USD",
+                    })}
               </span>
             </div>
           </div>
@@ -149,7 +161,7 @@ export default component$(() => {
               <span class="font-bold">
                 {order.totalPrice.toLocaleString("en-US", {
                   style: "currency",
-                  currency: "CAD",
+                  currency: order?.currency ?? "USD",
                 })}
               </span>
             </div>
@@ -205,7 +217,12 @@ export default component$(() => {
                     <span>Product Price:</span>
                   </div>
                   <div class="">
-                    <span class="font-bold">CA${product.price}</span>
+                    <span class="font-bold">
+                      {product.price?.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: order?.currency ?? "USD",
+                      })}
+                    </span>
                   </div>
                 </div>
                 <div class="grid grid-flow-row-dense gap-3 pl-6 md:grid-cols-4 grid-cols-2">
