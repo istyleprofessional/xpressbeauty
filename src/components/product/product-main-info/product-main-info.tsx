@@ -41,8 +41,13 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     () => {
       if (categories) {
         for (const cat of categories) {
-          if (cat.name.includes("Trimmers") || cat.name.includes("Clippers")) {
+          if (
+            cat?.name?.includes("Trimmers") ||
+            cat?.name?.includes("Clippers")
+          ) {
             isCond.value = true;
+          } else {
+            isCond.value = false;
           }
         }
       }
