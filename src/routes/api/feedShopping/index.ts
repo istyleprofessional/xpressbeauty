@@ -25,7 +25,6 @@ export const onGet: RequestHandler = async ({ json }) => {
   // get product row by name from spreadsheet
   const sheet = doc.sheetsByIndex[0];
   const rows = await sheet.getRows();
-  console.log(doc.sheetsByTitle);
   // update in stock column in spreadsheet by product id in sheet
   try {
     for (const row of rows) {
@@ -64,7 +63,7 @@ export const onGet: RequestHandler = async ({ json }) => {
         (cat) => cat?.name === "Trimmers" || cat?.name === "Clippers"
       );
       if (checkIfCat) {
-        row.set("shipping label", "free shipping");
+        row.set("shipping_label", "free shipping");
       }
       await row.save();
     }
