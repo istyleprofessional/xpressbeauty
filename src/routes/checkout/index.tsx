@@ -81,6 +81,7 @@ export const useAddUser = routeAction$(async (data: any, requestEvent) => {
   }
   if (user.status === "success") {
     const newData: any = data;
+    // check if state is valid and not includes undefined or null or purto rico or virgin islands or hawaii
     const validationObject = {
       country: (newData?.generalInfo?.address?.country?.length ?? 0) > 0,
       addressLine1:
@@ -90,7 +91,10 @@ export const useAddUser = routeAction$(async (data: any, requestEvent) => {
         (newData?.generalInfo?.address?.state?.length ?? 0) > 0 &&
         !(
           newData?.generalInfo?.address?.city?.includes("undefined") ||
-          newData?.generalInfo?.address?.city?.includes("null")
+          newData?.generalInfo?.address?.city?.includes("null") ||
+          newData?.generalInfo?.address?.city?.includes("Puerto Rico") ||
+          newData?.generalInfo?.address?.city?.includes("Virgin Islands") ||
+          newData?.generalInfo?.address?.city?.includes("Hawaii")
         ),
       postalCode: (newData?.generalInfo?.address?.postalCode?.length ?? 0) > 0,
       firstName:
@@ -239,6 +243,11 @@ export default component$(() => {
       <div class="flex flex-col justify-center items-center gap-3 bg-[#F4F4F5]">
         <Form action={action} class="w-full justify-center">
           <div class="w-full p-10 flex flex-col justify-center items-center">
+            <h1 class="text-2xl font-bold p-2">Shipping Details</h1>
+            <p class="text-base font-light p-2 text-center">
+              {" "}
+              We are not shipping to Puerto Rico, Virgin Islands and Hawaii.
+            </p>
             <div class="flex flex-col lg:flex-row w-full lg:gap-5">
               <InputField
                 label="First Name"

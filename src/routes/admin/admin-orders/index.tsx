@@ -10,7 +10,6 @@ import {
   getOrdersService,
   updateOrderStatus,
 } from "~/express/services/order.service";
-import { findUserByUserEmail } from "~/express/services/user.service";
 import { sendShippedEmail } from "~/utils/sendShippedEmail";
 
 export const useOrderTableData = routeLoader$(async ({ url }) => {
@@ -24,16 +23,7 @@ export const useOrderTableData = routeLoader$(async ({ url }) => {
 });
 
 export const sendShippedEmailServer = server$(async function (data: any) {
-  const getUser = await findUserByUserEmail(data.email);
-  if (getUser.status === "error")
-    return { status: "error", message: "User not found" };
-  if (getUser.result?.length === 0)
-    return { status: "error", message: "User not found" };
-  const user = (getUser?.result ?? [])[0];
-  const fullName = `${user?.firstName} ${user?.lastName}`;
-  const shippingAddress = user?.generalInfo.address;
   const getOrder = await getOrderByOrderIdService(data.orderId);
-
   if (getOrder.status === "error")
     return { status: "error", message: "Order not found" };
   const order = getOrder?.request;
@@ -41,8 +31,8 @@ export const sendShippedEmailServer = server$(async function (data: any) {
   // const products = order?.products;
   await sendShippedEmail(
     data.email,
-    fullName,
-    shippingAddress,
+    data.fullName,
+    data.shippingAddress,
     data.selectedProducts,
     data.trackingNumber,
     data.trackingCompanyName,
@@ -80,7 +70,14 @@ export default component$(() => {
   const selectedProducts = useSignal<any>([]);
 
   const handleStatusChanged = $(
-    (status: string, email: string, id: string, products?: any) => {
+    (
+      status: string,
+      email: string,
+      id: string,
+      products?: any,
+      shippingAddress?: any,
+      user?: any
+    ) => {
       (document?.getElementById("my_modal_1") as any)?.showModal();
       orderStatus.value = status;
       userEmail.value = email;
@@ -88,6 +85,8 @@ export default component$(() => {
       orderId.value = id.toString();
       orderDetail.value = {
         products: products,
+        shippingAddress: shippingAddress,
+        fullName: `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
       };
     }
   );
@@ -112,10 +111,15 @@ export default component$(() => {
       trackingCompanyName: trackingCompanyName.value,
       trackingLink: trackingLink.value,
       selectedProducts: selectedProducts.value,
+      shippingAddress: orderDetail.value?.shippingAddress,
+      fullName: `${orderDetail.value?.user?.firstName ?? ""} ${
+        orderDetail.value?.user?.lastName ?? ""
+      }`,
     });
     // console.log(sendShippedEmailreq);
     if (sendShippedEmailreq.status === "error") {
       alert(sendShippedEmailreq.message);
+      location.reload();
     } else {
       alert("Order status updated successfully");
     }
@@ -235,7 +239,9 @@ export default component$(() => {
                                     order?.dummyUser?.email ??
                                     "Not Found",
                                   order?._id,
-                                  order?.products
+                                  order?.products,
+                                  order?.shippingAddress,
+                                  order?.user ?? order?.dummyUser ?? {}
                                 );
                               }}
                             >
