@@ -38,12 +38,12 @@ export const sendShippedEmailServer = server$(async function (data: any) {
     return { status: "error", message: "Order not found" };
   const order = getOrder?.request;
   const orderNo = order?.order_number;
-  const products = order?.products;
+  // const products = order?.products;
   await sendShippedEmail(
     data.email,
     fullName,
     shippingAddress,
-    products ?? [],
+    data.selectedProducts,
     data.trackingNumber,
     data.trackingCompanyName,
     data.trackingLink,
@@ -52,7 +52,10 @@ export const sendShippedEmailServer = server$(async function (data: any) {
   const updateOrderStatusreq = await updateOrderStatus(data.orderId, "Shipped");
   if (updateOrderStatusreq.status === "error")
     return { status: "error", message: "Order status not updated" };
-  return { status: "success", message: updateOrderStatusreq.request };
+  return {
+    status: "success",
+    message: JSON.stringify(updateOrderStatusreq.request),
+  };
 });
 
 export default component$(() => {
@@ -74,13 +77,20 @@ export default component$(() => {
   const trackingNumber = useSignal<string>("");
   const trackingCompanyName = useSignal<string>("");
   const trackingLink = useSignal<string>("");
+  const selectedProducts = useSignal<any>([]);
 
-  const handleStatusChanged = $((status: string, email: string, id: string) => {
-    (document?.getElementById("my_modal_1") as any)?.showModal();
-    orderStatus.value = status;
-    userEmail.value = email;
-    orderId.value = id.toString();
-  });
+  const handleStatusChanged = $(
+    (status: string, email: string, id: string, products?: any) => {
+      (document?.getElementById("my_modal_1") as any)?.showModal();
+      orderStatus.value = status;
+      userEmail.value = email;
+      console.log(email);
+      orderId.value = id.toString();
+      orderDetail.value = {
+        products: products,
+      };
+    }
+  );
 
   const handleConfirmStatusChange = $(() => {
     (document?.getElementById("my_modal_1") as any)?.close();
@@ -90,15 +100,25 @@ export default component$(() => {
 
   const handleSendTrackingNumber = $(async () => {
     (document?.getElementById("my_modal_2") as any)?.close();
-    const data = {
-      email: userEmail.value,
+    (document?.getElementById("my_modal_3") as any)?.showModal();
+  });
+
+  const handleSendTrackingNumberConfirm = $(async () => {
+    (document?.getElementById("my_modal_3") as any)?.close();
+    const sendShippedEmailreq = await sendShippedEmailServer({
+      email: userEmail.value.trim(),
       orderId: orderId.value,
       trackingNumber: trackingNumber.value,
       trackingCompanyName: trackingCompanyName.value,
       trackingLink: trackingLink.value,
-    };
-    await sendShippedEmailServer(data);
-    window.location.reload();
+      selectedProducts: selectedProducts.value,
+    });
+    // console.log(sendShippedEmailreq);
+    if (sendShippedEmailreq.status === "error") {
+      alert(sendShippedEmailreq.message);
+    } else {
+      alert("Order status updated successfully");
+    }
   });
 
   return (
@@ -207,13 +227,17 @@ export default component$(() => {
                         >
                           <li>
                             <button
-                              onClick$={() =>
+                              onClick$={() => {
+                                console.log(order);
                                 handleStatusChanged(
                                   "Shipped",
-                                  order?.user?.email,
-                                  order?._id
-                                )
-                              }
+                                  order?.user?.email ??
+                                    order?.dummyUser?.email ??
+                                    "Not Found",
+                                  order?._id,
+                                  order?.products
+                                );
+                              }}
                             >
                               Shipped
                             </button>
@@ -382,6 +406,71 @@ export default component$(() => {
                       <button
                         class="btn btn-primary"
                         onClick$={handleSendTrackingNumber}
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </dialog>
+          <dialog id="my_modal_3" class="modal">
+            <div class="modal-box">
+              <h3 class="font-bold text-lg">Products To Be Shipped</h3>
+              <p class="py-4">Please select the products</p>
+              <div class="modal-action">
+                <form method="dialog" class="w-full">
+                  <div class="flex flex-col gap-3 w-full">
+                    {orderDetail.value?.products?.map(
+                      (product: any, index: number) => {
+                        return (
+                          <div
+                            class="flex flex-row gap-2 items-center"
+                            key={index}
+                          >
+                            <input
+                              type="checkbox"
+                              class="checkbox"
+                              onChange$={(e: any) => {
+                                if (e.target.checked) {
+                                  selectedProducts.value = [
+                                    ...selectedProducts.value,
+                                    product,
+                                  ];
+                                } else {
+                                  selectedProducts.value =
+                                    selectedProducts.value.filter(
+                                      (item: any) => item.id !== product.id
+                                    );
+                                }
+                              }}
+                            />
+                            <label>
+                              {product.product_name}
+                              {product?.id?.includes(".")
+                                ? ` - ${product?.id?.split(".")[1]}`
+                                : ""}
+                            </label>
+                          </div>
+                        );
+                      }
+                    )}
+                    <div class="flex flex-row gap-2">
+                      <button
+                        class="btn"
+                        onClick$={() => {
+                          orderId.value = "";
+                          userEmail.value = "";
+                          orderStatus.value = "";
+                          orderDetail.value = {};
+                        }}
+                      >
+                        Close
+                      </button>
+                      <button
+                        class="btn btn-primary"
+                        onClick$={handleSendTrackingNumberConfirm}
                       >
                         Confirm
                       </button>

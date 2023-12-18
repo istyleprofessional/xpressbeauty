@@ -9,7 +9,6 @@ import { connect } from "~/express/db.connection";
 
 export const useUserTableData = routeLoader$(async ({ url }) => {
   const page = url.searchParams.get("page") ?? "1";
-  // const search = url.searchParams.get("search") ?? "";
 
   const users = await getUsers(parseInt(page));
   if (users.status === "success") {

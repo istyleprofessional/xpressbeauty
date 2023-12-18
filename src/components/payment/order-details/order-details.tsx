@@ -48,7 +48,8 @@ export const checkCatServer = server$(async function (products: any) {
     if (prod.id.includes(".")) continue;
     const req = await productSchema.find({ _id: prod.id });
     if (req.length !== 0) {
-      const cat = req[0].categories;
+      const cat = req[0]?.categories;
+      if (!cat) continue;
       if (
         cat[0].name.includes("Trimmers") ||
         cat[0].name.includes("Clippers")

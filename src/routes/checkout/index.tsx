@@ -86,7 +86,12 @@ export const useAddUser = routeAction$(async (data: any, requestEvent) => {
       addressLine1:
         (newData?.generalInfo?.address?.addressLine1?.length ?? 0) > 0,
       city: (newData?.generalInfo?.address?.city?.length ?? 0) > 0,
-      state: (newData?.generalInfo?.address?.state?.length ?? 0) > 0,
+      state:
+        (newData?.generalInfo?.address?.state?.length ?? 0) > 0 &&
+        !(
+          newData?.generalInfo?.address?.city?.includes("undefined") ||
+          newData?.generalInfo?.address?.city?.includes("null")
+        ),
       postalCode: (newData?.generalInfo?.address?.postalCode?.length ?? 0) > 0,
       firstName:
         validate(newData?.firstName?.trim() ?? "", "firstName") &&
@@ -409,7 +414,7 @@ export default component$(() => {
               identifier="generalInfo.address.postalCode"
               validation={action?.value?.validation?.postalCode}
               isMandatory={true}
-              disabled={true}
+              // disabled={true}
             />
             <InputField
               label="Country/ Region"
