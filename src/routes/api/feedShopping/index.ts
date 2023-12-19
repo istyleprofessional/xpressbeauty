@@ -22,53 +22,69 @@ export const onGet: RequestHandler = async ({ json }) => {
     auth
   );
   await doc.loadInfo(); // loads document properties and worksheets
-  // get product row by name from spreadsheet
+  const productsDb = await productSchema.find();
   const sheet = doc.sheetsByIndex[0];
-  const rows = await sheet.getRows();
-  // update in stock column in spreadsheet by product id in sheet
-  try {
-    for (const row of rows) {
-      const id = row.toObject()?.id?.includes("-")
-        ? row.toObject().id?.split("-")[0]
-        : row.toObject().id?.toString();
-      const productFromDb = await productSchema.findOne({
-        _id: new ObjectId(id),
-      });
-      if (!productFromDb) continue;
-      if (row.toObject()?.id?.includes("-")) {
-        const variation_id = row.toObject().id.split("-")[1];
-        const variation = productFromDb.variations?.find(
-          (v) => v?.variation_id === variation_id
-        );
-        if (variation) {
-          row.set(
-            "availability",
-            parseInt(variation?.quantity_on_hand?.toString() ?? "0") > 0
-              ? "in_stock"
-              : "out_of_stock"
-          );
-          row.set("price", `${variation?.price} CAD` ?? "0");
-        }
-      }
-      if (
-        productFromDb &&
-        parseInt(productFromDb?.quantity_on_hand?.toString() ?? "0") > 0
-      ) {
-        row.set("availability", "in_stock");
-        row.set("price", `${productFromDb?.price?.regular} CAD` ?? "0");
-      } else {
-        row.set("availability", "out_of_stock");
-      }
-      const checkIfCat = productFromDb.categories?.find(
+  for (const product of productsDb) {
+    // get product row by id from spreadsheet and update in stock column
+    const rows = await sheet.getRows();
+    const row = rows.find((r) => r.toObject().id === product._id.toString());
+    if (row) {
+      row.set(
+        "availability",
+        parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
+          ? "in_stock"
+          : "out_of_stock"
+      );
+      row.set("price", `${product?.price?.regular} CAD` ?? "0");
+      const checkIfCat = product.categories?.find(
         (cat) => cat?.name === "Trimmers" || cat?.name === "Clippers"
       );
       if (checkIfCat) {
         row.set("shipping_label", "free shipping");
       }
       await row.save();
+    } else {
+      const checkProductShip = product?.categories?.find(
+        (cat) => cat?.main === "Tools"
+      );
+      const checkVariation = product?.variations?.length > 0;
+      if (checkVariation) {
+        for (const variant of product.variations) {
+          const row = await sheet.addRow({
+            id: `${product._id.toString()}-${variant?.variation_id}`,
+            title: variant?.product_name ?? "",
+            description: variant?.description ?? "",
+            link: `https://www.qwikcity.com/product/${product.perfix}`,
+            image_link: variant?.imgs[0] ?? "",
+            availability:
+              parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
+                ? "in_stock"
+                : "out_of_stock",
+            price: `${variant?.price} CAD` ?? "0",
+            brand: product?.companyName?.name ?? "Qwik City",
+            condition: "new",
+          });
+          await row.save();
+        }
+      } else {
+        const row = await sheet.addRow({
+          id: product._id.toString(),
+          title: product?.product_name ?? "",
+          description: product?.description ?? "",
+          link: `https://www.qwikcity.com/product/${product.perfix}`,
+          image_link: product?.imgs[0] ?? "",
+          availability:
+            parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
+              ? "in_stock"
+              : "out_of_stock",
+          price: `${product?.price?.regular} CAD` ?? "0",
+          brand: product?.companyName?.name ?? "Qwik City",
+          condition: "new",
+          shipping_label: checkProductShip ? "free shipping" : "",
+        });
+        await row.save();
+      }
     }
-  } catch (error) {
-    console.log(error);
   }
 
   json(200, { message: "done" });
