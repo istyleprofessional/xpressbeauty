@@ -34,18 +34,7 @@ export const onGet: RequestHandler = async ({ json }) => {
       const checkVariation = product?.variations?.length > 0;
       const row = rows.find((r) => r.toObject().id === product._id.toString());
       if (row) {
-        row.set(
-          "availability",
-          parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
-            ? "in_stock"
-            : "out_of_stock"
-        );
-        row.set("price", `${product?.price?.regular} CAD` ?? "0");
-
-        if (checkIfCat) {
-          row.set("shipping_label", "free shipping");
-        }
-        await row.save();
+        continue;
       } else {
         if (checkVariation) {
           for (const variant of product.variations) {
