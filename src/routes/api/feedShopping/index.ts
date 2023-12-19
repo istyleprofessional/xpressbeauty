@@ -10,21 +10,23 @@ export const onGet: RequestHandler = async ({ json }) => {
   await connect();
   // const merchantId = "5086882223"; // Replace with your merchant ID
 
-  const auth = new JWT({
-    email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
-    key: import.meta.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-  });
-
-  const doc = new GoogleSpreadsheet(
-    "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
-    auth
-  );
-  await doc.loadInfo(); // loads document properties and worksheets
   const productsDb = await productSchema.find();
-  const sheet = doc.sheetsByIndex[0];
+
   for (const product of productsDb) {
     try {
+      const auth = new JWT({
+        email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+        key:
+          import.meta.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+      });
+
+      const doc = new GoogleSpreadsheet(
+        "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
+        auth
+      );
+      await doc.loadInfo();
+      const sheet = doc.sheetsByIndex[0]; // loads document properties and worksheets
       const rows = await sheet.getRows();
       const checkIfCat = product.categories?.find(
         (cat) => cat?.main === "Tools"
@@ -82,6 +84,7 @@ export const onGet: RequestHandler = async ({ json }) => {
           await row.save();
         }
       }
+      doc.resetLocalCache();
     } catch (error) {
       console.log(error);
       continue;
