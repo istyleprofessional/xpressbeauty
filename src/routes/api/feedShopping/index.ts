@@ -51,7 +51,7 @@ export const onGet: RequestHandler = async ({ json }) => {
               id: `${product._id.toString()}-${variant?.variation_id}`,
               title: variant?.product_name ?? "",
               description: variant?.description ?? "",
-              link: `https://www.qwikcity.com/product/${product.perfix}`,
+              link: `https://xpressbeauty.ca/product/${product.perfix}`,
               image_link: variant?.imgs[0] ?? "",
               availability:
                 parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
@@ -68,7 +68,7 @@ export const onGet: RequestHandler = async ({ json }) => {
             id: product._id.toString(),
             title: product?.product_name ?? "",
             description: product?.description ?? "",
-            link: `https://www.qwikcity.com/product/${product.perfix}`,
+            link: `https://xpressbeauty.ca/product/${product.perfix}`,
             image_link: product?.imgs[0] ?? "",
             availability:
               parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
