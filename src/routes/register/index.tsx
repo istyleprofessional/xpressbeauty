@@ -142,6 +142,7 @@ export default component$(() => {
   useVisibleTask$(
     ({ track }) => {
       track(() => action.value?.status);
+      isLoading.value = false;
       if (action.value?.status === "failed") {
         console.log(action.value?.err);
         message.value = action.value?.err ?? "";
@@ -292,6 +293,9 @@ export default component$(() => {
             <button
               class={`btn w-full bg-black text-white text-lg`}
               type="submit"
+              onClick$={() => {
+                isLoading.value = true;
+              }}
               // disabled={!isRecaptcha.value}
             >
               {isLoading.value && <span class="loading loading-spinner"></span>}

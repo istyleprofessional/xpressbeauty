@@ -15,6 +15,7 @@ const userSchema = new Schema(
     stripeCustomerId: { type: String, default: null },
     paymentMethod: { type: Array, default: null },
     clientSecret: { type: String, default: null },
+    cobone: { type: Array, default: null },
   },
   { timestamps: true }
 );

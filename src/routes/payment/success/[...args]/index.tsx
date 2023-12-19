@@ -100,6 +100,10 @@ export default component$(() => {
     if (!data?.dataForSurvey?.order_id) {
       location.href = "/";
     }
+    const checkCopon = localStorage.getItem("copon");
+    if (checkCopon === "true") {
+      localStorage.removeItem("copon");
+    }
   });
 
   return (

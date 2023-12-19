@@ -1,9 +1,4 @@
-import {
-  component$,
-  useSignal,
-  useTask$,
-  useVisibleTask$,
-} from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 import { verify } from "jsonwebtoken";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
@@ -77,11 +72,15 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
   const symbol = useSignal<string>("CAD");
   const isDummy = useSignal<boolean>(true);
 
-  useTask$(async ({ track }) => {
+  useVisibleTask$(async ({ track }) => {
     track(() => cart?.totalPrice);
     track(() => currencyObject);
 
     subTotal.value = cart?.totalPrice;
+    const checkCopon = localStorage.getItem("copon");
+    if (checkCopon === "true") {
+      subTotal.value = subTotal.value - subTotal.value * 0.1;
+    }
     hst.value = !user?.generalInfo?.address?.country
       ?.toLowerCase()
       ?.includes("united")

@@ -27,6 +27,7 @@ import paypal from "paypal-rest-sdk";
 import SalesTax from "sales-tax";
 import { getDummyCustomer } from "~/express/services/dummy.user.service";
 import { CurContext } from "~/context/cur.context";
+import usersSchema from "~/express/schemas/users.schema";
 
 export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   const token = cookie.get("token")?.value;
@@ -139,7 +140,14 @@ export const paypalServer = server$(async function (data: any, user: any) {
       client_id: import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
       client_secret: import.meta.env.VITE_PAYPAL_APP_SECRET ?? "",
     });
-    console.log(data);
+    if (data.isCoponApplied) {
+      data.products = data.products.map((product: any) => {
+        return {
+          ...product,
+          price: parseFloat(product.price) - parseFloat(product.price) * 0.1,
+        };
+      });
+    }
     const create_payment_json = {
       intent: "sale",
       payer: {
@@ -212,7 +220,8 @@ export const callServer = server$(async function (
   total: number,
   cart: any,
   currency?: string,
-  totalInfo?: any
+  totalInfo?: any,
+  isCoponApplied?: boolean
 ) {
   try {
     const stripe: any = new Stripe(
@@ -245,7 +254,7 @@ export const callServer = server$(async function (
       data.order_status = "Pending";
       data.order_number = generateOrderNumber();
       orderId = data.order_number;
-      // const rate = this.cookie.get("curRate")?.value ?? "";
+
       await sendConfirmationEmail(
         user.result?.email ?? "",
         `${user.result?.firstName} ${user.result?.lastName}`,
@@ -261,6 +270,13 @@ export const callServer = server$(async function (
         // rate
       );
       console.log(data);
+      if (isCoponApplied) {
+        // update status of copon in cobone array of object
+        await usersSchema.updateOne(
+          { _id: verified.user_id, "cobone.code": "xpressbeauty10" },
+          { $set: { "cobone.$.status": true } }
+        );
+      }
       await createOrder(data);
       await deleteCart(verified.user_id);
     }
@@ -315,6 +331,7 @@ export default component$(() => {
         "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
         currency: currencyObject === "1" ? "USD" : "CAD",
       });
+      const checkCopon = localStorage.getItem("copon");
       (paypalUi as any)
         .Buttons({
           style: {
@@ -324,6 +341,7 @@ export default component$(() => {
             label: "paypal",
             tagline: false,
           },
+
           createOrder: async () => {
             const dataToSend = {
               subTotal: subTotal.value.toFixed(2),
@@ -356,6 +374,7 @@ export default component$(() => {
                 finalTotal: parseFloat(total.value.toString()).toFixed(2),
                 currency: currencyObject === "1" ? "USD" : "CAD",
               },
+              isCoponApplied: checkCopon === "true" ? true : false,
             };
             const paypalReq: any = await paypalServer(
               dataToSend,
@@ -393,8 +412,8 @@ export default component$(() => {
                   finalTotal: parseFloat(total.value.toString()).toFixed(2),
                   currency: currencyObject === "1" ? "USD" : "CAD",
                 },
+                isCoponApplied: checkCopon === "true" ? true : false,
               };
-              console.log(dataToSend);
               const req = await postRequest(
                 "/api/paymentConfirmiation",
                 dataToSend
@@ -449,7 +468,7 @@ export default component$(() => {
       }
       const form = document.querySelector("#payment-form") as HTMLFormElement;
       const errorEl = document.querySelector("#card-errors") as HTMLElement;
-
+      const coponCheck = localStorage.getItem("copon");
       const stripeTokenHandler = async (token: any) => {
         const hiddenInput = document.createElement("input");
         hiddenInput.setAttribute("type", "hidden");
@@ -479,6 +498,7 @@ export default component$(() => {
             finalTotal: parseFloat(total.value.toString()).toFixed(2),
             currency: currencyObject === "1" ? "USD" : "CAD",
           },
+          isCoponApplied: coponCheck === "true" ? true : false,
         };
 
         const req = await postRequest("/api/paymentConfirmiation", dataToSend);
@@ -510,13 +530,16 @@ export default component$(() => {
             finalTotal: parseFloat(total.value.toString()).toFixed(2),
             currency: currencyObject === "1" ? "USD" : "CAD",
           };
+          const isCoponApplied = localStorage.getItem("copon");
+
           const pay = await callServer(
             finalCard.value.id,
             userContext?.user?.stripeCustomerId,
             total.value,
             cartContext?.cart ?? {},
             currencyObject === "1" ? "USD" : "CAD",
-            totalInfo
+            totalInfo,
+            isCoponApplied === "true" ? true : false
           );
           if (pay?.paymentIntent.status === "succeeded") {
             isLoading.value = false;

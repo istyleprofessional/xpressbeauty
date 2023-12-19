@@ -153,6 +153,7 @@ export default component$(() => {
   useVisibleTask$(
     ({ track }) => {
       track(() => action.value?.status);
+      isLoading.value = false;
       if (action.value?.status === "success") {
         if (action.value?.token) {
           window.location.href = "/phoneVerify/?token=" + jsonUser.token;

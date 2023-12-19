@@ -12,6 +12,7 @@ import { sendConfirmationOrderForAdmin } from "~/utils/sendConfirmationOrderForA
 import Stripe from "stripe";
 import { refreshToken } from "~/utils/refreshToken";
 import { verifyTokenUtil } from "~/utils/verifyTokenUtil";
+import usersSchema from "~/express/schemas/users.schema";
 
 export const onPost: RequestHandler = async ({
   json,
@@ -78,13 +79,13 @@ export const onPost: RequestHandler = async ({
     data.paymentStatus = "Paid";
     data.order_status = "Pending";
     data.order_number = generateOrderNumber();
-    console.log("data", data);
     await createOrder(data);
     await deleteCart(verifiedToken.user_id);
     json(200, { status: "success", orderId: data.order_number });
     return;
   } else {
     const request = await getUserById(verifiedToken.user_id);
+    const coponCheck = data.isCoponApplied;
     const email = request?.result?.email;
     const name = `${request?.result?.firstName} ${request?.result?.lastName}`;
     const shipping_address = request.result?.generalInfo.address;
@@ -113,7 +114,6 @@ export const onPost: RequestHandler = async ({
           );
         }
       }
-      console.log("data", data);
       const totalInfo = data.totalInfo;
       await sendConfirmationEmail(
         email ?? "",
@@ -134,6 +134,12 @@ export const onPost: RequestHandler = async ({
       data.paymentStatus = "Paid";
       data.order_status = "Pending";
       data.order_number = generateOrderNumber();
+      if (coponCheck) {
+        await usersSchema.updateOne(
+          { _id: verifiedToken.user_id, "cobone.code": "xpressbeauty10" },
+          { $set: { "cobone.$.status": true } }
+        );
+      }
       console.log("data", data);
       await createOrder(data);
       await deleteCart(verifiedToken.user_id);

@@ -184,6 +184,7 @@ export default component$(() => {
   useVisibleTask$(
     ({ track }) => {
       track(() => action.value?.status);
+      isLoading.value = false;
       if (action.value?.status === "success") {
         window.location.href = `/login/`;
       }
@@ -197,7 +198,6 @@ export default component$(() => {
         );
         recaptchaToken.value = token;
       });
-      isLoading.value = false;
     },
     { strategy: "document-idle" }
   );

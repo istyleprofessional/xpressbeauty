@@ -82,6 +82,7 @@ export const useUserData = routeLoader$(
       return JSON.stringify({
         user: null,
         cur: curr,
+        isDummy: true,
       });
     }
     if (!curr) {
@@ -114,16 +115,20 @@ export const useUserData = routeLoader$(
         return JSON.stringify({
           user: requestDum?.result,
           cur: curr,
+          isDummy: true,
         });
       }
     }
     try {
       const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
       let user: any;
+      let isDummy = true;
       if (verify.isDummy) {
         user = await getDummyCustomer(verify?.user_id ?? "");
+        isDummy = true;
       } else {
         user = await findUserByUserId(verify?.user_id ?? "");
+        isDummy = false;
       }
 
       if (!user?.result) {
@@ -144,6 +149,7 @@ export const useUserData = routeLoader$(
         return JSON.stringify({
           user: request?.result,
           cur: curr,
+          isDummy: true,
         });
       }
 
@@ -155,9 +161,9 @@ export const useUserData = routeLoader$(
       return JSON.stringify({
         user: user?.result,
         cur: curr,
+        isDummy: isDummy,
       });
     } catch (error: any) {
-      console.log(token);
       if (error.message === "jwt expired") {
         const decode: any = jwt.decode(token);
         const newToken = jwt.sign(
@@ -174,10 +180,13 @@ export const useUserData = routeLoader$(
           path: "/",
         });
         let user: any;
+        let isDummy = true;
         if (decode.isDummy) {
           user = await getDummyCustomer(decode.user_id);
+          isDummy = true;
         } else {
           user = await findUserByUserId(decode.user_id);
+          isDummy = false;
         }
         let curr: string = cookie.get("cur")?.value ?? "1";
         if (!curr) {
@@ -195,6 +204,7 @@ export const useUserData = routeLoader$(
         return JSON.stringify({
           user: user?.result,
           cur: curr,
+          isDummy: isDummy,
         });
       } else {
         const request: any = await addDummyCustomer("", data);
@@ -213,6 +223,7 @@ export const useUserData = routeLoader$(
         return JSON.stringify({
           user: request?.result,
           cur: curr,
+          isDummy: true,
         });
       }
     }
@@ -248,6 +259,7 @@ export default component$(() => {
   const userContextObject = useStore<any>(
     {
       user: userData?.user,
+      isDummy: userData?.isDummy,
     },
     { deep: true }
   );
@@ -329,6 +341,7 @@ export default component$(() => {
 
   const handleLogout = $(async () => {
     await clearUser();
+    localStorage.removeItem("copon");
     location.reload();
   });
 
