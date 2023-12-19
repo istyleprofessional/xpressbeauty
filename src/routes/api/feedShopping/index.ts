@@ -38,7 +38,7 @@ export const onGet: RequestHandler = async ({ json }) => {
       } else {
         if (checkVariation) {
           for (const variant of product.variations) {
-            const row = await sheet.addRow({
+            await sheet.addRow({
               id: `${product._id.toString()}-${variant?.variation_id}`,
               title: variant?.product_name ?? "",
               description: variant?.description ?? "",
@@ -52,10 +52,9 @@ export const onGet: RequestHandler = async ({ json }) => {
               brand: product?.companyName?.name ?? "Qwik City",
               condition: "new",
             });
-            await row.save();
           }
         } else {
-          const row = await sheet.addRow({
+          await sheet.addRow({
             id: product._id.toString(),
             title: product?.product_name ?? "",
             description: product?.description ?? "",
@@ -70,7 +69,6 @@ export const onGet: RequestHandler = async ({ json }) => {
             condition: "new",
             shipping_label: checkIfCat ? "free shipping" : "",
           });
-          await row.save();
         }
       }
       doc.resetLocalCache();
