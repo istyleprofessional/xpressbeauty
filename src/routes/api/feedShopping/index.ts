@@ -24,66 +24,69 @@ export const onGet: RequestHandler = async ({ json }) => {
   const productsDb = await productSchema.find();
   const sheet = doc.sheetsByIndex[0];
   for (const product of productsDb) {
-    // get product row by id from spreadsheet and update in stock column
-    const rows = await sheet.getRows();
-    const row = rows.find((r) => r.toObject().id === product._id.toString());
-    if (row) {
-      row.set(
-        "availability",
-        parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
-          ? "in_stock"
-          : "out_of_stock"
-      );
-      row.set("price", `${product?.price?.regular} CAD` ?? "0");
+    try {
+      const rows = await sheet.getRows();
       const checkIfCat = product.categories?.find(
-        (cat) => cat?.name === "Trimmers" || cat?.name === "Clippers"
-      );
-      if (checkIfCat) {
-        row.set("shipping_label", "free shipping");
-      }
-      await row.save();
-    } else {
-      const checkProductShip = product?.categories?.find(
         (cat) => cat?.main === "Tools"
       );
       const checkVariation = product?.variations?.length > 0;
-      if (checkVariation) {
-        for (const variant of product.variations) {
+      const row = rows.find((r) => r.toObject().id === product._id.toString());
+      if (row) {
+        row.set(
+          "availability",
+          parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
+            ? "in_stock"
+            : "out_of_stock"
+        );
+        row.set("price", `${product?.price?.regular} CAD` ?? "0");
+
+        if (checkIfCat) {
+          row.set("shipping_label", "free shipping");
+        }
+        await row.save();
+      } else {
+        if (checkVariation) {
+          for (const variant of product.variations) {
+            const row = await sheet.addRow({
+              id: `${product._id.toString()}-${variant?.variation_id}`,
+              title: variant?.product_name ?? "",
+              description: variant?.description ?? "",
+              link: `https://www.qwikcity.com/product/${product.perfix}`,
+              image_link: variant?.imgs[0] ?? "",
+              availability:
+                parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
+                  ? "in_stock"
+                  : "out_of_stock",
+              price: `${variant?.price} CAD` ?? "0",
+              brand: product?.companyName?.name ?? "Qwik City",
+              condition: "new",
+            });
+            await row.save();
+          }
+        } else {
           const row = await sheet.addRow({
-            id: `${product._id.toString()}-${variant?.variation_id}`,
-            title: variant?.product_name ?? "",
-            description: variant?.description ?? "",
+            id: product._id.toString(),
+            title: product?.product_name ?? "",
+            description: product?.description ?? "",
             link: `https://www.qwikcity.com/product/${product.perfix}`,
-            image_link: variant?.imgs[0] ?? "",
+            image_link: product?.imgs[0] ?? "",
             availability:
-              parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
+              parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
                 ? "in_stock"
                 : "out_of_stock",
-            price: `${variant?.price} CAD` ?? "0",
+            price: `${product?.price?.regular} CAD` ?? "0",
             brand: product?.companyName?.name ?? "Qwik City",
             condition: "new",
+            shipping_label: checkIfCat ? "free shipping" : "",
           });
           await row.save();
         }
-      } else {
-        const row = await sheet.addRow({
-          id: product._id.toString(),
-          title: product?.product_name ?? "",
-          description: product?.description ?? "",
-          link: `https://www.qwikcity.com/product/${product.perfix}`,
-          image_link: product?.imgs[0] ?? "",
-          availability:
-            parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
-              ? "in_stock"
-              : "out_of_stock",
-          price: `${product?.price?.regular} CAD` ?? "0",
-          brand: product?.companyName?.name ?? "Qwik City",
-          condition: "new",
-          shipping_label: checkProductShip ? "free shipping" : "",
-        });
-        await row.save();
       }
+    } catch (error) {
+      console.log(error);
+      continue;
     }
+    // get product row by id from spreadsheet and update in stock column
   }
 
   json(200, { message: "done" });
