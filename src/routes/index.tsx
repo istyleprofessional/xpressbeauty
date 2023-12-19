@@ -67,19 +67,6 @@ export default component$(() => {
       {status === "1" && (
         <div class="flex flex-col gap-10">
           <Hero />
-          {/* <div
-            class="flex flex-col relative cursor-pointer justify-center items-center w-full h-[40vh] lg:h-[60vh] bg-[#E8E8E8]"
-            onClick$={() => {
-              nav("/products");
-            }}
-          >
-            <BannerImage class="w-full h-full object-contain" />
-            <div class="flex flex-col gap-4 absolute bottom-0 w-full justify-center items-center">
-              <button class="bg-white btn btn-sm lg:btn-lg  text-black font-bold text-base normal-case m-2">
-                Shop Now
-              </button>
-            </div>
-          </div> */}
           <FeatureProducts
             bestSellerProducts={bestSellerProducts2}
             type="Top Selling Products"

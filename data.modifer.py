@@ -507,7 +507,7 @@ def updateQuantity():
                 driver = webdriver.Chrome(service=Service(path), options=chrome_options)
                 driver.delete_all_cookies()
                 delete_cache(driver)
-                time.sleep(15)
+                time.sleep(30)
                 if "Hair" in ','.join(d['categories']):
                     url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-AvailabilityJson?pids={d['id']}&page=pdp'''
                     driver.get(url)
