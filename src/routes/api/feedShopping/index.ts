@@ -38,6 +38,9 @@ export const onGet: RequestHandler = async ({ json }) => {
         );
         oldRow.price = `${product?.price?.regular} CAD` ?? "0";
         oldRow.shipping_label = checkIfCat ? "free shipping" : "";
+        oldRow.gtin = product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
+        oldRow["identifier exists"] =
+          product?.gtin || oldRow?.gtin ? "yes" : "no";
         newArray.push(oldRow);
       } else {
         if (checkVariation) {
@@ -56,7 +59,7 @@ export const onGet: RequestHandler = async ({ json }) => {
               brand: product?.companyName?.name ?? "Qwik City",
               condition: "new",
               gtin: product?.gtin ?? "",
-              identifier_exists: product?.gtin ? "yes" : "no",
+              "identifier exists": product?.gtin ? "yes" : "no",
             };
             newArray.push(newRow);
           }
@@ -76,7 +79,7 @@ export const onGet: RequestHandler = async ({ json }) => {
             condition: "new",
             shipping_label: checkIfCat ? "free shipping" : "",
             gtin: product?.gtin ?? "",
-            identifier_exists: product?.gtin ? "yes" : "no",
+            "identifier exists": product?.gtin ? "yes" : "no",
           };
           newArray.push(newRow);
         }
