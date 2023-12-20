@@ -30,38 +30,39 @@ export const onGet: RequestHandler = async ({ json }) => {
         (cat) => cat?.main === "Tools"
       );
       const row = rows.find((r) => r.toObject().id === product._id.toString());
-      if (row) {
-        const oldRow = row.toObject();
-        oldRow.availability = parseInt(
-          product?.quantity_on_hand?.toString() ?? "0"
-        );
-        oldRow.price = `${product?.price?.regular} CAD` ?? "0";
-        oldRow.shipping_label = checkIfCat ? "free shipping" : "";
-        oldRow.gtin = product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
-        oldRow["identifier exists"] =
-          product?.gtin || oldRow?.gtin ? "yes" : "no";
-        newArray.push(oldRow);
+      if (product?.variations?.length > 0) {
+        for (const variant of product.variations) {
+          const newRow = {
+            id: `${product._id.toString()}-${variant?.variation_id}`,
+            title: product?.product_name ?? "",
+            description: product?.description ?? "",
+            link: `https://xpressbeauty.ca/product/${product.perfix}`,
+            image_link: product?.imgs[0] ?? "",
+            availability:
+              parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
+                ? "in_stock"
+                : "out_of_stock",
+            price: `${variant?.price} CAD` ?? "0",
+            brand: product?.companyName?.name ?? "Qwik City",
+            condition: "new",
+            gtin: product?.gtin ?? "",
+            "identifier exists": product?.gtin ? "yes" : "no",
+          };
+          newArray.push(newRow);
+        }
       } else {
-        if (product?.variations?.length > 0) {
-          for (const variant of product.variations) {
-            const newRow = {
-              id: `${product._id.toString()}-${variant?.variation_id}`,
-              title: product?.product_name ?? "",
-              description: product?.description ?? "",
-              link: `https://xpressbeauty.ca/product/${product.perfix}`,
-              image_link: product?.imgs[0] ?? "",
-              availability:
-                parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
-                  ? "in_stock"
-                  : "out_of_stock",
-              price: `${variant?.price} CAD` ?? "0",
-              brand: product?.companyName?.name ?? "Qwik City",
-              condition: "new",
-              gtin: product?.gtin ?? "",
-              "identifier exists": product?.gtin ? "yes" : "no",
-            };
-            newArray.push(newRow);
-          }
+        if (row) {
+          const oldRow = row.toObject();
+          oldRow.availability = parseInt(
+            product?.quantity_on_hand?.toString() ?? "0"
+          );
+          oldRow.price = `${product?.price?.regular} CAD` ?? "0";
+          oldRow.shipping_label = checkIfCat ? "free shipping" : "";
+          oldRow.gtin =
+            product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
+          oldRow["identifier exists"] =
+            product?.gtin || oldRow?.gtin ? "yes" : "no";
+          newArray.push(oldRow);
         } else {
           const newRow = {
             id: product._id.toString(),
