@@ -29,7 +29,6 @@ export const onGet: RequestHandler = async ({ json }) => {
       const checkIfCat = product.categories?.find(
         (cat) => cat?.main === "Tools"
       );
-      const checkVariation = product?.variations?.length > 0;
       const row = rows.find((r) => r.toObject().id === product._id.toString());
       if (row) {
         const oldRow = row.toObject();
@@ -43,7 +42,7 @@ export const onGet: RequestHandler = async ({ json }) => {
           product?.gtin || oldRow?.gtin ? "yes" : "no";
         newArray.push(oldRow);
       } else {
-        if (checkVariation) {
+        if (product?.variations?.length > 0) {
           for (const variant of product.variations) {
             const newRow = {
               id: `${product._id.toString()}-${variant?.variation_id}`,
