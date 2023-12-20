@@ -55,6 +55,8 @@ export const onGet: RequestHandler = async ({ json }) => {
               price: `${variant?.price} CAD` ?? "0",
               brand: product?.companyName?.name ?? "Qwik City",
               condition: "new",
+              gtin: product?.gtin ?? "",
+              identifier_exists: product?.gtin ? "yes" : "no",
             };
             newArray.push(newRow);
           }
@@ -73,6 +75,8 @@ export const onGet: RequestHandler = async ({ json }) => {
             brand: product?.companyName?.name ?? "Qwik City",
             condition: "new",
             shipping_label: checkIfCat ? "free shipping" : "",
+            gtin: product?.gtin ?? "",
+            identifier_exists: product?.gtin ? "yes" : "no",
           };
           newArray.push(newRow);
         }
