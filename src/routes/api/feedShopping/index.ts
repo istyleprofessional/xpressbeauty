@@ -47,8 +47,8 @@ export const onGet: RequestHandler = async ({ json }) => {
           for (const variant of product.variations) {
             const newRow = {
               id: `${product._id.toString()}-${variant?.variation_id}`,
-              title: variant?.product_name ?? "",
-              description: variant?.description ?? "",
+              title: product?.product_name ?? "",
+              description: product?.description ?? "",
               link: `https://xpressbeauty.ca/product/${product.perfix}`,
               image_link: product?.imgs[0] ?? "",
               availability:
