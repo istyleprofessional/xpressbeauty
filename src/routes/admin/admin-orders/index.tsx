@@ -1,4 +1,10 @@
-import { component$, $, useSignal } from "@builder.io/qwik";
+import {
+  component$,
+  $,
+  useSignal,
+  useStore,
+  useVisibleTask$,
+} from "@builder.io/qwik";
 import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import {
   CheckOrderIcon,
@@ -28,7 +34,6 @@ export const sendShippedEmailServer = server$(async function (data: any) {
     return { status: "error", message: "Order not found" };
   const order = getOrder?.request;
   const orderNo = order?.order_number;
-  // const products = order?.products;
   await sendShippedEmail(
     data.email,
     data.fullName,
@@ -48,13 +53,28 @@ export const sendShippedEmailServer = server$(async function (data: any) {
   };
 });
 
+export const updateOrderStatusServer = server$(async function (
+  orderId: string,
+  status: string
+) {
+  const updateOrderStatusreq = await updateOrderStatus(orderId, status);
+  if (updateOrderStatusreq.status === "error")
+    return { status: "error", message: "Order status not updated" };
+  return {
+    status: "success",
+    message: JSON.stringify(updateOrderStatusreq.request),
+  };
+});
+
 export default component$(() => {
   const loc = useLocation();
   const orders = useOrderTableData();
-  let ordersData: any;
-  if (orders.value?.res) {
-    ordersData = JSON.parse(orders.value?.res ?? "[]");
-  }
+  const ordersData = useStore<any>({ request: [] });
+  useVisibleTask$(async () => {
+    if (orders.value?.res) {
+      ordersData.request = JSON.parse(orders.value?.res ?? "[]").request;
+    }
+  });
   const currentPageNo = loc.url.searchParams.get("page") ?? "1";
   const total = ordersData?.total ?? 0;
   const totalPages = Math.ceil(total / 20);
@@ -70,7 +90,7 @@ export default component$(() => {
   const selectedProducts = useSignal<any>([]);
 
   const handleStatusChanged = $(
-    (
+    async (
       status: string,
       email: string,
       id: string,
@@ -78,16 +98,33 @@ export default component$(() => {
       shippingAddress?: any,
       user?: any
     ) => {
-      (document?.getElementById("my_modal_1") as any)?.showModal();
-      orderStatus.value = status;
-      userEmail.value = email;
-      console.log(email);
-      orderId.value = id.toString();
-      orderDetail.value = {
-        products: products,
-        shippingAddress: shippingAddress,
-        fullName: `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
-      };
+      console.log(status, email, id, products, shippingAddress, user);
+      if (status === "Shipped") {
+        (document?.getElementById("my_modal_1") as any)?.showModal();
+        orderStatus.value = status;
+        userEmail.value = email;
+        orderId.value = id.toString();
+        orderDetail.value = {
+          products: products,
+          shippingAddress: shippingAddress,
+          fullName: `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
+        };
+      } else {
+        const updateOrderStatusreq = await updateOrderStatusServer(id, status);
+        if (updateOrderStatusreq.status === "error") {
+          alert(updateOrderStatusreq.message);
+          location.reload();
+        } else {
+          const result = JSON.parse(updateOrderStatusreq.message);
+          ordersData.request = ordersData.request.map((order: any) => {
+            if (order._id === result._id) {
+              order.orderStatus = result.orderStatus;
+            }
+            return order;
+          });
+          alert("Order status updated successfully");
+        }
+      }
     }
   );
 
@@ -212,9 +249,11 @@ export default component$(() => {
                             ? "bg-[#FEF9C3] text-[#CA8A04]"
                             : order.orderStatus === "Shipped"
                             ? "bg-[#E0F2FE] text-[#0EA5E9]"
-                            : order.orderStatus === "Completed"
-                            ? "bg-[#C6F6D5] text-[#059669]"
-                            : "bg-[#FED7D7] text-[#B91C1C]"
+                            : order.orderStatus === "Return"
+                            ? "bg-[#FED7D7] text-[#B91C1C]"
+                            : order.orderStatus === "Refund"
+                            ? "bg-[#FED7D7] text-[#B91C1C]"
+                            : "bg-[#D1FAE5] text-[#047857]"
                         } text-xs`}
                       >
                         {order.orderStatus}
@@ -253,7 +292,7 @@ export default component$(() => {
                               onClick$={() =>
                                 handleStatusChanged(
                                   "Pending",
-                                  order?.user.email,
+                                  order?.user?.email,
                                   order?._id
                                 )
                               }
@@ -266,12 +305,25 @@ export default component$(() => {
                               onClick$={() =>
                                 handleStatusChanged(
                                   "Return",
-                                  order?.user.email,
+                                  order?.user?.email,
                                   order?._id
                                 )
                               }
                             >
                               Return
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              onClick$={() =>
+                                handleStatusChanged(
+                                  "Refund",
+                                  order?.user?.email,
+                                  order?._id
+                                )
+                              }
+                            >
+                              Refund
                             </button>
                           </li>
                         </ul>

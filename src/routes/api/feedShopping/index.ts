@@ -8,42 +8,46 @@ import productSchema from "~/express/schemas/product.schema";
 
 export const onGet: RequestHandler = async ({ json }) => {
   await connect();
-  // const merchantId = "5086882223"; // Replace with your merchant ID
 
   const productsDb = await productSchema.find();
+  const newArray: any[] = [];
+  const auth = new JWT({
+    email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+    key: import.meta.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
 
+  const doc = new GoogleSpreadsheet(
+    "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
+    auth
+  );
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0]; // loads document properties and worksheets
+  const rows = await sheet.getRows();
   for (const product of productsDb) {
     try {
-      const auth = new JWT({
-        email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
-        key:
-          import.meta.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
-        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-      });
-
-      const doc = new GoogleSpreadsheet(
-        "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
-        auth
-      );
-      await doc.loadInfo();
-      const sheet = doc.sheetsByIndex[0]; // loads document properties and worksheets
-      const rows = await sheet.getRows();
       const checkIfCat = product.categories?.find(
         (cat) => cat?.main === "Tools"
       );
       const checkVariation = product?.variations?.length > 0;
       const row = rows.find((r) => r.toObject().id === product._id.toString());
       if (row) {
-        continue;
+        const oldRow = row.toObject();
+        oldRow.availability = parseInt(
+          product?.quantity_on_hand?.toString() ?? "0"
+        );
+        oldRow.price = `${product?.price?.regular} CAD` ?? "0";
+        oldRow.shipping_label = checkIfCat ? "free shipping" : "";
+        newArray.push(oldRow);
       } else {
         if (checkVariation) {
           for (const variant of product.variations) {
-            await sheet.addRow({
+            const newRow = {
               id: `${product._id.toString()}-${variant?.variation_id}`,
               title: variant?.product_name ?? "",
               description: variant?.description ?? "",
               link: `https://xpressbeauty.ca/product/${product.perfix}`,
-              image_link: variant?.imgs[0] ?? "",
+              image_link: product?.imgs[0] ?? "",
               availability:
                 parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
                   ? "in_stock"
@@ -51,10 +55,11 @@ export const onGet: RequestHandler = async ({ json }) => {
               price: `${variant?.price} CAD` ?? "0",
               brand: product?.companyName?.name ?? "Qwik City",
               condition: "new",
-            });
+            };
+            newArray.push(newRow);
           }
         } else {
-          await sheet.addRow({
+          const newRow = {
             id: product._id.toString(),
             title: product?.product_name ?? "",
             description: product?.description ?? "",
@@ -68,16 +73,22 @@ export const onGet: RequestHandler = async ({ json }) => {
             brand: product?.companyName?.name ?? "Qwik City",
             condition: "new",
             shipping_label: checkIfCat ? "free shipping" : "",
-          });
+          };
+          newArray.push(newRow);
         }
       }
-      doc.resetLocalCache();
     } catch (error) {
       console.log(error);
       continue;
     }
-    // get product row by id from spreadsheet and update in stock column
   }
-
+  debugger;
+  try {
+    const sheet = doc.sheetsByIndex[0]; // loads document properties and worksheets
+    await sheet.clear("A2:Z");
+    await sheet.addRows(newArray);
+  } catch (error) {
+    console.log(error);
+  }
   json(200, { message: "done" });
 };
