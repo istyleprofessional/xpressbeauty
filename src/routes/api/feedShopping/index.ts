@@ -82,7 +82,6 @@ export const onGet: RequestHandler = async ({ json }) => {
       continue;
     }
   }
-  debugger;
   try {
     const sheet = doc.sheetsByIndex[0]; // loads document properties and worksheets
     await sheet.clear("A2:Z");
