@@ -40,12 +40,10 @@ export const checkCoponServer = server$(async function (
       _id: user_id,
       cobone: { $elemMatch: { code: copon } },
     });
-    console.log(checkIfUserUsed);
     if (checkIfUserUsed) {
       const filterCopon = checkIfUserUsed.cobone.filter(
         (copons: any) => copons.code === copon
       );
-      console.log(filterCopon);
       if (filterCopon[0].status) {
         return false;
       } else {

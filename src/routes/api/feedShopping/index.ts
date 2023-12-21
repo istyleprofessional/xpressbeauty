@@ -62,6 +62,10 @@ export const onGet: RequestHandler = async ({ json }) => {
             product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
           oldRow["identifier exists"] =
             product?.gtin || oldRow?.gtin ? "yes" : "no";
+          oldRow.availability =
+            parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
+              ? "in_stock"
+              : "out_of_stock";
           newArray.push(oldRow);
         } else {
           const newRow = {

@@ -595,5 +595,54 @@ def delete_cache(driver):
     actions.perform()
     time.sleep(5) # wait some time to finish
 
-updateQuantity()
-# 6446da122dcb930801f43cd9
+# updateQuantity()
+
+def get_last_prices_and_upc():
+    with open('./backups/file-7.json', encoding='utf-8') as f:
+        data = json.load(f)
+        print(len(data))
+        path = r"C:\chromedriver-win64\chromedriver.exe"
+        chrome_options = Options()
+        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument(
+            "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36")
+        driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+        # add cookies to the browser
+
+        with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (24).json", 'r') as cookie_file:
+            cookies = json.load(cookie_file)
+        for cookie in cookies:
+            driver.add_cookie(cookie)
+        for d in data:
+            try:
+                if "Hair" in ','.join(d['categories']):
+                    if(d['variations'] and len(d['variations']) > 0):
+                        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        if d['priceType'] == 'range':
+                            d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 3
+                            d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 3
+                        for variation in d['variations']:
+                            url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
+                            driver.get(url)
+                            soup = BeautifulSoup(driver.page_source, 'html.parser')
+                            json_element = soup.find('pre')
+                            json_data = json_element.get_text()
+                            parsed_json = json.loads(json_data)
+                            if 'upc' in parsed_json['product']:
+                                variation['upc'] = parsed_json['product']['upc']
+                            if 'price' in parsed_json['product']:
+                                variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                            print(variation)
+            except:
+                continue
+
+        
+        
+get_last_prices_and_upc()
