@@ -403,7 +403,7 @@ export default component$(() => {
               identifier="generalInfo.address.city"
               validation={action?.value?.validation?.city}
               isMandatory={true}
-              disabled={true}
+              // disabled={true}
             />
             <InputField
               label="Province"
@@ -413,7 +413,7 @@ export default component$(() => {
               identifier="generalInfo.address.state"
               validation={action?.value?.validation?.state}
               isMandatory={true}
-              disabled={true}
+              // disabled={true}
             />
             <InputField
               label="Postal Code"
@@ -433,7 +433,7 @@ export default component$(() => {
               identifier="generalInfo.address.country"
               validation={action?.value?.validation?.country}
               isMandatory={true}
-              disabled={true}
+              // disabled={true}
             />
             <div class="form-control w-full">
               <label class="label">

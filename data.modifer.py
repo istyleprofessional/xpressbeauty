@@ -611,7 +611,7 @@ def get_last_prices_and_upc():
         driver = webdriver.Chrome(service=Service(path), options=chrome_options)
         # add cookies to the browser
 
-        with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (24).json", 'r') as cookie_file:
+        with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (25).json", 'r') as cookie_file:
             cookies = json.load(cookie_file)
         for cookie in cookies:
             driver.add_cookie(cookie)
@@ -628,6 +628,8 @@ def get_last_prices_and_upc():
                         if d['priceType'] == 'range':
                             d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 3
                             d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 3
+                        else:
+                            d['price'] = parsed_json['product']['price']['list']['value'] + 3
                         for variation in d['variations']:
                             url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
                             driver.get(url)
@@ -639,8 +641,62 @@ def get_last_prices_and_upc():
                                 variation['upc'] = parsed_json['product']['upc']
                             if 'price' in parsed_json['product']:
                                 variation['price'] = parsed_json['product']['price']['list']['value'] + 3
-                            print(variation)
+                        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-AvailabilityJson?pids={d['id']}&page=pdp'''
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        new_quantity = 0
+                        if "estimatedQty" in parsed_json['products'][0]['availability']:
+                            new_quantity = parsed_json['products'][0]['availability']['estimatedQty']
+                        data = {
+                                "secret": "myTotallySecretKey",
+                                "product_name": d['product_name'],
+                                "quantity": new_quantity,
+                                "isVariation": False,
+                            }
+                        headers = {
+                                "Content-Type": "application/json",
+                                # Add any other headers required by the API
+                        }
+                        update = requests.put(
+                            'https://xpressbeauty.ca/api/products/update/', data=data, headers=headers)
+                        print(update.json())
+                    else:
+                        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        if 'upc' in parsed_json['product']:
+                            d['upc'] = parsed_json['product']['upc']
+                        if 'price' in parsed_json['product']:
+                            d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-AvailabilityJson?pids={d['id']}&page=pdp'''
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        new_quantity = 0
+                        if "estimatedQty" in parsed_json['products'][0]['availability']:
+                            new_quantity = parsed_json['products'][0]['availability']['estimatedQty']
+                        data = {
+                                "secret": "myTotallySecretKey",
+                                "product_name": d['product_name'],
+                                "quantity": new_quantity,
+                                "isVariation": False,
+                            }
+                        headers = {
+                                "Content-Type": "application/json",
+                        }
+                        update = requests.put(
+                            'https://xpressbeauty.ca/api/products/update/', data=data, headers=headers)
+                        print(update.json())
             except:
+                time.sleep(60)
                 continue
 
         
