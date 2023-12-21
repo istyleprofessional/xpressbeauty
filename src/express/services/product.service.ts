@@ -483,6 +483,7 @@ export const update_hair_product_service = async (product: any) => {
           gtin: product.upc,
           "price.min": product.price.min,
           "price.max": product.price.max,
+          priceType: product.priceType,
           variations: product.variations,
         },
         { new: true }
@@ -495,6 +496,7 @@ export const update_hair_product_service = async (product: any) => {
           quantity_on_hand: product.quantity_on_hand,
           gtin: product.upc,
           "price.regular": product.price,
+          priceType: product.priceType,
           variations: product.variations,
         },
         { new: true }
