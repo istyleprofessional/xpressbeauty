@@ -32,6 +32,7 @@ import categorySchema from "./express/schemas/category.schema";
 import brandSchema from "./express/schemas/brand.schema";
 import VoiceResponse from "twilio/lib/twiml/VoiceResponse";
 import MessagingResponse from "twilio/lib/twiml/MessagingResponse";
+import { update_hair_product_service } from "./express/services/product.service";
 
 dotenv.config();
 let sitemap: any;
@@ -121,6 +122,15 @@ app.get("/sitemap.xml", async (req, res) => {
     console.error(error);
     return res.status(500).end();
   }
+});
+
+app.put("/api/updateProduct", async (req, res) => {
+  const { secret, product } = req.body;
+  if (secret === process.env.SECRET_KEY) {
+    const req = await update_hair_product_service(product);
+    return res.status(200).send(req);
+  }
+  return res.status(401).send("Unauthorized");
 });
 
 app.post("/api/twilioSMS", async (req, res) => {

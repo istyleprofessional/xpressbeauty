@@ -473,31 +473,31 @@ export const updateProductRating = async (body: any) => {
   }
 };
 
-export const update_hair_product_service = async (
-  product_name: string,
-  quantity: string,
-  variation_id?: string,
-  isVariation?: boolean
-) => {
+export const update_hair_product_service = async (product: any) => {
   try {
-    if (isVariation) {
-      const result = await Product.findOne({ product_name: product_name });
-      const variations = result?.variations;
-      const newVariations = variations?.map((variation: any) => {
-        if (variation.variation_id === variation_id) {
-          variation.quantity_on_hand = quantity;
-        }
-        return variation;
-      });
-      const updated = await Product.findOneAndUpdate(
-        { product_name: product_name },
-        { variations: newVariations }
+    if (product.priceType === "range") {
+      const result = await Product.findOneAndUpdate(
+        { product_name: product.product_name },
+        {
+          quantity_on_hand: product.quantity_on_hand,
+          gtin: product.upc,
+          "price.min": product.price.min,
+          "price.max": product.price.max,
+          variations: product.variations,
+        },
+        { new: true }
       );
-      return { status: "success", result: updated };
+      return { status: "success", result: result };
     } else {
       const result = await Product.findOneAndUpdate(
-        { product_name: product_name },
-        { quantity_on_hand: quantity }
+        { product_name: product.product_name },
+        {
+          quantity_on_hand: product.quantity_on_hand,
+          gtin: product.upc,
+          "price.regular": product.price,
+          variations: product.variations,
+        },
+        { new: true }
       );
       return { status: "success", result: result };
     }
