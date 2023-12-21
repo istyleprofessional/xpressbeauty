@@ -80,15 +80,7 @@ export const CartDetails = component$((props: any) => {
       subTotal.value = subTotal.value - subTotal.value * 0.1;
       applyCoponMessage.value = "Copon Applied";
     }
-    const checker = await checkCatServer(cartContext?.cart?.products);
-    if (checker) {
-      shipping.value = 0.0;
-    } else if (subTotal.value > 200) {
-      shipping.value = 0.0;
-    } else {
-      shipping.value = 15;
-    }
-    total.value = subTotal.value + shipping.value;
+    total.value = subTotal.value;
     if (props?.currencyObject?.cur === "1") {
       symbol.value = "USD";
     } else {
@@ -101,7 +93,6 @@ export const CartDetails = component$((props: any) => {
       coponSignal.value,
       userContext?.user?._id
     );
-    console.log(checkCopon);
     if (checkCopon) {
       subTotal.value = cartContext?.cart?.totalPrice;
       subTotal.value = subTotal.value - subTotal.value * 0.1;
@@ -171,29 +162,15 @@ export const CartDetails = component$((props: any) => {
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
-          <p class="text-white text-xs font-light">HST</p>
+          <p class="text-white text-xs font-light">TAX</p>
           <p class="justify-self-end text-white text-xs font-light w-full">
             Continue To Calculate Tax...
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
           <p class="text-white text-xs font-light">Shipping</p>
-          <p class="justify-self-end text-white text-sm font-light">
-            {shipping.value &&
-              shipping.value.toLocaleString("en-US", {
-                style: "currency",
-                currency: symbol.value,
-              })}
-          </p>
-        </div>
-        <div class="grid grid-cols-2 w-full">
-          <p class="text-white text-xs font-light">Total (Tax incl.)</p>
-          <p class="justify-self-end text-white text-sm font-light">
-            {total.value &&
-              total.value?.toLocaleString("en-US", {
-                style: "currency",
-                currency: symbol.value,
-              })}
+          <p class="justify-self-end text-white text-xs font-light">
+            Continue To Calculate Shipping...
           </p>
         </div>
       </div>

@@ -47,7 +47,7 @@ def convert_data_from_csv_to_json():
                 'wholesale_sale_price': row['Meta: wholesale_customer_wholesale_sale_price']
             })
     with open('test_data.json', 'w', encoding="utf-8") as f:
-        json.dump(json_file, f, ensure_ascii=False)
+        json.dumps(json_file, f, ensure_ascii=False)
 
 
 def convert_images_to_webp_in_json():
@@ -57,7 +57,7 @@ def convert_images_to_webp_in_json():
         d['image'] = f'''{d['image'].split('.')[0]}.webp'''
 
     with open('test_data.json', 'w', encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False)
+        json.dumps(data, f, ensure_ascii=False)
 
 
 def convert_images_to_webp_in_folder():
@@ -78,7 +78,7 @@ def add_quantity_on_hand_attr():
         d['quantity_on_hand'] = ''
 
     with open('test_data.json', 'w', encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False)
+        json.dumps(data, f, ensure_ascii=False)
 
 
 def add_sku():
@@ -88,7 +88,7 @@ def add_sku():
         d['sku'] = ''
 
     with open('test_data.json', 'w', encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False)
+        json.dumps(data, f, ensure_ascii=False)
 
 
 def create_images_responsive():
@@ -168,7 +168,7 @@ def adjust_all_images_names():
                         continue
                 final_data.append(d)
                 with open('data.json', 'w') as f:
-                    json.dump(final_data, f)
+                    json.dumps(final_data, f)
 
 
 def check_empty_folders_in_image_folder():
@@ -191,7 +191,7 @@ def delete_images_attr():
     for d in data:
         del d['image']
     with open('data_1.json', 'w') as f:
-        json.dump(data, f)
+        json.dumps(data, f)
 
 
 def keep_trimmers_clippers():
@@ -202,7 +202,7 @@ def keep_trimmers_clippers():
         if 'trimmer' in d['category'].lower() or 'clipper' in d['category'].lower():
             final_data.append(d)
     with open('data_1.json', 'w') as f:
-        json.dump(final_data, f)
+        json.dumps(final_data, f)
 
 
 def add_brand_to_products():
@@ -252,7 +252,7 @@ def add_brand_to_products():
                 except:
                     continue
         with open('data_2.json', 'w') as f:
-            json.dump(final_data, f)
+            json.dumps(final_data, f)
 
 
 def get_all_unique_brands_from_product_file():
@@ -263,7 +263,7 @@ def get_all_unique_brands_from_product_file():
         brands.append(d['companyName'])
     brands = list(set(brands))
     with open('brands.json', 'w') as f:
-        json.dump(brands, f)
+        json.dumps(brands, f)
 
 
 def get_all_unique_categories_from_product_file():
@@ -279,7 +279,7 @@ def get_all_unique_categories_from_product_file():
                        for category in categories]
 
     with open('categories.json', 'w') as f:
-        json.dump(categories_list, f)
+        json.dumps(categories_list, f)
 
 
 def get_id_for_each_variation():
@@ -325,11 +325,11 @@ def add_product_price():
                             variation['price'] = res['product']['price']['list']['value']
                 print(d)
         with open('data_3.json', 'w') as f:
-            json.dump(data, f)
+            json.dumps(data, f)
     except Exception as e:
         print(e)
         with open('data_3.json', 'w') as f:
-            json.dump(data, f)
+            json.dumps(data, f)
 
         # print(response.json())
 
@@ -346,7 +346,7 @@ def make_mainPrice_not_string():
                 prices = float(d['price'].replace('$', ''))
                 d['price'] = format(prices, '.2f')
         with open('file_1.json', 'w') as f:
-            json.dump(data, f)
+            json.dumps(data, f)
     except Exception as e:
         print(d)
         print(e)
@@ -374,7 +374,7 @@ def adjust_tools_price():
                     del d['wholesale_price']
                     del d['wholesale_sale_price']
         with open('file_1.json', 'w') as f:
-            json.dump(data, f)
+            json.dumps(data, f)
     except Exception as e:
         print(d)
         print(e)
@@ -389,7 +389,7 @@ def adjust_tools_sale_regular_prices():
                 if d['sale_price'] == d['regular_price']:
                     d['sale_price'] = ''
         with open('file_1.json', 'w') as f:
-            json.dump(data, f)
+            json.dumps(data, f)
     except Exception as e:
         print(d)
         print(e)
@@ -408,7 +408,7 @@ def adjust_variation_prices():
                     elif isinstance(variation['price'], float):
                         variation['price'] = format(variation['price'], '.2f')
         with open('file_1.json', 'w') as f:
-            json.dump(data, f)
+            json.dumps(data, f)
     except Exception as e:
         print(d)
         print(e)
@@ -611,7 +611,7 @@ def get_last_prices_and_upc():
         driver = webdriver.Chrome(service=Service(path), options=chrome_options)
         # add cookies to the browser
 
-        with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (27).json", 'r') as cookie_file:
+        with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (28).json", 'r') as cookie_file:
             cookies = json.load(cookie_file)
         for cookie in cookies:
             driver.add_cookie(cookie)
@@ -634,7 +634,11 @@ def get_last_prices_and_upc():
                                 d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                 d['priceType'] = 'single'
                             else:
-                                d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                if parsed_json['product']['price']['list']['value'] != None:
+                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                else:
+                                    d['price'] = parsed_json['product']['price']['sales']['value'] + 3
+                                # d['price'] = parsed_json['product']['price']['list']['value'] + 3
                                 d['priceType'] = 'single'
                             for variation in d['variations']:
                                 url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
@@ -650,7 +654,10 @@ def get_last_prices_and_upc():
                                         if 'tiered' in parsed_json['product']['price']['type']:
                                             variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                         else:
-                                            variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                            if parsed_json['product']['price']['list']['value'] != None:
+                                                variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                            else:
+                                                variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
                                     if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                         variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
                                     else:
@@ -668,7 +675,10 @@ def get_last_prices_and_upc():
                                         if 'tiered' in parsed_json['product']['price']['type']:
                                             variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                         else:
-                                            variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                            if parsed_json['product']['price']['list']['value'] != None:
+                                                variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                            else:
+                                                variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
                                     if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                         variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
                                     else:
@@ -698,7 +708,10 @@ def get_last_prices_and_upc():
                                 d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                 d['priceType'] = 'single'
                             else:
-                                d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                if parsed_json['product']['price']['list']['value'] != None:
+                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                else:
+                                    d['price'] = parsed_json['product']['price']['sales']['value'] + 3
                                 d['priceType'] = 'single'
                             for variation in d['variations']:
                                 url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
@@ -713,7 +726,10 @@ def get_last_prices_and_upc():
                                     if 'tiered' in parsed_json['product']['price']['type']:
                                         variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                     else:
-                                        variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                        if parsed_json['product']['price']['list']['value'] != None:
+                                            variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                        else:
+                                            variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
                                 if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                     variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
                                 else:
@@ -726,7 +742,7 @@ def get_last_prices_and_upc():
                                     "Content-Type": "application/json",
                             }
                             update = requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dump(data), headers=headers)
+                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(update.json())
                             continue
                     else:
@@ -743,7 +759,10 @@ def get_last_prices_and_upc():
                                 if 'tiered' in parsed_json['product']['price']['type']:
                                     d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                 else:
-                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                    if parsed_json['product']['price']['list']['value'] != None:
+                                        d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                    else:
+                                        d['price'] = parsed_json['product']['price']['sales']['value'] + 3
                             d['priceType'] = 'single'
                             if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                 d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
@@ -757,7 +776,7 @@ def get_last_prices_and_upc():
                                     "Content-Type": "application/json",
                             }
                             update = requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dump(data), headers=headers)
+                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(update.json())
                         except:
                             time.sleep(40)
@@ -772,7 +791,10 @@ def get_last_prices_and_upc():
                                 if 'tiered' in parsed_json['product']['price']['type']:
                                     d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                 else:
-                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                    if parsed_json['product']['price']['list']['value'] != None:
+                                        d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                    else:
+                                        d['price'] = parsed_json['product']['price']['sales']['value'] + 3
                             d['priceType'] = 'single'   
                             if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                 d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
@@ -786,7 +808,7 @@ def get_last_prices_and_upc():
                                     "Content-Type": "application/json",
                             }
                             update = requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dump(data), headers=headers)
+                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(update.json())
                             continue
                 except:
@@ -807,7 +829,10 @@ def get_last_prices_and_upc():
                                 d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                 d['priceType'] = 'single'
                             else:
-                                d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                if parsed_json['product']['price']['list']['value'] != None:
+                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                else:
+                                    d['price'] = parsed_json['product']['price']['sales']['value'] + 3
                                 d['priceType'] = 'single'
                             for variation in d['variations']:
                                 url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
@@ -823,7 +848,10 @@ def get_last_prices_and_upc():
                                         if 'tiered' in parsed_json['product']['price']['type']:
                                             variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                         else:
-                                            variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                            if parsed_json['product']['price']['list']['value'] != None:
+                                                variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                            else:
+                                                variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
                                     if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                         variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
                                     else:
@@ -841,7 +869,10 @@ def get_last_prices_and_upc():
                                         if 'tiered' in parsed_json['product']['price']['type']:
                                             variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                         else:
-                                            variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                            if parsed_json['product']['price']['list']['value'] != None:
+                                                variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                            else:
+                                                variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
                                     if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                         variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
                                     else:
@@ -854,7 +885,7 @@ def get_last_prices_and_upc():
                                     "Content-Type": "application/json",
                             }
                             update = requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dump(data), headers=headers)
+                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(update.json())
                         except:
                             time.sleep(40)
@@ -871,7 +902,10 @@ def get_last_prices_and_upc():
                                 d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                 d['priceType'] = 'single'
                             else:
-                                d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                if parsed_json['product']['price']['list']['value'] != None:
+                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                else:
+                                    d['price'] = parsed_json['product']['price']['sales']['value'] + 3
                                 d['priceType'] = 'single'
                             for variation in d['variations']:
                                 url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
@@ -886,7 +920,10 @@ def get_last_prices_and_upc():
                                     if 'tiered' in parsed_json['product']['price']['type']:
                                         variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                     else:
-                                        variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                        if parsed_json['product']['price']['list']['value'] != None:
+                                            variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                        else:
+                                            variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
                                 if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                     variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
                                 else:
@@ -899,7 +936,7 @@ def get_last_prices_and_upc():
                                     "Content-Type": "application/json",
                             }
                             update = requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dump(data), headers=headers)
+                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(update.json())
                             continue
                     else:
@@ -916,7 +953,10 @@ def get_last_prices_and_upc():
                                 if 'tiered' in parsed_json['product']['price']['type']:
                                     d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                 else:
-                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                    if parsed_json['product']['price']['list']['value'] != None:
+                                        d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                    else:
+                                        d['price'] = parsed_json['product']['price']['sales']['value'] + 3
                             d['priceType'] = 'single'
                             if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                 d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
@@ -930,7 +970,7 @@ def get_last_prices_and_upc():
                                     "Content-Type": "application/json",
                             }
                             update = requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dump(data), headers=headers)
+                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(update.json())
                         except:
                             time.sleep(40)
@@ -945,7 +985,10 @@ def get_last_prices_and_upc():
                                 if 'tiered' in parsed_json['product']['price']['type']:
                                     d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
                                 else:
-                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                    if parsed_json['product']['price']['list']['value'] != None:
+                                        d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                                    else:
+                                        d['price'] = parsed_json['product']['price']['sales']['value'] + 3
                             if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                 d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
                             else:
@@ -958,7 +1001,7 @@ def get_last_prices_and_upc():
                                     "Content-Type": "application/json",
                             }
                             update = requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dump(data), headers=headers)
+                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(update.json())
                             continue
                     continue
