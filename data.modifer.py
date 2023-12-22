@@ -596,6 +596,93 @@ def delete_cache(driver):
     time.sleep(5) # wait some time to finish
 
 # updateQuantity()
+    
+def return_product_if_range(parsed_json, d, url, driver):
+    if 'range' in parsed_json['product']['price']['type']:
+        d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 3
+        d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 3
+        d['priceType'] = 'range'
+    elif 'tiered' in parsed_json['product']['price']['type']:
+        d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
+        d['priceType'] = 'single'
+    else:
+        if parsed_json['product']['price']['list'] != None and parsed_json['product']['price']['list']['value'] != None:
+            d['price'] = parsed_json['product']['price']['list']['value'] + 3
+        elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+            d['price'] = parsed_json['product']['price']['sales']['value'] + 3
+        else:
+            d['price'] = 0
+        # d['price'] = parsed_json['product']['price']['list']['value'] + 3
+        d['priceType'] = 'single'
+    for variation in d['variations']:
+        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
+        try: 
+            driver.get(url)
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            json_element = soup.find('pre')
+            json_data = json_element.get_text()
+            parsed_json = json.loads(json_data)
+            if 'upc' in parsed_json['product']:
+                variation['upc'] = parsed_json['product']['upc']
+            if 'price' in parsed_json['product']:
+                if 'tiered' in parsed_json['product']['price']['type']:
+                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
+                else:
+                    if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
+                        variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                    elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+                        variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
+                    else:
+                        variation['price'] = 0
+            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+                variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+            else:
+                variation['quantity_on_hand'] = 0
+        except:
+            time.sleep(40)
+            driver.get(url)
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            json_element = soup.find('pre')
+            json_data = json_element.get_text()
+            parsed_json = json.loads(json_data)
+            if 'upc' in parsed_json['product']:
+                variation['upc'] = parsed_json['product']['upc']
+            if 'price' in parsed_json['product']:
+                if 'tiered' in parsed_json['product']['price']['type']:
+                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
+                else:
+                    if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
+                        variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                    elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+                        variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
+                    else:
+                        variation['price'] = 0
+            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+                variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+            else:
+                variation['quantity_on_hand'] = 0
+    return d
+
+def return_product_if_single(parsed_json, d):
+    if 'upc' in parsed_json['product']:
+        d['upc'] = parsed_json['product']['upc']
+    if 'price' in parsed_json['product']:
+        if 'tiered' in parsed_json['product']['price']['type']:
+            d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
+        else:
+            if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
+                d['price'] = parsed_json['product']['price']['list']['value'] + 3
+            elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+                d['price'] = parsed_json['product']['price']['sales']['value'] + 3
+            else:
+                d['price'] = 0
+    d['priceType'] = 'single'
+    if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+        d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+    else:
+        d['quantity_on_hand'] = 0
+    return d
+        
 
 def get_last_prices_and_upc():
     with open('./backups/file-7.json', encoding='utf-8') as f:
@@ -611,14 +698,14 @@ def get_last_prices_and_upc():
         driver = webdriver.Chrome(service=Service(path), options=chrome_options)
         # add cookies to the browser
 
-        with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (28).json", 'r') as cookie_file:
+        with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (31).json", 'r') as cookie_file:
             cookies = json.load(cookie_file)
         for cookie in cookies:
             driver.add_cookie(cookie)
         for d in data:
             if "Hair" in ','.join(d['categories']):
                 try:
-                    if(d['variations'] and len(d['variations']) > 0):
+                    if('variations' in d and len(d['variations']) > 0):
                         url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
                         try: 
                             driver.get(url)
@@ -626,66 +713,10 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            if 'range' in parsed_json['product']['price']['type']:
-                                d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 3
-                                d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 3
-                                d['priceType'] = 'range'
-                            elif 'tiered' in parsed_json['product']['price']['type']:
-                                d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                d['priceType'] = 'single'
-                            else:
-                                if parsed_json['product']['price']['list']['value'] != None:
-                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                else:
-                                    d['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                                # d['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                d['priceType'] = 'single'
-                            for variation in d['variations']:
-                                url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
-                                try: 
-                                    driver.get(url)
-                                    soup = BeautifulSoup(driver.page_source, 'html.parser')
-                                    json_element = soup.find('pre')
-                                    json_data = json_element.get_text()
-                                    parsed_json = json.loads(json_data)
-                                    if 'upc' in parsed_json['product']:
-                                        variation['upc'] = parsed_json['product']['upc']
-                                    if 'price' in parsed_json['product']:
-                                        if 'tiered' in parsed_json['product']['price']['type']:
-                                            variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                        else:
-                                            if parsed_json['product']['price']['list']['value'] != None:
-                                                variation['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                            else:
-                                                variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                                    if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                        variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                                    else:
-                                        variation['quantity_on_hand'] = 0
-                                except:
-                                    time.sleep(40)
-                                    driver.get(url)
-                                    soup = BeautifulSoup(driver.page_source, 'html.parser')
-                                    json_element = soup.find('pre')
-                                    json_data = json_element.get_text()
-                                    parsed_json = json.loads(json_data)
-                                    if 'upc' in parsed_json['product']:
-                                        variation['upc'] = parsed_json['product']['upc']
-                                    if 'price' in parsed_json['product']:
-                                        if 'tiered' in parsed_json['product']['price']['type']:
-                                            variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                        else:
-                                            if parsed_json['product']['price']['list']['value'] != None:
-                                                variation['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                            else:
-                                                variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                                    if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                        variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                                    else:
-                                        variation['quantity_on_hand'] = 0
+                            finalProduct = return_product_if_range(parsed_json, d, url, driver)
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "product": d,
+                                    "product": finalProduct,
                                 }
                             headers = {
                                     "Content-Type": "application/json",
@@ -693,50 +724,18 @@ def get_last_prices_and_upc():
                             update = requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(update.json())
-                        except:
+                        except Exception as e:
+                            print(e)
                             time.sleep(40)
                             driver.get(url)
                             soup = BeautifulSoup(driver.page_source, 'html.parser')
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            if 'range' in parsed_json['product']['price']['type']:
-                                d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 3
-                                d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 3
-                                d['priceType'] = 'range'
-                            elif 'tiered' in parsed_json['product']['price']['type']:
-                                d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                d['priceType'] = 'single'
-                            else:
-                                if parsed_json['product']['price']['list']['value'] != None:
-                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                else:
-                                    d['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                                d['priceType'] = 'single'
-                            for variation in d['variations']:
-                                url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
-                                driver.get(url)
-                                soup = BeautifulSoup(driver.page_source, 'html.parser')
-                                json_element = soup.find('pre')
-                                json_data = json_element.get_text()
-                                parsed_json = json.loads(json_data)
-                                if 'upc' in parsed_json['product']:
-                                    variation['upc'] = parsed_json['product']['upc']
-                                if 'price' in parsed_json['product']:
-                                    if 'tiered' in parsed_json['product']['price']['type']:
-                                        variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                    else:
-                                        if parsed_json['product']['price']['list']['value'] != None:
-                                            variation['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                        else:
-                                            variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                                if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                    variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                                else:
-                                    variation['quantity_on_hand'] = 0
+                            finalProduct = return_product_if_range(parsed_json, d, url, driver)
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "product": d,
+                                    "product": finalProduct,
                                 }
                             headers = {
                                     "Content-Type": "application/json",
@@ -753,24 +752,10 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            if 'upc' in parsed_json['product']:
-                                d['upc'] = parsed_json['product']['upc']
-                            if 'price' in parsed_json['product']:
-                                if 'tiered' in parsed_json['product']['price']['type']:
-                                    d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                else:
-                                    if parsed_json['product']['price']['list']['value'] != None:
-                                        d['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                    else:
-                                        d['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                            d['priceType'] = 'single'
-                            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                            else:
-                                d['quantity_on_hand'] = 0
+                            finalProduct = return_product_if_single(parsed_json, d)
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "product": d,
+                                    "product": finalProduct,
                                 }
                             headers = {
                                     "Content-Type": "application/json",
@@ -785,24 +770,10 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            if 'upc' in parsed_json['product']:
-                                d['upc'] = parsed_json['product']['upc']
-                            if 'price' in parsed_json['product']:
-                                if 'tiered' in parsed_json['product']['price']['type']:
-                                    d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                else:
-                                    if parsed_json['product']['price']['list']['value'] != None:
-                                        d['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                    else:
-                                        d['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                            d['priceType'] = 'single'   
-                            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                            else:
-                                d['quantity_on_hand'] = 0
+                            finalProduct = return_product_if_single(parsed_json, d)
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "product": d,
+                                    "product": finalProduct,
                                 }
                             headers = {
                                     "Content-Type": "application/json",
@@ -811,9 +782,10 @@ def get_last_prices_and_upc():
                                 'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(update.json())
                             continue
-                except:
+                except Exception as e:
+                    print(e)
                     time.sleep(60)
-                    if(d['variations'] and len(d['variations']) > 0):
+                    if('variations' in d and len(d['variations']) > 0):
                         url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
                         try: 
                             driver.get(url)
@@ -821,65 +793,10 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            if 'range' in parsed_json['product']['price']['type']:
-                                d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 3
-                                d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 3
-                                d['priceType'] = 'range'
-                            elif 'tiered' in parsed_json['product']['price']['type']:
-                                d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                d['priceType'] = 'single'
-                            else:
-                                if parsed_json['product']['price']['list']['value'] != None:
-                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                else:
-                                    d['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                                d['priceType'] = 'single'
-                            for variation in d['variations']:
-                                url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
-                                try: 
-                                    driver.get(url)
-                                    soup = BeautifulSoup(driver.page_source, 'html.parser')
-                                    json_element = soup.find('pre')
-                                    json_data = json_element.get_text()
-                                    parsed_json = json.loads(json_data)
-                                    if 'upc' in parsed_json['product']:
-                                        variation['upc'] = parsed_json['product']['upc']
-                                    if 'price' in parsed_json['product']:
-                                        if 'tiered' in parsed_json['product']['price']['type']:
-                                            variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                        else:
-                                            if parsed_json['product']['price']['list']['value'] != None:
-                                                variation['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                            else:
-                                                variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                                    if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                        variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                                    else:
-                                        variation['quantity_on_hand'] = 0
-                                except:
-                                    time.sleep(40)
-                                    driver.get(url)
-                                    soup = BeautifulSoup(driver.page_source, 'html.parser')
-                                    json_element = soup.find('pre')
-                                    json_data = json_element.get_text()
-                                    parsed_json = json.loads(json_data)
-                                    if 'upc' in parsed_json['product']:
-                                        variation['upc'] = parsed_json['product']['upc']
-                                    if 'price' in parsed_json['product']:
-                                        if 'tiered' in parsed_json['product']['price']['type']:
-                                            variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                        else:
-                                            if parsed_json['product']['price']['list']['value'] != None:
-                                                variation['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                            else:
-                                                variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                                    if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                        variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                                    else:
-                                        variation['quantity_on_hand'] = 0
+                            finalProduct = return_product_if_range(parsed_json, d, url, driver)
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "product": d,
+                                    "product": finalProduct,
                                 }
                             headers = {
                                     "Content-Type": "application/json",
@@ -894,43 +811,10 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            if 'range' in parsed_json['product']['price']['type']:
-                                d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 3
-                                d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 3
-                                d['priceType'] = 'range'
-                            elif 'tiered' in parsed_json['product']['price']['type']:
-                                d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                d['priceType'] = 'single'
-                            else:
-                                if parsed_json['product']['price']['list']['value'] != None:
-                                    d['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                else:
-                                    d['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                                d['priceType'] = 'single'
-                            for variation in d['variations']:
-                                url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
-                                driver.get(url)
-                                soup = BeautifulSoup(driver.page_source, 'html.parser')
-                                json_element = soup.find('pre')
-                                json_data = json_element.get_text()
-                                parsed_json = json.loads(json_data)
-                                if 'upc' in parsed_json['product']:
-                                    variation['upc'] = parsed_json['product']['upc']
-                                if 'price' in parsed_json['product']:
-                                    if 'tiered' in parsed_json['product']['price']['type']:
-                                        variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                    else:
-                                        if parsed_json['product']['price']['list']['value'] != None:
-                                            variation['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                        else:
-                                            variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                                if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                    variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                                else:
-                                    variation['quantity_on_hand'] = 0
+                            finalProduct = return_product_if_range(parsed_json, d, url, driver)
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "product": d,
+                                    "product": finalProduct,
                                 }
                             headers = {
                                     "Content-Type": "application/json",
@@ -947,24 +831,10 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            if 'upc' in parsed_json['product']:
-                                d['upc'] = parsed_json['product']['upc']
-                            if 'price' in parsed_json['product']:
-                                if 'tiered' in parsed_json['product']['price']['type']:
-                                    d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                else:
-                                    if parsed_json['product']['price']['list']['value'] != None:
-                                        d['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                    else:
-                                        d['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                            d['priceType'] = 'single'
-                            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                            else:
-                                d['quantity_on_hand'] = 0
+                            finalProduct = return_product_if_single(parsed_json, d)
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "product": d,
+                                    "product": finalProduct,
                                 }
                             headers = {
                                     "Content-Type": "application/json",
@@ -979,23 +849,10 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            if 'upc' in parsed_json['product']:
-                                d['upc'] = parsed_json['product']['upc']
-                            if 'price' in parsed_json['product']:
-                                if 'tiered' in parsed_json['product']['price']['type']:
-                                    d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
-                                else:
-                                    if parsed_json['product']['price']['list']['value'] != None:
-                                        d['price'] = parsed_json['product']['price']['list']['value'] + 3
-                                    else:
-                                        d['price'] = parsed_json['product']['price']['sales']['value'] + 3
-                            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                            else:
-                                d['quantity_on_hand'] = 0
+                            finalProduct = return_product_if_single(parsed_json, d)
                             data = {
                                     "secret": "myTotallySecretKey",
-                                    "product": d,
+                                    "product": finalProduct,
                                 }
                             headers = {
                                     "Content-Type": "application/json",

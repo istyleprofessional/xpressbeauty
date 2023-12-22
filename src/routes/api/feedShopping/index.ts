@@ -45,8 +45,8 @@ export const onGet: RequestHandler = async ({ json }) => {
             price: `${variant?.price} CAD` ?? "0",
             brand: product?.companyName?.name ?? "Qwik City",
             condition: "new",
-            gtin: product?.gtin ?? "",
-            "identifier exists": product?.gtin ? "yes" : "no",
+            gtin: variant?.upc ?? "",
+            "identifier exists": variant?.upc ? "yes" : "no",
           };
           newArray.push(newRow);
         }
