@@ -36,7 +36,7 @@ export const onGet: RequestHandler = async ({ json }) => {
             id: `${product._id.toString()}-${variant?.variation_id}`,
             title: product?.product_name ?? "",
             description: product?.description ?? "",
-            link: `https://xpressbeauty.ca/product/${product.perfix}`,
+            link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0] ?? "",
             availability:
               parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
@@ -66,13 +66,14 @@ export const onGet: RequestHandler = async ({ json }) => {
             parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
               ? "in_stock"
               : "out_of_stock";
+          oldRow.link = `https://xpressbeauty.ca/products/${product.perfix}`;
           newArray.push(oldRow);
         } else {
           const newRow = {
             id: product._id.toString(),
             title: product?.product_name ?? "",
             description: product?.description ?? "",
-            link: `https://xpressbeauty.ca/product/${product.perfix}`,
+            link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0] ?? "",
             availability:
               parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
