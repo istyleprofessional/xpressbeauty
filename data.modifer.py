@@ -599,20 +599,20 @@ def delete_cache(driver):
     
 def return_product_if_range(parsed_json, d, url, driver):
     if 'range' in parsed_json['product']['price']['type']:
-        d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 3
-        d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 3
+        d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 5
+        d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 5
         d['priceType'] = 'range'
     elif 'tiered' in parsed_json['product']['price']['type']:
-        d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
+        d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
         d['priceType'] = 'single'
     else:
         if parsed_json['product']['price']['list'] != None and parsed_json['product']['price']['list']['value'] != None:
-            d['price'] = parsed_json['product']['price']['list']['value'] + 3
+            d['price'] = parsed_json['product']['price']['list']['value'] + 5
         elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
-            d['price'] = parsed_json['product']['price']['sales']['value'] + 3
+            d['price'] = parsed_json['product']['price']['sales']['value'] + 5
         else:
             d['price'] = 0
-        # d['price'] = parsed_json['product']['price']['list']['value'] + 3
+        # d['price'] = parsed_json['product']['price']['list']['value'] + 5
         d['priceType'] = 'single'
     for variation in d['variations']:
         url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
@@ -626,12 +626,12 @@ def return_product_if_range(parsed_json, d, url, driver):
                 variation['upc'] = parsed_json['product']['upc']
             if 'price' in parsed_json['product']:
                 if 'tiered' in parsed_json['product']['price']['type']:
-                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
+                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
                 else:
                     if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
-                        variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                        variation['price'] = parsed_json['product']['price']['list']['value'] + 5
                     elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
-                        variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
+                        variation['price'] = parsed_json['product']['price']['sales']['value'] + 5
                     else:
                         variation['price'] = 0
             if 'estimatedQty' in parsed_json['productAvailability']['availability']:
@@ -649,12 +649,12 @@ def return_product_if_range(parsed_json, d, url, driver):
                 variation['upc'] = parsed_json['product']['upc']
             if 'price' in parsed_json['product']:
                 if 'tiered' in parsed_json['product']['price']['type']:
-                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
+                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
                 else:
                     if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
-                        variation['price'] = parsed_json['product']['price']['list']['value'] + 3
+                        variation['price'] = parsed_json['product']['price']['list']['value'] + 5
                     elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
-                        variation['price'] = parsed_json['product']['price']['sales']['value'] + 3
+                        variation['price'] = parsed_json['product']['price']['sales']['value'] + 5
                     else:
                         variation['price'] = 0
             if 'estimatedQty' in parsed_json['productAvailability']['availability']:
@@ -668,12 +668,12 @@ def return_product_if_single(parsed_json, d):
         d['upc'] = parsed_json['product']['upc']
     if 'price' in parsed_json['product']:
         if 'tiered' in parsed_json['product']['price']['type']:
-            d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 3
+            d['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
         else:
             if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
-                d['price'] = parsed_json['product']['price']['list']['value'] + 3
+                d['price'] = parsed_json['product']['price']['list']['value'] + 5
             elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
-                d['price'] = parsed_json['product']['price']['sales']['value'] + 3
+                d['price'] = parsed_json['product']['price']['sales']['value'] + 5
             else:
                 d['price'] = 0
     d['priceType'] = 'single'
@@ -698,7 +698,7 @@ def get_last_prices_and_upc():
         driver = webdriver.Chrome(service=Service(path), options=chrome_options)
         # add cookies to the browser
 
-        with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (31).json", 'r') as cookie_file:
+        with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (32).json", 'r') as cookie_file:
             cookies = json.load(cookie_file)
         for cookie in cookies:
             driver.add_cookie(cookie)
