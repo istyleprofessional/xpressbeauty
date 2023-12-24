@@ -50,22 +50,22 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
       const response = await fetch(urls);
       const jsonRes = await response.json();
       const details = await fetch(
-        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${jsonRes.predictions[0].place_id}&key=${apiKey}`
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${
+          jsonRes?.predictions[0]?.place_id ?? ""
+        }&key=${apiKey}`
       );
       const jsonDetails = await details.json();
       if (!user.result) {
         return JSON.stringify({ status: "failed" });
       }
-      const shortCoCode = jsonDetails.result.address_components.find(
-        (comp: any) => {
+      const shortCoCode =
+        jsonDetails?.result?.address_components?.find((comp: any) => {
           return comp.types.includes("country");
-        }
-      )?.short_name;
-      const shortStateCode = jsonDetails.result.address_components.find(
-        (comp: any) => {
+        })?.short_name ?? "CA";
+      const shortStateCode =
+        jsonDetails?.result?.address_components?.find((comp: any) => {
           return comp.types.includes("administrative_area_level_1");
-        }
-      )?.short_name;
+        })?.short_name ?? "ON";
       try {
         const sales = await SalesTax.getSalesTax(shortCoCode, shortStateCode);
         rate = sales?.rate ?? 0.13;
