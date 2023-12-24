@@ -246,8 +246,9 @@ export const get_products_data = async (
       };
     }
     // debugger;
-    buildQuery["$or"] = [];
+
     if (filter && filter !== "") {
+      buildQuery["$or"] = [];
       buildQuery["$or"].push(
         ...[
           {
@@ -264,6 +265,9 @@ export const get_products_data = async (
     if (filterPrices.length > 0) {
       for (let i = 0; i < filterPrices.length; i++) {
         if (filterPrices[i].includes(">")) {
+          if (!buildQuery["$or"]) {
+            buildQuery["$or"] = [];
+          }
           const vars = filterPrices[i].split(">");
           buildQuery["$or"].push({
             "price.regular": { $lte: parseFloat(vars[1]) },
@@ -316,33 +320,10 @@ export const get_products_data = async (
       }
     }
     if (query && query !== "") {
-      buildQuery["$or"].push(
-        ...[
-          {
-            variations: {
-              $elemMatch: {
-                variation_name: { $regex: query, $options: "i" },
-              },
-            },
-          },
-          {
-            categories: {
-              $elemMatch: {
-                main: { $regex: query, $options: "i" },
-                name: { $regex: query, $options: "i" },
-              },
-            },
-          },
-          { product_name: { $regex: query, $options: "i" } },
-          { "companyName.name": { $regex: query, $options: "i" } },
-        ]
-      );
-    }
-    if (buildQuery["$or"].length === 0) {
-      delete buildQuery["$or"];
+      buildQuery["$text"] = { $search: query };
+      // console.log(buildQuery);
     }
     buildQuery["isHidden"] = { $ne: true };
-
     const request = await Product.find(buildQuery)
       .sort(
         sort && sort !== "" ? { product_name: sort === "ASC" ? 1 : -1 } : {}

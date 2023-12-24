@@ -31,4 +31,5 @@ const productsSchema = new Schema(
   { timestamps: true }
 );
 
+productsSchema.index({ product_name: "text" });
 export default model("products", productsSchema);

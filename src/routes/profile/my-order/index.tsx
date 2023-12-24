@@ -1,34 +1,29 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useContext, useSignal, useTask$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { routeLoader$, useNavigate } from "@builder.io/qwik-city";
-import jwt from "jsonwebtoken";
+import { server$, useNavigate } from "@builder.io/qwik-city";
+import { UserContext } from "~/context/user.context";
 import { getMyOrdersService } from "~/express/services/order.service";
 
-export const useGetMyOrders = routeLoader$(
-  async ({ cookie, redirect, env }) => {
-    const token = cookie.get("token")?.value;
-
-    if (!token) {
-      throw redirect(301, "/login");
-    }
-    try {
-      const verified: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
-      if (!verified) {
-        throw redirect(301, "/login");
-      }
-      const user_id = verified.user_id;
-      const getMyOrders = await getMyOrdersService(user_id);
-      return JSON.stringify(getMyOrders);
-    } catch (err) {
-      throw redirect(301, "/login");
-    }
-  }
-);
+export const getMyOrdersServer = server$(async (user_id: string) => {
+  console.log(user_id);
+  const getMyOrders = await getMyOrdersService(user_id);
+  return JSON.stringify(getMyOrders);
+});
 
 export default component$(() => {
-  const myOrders = useGetMyOrders();
-  const myOrdersData = JSON.parse(myOrders.value ?? "[]");
+  const myOrders = useSignal<any[]>([]);
   const nav = useNavigate();
+  const user: any = useContext(UserContext);
+
+  useTask$(async () => {
+    const myOrdersString = await getMyOrdersServer(user?.user?._id);
+    const myOrdersServer = JSON.parse(myOrdersString);
+    if (myOrdersServer.status === "success") {
+      myOrders.value = myOrdersServer?.request ?? [];
+    } else {
+      myOrders.value = [];
+    }
+  });
 
   return (
     <div class="overflow-x-scroll w-96 lg:w-full">
@@ -45,8 +40,8 @@ export default component$(() => {
           </tr>
         </thead>
         <tbody>
-          {myOrdersData?.request?.length > 0 &&
-            myOrdersData?.request?.map((order: any, index: number) => {
+          {myOrders.value.length > 0 &&
+            myOrders?.value?.map((order: any, index: number) => {
               const date = new Date(order.createdAt);
               return (
                 <tr
@@ -91,7 +86,7 @@ export default component$(() => {
                 </tr>
               );
             })}
-          {myOrdersData?.request?.length === 0 && (
+          {myOrders.value.length === 0 && (
             <tr>
               <td colSpan={8} class="text-center">
                 No orders found

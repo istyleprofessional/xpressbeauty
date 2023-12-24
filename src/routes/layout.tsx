@@ -73,6 +73,8 @@ export const useUserData = routeLoader$(
         ip: userIP ?? "",
         visitPage: visitPage ?? "",
         userAgent: userAgent ?? "",
+        // format date to yyyy-mm-dd hh:mm:ss
+        date: new Date().toISOString().slice(0, 19).replace("T", " "),
       },
     };
     console.log(data);
