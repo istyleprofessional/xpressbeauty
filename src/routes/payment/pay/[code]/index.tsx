@@ -155,8 +155,7 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
       const response = await fetch(urls);
       const jsonRes = await response.json();
       const details = await fetch(
-        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${
-          jsonRes?.predictions[0]?.place_id ?? ""
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${jsonRes?.predictions[0]?.place_id ?? ""
         }&key=${apiKey}`
       );
       const jsonDetails = await details.json();
@@ -454,10 +453,10 @@ export default component$(() => {
                 ?.toLowerCase()
                 ?.includes("united")
                 ? parseFloat(
-                    (
-                      (cartContext.cart?.totalPrice ?? 0) * taxRate.value
-                    ).toString()
-                  ).toFixed(2)
+                  (
+                    (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                  ).toString()
+                ).toFixed(2)
                 : "0.00",
               ...cartContext?.cart,
               order_amount: parseFloat(total.value.toString()).toFixed(2),
@@ -471,10 +470,10 @@ export default component$(() => {
                   ?.toLowerCase()
                   ?.includes("united")
                   ? parseFloat(
-                      (
-                        (cartContext.cart?.totalPrice ?? 0) * taxRate.value
-                      ).toString()
-                    ).toFixed(2)
+                    (
+                      (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                    ).toString()
+                  ).toFixed(2)
                   : "0.00",
                 finalTotal: parseFloat(total.value.toString()).toFixed(2),
                 currency: currencyObject === "1" ? "USD" : "CAD",
@@ -509,10 +508,10 @@ export default component$(() => {
                     ?.toLowerCase()
                     ?.includes("united")
                     ? parseFloat(
-                        (
-                          (cartContext.cart?.totalPrice ?? 0) * taxRate.value
-                        ).toString()
-                      ).toFixed(2)
+                      (
+                        (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                      ).toString()
+                    ).toFixed(2)
                     : "0.00",
                   finalTotal: parseFloat(total.value.toString()).toFixed(2),
                   currency: currencyObject === "1" ? "USD" : "CAD",
@@ -736,7 +735,7 @@ export default component$(() => {
                   acceptSaveCard={acceptSaveCard}
                   currencyObject={currencyObject}
                   shipping={shipping}
-                  // chargeClover={chargeClover}
+                // chargeClover={chargeClover}
                 />
               </div>
             </div>

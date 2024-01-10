@@ -140,7 +140,7 @@ export const useAddUser = routeAction$(async (data: any, requestEvent) => {
 export default component$(() => {
   const isLoading = useSignal(false);
   const userData: any = useContext(UserContext);
-  const info: UserModel = userData?.user ?? {};
+  const info: UserModel = userData ?? {};
   const action = useAddUser();
   const verifyCardRef = useSignal<Element>();
   const messageToast = useSignal<string>("");
@@ -403,7 +403,7 @@ export default component$(() => {
               identifier="generalInfo.address.city"
               validation={action?.value?.validation?.city}
               isMandatory={true}
-              // disabled={true}
+            // disabled={true}
             />
             <InputField
               label="Province"
@@ -413,7 +413,7 @@ export default component$(() => {
               identifier="generalInfo.address.state"
               validation={action?.value?.validation?.state}
               isMandatory={true}
-              // disabled={true}
+            // disabled={true}
             />
             <InputField
               label="Postal Code"
@@ -423,7 +423,7 @@ export default component$(() => {
               identifier="generalInfo.address.postalCode"
               validation={action?.value?.validation?.postalCode}
               isMandatory={true}
-              // disabled={true}
+            // disabled={true}
             />
             <InputField
               label="Country/ Region"
@@ -433,7 +433,7 @@ export default component$(() => {
               identifier="generalInfo.address.country"
               validation={action?.value?.validation?.country}
               isMandatory={true}
-              // disabled={true}
+            // disabled={true}
             />
             <div class="form-control w-full">
               <label class="label">

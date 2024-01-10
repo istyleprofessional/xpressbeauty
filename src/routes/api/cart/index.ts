@@ -9,59 +9,27 @@ import { getDummyCustomer } from "~/express/services/dummy.user.service";
 import { findUserByUserId } from "~/express/services/user.service";
 import jwt from "jsonwebtoken";
 
-export const onPost: RequestHandler = async ({ parseBody, cookie, json }) => {
+export const onPost: RequestHandler = async ({ parseBody, json }) => {
   await connect();
   const data: any = await parseBody();
   const jsonData = JSON.parse(data);
-  const token = cookie.get("token")?.value;
-  let user: any;
-  if (token) {
-    try {
-      const decoded: any = jwt.verify(
-        token,
-        import.meta.env.VITE_JWTSECRET ?? ""
-      );
-      if (decoded.isDummy) {
-        user = await getDummyCustomer(decoded.user_id);
-        jsonData.userId = user?.result?._id.toString();
-        const result = await updateUserCart(jsonData);
-        json(200, result);
-      } else {
-        user = await findUserByUserId(decoded.user_id);
-        jsonData.userId = user?.result?._id.toString();
-        const result = await updateUserCart(jsonData);
-        json(200, result);
-      }
-    } catch (error: any) {
-      if (error.message === "jwt expired") {
-        const decode: any = jwt.decode(token);
-        const newToken = jwt.sign(
-          { user_id: decode.user_id, isDummy: decode.isDummy },
-          import.meta.env.VITE_JWTSECRET ?? "",
-          { expiresIn: "2h" }
-        );
-        cookie.set("token", newToken, { httpOnly: true, path: "/" });
-        if (decode?.isDummy) {
-          user = await getDummyCustomer(decode.user_id);
-          jsonData.userId = user?.result?._id.toString();
-          const result = await updateUserCart(jsonData);
-          json(200, result);
-        } else {
-          user = await findUserByUserId(decode.user_id);
-          jsonData.userId = user?.result?._id.toString();
-          const result = await updateUserCart(jsonData);
-          json(200, result);
-        }
-      } else {
-        json(200, { status: "failed", error: error.message });
-      }
+  const userObj = jsonData.user;
+  try {
+    if (userObj.isDummy) {
+      jsonData.userId = userObj._id;
+      const result = await updateUserCart(jsonData);
+      json(200, result);
+    } else {
+      jsonData.userId = userObj._id;
+      const result = await updateUserCart(jsonData);
+      json(200, result);
     }
-  } else {
-    json(200, { status: "failed", error: "Suspicious behavior detected" });
+  } catch (error: any) {
+    json(200, { status: "failed", error: error.message });
   }
 };
 
-export const onDelete: RequestHandler = async ({ parseBody, cookie, json }) => {
+export const onDelete: RequestHandler = async ({ parseBody, cookie, json, env }) => {
   await connect();
   const data: any = await parseBody();
   const jsonData = JSON.parse(data);
@@ -71,7 +39,7 @@ export const onDelete: RequestHandler = async ({ parseBody, cookie, json }) => {
     try {
       const decoded: any = jwt.verify(
         token,
-        import.meta.env.VITE_JWTSECRET ?? ""
+        env.get('VITE_JWTSECRET') ?? ""
       );
       if (decoded.isDummy) {
         user = await getDummyCustomer(decoded.user_id);

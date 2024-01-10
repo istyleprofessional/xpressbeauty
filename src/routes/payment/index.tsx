@@ -3,7 +3,6 @@ import { routeLoader$ } from "@builder.io/qwik-city";
 
 export const useCloverTest = routeLoader$(async ({ redirect, env }) => {
   const client_id = env.get("VITE_APP_ID");
-  console.log("client_id", client_id);
   const url = `https://sandbox.dev.clover.com/oauth/authorize?client_id=${client_id}&redirect_uri=http://localhost:5173/api/cloveroAuth`;
   throw redirect(301, url);
 });

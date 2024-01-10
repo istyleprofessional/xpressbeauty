@@ -1,5 +1,5 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import { server$ } from "@builder.io/qwik-city";
+import { server$, useNavigate } from "@builder.io/qwik-city";
 // import axios from "axios";
 import { verify } from "jsonwebtoken";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
@@ -19,29 +19,34 @@ interface OrderDetailsProps {
 }
 
 export const chargeCus = server$(async function (data: any) {
-  // console.log(apiKeyRes.apiAccessKey);
   console.log(data);
-  const options = {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "content-type": "application/json",
-      authorization: `Bearer ${data.apiAccessKey}`,
-    },
-    body: JSON.stringify({
-      orderId: "1",
-      currency: data.currency,
-      amount: data.amount,
-      source: data.cardTok,
-    }),
-  };
-  const charge = await fetch(
-    "https://scl-sandbox.dev.clover.com/v1/charges",
-    options
-  );
-  const chargeRes = await charge.json();
-  console.log(chargeRes);
-  return chargeRes;
+  try {
+    const options = {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        authorization: `Bearer ${data.apiAccessKey}`,
+      },
+      body: JSON.stringify({
+        orderId: "1",
+        currency: data.currency,
+        amount: data.amount,
+        source: data.cardTok,
+      }),
+    };
+    const charge = await fetch(
+      `https://scl-${this.env.get('VITE_CLOVER_URL')?.replace('https://', '')}/v1/charges`,
+      options
+    );
+    const chargeRes = await charge.json();
+    console.log(chargeRes);
+    return chargeRes;
+  } catch (error: any) {
+    console.error("Error:", error.message);
+    return false;
+  }
+
 });
 
 export const getAccessToken = server$(async function () {
@@ -49,9 +54,7 @@ export const getAccessToken = server$(async function () {
   try {
     const client_id = this.env.get("VITE_APP_ID");
     const client_secret: any = this.env.get("VITE_CLOVER_SECRET");
-    console.log(client_id, client_secret);
-    debugger;
-    const url = `https://sandbox.dev.clover.com/oauth/token?client_id=${client_id}&client_secret=${client_secret}&code=${authorizationCode}`;
+    const url = `${this.env.get('VITE_CLOVER_URL')}/oauth/token?client_id=${client_id}&client_secret=${client_secret}&code=${authorizationCode}`;
     const authReq = await fetch(url, {
       method: "GET",
       headers: {
@@ -59,31 +62,8 @@ export const getAccessToken = server$(async function () {
         "content-type": "application/json",
       },
     });
+
     const data = await authReq.json();
-    console.log(data);
-    const options = {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "content-type": "application/json",
-        authorization: `Bearer ${data.access_token}`,
-      },
-      body: JSON.stringify({
-        emailAddresses: [
-          {
-            emailAddress: "ramyanber@gmail.com",
-          },
-        ],
-        firstName: "Ramy",
-        lastName: "Anber",
-      }),
-    };
-    const cusReq = await fetch(
-      `https://sandbox.dev.clover.com/v3/merchants/SYKR03SX51WP1/customers`,
-      options
-    );
-    const cusRes = await cusReq.json();
-    console.log(cusRes);
     const optionss = {
       method: "GET",
       headers: {
@@ -93,7 +73,7 @@ export const getAccessToken = server$(async function () {
     };
 
     const apiKey = await fetch(
-      "https://scl-sandbox.dev.clover.com/pakms/apikey",
+      `${this.env.get('VITE_CLOVER_URL')}/pakms/apikey`,
       optionss
     );
     const apiKeyRes = await apiKey.json();
@@ -110,7 +90,7 @@ export const getAccessToken = server$(async function () {
 export const tokenCard = server$(async function (data: any) {
   try {
     console.log(data);
-    const optionsss = {
+    const option = {
       method: "POST",
       headers: {
         accept: "application/json",
@@ -126,10 +106,10 @@ export const tokenCard = server$(async function (data: any) {
         },
       }),
     };
-
+    const url = `https://token-${this.env.get('VITE_CLOVER_URL')?.replace('https://', '')}/v1/tokens`;
     const tokenCard = await fetch(
-      "https://token-sandbox.dev.clover.com/v1/tokens",
-      optionsss
+      url,
+      option
     );
     const tokenCardRes = await tokenCard.json();
     console.log(tokenCardRes);
@@ -198,6 +178,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
   const expMonthElm = useSignal<string>("");
   const expYearElm = useSignal<string>("");
   const cvvElm = useSignal<string>("");
+  const nav = useNavigate();
 
   useVisibleTask$(async ({ track }) => {
     track(() => cart?.totalPrice);
@@ -363,13 +344,13 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
                 ?.toLowerCase()
                 ?.includes("united")
                 ? hst.value?.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: symbol.value,
-                  })
+                  style: "currency",
+                  currency: symbol.value,
+                })
                 : (0.0).toLocaleString("en-US", {
-                    style: "currency",
-                    currency: symbol.value,
-                  })}
+                  style: "currency",
+                  currency: symbol.value,
+                })}
             </p>
           </div>
           <div class="grid grid-cols-2 w-full">
@@ -421,17 +402,17 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
                 expYear: expYearElm.value,
                 cvv: cvvElm.value,
                 apiAccessKey: apikey,
-                // saveCard: acceptSaveCard.value,
               };
-              console.log(paymentDetails);
               const cardTok = await tokenCard(paymentDetails);
               const cusCharge = await chargeCus({
                 currency: symbol.value,
-                // must be in cents
                 amount: Math.round(total.value * 100),
                 cardTok: cardTok.id,
                 apiAccessKey: access_token,
               });
+              if (cusCharge.status === "succeeded") {
+                nav("/payment/success")
+              }
               console.log(cusCharge);
             }}
           >
