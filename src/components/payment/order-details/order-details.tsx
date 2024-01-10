@@ -1,5 +1,6 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
+// import axios from "axios";
 import { verify } from "jsonwebtoken";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 import productSchema from "~/express/schemas/product.schema";
@@ -16,6 +17,128 @@ interface OrderDetailsProps {
   taxRate: number;
   shipping: any;
 }
+
+export const chargeCus = server$(async function (data: any) {
+  // console.log(apiKeyRes.apiAccessKey);
+  console.log(data);
+  const options = {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      authorization: `Bearer ${data.apiAccessKey}`,
+    },
+    body: JSON.stringify({
+      orderId: "1",
+      currency: data.currency,
+      amount: data.amount,
+      source: data.cardTok,
+    }),
+  };
+  const charge = await fetch(
+    "https://scl-sandbox.dev.clover.com/v1/charges",
+    options
+  );
+  const chargeRes = await charge.json();
+  console.log(chargeRes);
+  return chargeRes;
+});
+
+export const getAccessToken = server$(async function () {
+  const authorizationCode = this.params.code;
+  try {
+    const client_id = this.env.get("VITE_APP_ID");
+    const client_secret: any = this.env.get("VITE_CLOVER_SECRET");
+    console.log(client_id, client_secret);
+    debugger;
+    const url = `https://sandbox.dev.clover.com/oauth/token?client_id=${client_id}&client_secret=${client_secret}&code=${authorizationCode}`;
+    const authReq = await fetch(url, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+    });
+    const data = await authReq.json();
+    console.log(data);
+    const options = {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        authorization: `Bearer ${data.access_token}`,
+      },
+      body: JSON.stringify({
+        emailAddresses: [
+          {
+            emailAddress: "ramyanber@gmail.com",
+          },
+        ],
+        firstName: "Ramy",
+        lastName: "Anber",
+      }),
+    };
+    const cusReq = await fetch(
+      `https://sandbox.dev.clover.com/v3/merchants/SYKR03SX51WP1/customers`,
+      options
+    );
+    const cusRes = await cusReq.json();
+    console.log(cusRes);
+    const optionss = {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        authorization: `Bearer ${data.access_token}`,
+      },
+    };
+
+    const apiKey = await fetch(
+      "https://scl-sandbox.dev.clover.com/pakms/apikey",
+      optionss
+    );
+    const apiKeyRes = await apiKey.json();
+    return JSON.stringify({
+      apikey: apiKeyRes.apiAccessKey,
+      access_token: data.access_token,
+    });
+  } catch (error: any) {
+    console.error("Error:", error.message);
+    return "";
+  }
+});
+
+export const tokenCard = server$(async function (data: any) {
+  try {
+    console.log(data);
+    const optionsss = {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        apiKey: data.apiAccessKey,
+      },
+      body: JSON.stringify({
+        card: {
+          number: data.cardNumber,
+          exp_month: data.expMonth,
+          exp_year: data.expYear,
+          cvv: data.cvv,
+        },
+      }),
+    };
+
+    const tokenCard = await fetch(
+      "https://token-sandbox.dev.clover.com/v1/tokens",
+      optionsss
+    );
+    const tokenCardRes = await tokenCard.json();
+    console.log(tokenCardRes);
+    return tokenCardRes;
+  } catch (error: any) {
+    console.error("Error:", error.message);
+    return false;
+  }
+});
 
 export const checker = server$(function () {
   const token = this.cookie.get("token")?.value;
@@ -71,6 +194,10 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
   const hst = useSignal<number>(0);
   const symbol = useSignal<string>("CAD");
   const isDummy = useSignal<boolean>(true);
+  const cardNumberElm = useSignal<string>("");
+  const expMonthElm = useSignal<string>("");
+  const expYearElm = useSignal<string>("");
+  const cvvElm = useSignal<string>("");
 
   useVisibleTask$(async ({ track }) => {
     track(() => cart?.totalPrice);
@@ -118,10 +245,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
         </>
       )}
 
-      <form
-        id="payment-form"
-        class="bg-white shadow-md flex-col flex rounded px-8 pt-6 pb-8 mb-4"
-      >
+      <div class="bg-white shadow-md flex-col flex rounded px-8 pt-6 pb-8 mb-4">
         {!isExistingPaymentMethod && (
           <>
             <div class="mb-4">
@@ -131,10 +255,33 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
               >
                 Card Number
               </label>
-              <div
+              <input
+                class="input input-bordered w-full "
                 id="card-element"
-                class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              ></div>
+                type="text"
+                onInput$={(e: any) => {
+                  const value = e.target.value;
+                  if (value.length === 4) {
+                    e.target.value = value + " ";
+                  }
+                  if (value.length === 9) {
+                    e.target.value = value + " ";
+                  }
+                  if (value.length === 14) {
+                    e.target.value = value + " ";
+                  }
+                  const cardNumber = e.target.value;
+                  const cardNumberArray = cardNumber.split(" ");
+                  const cardNumberString = cardNumberArray.join("");
+                  const cardNumberLength = cardNumberString.length;
+                  if (cardNumberLength > 16) {
+                    e.target.value = cardNumber.slice(0, -1);
+                  }
+                  cardNumberElm.value = cardNumberString;
+                  console.log(cardNumberString);
+                }}
+                placeholder="4242 4242 4242 4242"
+              />
             </div>
 
             <div class="mb-4">
@@ -144,10 +291,27 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
               >
                 Expiration Date
               </label>
-              <div
+              <input
+                class="input input-bordered w-full"
                 id="card-expiration"
-                class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              ></div>
+                type="text"
+                onInput$={(e: any) => {
+                  const value = e.target.value;
+                  if (value.length === 2) {
+                    e.target.value = value + "/";
+                  }
+                  const cardNumber = e.target.value;
+                  const cardNumberArray = cardNumber.split("/");
+                  const cardNumberString = cardNumberArray.join("");
+                  const cardNumberLength = cardNumberString.length;
+                  if (cardNumberLength > 4) {
+                    e.target.value = cardNumber.slice(0, -1);
+                  }
+                  expMonthElm.value = cardNumberArray[0];
+                  expYearElm.value = cardNumberArray[1];
+                }}
+                placeholder="MM/YY"
+              />
             </div>
 
             <div class="mb-4">
@@ -157,10 +321,22 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
               >
                 CVC
               </label>
-              <div
+              <input
+                class="input input-bordered w-full"
                 id="card-cvc"
-                class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              ></div>
+                type="text"
+                onInput$={(e: any) => {
+                  const cardNumber = e.target.value;
+                  const cardNumberArray = cardNumber.split("");
+                  const cardNumberString = cardNumberArray.join("");
+                  const cardNumberLength = cardNumberString.length;
+                  if (cardNumberLength > 3) {
+                    e.target.value = cardNumber.slice(0, -1);
+                  }
+                  cvvElm.value = cardNumberString;
+                }}
+                placeholder="123"
+              />
             </div>
 
             <div
@@ -233,7 +409,32 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
               </label>
             </div>
           )}
-          <button type="submit" class="btn btn-primary text-white w-full">
+          <button
+            type="submit"
+            class="btn bg-black text-white w-full"
+            onClick$={async () => {
+              const getAccessTokenReq = await getAccessToken();
+              const { access_token, apikey } = JSON.parse(getAccessTokenReq);
+              const paymentDetails = {
+                cardNumber: cardNumberElm.value.replace(/\s/g, ""),
+                expMonth: expMonthElm.value,
+                expYear: expYearElm.value,
+                cvv: cvvElm.value,
+                apiAccessKey: apikey,
+                // saveCard: acceptSaveCard.value,
+              };
+              console.log(paymentDetails);
+              const cardTok = await tokenCard(paymentDetails);
+              const cusCharge = await chargeCus({
+                currency: symbol.value,
+                // must be in cents
+                amount: Math.round(total.value * 100),
+                cardTok: cardTok.id,
+                apiAccessKey: access_token,
+              });
+              console.log(cusCharge);
+            }}
+          >
             <div class="flex flex-row w-full items-center text-xs">
               <div class="flex flex-row gap-1 items-center w-full justify-center text-sm">
                 Pay <NextArrowIconNoStick color="white" />
@@ -241,7 +442,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
             </div>
           </button>
         </div>
-      </form>
+      </div>
       <div id="paypal-button-container" style="max-width:1000px;"></div>
       <div class="divider text-white"></div>
     </>

@@ -13,7 +13,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
-
+import undetected_chromedriver as uc
 
 def run_chrome():
 
@@ -682,26 +682,20 @@ def return_product_if_single(parsed_json, d):
     else:
         d['quantity_on_hand'] = 0
     return d
-        
 
 def get_last_prices_and_upc():
     with open('./backups/file-7.json', encoding='utf-8') as f:
         data = json.load(f)
         print(len(data))
-        path = r"C:\chromedriver-win64\chromedriver.exe"
-        chrome_options = Options()
-        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument(
-            "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36")
-        driver = webdriver.Chrome(service=Service(path), options=chrome_options)
+        driver = uc.Chrome()
+        driver.get('https://www.cosmoprofbeauty.ca/')
+        time.sleep(40)
         # add cookies to the browser
-
-        with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (32).json", 'r') as cookie_file:
-            cookies = json.load(cookie_file)
-        for cookie in cookies:
-            driver.add_cookie(cookie)
+        
+        # with open("C:/Users/User/Downloads/www.cosmoprofbeauty.ca.cookies (41).json", 'r') as cookie_file:
+        #     cookies = json.load(cookie_file)
+        # for cookie in cookies:
+        #     driver.add_cookie(cookie)
         for d in data:
             if "Hair" in ','.join(d['categories']):
                 try:
@@ -862,6 +856,9 @@ def get_last_prices_and_upc():
                             print(update.json())
                             continue
                     continue
+                # print remaining products length
+            
+
 
         
         
