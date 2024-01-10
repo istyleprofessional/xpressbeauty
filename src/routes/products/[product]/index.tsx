@@ -195,7 +195,7 @@ export default component$(() => {
       {isLoading.value && (
         <>
           <div class="w-full backdrop-blur-lg drop-shadow-lg fixed z-20 m-auto inset-x-0 inset-y-0 ">
-            <progress class="progress progress-secondary  w-56 fixed z-20 m-auto inset-x-0 inset-y-0"></progress>
+            <progress class="progress progress-white w-56 fixed z-20 m-auto inset-x-0 inset-y-0  bg-white"></progress>
           </div>
         </>
       )}
@@ -240,13 +240,13 @@ export default component$(() => {
             content={
               product.priceType === "range"
                 ? product?.price?.min
-                  ?.toString()
-                  ?.replace("$", "")
-                  ?.toLocaleString("en-US")
+                    ?.toString()
+                    ?.replace("$", "")
+                    ?.toLocaleString("en-US")
                 : product?.price?.regular
-                  ?.toString()
-                  ?.replace("$", "")
-                  ?.toLocaleString("en-US")
+                    ?.toString()
+                    ?.replace("$", "")
+                    ?.toLocaleString("en-US")
             }
           />
           <meta
@@ -254,13 +254,13 @@ export default component$(() => {
             content={
               product.priceType === "range"
                 ? product?.price?.max
-                  ?.toString()
-                  ?.replace("$", "")
-                  ?.toLocaleString("en-US")
+                    ?.toString()
+                    ?.replace("$", "")
+                    ?.toLocaleString("en-US")
                 : product?.price?.regular
-                  ?.toString()
-                  ?.replace("$", "")
-                  ?.toLocaleString("en-US")
+                    ?.toString()
+                    ?.replace("$", "")
+                    ?.toLocaleString("en-US")
             }
           />
           <meta itemProp="priceCurrency" content="CAD" />
@@ -375,33 +375,39 @@ export const head: DocumentHead = ({ resolveValue }) => {
         href: `https://xpressbeauty.ca/products/${jsonData?.perfix ?? ""}`,
       },
     ],
-    title: `${jsonData?.product_name ?? ""} | ${jsonData.companyName.name && jsonData.companyName.name !== ""
-      ? `${jsonData.companyName.name} |`
-      : ""
-      } ${`${jsonData.categories[0].main ?? ""}`}`,
+    title: `${jsonData?.product_name ?? ""} | ${
+      jsonData.companyName.name && jsonData.companyName.name !== ""
+        ? `${jsonData.companyName.name} |`
+        : ""
+    } ${`${jsonData.categories[0].main ?? ""}`}`,
     meta: [
       {
         name: "description",
-        content: `Discover ${jsonData?.product_name ?? ""}${jsonData.companyName.name && jsonData.companyName.name !== ""
-          ? ` by ${jsonData.companyName.name}`
-          : " "
-          }${jsonData.lineName && jsonData.lineName !== ""
+        content: `Discover ${jsonData?.product_name ?? ""}${
+          jsonData.companyName.name && jsonData.companyName.name !== ""
+            ? ` by ${jsonData.companyName.name}`
+            : " "
+        }${
+          jsonData.lineName && jsonData.lineName !== ""
             ? ` from the ${jsonData.lineName} collection `
             : " "
-          }at Xpress Beauty. Get it for just ${jsonData.priceType === "range"
+        }at Xpress Beauty. Get it for just ${
+          jsonData.priceType === "range"
             ? `$${jsonData.price.min}-$${jsonData.price.max}`
             : `$${jsonData.price.regular}`
-          } in our ${jsonData.categories
+        } in our ${
+          jsonData.categories
             .map((cat: any) => `${cat.main}, ${cat.name}`)
             .join(", ") ?? ""
-          } category.`,
+        } category.`,
       },
       {
         name: "keywords",
-        content: `${jsonData?.product_name ?? ""}, ${jsonData.companyName && jsonData.companyName !== ""
-          ? `${jsonData.companyName},`
-          : ""
-          } ${jsonData.categories.join(", ") ?? ""}`,
+        content: `${jsonData?.product_name ?? ""}, ${
+          jsonData.companyName && jsonData.companyName !== ""
+            ? `${jsonData.companyName},`
+            : ""
+        } ${jsonData.categories.join(", ") ?? ""}`,
       },
     ],
   };

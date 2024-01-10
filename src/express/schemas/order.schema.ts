@@ -15,6 +15,7 @@ const orderSchema = new Schema(
     order_number: { type: String, default: null },
     currency: { type: String, default: null },
     paypalObj: { type: Object, default: null },
+    totalInfo: { type: Object, default: null },
   },
   { timestamps: true }
 );

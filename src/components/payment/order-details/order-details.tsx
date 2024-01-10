@@ -1,9 +1,20 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import { server$, useNavigate } from "@builder.io/qwik-city";
+import {
+  component$,
+  useSignal,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
+import { server$ } from "@builder.io/qwik-city";
 // import axios from "axios";
 import { verify } from "jsonwebtoken";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 import productSchema from "~/express/schemas/product.schema";
+import usersSchema from "~/express/schemas/users.schema";
+import { deleteCart } from "~/express/services/cart.service";
+import { createOrder } from "~/express/services/order.service";
+import { generateOrderNumber } from "~/utils/generateOrderNo";
+import { sendConfirmationEmail } from "~/utils/sendConfirmationEmail";
+import { sendConfirmationOrderForAdmin } from "~/utils/sendConfirmationOrderForAdmin";
 
 interface OrderDetailsProps {
   cart: any;
@@ -16,6 +27,7 @@ interface OrderDetailsProps {
   subTotal: any;
   taxRate: number;
   shipping: any;
+  isLoading: any;
 }
 
 export const chargeCus = server$(async function (data: any) {
@@ -36,17 +48,55 @@ export const chargeCus = server$(async function (data: any) {
       }),
     };
     const charge = await fetch(
-      `https://scl-${this.env.get('VITE_CLOVER_URL')?.replace('https://', '')}/v1/charges`,
+      `https://scl-${this.env
+        .get("VITE_CLOVER_URL")
+        ?.replace("https://", "")}/v1/charges`,
       options
     );
     const chargeRes = await charge.json();
-    console.log(chargeRes);
+    const dataToSend: any = {};
+    dataToSend.order_number = generateOrderNumber();
+    dataToSend.order_amount = data.amount / 100;
+    dataToSend.userId = data.user._id;
+    dataToSend.shipping_address = data.user?.generalInfo.address;
+    dataToSend.paymentMethod = "Clover";
+    dataToSend.order_status = "Pending";
+    dataToSend.products = data.products;
+    dataToSend.totalInfo = data.totalInfo;
+    dataToSend.totalQuantity = data.totalQuantity;
+    dataToSend.currency = data.currencyObject;
+    dataToSend.payment_status = chargeRes.status;
+    dataToSend.payment_id = chargeRes.id;
+    dataToSend.payment_date = chargeRes.created;
+    await sendConfirmationEmail(
+      data.user?.email ?? "",
+      `${data.user?.firstName} ${data.user?.lastName}`,
+      dataToSend.shipping_address,
+      data.products,
+      data.totalInfo
+    );
+    await sendConfirmationOrderForAdmin(
+      `${data.user?.firstName} ${data.user?.lastName}`,
+      data.shipping_address,
+      data.products
+      // currency?.toLocaleLowerCase() ?? "CAD",
+      // rate
+    );
+    if (data.isCoponApplied) {
+      // update status of copon in cobone array of object
+      await usersSchema.updateOne(
+        { _id: data.user._id, "cobone.code": "xpressbeauty10" },
+        { $set: { "cobone.$.status": true } }
+      );
+    }
+    await createOrder(dataToSend);
+    await deleteCart(data.user?._id);
+    chargeRes.orderId = dataToSend.order_number;
     return chargeRes;
   } catch (error: any) {
     console.error("Error:", error.message);
     return false;
   }
-
 });
 
 export const getAccessToken = server$(async function () {
@@ -54,7 +104,9 @@ export const getAccessToken = server$(async function () {
   try {
     const client_id = this.env.get("VITE_APP_ID");
     const client_secret: any = this.env.get("VITE_CLOVER_SECRET");
-    const url = `${this.env.get('VITE_CLOVER_URL')}/oauth/token?client_id=${client_id}&client_secret=${client_secret}&code=${authorizationCode}`;
+    const url = `${this.env.get(
+      "VITE_CLOVER_URL"
+    )}/oauth/token?client_id=${client_id}&client_secret=${client_secret}&code=${authorizationCode}`;
     const authReq = await fetch(url, {
       method: "GET",
       headers: {
@@ -73,7 +125,7 @@ export const getAccessToken = server$(async function () {
     };
 
     const apiKey = await fetch(
-      `${this.env.get('VITE_CLOVER_URL')}/pakms/apikey`,
+      `${this.env.get("VITE_CLOVER_URL")}/pakms/apikey`,
       optionss
     );
     const apiKeyRes = await apiKey.json();
@@ -106,13 +158,11 @@ export const tokenCard = server$(async function (data: any) {
         },
       }),
     };
-    const url = `https://token-${this.env.get('VITE_CLOVER_URL')?.replace('https://', '')}/v1/tokens`;
-    const tokenCard = await fetch(
-      url,
-      option
-    );
+    const url = `https://token-${this.env
+      .get("VITE_CLOVER_URL")
+      ?.replace("https://", "")}/v1/tokens`;
+    const tokenCard = await fetch(url, option);
     const tokenCardRes = await tokenCard.json();
-    console.log(tokenCardRes);
     return tokenCardRes;
   } catch (error: any) {
     console.error("Error:", error.message);
@@ -170,6 +220,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     subTotal,
     taxRate,
     shipping,
+    isLoading,
   } = props;
   const hst = useSignal<number>(0);
   const symbol = useSignal<string>("CAD");
@@ -178,7 +229,8 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
   const expMonthElm = useSignal<string>("");
   const expYearElm = useSignal<string>("");
   const cvvElm = useSignal<string>("");
-  const nav = useNavigate();
+  const accessToken = useSignal<string>("");
+  const api_key = useSignal<string>("");
 
   useVisibleTask$(async ({ track }) => {
     track(() => cart?.totalPrice);
@@ -216,6 +268,13 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     isDummy.value = check;
   });
 
+  useTask$(async () => {
+    const getAccessTokenReq = await getAccessToken();
+    const { access_token, apikey } = JSON.parse(getAccessTokenReq);
+    accessToken.value = access_token;
+    api_key.value = apikey;
+  });
+
   return (
     <>
       {/** ask the user if he wants to use the perivious payment method */}
@@ -225,7 +284,11 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
           <div class="flex flex-row gap-3 justify-center items-end"></div>
         </>
       )}
-
+      {isLoading.value && (
+        <div class="w-full backdrop-blur-lg drop-shadow-lg fixed z-20 m-auto inset-x-0 inset-y-0 ">
+          <progress class="progress progress-white w-56 fixed z-20 m-auto inset-x-0 inset-y-0  bg-white"></progress>
+        </div>
+      )}
       <div class="bg-white shadow-md flex-col flex rounded px-8 pt-6 pb-8 mb-4">
         {!isExistingPaymentMethod && (
           <>
@@ -344,13 +407,13 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
                 ?.toLowerCase()
                 ?.includes("united")
                 ? hst.value?.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: symbol.value,
-                })
+                    style: "currency",
+                    currency: symbol.value,
+                  })
                 : (0.0).toLocaleString("en-US", {
-                  style: "currency",
-                  currency: symbol.value,
-                })}
+                    style: "currency",
+                    currency: symbol.value,
+                  })}
             </p>
           </div>
           <div class="grid grid-cols-2 w-full">
@@ -394,24 +457,50 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
             type="submit"
             class="btn bg-black text-white w-full"
             onClick$={async () => {
-              const getAccessTokenReq = await getAccessToken();
-              const { access_token, apikey } = JSON.parse(getAccessTokenReq);
+              isLoading.value = true;
               const paymentDetails = {
                 cardNumber: cardNumberElm.value.replace(/\s/g, ""),
                 expMonth: expMonthElm.value,
                 expYear: expYearElm.value,
                 cvv: cvvElm.value,
-                apiAccessKey: apikey,
+                apiAccessKey: api_key.value,
               };
               const cardTok = await tokenCard(paymentDetails);
+              const totalInfo = {
+                shipping: shipping.value,
+                tax: !user?.generalInfo?.address?.country
+                  ?.toLowerCase()
+                  ?.includes("united")
+                  ? parseFloat(
+                      ((cart?.totalPrice ?? 0) * taxRate).toString()
+                    ).toFixed(2)
+                  : "0.00",
+                finalTotal: parseFloat(total.value.toString()).toFixed(2),
+                currency: currencyObject === "1" ? "USD" : "CAD",
+              };
+              const checkCopon = localStorage.getItem("copon");
+              let isCoponApplied = false;
+              if (checkCopon === "true") {
+                isCoponApplied = true;
+              }
               const cusCharge = await chargeCus({
                 currency: symbol.value,
                 amount: Math.round(total.value * 100),
                 cardTok: cardTok.id,
-                apiAccessKey: access_token,
+                apiAccessKey: accessToken.value,
+                user: user,
+                products: cart?.products,
+                totalInfo: totalInfo,
+                isCoponApplied: isCoponApplied,
+                totalQuantity: cart?.totalQuantity,
+                currencyObject: symbol.value,
               });
               if (cusCharge.status === "succeeded") {
-                nav("/payment/success")
+                isLoading.value = false;
+                window.location.href = `/payment/success/${cusCharge.orderId}`;
+              } else {
+                isLoading.value = false;
+                alert("Payment Failed");
               }
               console.log(cusCharge);
             }}
