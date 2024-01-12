@@ -138,7 +138,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
       )}
 
       <div class="flex flex-col gap-3 ">
-        <h2 class="flex flex-row gap-2 text-xl lg:text-3xl">
+        <h2 class="flex flex-row gap-2 text-xl lg:text-3xl text-gray-600">
           {priceType === "single" && sale_price.sale !== "" && (
             <>
               <span class="text-gray-400" itemProp="price">
