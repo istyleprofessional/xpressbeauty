@@ -124,7 +124,7 @@ export const useDomContentLoaded = routeLoader$(
       finalUrl?.split("/")?.filter((item: string) => {
         return item !== "";
       })?.length ?? 0;
-    console.log(url);
+
     if (
       finalLength !==
       params.args.split("/").filter((e: string) => e !== "").length
