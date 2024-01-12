@@ -118,7 +118,6 @@ export const useDomContentLoaded = routeLoader$(
         ? `filterPrices/${filterPricesArray.join("+")}/`
         : ""
     }`;
-    console.log(finalUrl);
     const finalLength =
       finalUrl?.split("/")?.filter((item: string) => {
         return item !== "";
@@ -127,7 +126,7 @@ export const useDomContentLoaded = routeLoader$(
       finalLength !==
       params.args.split("/").filter((e: string) => e !== "").length
     ) {
-      throw redirect(301, `/products/${finalUrl ? `${finalUrl}/` : ""}`);
+      throw redirect(301, `/products/${finalUrl ? `${finalUrl}` : ""}`);
     }
     const request = await get_products_data(
       finalFilterBrandsArray,
