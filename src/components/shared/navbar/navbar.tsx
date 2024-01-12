@@ -28,6 +28,15 @@ export const NavBar = component$(() => {
             Brands
           </a>
         </li>
+        <li>
+          <a
+            class="lg:text-lg"
+            href="/products/filterCategories/Skin-Care/"
+            aria-label="Brands"
+          >
+            Skin Care
+          </a>
+        </li>
       </ul>
     </div>
   );
