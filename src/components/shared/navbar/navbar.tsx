@@ -24,17 +24,17 @@ export const NavBar = component$(() => {
           </a>
         </li>
         <li>
-          <a class="lg:text-lg" href="/brands" aria-label="Brands">
-            Brands
-          </a>
-        </li>
-        <li>
           <a
             class="lg:text-lg"
             href="/products/filterCategories/Skin-Care/"
             aria-label="Brands"
           >
             Skin Care
+          </a>
+        </li>
+        <li>
+          <a class="lg:text-lg" href="/brands" aria-label="Brands">
+            Brands
           </a>
         </li>
       </ul>
