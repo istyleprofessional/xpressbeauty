@@ -31,5 +31,10 @@ const productsSchema = new Schema(
   { timestamps: true }
 );
 
-productsSchema.index({ product_name: "text" });
+productsSchema.index({
+  product_name: "text",
+  description: "text",
+  lineName: "text",
+  companyName: "text",
+});
 export default model("products", productsSchema);

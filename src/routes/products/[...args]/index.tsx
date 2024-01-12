@@ -117,16 +117,22 @@ export const useDomContentLoaded = routeLoader$(
       filterPricesArray.length > 0
         ? `filterPrices/${filterPricesArray.join("+")}/`
         : ""
+    }/${search() !== "" ? `search/${search()}/` : ""}/${
+      filter() !== "" ? `filter/${filter()}/` : ""
     }`;
     const finalLength =
       finalUrl?.split("/")?.filter((item: string) => {
         return item !== "";
       })?.length ?? 0;
+    console.log(url);
     if (
       finalLength !==
       params.args.split("/").filter((e: string) => e !== "").length
     ) {
-      throw redirect(301, `/products/${finalUrl ? `${finalUrl}` : ""}`);
+      throw redirect(
+        301,
+        `/products/${finalUrl ? `${finalUrl}?${url.search}` : ""}`
+      );
     }
     const request = await get_products_data(
       finalFilterBrandsArray,
