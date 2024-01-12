@@ -1,7 +1,7 @@
 import {
   component$,
   useSignal,
-  useTask$,
+  // useTask$,
   useVisibleTask$,
 } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
@@ -229,8 +229,8 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
   // const expMonthElm = useSignal<string>("");
   // const expYearElm = useSignal<string>("");
   // const cvvElm = useSignal<string>("");
-  const accessToken = useSignal<string>("");
-  const api_key = useSignal<string>("");
+  // const accessToken = useSignal<string>("");
+  // const api_key = useSignal<string>("");
 
   useVisibleTask$(async ({ track }) => {
     track(() => cart?.totalPrice);
@@ -268,12 +268,12 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     isDummy.value = check;
   });
 
-  useTask$(async () => {
-    const getAccessTokenReq = await getAccessToken();
-    const { access_token, apikey } = JSON.parse(getAccessTokenReq);
-    accessToken.value = access_token;
-    api_key.value = apikey;
-  });
+  // useTask$(async () => {
+  //   const getAccessTokenReq = await getAccessToken();
+  //   const { access_token, apikey } = JSON.parse(getAccessTokenReq);
+  //   accessToken.value = access_token;
+  //   api_key.value = apikey;
+  // });
 
   return (
     <>
