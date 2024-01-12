@@ -40,7 +40,6 @@ export const useServerTimeLoader = routeLoader$(() => {
 export const useUserData = routeLoader$(
   async ({ cookie, env, request, url }) => {
     await connect();
-    console.log(env.get("VITE_JWTSECRET"));
     if (url.pathname.includes("admin")) {
       return;
     }
@@ -77,7 +76,7 @@ export const useUserData = routeLoader$(
         date: new Date().toISOString().slice(0, 19).replace("T", " "),
       },
     };
-    console.log(data);
+    // console.log(data);
     let curr: any = cookie.get("cur")?.value;
     if (userAgent?.includes("bot")) {
       cookie.delete("token", { path: "/" });

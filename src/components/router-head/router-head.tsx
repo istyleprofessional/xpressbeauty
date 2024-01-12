@@ -1,12 +1,12 @@
 import { component$ } from "@builder.io/qwik";
-import { useDocumentHead } from "@builder.io/qwik-city";
+import { useDocumentHead, useLocation } from "@builder.io/qwik-city";
 
 /**
  * The RouterHead component is placed inside of the document `<head>` element.
  */
 export const RouterHead = component$(() => {
   const head = useDocumentHead();
-  // const loc = useLocation();
+  const loc = useLocation();
 
   // const url = loc.url.href.split(".ca")[1];
 
@@ -31,7 +31,7 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 fbq('init', '628174676061797');
 fbq('track', 'PageView');
 `;
-
+  const url = `https://${loc.url.host}${loc.url.pathname}`;
   return (
     <>
       <title>{head.title}</title>
@@ -45,7 +45,7 @@ fbq('track', 'PageView');
         </>
       )}
       <script dangerouslySetInnerHTML={metaScript} />
-      {/* <link rel="canonical" href={`https://xpressbeauty.ca${url}`} /> */}
+      <link rel="canonical" href={`${url}`} />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="icon" type="image/svg+xml" href="/logoX2.jpg" />
       <meta name="robots" content="max-snippet:50, max-image-preview:large" />
