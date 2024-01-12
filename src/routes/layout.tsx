@@ -40,6 +40,7 @@ export const useServerTimeLoader = routeLoader$(() => {
 export const useUserData = routeLoader$(
   async ({ cookie, env, request, url }) => {
     await connect();
+    console.log(env.get("VITE_JWTSECRET"));
     if (url.pathname.includes("admin")) {
       return;
     }

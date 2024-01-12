@@ -199,9 +199,9 @@ export const CartDetails = component$((props: any) => {
           >
             Login or Register
           </a>
-          <div class="divider text-white"></div>
+          <div class="divider divider-neutral"></div>
           <div
-            class="bg-red-100 border border-red-400 text-white px-4 py-3 rounded relative"
+            class=" bg-red-900 text-white px-4 py-3 rounded relative"
             role="alert"
           >
             <p class="text-sm">

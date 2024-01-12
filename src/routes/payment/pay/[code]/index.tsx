@@ -13,7 +13,7 @@ import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import jwt from "jsonwebtoken";
 import { deleteCart, getCartByUserId } from "~/express/services/cart.service";
 import { UserContext } from "~/context/user.context";
-// import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import { postRequest } from "~/utils/fetch.utils";
 import { CartContext } from "~/context/cart.context";
 import Stripe from "stripe";
@@ -28,111 +28,6 @@ import SalesTax from "sales-tax";
 import { getDummyCustomer } from "~/express/services/dummy.user.service";
 import { CurContext } from "~/context/cur.context";
 import usersSchema from "~/express/schemas/users.schema";
-// import axios from "axios";
-
-// export const useCloverAuth = routeLoader$(async ({ params }) => {
-//   const authorizationCode = params.code;
-//   try {
-//     const authReq = await axios.get(
-//       `https://sandbox.dev.clover.com/oauth/token?client_id=SNWRA1FGKMZ3P&client_secret=cc4b9d4c-b95c-d5d5-1c39-d1b7d30c85f4&code=${authorizationCode}`
-//     );
-//     const data = authReq.data;
-//     console.log(data);
-//     const options = {
-//       method: "POST",
-//       headers: {
-//         accept: "application/json",
-//         "content-type": "application/json",
-//         authorization: `Bearer ${data.access_token}`,
-//       },
-//       body: JSON.stringify({
-//         emailAddresses: [
-//           {
-//             emailAddress: "ramyanber@gmail.com",
-//           },
-//         ],
-//         firstName: "Ramy",
-//         lastName: "Anber",
-//       }),
-//     };
-//     const cusReq = await fetch(
-//       `https://sandbox.dev.clover.com/v3/merchants/SYKR03SX51WP1/customers`,
-//       options
-//     );
-//     const cusRes = await cusReq.json();
-//     console.log(cusRes);
-//     const optionss = {
-//       method: "GET",
-//       headers: {
-//         accept: "application/json",
-//         authorization: `Bearer ${data.access_token}`,
-//       },
-//     };
-
-//     const apiKey = await fetch(
-//       "https://scl-sandbox.dev.clover.com/pakms/apikey",
-//       optionss
-//     );
-//     const apiKeyRes = await apiKey.json();
-//     console.log(apiKeyRes.apiAccessKey);
-//     const optionsss = {
-//       method: "POST",
-//       headers: {
-//         accept: "application/json",
-//         "content-type": "application/json",
-//         apiKey: apiKeyRes.apiAccessKey,
-//       },
-//       body: JSON.stringify({
-//         card: {
-//           brand: "VISA",
-//           number: "6011361000006668",
-//           exp_month: "01",
-//           exp_year: "2023",
-//           cvv: "123",
-//         },
-//       }),
-//     };
-
-//     const tokenCard = await fetch(
-//       "https://token-sandbox.dev.clover.com/v1/tokens",
-//       optionsss
-//     );
-//     const tokenCardRes = await tokenCard.json();
-//     console.log(tokenCardRes);
-//     const optionssss = {
-//       method: "POST",
-//       headers: {
-//         accept: "application/json",
-//         "content-type": "application/json",
-//         authorization: `Bearer ${data.access_token}`,
-//       },
-//       body: JSON.stringify({
-//         orderId: "1",
-//         currency: "CAD",
-//         amount: 100,
-//         token: tokenCardRes.token,
-//         source: tokenCardRes.id,
-//       }),
-//     };
-//     console.log(optionssss);
-//     const charge = await fetch(
-//       "https://scl-sandbox.dev.clover.com/v1/charges",
-//       optionssss
-//     );
-//     const chargeRes = await charge.json();
-//     console.log(chargeRes);
-//     // const req = await fetch(
-//     //   `https://scl-sandbox.dev.clover.com/v1/charges`,
-//     //   options
-//     // );
-//     // const res = await req.json();
-//     // console.log(res);
-//     // res.send("Charge successful!");
-//   } catch (error: any) {
-//     console.error("Error:", error.message);
-//     // res.status(500).send("Internal Server Error");
-//   }
-// });
 
 export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   const token = cookie.get("token")?.value;
@@ -546,125 +441,125 @@ export default component$(() => {
     { strategy: "document-idle" }
   );
 
-  // useVisibleTask$(
-  //   async ({ track }) => {
-  //     track(() => total.value);
-  //     track(() => isExistingPaymentMethod.value);
-  //     if (total.value === 0) {
-  //       return;
-  //     }
-  //     const stripe = await loadStripe(
-  //       import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
-  //     );
-  //     if (!stripe) {
-  //       return;
-  //     }
-  //     const elements = stripe.elements();
-  //     let cardNo: any;
-  //     let cardExpiration: any;
-  //     let cardCvc: any;
-  //     if (!isExistingPaymentMethod.value) {
-  //       cardNo = elements.create("cardNumber");
-  //       cardNo.mount("#card-element");
-  //       cardExpiration = elements.create("cardExpiry");
-  //       cardExpiration.mount("#card-expiration");
-  //       cardCvc = elements.create("cardCvc");
-  //       cardCvc.mount("#card-cvc");
-  //     }
-  //     const form = document.querySelector("#payment-form") as HTMLFormElement;
-  //     const errorEl = document.querySelector("#card-errors") as HTMLElement;
-  //     const coponCheck = localStorage.getItem("copon");
-  //     const stripeTokenHandler = async (token: any) => {
-  //       const hiddenInput = document.createElement("input");
-  //       hiddenInput.setAttribute("type", "hidden");
-  //       hiddenInput.setAttribute("name", "stripeToken");
-  //       hiddenInput.setAttribute("value", token.id);
-  //       form?.appendChild(hiddenInput);
-  //       const dataToSend = {
-  //         ...cartContext?.cart,
-  //         currency: currencyObject === "1" ? "USD" : "CAD",
-  //         token: token.id,
-  //         order_amount: parseFloat(total.value.toString()).toFixed(2),
-  //         email: userContext?.user?.email,
-  //         products: cartContext?.cart?.products,
-  //         acceptSaveCard: acceptSaveCard.value,
-  //         paymentSource: "STRIPE",
-  //         totalInfo: {
-  //           shipping: shipping.value,
-  //           tax: !userContext?.user?.generalInfo?.address?.country
-  //             ?.toLowerCase()
-  //             ?.includes("united")
-  //             ? parseFloat(
-  //                 (
-  //                   (cartContext.cart?.totalPrice ?? 0) * taxRate.value
-  //                 ).toString()
-  //               ).toFixed(2)
-  //             : "0.00",
-  //           finalTotal: parseFloat(total.value.toString()).toFixed(2),
-  //           currency: currencyObject === "1" ? "USD" : "CAD",
-  //         },
-  //         isCoponApplied: coponCheck === "true" ? true : false,
-  //       };
+  useVisibleTask$(
+    async ({ track }) => {
+      track(() => total.value);
+      track(() => isExistingPaymentMethod.value);
+      if (total.value === 0) {
+        return;
+      }
+      const stripe = await loadStripe(
+        import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
+      );
+      if (!stripe) {
+        return;
+      }
+      const elements = stripe.elements();
+      let cardNo: any;
+      let cardExpiration: any;
+      let cardCvc: any;
+      if (!isExistingPaymentMethod.value) {
+        cardNo = elements.create("cardNumber");
+        cardNo.mount("#card-element");
+        cardExpiration = elements.create("cardExpiry");
+        cardExpiration.mount("#card-expiration");
+        cardCvc = elements.create("cardCvc");
+        cardCvc.mount("#card-cvc");
+      }
+      const form = document.querySelector("#payment-form") as HTMLFormElement;
+      const errorEl = document.querySelector("#card-errors") as HTMLElement;
+      const coponCheck = localStorage.getItem("copon");
+      const stripeTokenHandler = async (token: any) => {
+        const hiddenInput = document.createElement("input");
+        hiddenInput.setAttribute("type", "hidden");
+        hiddenInput.setAttribute("name", "stripeToken");
+        hiddenInput.setAttribute("value", token.id);
+        form?.appendChild(hiddenInput);
+        const dataToSend = {
+          ...cartContext?.cart,
+          currency: currencyObject === "1" ? "USD" : "CAD",
+          token: token.id,
+          order_amount: parseFloat(total.value.toString()).toFixed(2),
+          email: userContext?.user?.email,
+          products: cartContext?.cart?.products,
+          acceptSaveCard: acceptSaveCard.value,
+          paymentSource: "STRIPE",
+          totalInfo: {
+            shipping: shipping.value,
+            tax: !userContext?.user?.generalInfo?.address?.country
+              ?.toLowerCase()
+              ?.includes("united")
+              ? parseFloat(
+                  (
+                    (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                  ).toString()
+                ).toFixed(2)
+              : "0.00",
+            finalTotal: parseFloat(total.value.toString()).toFixed(2),
+            currency: currencyObject === "1" ? "USD" : "CAD",
+          },
+          isCoponApplied: coponCheck === "true" ? true : false,
+        };
 
-  //       const req = await postRequest("/api/paymentConfirmiation", dataToSend);
-  //       const res = await req.json();
+        const req = await postRequest("/api/paymentConfirmiation", dataToSend);
+        const res = await req.json();
 
-  //       if (res.status === "success") {
-  //         isLoading.value = false;
-  //         window.location.href = `/payment/success/${res.orderId}`;
-  //       } else {
-  //         isLoading.value = false;
-  //         errorEl.innerText = res.message;
-  //       }
-  //     };
-  //     form.addEventListener("submit", async (e) => {
-  //       e.preventDefault();
-  //       isLoading.value = true;
-  //       if (finalCard.value && isExistingPaymentMethod.value) {
-  //         const totalInfo = {
-  //           shipping: shipping.value,
-  //           tax: !userContext?.user?.generalInfo?.address?.country
-  //             ?.toLowerCase()
-  //             ?.includes("united")
-  //             ? parseFloat(
-  //                 (
-  //                   (cartContext.cart?.totalPrice ?? 0) * taxRate.value
-  //                 ).toString()
-  //               ).toFixed(2)
-  //             : "0.00",
-  //           finalTotal: parseFloat(total.value.toString()).toFixed(2),
-  //           currency: currencyObject === "1" ? "USD" : "CAD",
-  //         };
-  //         const isCoponApplied = localStorage.getItem("copon");
+        if (res.status === "success") {
+          isLoading.value = false;
+          window.location.href = `/payment/success/${res.orderId}`;
+        } else {
+          isLoading.value = false;
+          errorEl.innerText = res.message;
+        }
+      };
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        isLoading.value = true;
+        if (finalCard.value && isExistingPaymentMethod.value) {
+          const totalInfo = {
+            shipping: shipping.value,
+            tax: !userContext?.user?.generalInfo?.address?.country
+              ?.toLowerCase()
+              ?.includes("united")
+              ? parseFloat(
+                  (
+                    (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                  ).toString()
+                ).toFixed(2)
+              : "0.00",
+            finalTotal: parseFloat(total.value.toString()).toFixed(2),
+            currency: currencyObject === "1" ? "USD" : "CAD",
+          };
+          const isCoponApplied = localStorage.getItem("copon");
 
-  //         const pay = await callServer(
-  //           finalCard.value.id,
-  //           userContext?.user?.stripeCustomerId,
-  //           total.value,
-  //           cartContext?.cart ?? {},
-  //           currencyObject === "1" ? "USD" : "CAD",
-  //           totalInfo,
-  //           isCoponApplied === "true" ? true : false
-  //         );
-  //         if (pay?.paymentIntent.status === "succeeded") {
-  //           isLoading.value = false;
-  //           window.location.href = `/payment/success/${pay.orderId}`;
-  //         } else {
-  //           isLoading.value = false;
-  //           alert("Payment Failed");
-  //         }
-  //         return;
-  //       } else {
-  //         stripe.createToken(cardNo).then((res) => {
-  //           if (res.error) errorEl.innerText = res?.error?.message ?? "";
-  //           else stripeTokenHandler(res.token);
-  //           isLoading.value = false;
-  //         });
-  //       }
-  //     });
-  //   },
-  //   { strategy: "document-idle" }
-  // );
+          const pay = await callServer(
+            finalCard.value.id,
+            userContext?.user?.stripeCustomerId,
+            total.value,
+            cartContext?.cart ?? {},
+            currencyObject === "1" ? "USD" : "CAD",
+            totalInfo,
+            isCoponApplied === "true" ? true : false
+          );
+          if (pay?.paymentIntent.status === "succeeded") {
+            window.location.href = `/payment/success/${pay.orderId}`;
+            isLoading.value = false;
+          } else {
+            alert("Payment Failed");
+            isLoading.value = false;
+          }
+          return;
+        } else {
+          stripe.createToken(cardNo).then((res: any) => {
+            if (res.error) errorEl.innerText = res?.error?.message ?? "";
+            else stripeTokenHandler(res.token);
+            isLoading.value = false;
+          });
+        }
+      });
+    },
+    { strategy: "document-idle" }
+  );
 
   return (
     <>
