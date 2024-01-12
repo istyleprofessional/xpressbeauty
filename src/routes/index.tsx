@@ -75,7 +75,7 @@ export default component$(() => {
           />
           <div class="flex justify-center items-center">
             <a
-              class="btn btn-primary text-white font-['Inter'] w-fit rounded-sm mt-8"
+              class="btn bg-black text-white font-['Inter'] w-fit rounded-sm mt-8"
               aria-label="See More Products"
               href="/products/"
             >
@@ -90,7 +90,7 @@ export default component$(() => {
           />
           <div class="flex justify-center items-center">
             <a
-              class="btn btn-primary text-white font-['Inter'] w-fit rounded-sm mt-8"
+              class="btn bg-black text-white font-['Inter'] w-fit rounded-sm mt-8"
               aria-label="See More Products"
               href="/products/"
             >
@@ -105,7 +105,7 @@ export default component$(() => {
           />
           <div class="flex justify-center items-center">
             <a
-              class="btn btn-primary text-white font-['Inter'] w-fit  rounded-sm mt-8"
+              class="btn bg-black text-white font-['Inter'] w-fit  rounded-sm mt-8"
               aria-label="See More Products"
               href="/products/"
             >

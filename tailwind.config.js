@@ -6,7 +6,7 @@ module.exports = {
     // "./node_modules/flowbite/**/*.js",
   ],
   daisyui: {
-    themes: ["light"],
+    themes: ["cupcake"],
   },
   plugins: [require("daisyui")],
 };
