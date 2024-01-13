@@ -326,11 +326,15 @@ export default component$(() => {
   useTask$(async () => {
     taxRate.value = paymentRoute?.rate ?? 0.13;
   });
-
+  console.log("user", userContext);
   useVisibleTask$(
     () => {
-      if (paymentRoute.status === "failed") {
-        window.location.href = "/cart";
+      if (
+        !userContext?.email ||
+        !userContext?.phoneNumber ||
+        !userContext?.generalInfo?.address?.postalCode
+      ) {
+        window.location.href = "/checkout";
       }
     },
     { strategy: "document-idle" }
