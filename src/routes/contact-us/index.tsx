@@ -18,7 +18,7 @@ export const useFormActions = routeAction$(async (data, requestEvent) => {
   if (!google_response.success) {
     return {
       status: "failed",
-      err: "Boot detected",
+      err: "Bot detected",
     };
   }
   const token = requestEvent.cookie.get("token")?.value;
@@ -167,6 +167,13 @@ export default component$(() => {
       successMessage.value = "Message sent successfully";
       isLoading.value = false;
     }
+    (window as any).grecaptcha.ready(async () => {
+      const token = await (window as any).grecaptcha.execute(
+        import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
+        { action: "submit" }
+      );
+      recaptchaToken.value = token;
+    });
   });
 
   const handleAlertClose = $(() => {});
@@ -203,7 +210,7 @@ export default component$(() => {
         <Form
           action={action}
           reloadDocument={false}
-          onSubmit$={handleFormSubmit}
+          onSubmitCompleted$={handleFormSubmit}
           class="card w-full lg:w-[90%] md:w-[35rem] h-fit mb-5 mt-5 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5"
         >
           {errorMessage.value && (
