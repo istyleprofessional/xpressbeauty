@@ -366,7 +366,15 @@ export default component$(() => {
           createOrder: async () => {
             const dataToSend = {
               subTotal: subTotal.value.toFixed(2),
-              hst: taxRate.value.toFixed(2),
+              hst: !userContext?.user?.generalInfo?.address?.country
+                ?.toLowerCase()
+                ?.includes("united")
+                ? parseFloat(
+                    (
+                      (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                    ).toString()
+                  ).toFixed(2)
+                : "0.00",
               ...cartContext?.cart,
               order_amount: parseFloat(total.value.toString()).toFixed(2),
               email: userContext?.user?.email,
@@ -375,7 +383,15 @@ export default component$(() => {
               shipping: shipping.value,
               totalInfo: {
                 shipping: shipping.value,
-                tax: taxRate.value.toFixed(2),
+                tax: !userContext?.user?.generalInfo?.address?.country
+                  ?.toLowerCase()
+                  ?.includes("united")
+                  ? parseFloat(
+                      (
+                        (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                      ).toString()
+                    ).toFixed(2)
+                  : "0.00",
                 finalTotal: parseFloat(total.value.toString()).toFixed(2),
                 currency: currencyObject === "1" ? "USD" : "CAD",
               },
@@ -405,7 +421,15 @@ export default component$(() => {
                 currency: currencyObject === "1" ? "USD" : "CAD",
                 totalInfo: {
                   shipping: shipping.value,
-                  tax: taxRate.value.toFixed(2),
+                  tax: !userContext?.user?.generalInfo?.address?.country
+                    ?.toLowerCase()
+                    ?.includes("united")
+                    ? parseFloat(
+                        (
+                          (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                        ).toString()
+                      ).toFixed(2)
+                    : "0.00",
                   finalTotal: parseFloat(total.value.toString()).toFixed(2),
                   currency: currencyObject === "1" ? "USD" : "CAD",
                 },
@@ -483,7 +507,15 @@ export default component$(() => {
           paymentSource: "STRIPE",
           totalInfo: {
             shipping: shipping.value,
-            tax: taxRate.value.toFixed(2),
+            tax: !userContext?.user?.generalInfo?.address?.country
+              ?.toLowerCase()
+              ?.includes("united")
+              ? parseFloat(
+                  (
+                    (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                  ).toString()
+                ).toFixed(2)
+              : "0.00",
             finalTotal: parseFloat(total.value.toString()).toFixed(2),
             currency: currencyObject === "1" ? "USD" : "CAD",
           },
@@ -507,7 +539,15 @@ export default component$(() => {
         if (finalCard.value && isExistingPaymentMethod.value) {
           const totalInfo = {
             shipping: shipping.value,
-            tax: taxRate.value.toFixed(2),
+            tax: !userContext?.user?.generalInfo?.address?.country
+              ?.toLowerCase()
+              ?.includes("united")
+              ? parseFloat(
+                  (
+                    (cartContext.cart?.totalPrice ?? 0) * taxRate.value
+                  ).toString()
+                ).toFixed(2)
+              : "0.00",
             finalTotal: parseFloat(total.value.toString()).toFixed(2),
             currency: currencyObject === "1" ? "USD" : "CAD",
           };
