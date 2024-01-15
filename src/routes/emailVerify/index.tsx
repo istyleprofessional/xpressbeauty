@@ -170,6 +170,7 @@ export default component$(() => {
           recaptchaToken.value = token;
         });
       }
+      isLoading.value = false;
     },
     { strategy: "document-idle" }
   );
@@ -334,13 +335,13 @@ export default component$(() => {
                   <div>
                     <button
                       class="btn text-center w-full border
-                     rounded-xl outline-none btn-primary border-none text-white shadow-sm"
+                     rounded-xl outline-none bg-black border-none text-white shadow-sm"
                       onClick$={() => (isLoading.value = true)}
                       type="submit"
                       disabled={recaptchaToken.value.length === 0}
                     >
                       {isLoading.value && (
-                        <span class="loading-spinner loading-spinner-white"></span>
+                        <span class="loading loading-spinner-white"></span>
                       )}
                       Verify Account
                     </button>
