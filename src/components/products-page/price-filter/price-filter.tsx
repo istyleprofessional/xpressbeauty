@@ -31,52 +31,72 @@ export const PriceFilter = component$((props: PriceFilterInterface) => {
   );
 
   return (
-    <div class="w-full flex flex-col gap-2">
-      <div class="grid grid-cols-2 justify-items-center">
+    <ul class="w-full pl-2 rounded-box">
+      <li class="flex flex-row w-full gap-1 text-black items-center">
         <input
           type="checkbox"
           checked={filterPrices.value.includes(">25") ? true : false}
-          class="checkbox checkbox-primary checkbox-sm"
+          class="checkbox checkbox-sm"
+          name=">25"
+          id=">25"
           onChange$={(e: any) => handlePricesCheckBoxChange(e, ">25")}
         />
-        <p class="text-black text-sm font-semibold">{"> $25"}</p>
-      </div>
-      <div class="grid grid-cols-2 justify-items-center">
+        <label for=">25" class="text-black text-xs font-semibold">
+          {"> $25"}
+        </label>
+      </li>
+      <li class="flex flex-row w-full gap-1 text-black items-center">
         <input
           type="checkbox"
           checked={filterPrices.value.includes("25-50") ? true : false}
-          class="checkbox checkbox-primary checkbox-sm"
+          name="25-50"
+          id="25-50"
+          class="checkbox checkbox-sm"
           onChange$={(e: any) => handlePricesCheckBoxChange(e, "25-50")}
         />
-        <p class="text-black text-sm font-semibold">{"$25 - $50"}</p>
-      </div>
-      <div class="grid grid-cols-2 justify-items-center">
+        <label for="25-50" class="text-black text-xs font-semibold">
+          {"$25 - $50"}
+        </label>
+      </li>
+      <li class="flex flex-row w-full gap-1 text-black items-center">
         <input
           type="checkbox"
           checked={filterPrices.value.includes("50-100") ? true : false}
-          class="checkbox checkbox-primary checkbox-sm"
+          class="checkbox checkbox-sm"
+          name="50-100"
+          id="50-100"
           onChange$={(e: any) => handlePricesCheckBoxChange(e, "50-100")}
         />
-        <p class="text-black text-sm font-semibold">{"$50 - $100"}</p>
-      </div>
-      <div class="grid grid-cols-2 justify-items-center">
+        <label for="50-100" class="text-black text-xs font-semibold">
+          {"$50 - $100"}
+        </label>
+      </li>
+      <li class="flex flex-row w-full gap-1 text-black items-center">
         <input
           type="checkbox"
           checked={filterPrices.value.includes("100-500") ? true : false}
-          class="checkbox checkbox-primary checkbox-sm"
+          class="checkbox checkbox-sm"
+          name="100-500"
+          id="100-500"
           onChange$={(e: any) => handlePricesCheckBoxChange(e, "100-500")}
         />
-        <p class="text-black text-sm font-semibold">{"$100 - $500"}</p>
-      </div>
-      <div class="grid grid-cols-2 justify-items-center">
+        <label for="100-500" class="text-black text-xs font-semibold">
+          {"$100 - $500"}
+        </label>
+      </li>
+      <li class="flex flex-row w-full gap-1 text-black items-center">
         <input
           type="checkbox"
           checked={filterPrices.value.includes("<500") ? true : false}
-          class="checkbox checkbox-primary checkbox-sm"
+          class="checkbox checkbox-sm"
+          name="<500"
+          id="<500"
           onChange$={(e: any) => handlePricesCheckBoxChange(e, "<500")}
         />
-        <p class="text-black text-sm font-semibold">{"< $500"}</p>
-      </div>
-    </div>
+        <label for="<500" class="text-black text-xs font-semibold">
+          {"< $500"}
+        </label>
+      </li>
+    </ul>
   );
 });

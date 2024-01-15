@@ -129,7 +129,9 @@ export const useDomContentLoaded = routeLoader$(
       finalLength !==
       params.args.split("/").filter((e: string) => e !== "").length
     ) {
-      throw redirect(301, `/products/${finalUrl ? `${finalUrl}` : ""}`);
+      //make sure finalUrl ends with only one / any extra remove it
+      const urlToRedirect = finalUrl.replace(/\/$/, "");
+      throw redirect(301, `/products/${urlToRedirect}`);
     }
     const request = await get_products_data(
       finalFilterBrandsArray,

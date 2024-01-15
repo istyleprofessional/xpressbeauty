@@ -100,6 +100,14 @@ export default component$(() => {
       } else {
         message.value = action.value?.err ?? "";
       }
+      isLoading.value = false;
+    },
+    { strategy: "document-idle" }
+  );
+
+  useVisibleTask$(
+    ({ track }) => {
+      track(() => action.value?.status);
       (window as any).grecaptcha.ready(async () => {
         const token = await (window as any).grecaptcha.execute(
           import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
@@ -134,7 +142,7 @@ export default component$(() => {
             import.meta.env.VITE_RECAPTCHA_SITE_KEY
           }`}
         ></script>
-        <Form action={action} reloadDocument={true}>
+        <Form action={action} reloadDocument={false}>
           <div class="card w-[90%] md:w-[35rem] h-fit m-6 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
             {message.value && (
               <div class="w-full">
@@ -171,9 +179,12 @@ export default component$(() => {
               class={`btn w-full bg-black text-white text-lg`}
               type="submit"
               disabled={recaptchaToken.value.length === 0}
+              onClick$={() => {
+                isLoading.value = true;
+              }}
             >
               {isLoading.value && (
-                <span class="loading-spinner loading-spinner-white"></span>
+                <span class="loading loading-spinner-white"></span>
               )}
               Sign In
             </button>
@@ -182,7 +193,7 @@ export default component$(() => {
               <button
                 class="btn btn-ghost text-black"
                 type="button"
-                disabled={recaptchaToken.value.length === 0}
+                disabled={recaptchaToken.value.length === 0 || isLoading.value}
                 onClick$={() => {
                   window.location.href = "/forget-password";
                 }}
