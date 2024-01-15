@@ -81,6 +81,7 @@ export default component$(() => {
     } else {
       message.value = action.value?.err ?? "";
     }
+    isLoading.value = false;
   });
 
   useVisibleTask$(
@@ -158,9 +159,12 @@ export default component$(() => {
               class={`btn w-full bg-black text-white text-lg normal-case`}
               type="submit"
               disabled={recaptchaToken.value.length === 0}
+              onClick$={() => {
+                isLoading.value = true;
+              }}
             >
               {isLoading.value && (
-                <span class="loading-spinner loading-spinner-white"></span>
+                <span class="loading loading-spinner-white"></span>
               )}
               Reset
             </button>

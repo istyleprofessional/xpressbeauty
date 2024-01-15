@@ -174,7 +174,7 @@ export const CartDetails = component$((props: any) => {
           </p>
         </div>
       </div>
-      {userContext?.user?.email ? (
+      {!userContext?.isDummy ? (
         <a
           class={`btn text-black  normal-case ${
             cartContext?.cart?.products &&

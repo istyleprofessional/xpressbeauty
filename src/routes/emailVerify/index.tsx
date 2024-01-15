@@ -226,7 +226,7 @@ export default component$(() => {
     });
     const response = await sendPhoneOtp.json();
     if (response.status === "success") {
-      nav("/phoneVerify/?token=" + jsonUser.token);
+      nav("/login/");
     }
   });
 
