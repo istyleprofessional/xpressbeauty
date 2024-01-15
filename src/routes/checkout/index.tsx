@@ -157,13 +157,31 @@ export default component$(() => {
 
   useVisibleTask$(({ track }) => {
     track(() => action.value);
-    if (action.value?.status === "failed" && !action.value?.validation) {
-      messageToast.value = "Something went wrong";
+    console.log(action.value);
+    // check if validation object has any false value
+    if (
+      action.value?.status === "failed" &&
+      Object.values(action.value?.validation ?? {}).reduce((a, b) => a || b)
+    ) {
+      messageToast.value =
+        "Please fill all the required fields and Make sure you have entered a valid information";
     }
     if (action.value?.status === "success") {
       location.href = `/payment`;
     }
     isLoading.value = false;
+  });
+
+  useVisibleTask$(({ track, cleanup }) => {
+    track(() => messageToast.value);
+    if (messageToast.value !== "") {
+      const time = setTimeout(() => {
+        messageToast.value = "";
+      }, 3000);
+      cleanup(() => {
+        clearTimeout(time);
+      });
+    }
   });
 
   useVisibleTask$(() => {
@@ -215,6 +233,25 @@ export default component$(() => {
 
   return (
     <div class="flex flex-col gap-10 p-4">
+      {messageToast.value !== "" && (
+        <div role="alert" class="alert alert-error sticky top-0 z-50">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="stroke-current shrink-0 h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>{messageToast.value}</span>
+        </div>
+      )}
+
       <div
         class="w-full h-full fixed top-0 left-0 backdrop-blur-md z-50 hidden"
         ref={verifyCardRef}

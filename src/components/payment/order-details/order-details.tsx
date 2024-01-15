@@ -241,11 +241,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     if (checkCopon === "true") {
       subTotal.value = subTotal.value - subTotal.value * 0.1;
     }
-    hst.value = !user?.generalInfo?.address?.country
-      ?.toLowerCase()
-      ?.includes("united")
-      ? (cart?.totalPrice ?? 0) * taxRate
-      : 0;
+    hst.value = taxRate * subTotal.value;
 
     const checker = await checkCatServer(cart?.products);
     if (checker) {

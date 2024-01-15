@@ -287,12 +287,8 @@ export const callServer = server$(async function (
         `${user.result?.firstName} ${user.result?.lastName}`,
         data.shipping_address,
         data.products
-        // currency?.toLocaleLowerCase() ?? "CAD",
-        // rate
       );
-      console.log(data);
       if (isCoponApplied) {
-        // update status of copon in cobone array of object
         await usersSchema.updateOne(
           { _id: verified.user_id, "cobone.code": "xpressbeauty10" },
           { $set: { "cobone.$.status": true } }
@@ -370,15 +366,7 @@ export default component$(() => {
           createOrder: async () => {
             const dataToSend = {
               subTotal: subTotal.value.toFixed(2),
-              hst: !userContext?.user?.generalInfo?.address?.country
-                ?.toLowerCase()
-                ?.includes("united")
-                ? parseFloat(
-                    (
-                      (cartContext.cart?.totalPrice ?? 0) * taxRate.value
-                    ).toString()
-                  ).toFixed(2)
-                : "0.00",
+              hst: taxRate.value.toFixed(2),
               ...cartContext?.cart,
               order_amount: parseFloat(total.value.toString()).toFixed(2),
               email: userContext?.user?.email,
@@ -387,15 +375,7 @@ export default component$(() => {
               shipping: shipping.value,
               totalInfo: {
                 shipping: shipping.value,
-                tax: !userContext?.user?.generalInfo?.address?.country
-                  ?.toLowerCase()
-                  ?.includes("united")
-                  ? parseFloat(
-                      (
-                        (cartContext.cart?.totalPrice ?? 0) * taxRate.value
-                      ).toString()
-                    ).toFixed(2)
-                  : "0.00",
+                tax: taxRate.value.toFixed(2),
                 finalTotal: parseFloat(total.value.toString()).toFixed(2),
                 currency: currencyObject === "1" ? "USD" : "CAD",
               },
@@ -425,15 +405,7 @@ export default component$(() => {
                 currency: currencyObject === "1" ? "USD" : "CAD",
                 totalInfo: {
                   shipping: shipping.value,
-                  tax: !userContext?.user?.generalInfo?.address?.country
-                    ?.toLowerCase()
-                    ?.includes("united")
-                    ? parseFloat(
-                        (
-                          (cartContext.cart?.totalPrice ?? 0) * taxRate.value
-                        ).toString()
-                      ).toFixed(2)
-                    : "0.00",
+                  tax: taxRate.value.toFixed(2),
                   finalTotal: parseFloat(total.value.toString()).toFixed(2),
                   currency: currencyObject === "1" ? "USD" : "CAD",
                 },
@@ -511,15 +483,7 @@ export default component$(() => {
           paymentSource: "STRIPE",
           totalInfo: {
             shipping: shipping.value,
-            tax: !userContext?.user?.generalInfo?.address?.country
-              ?.toLowerCase()
-              ?.includes("united")
-              ? parseFloat(
-                  (
-                    (cartContext.cart?.totalPrice ?? 0) * taxRate.value
-                  ).toString()
-                ).toFixed(2)
-              : "0.00",
+            tax: taxRate.value.toFixed(2),
             finalTotal: parseFloat(total.value.toString()).toFixed(2),
             currency: currencyObject === "1" ? "USD" : "CAD",
           },
@@ -543,15 +507,7 @@ export default component$(() => {
         if (finalCard.value && isExistingPaymentMethod.value) {
           const totalInfo = {
             shipping: shipping.value,
-            tax: !userContext?.user?.generalInfo?.address?.country
-              ?.toLowerCase()
-              ?.includes("united")
-              ? parseFloat(
-                  (
-                    (cartContext.cart?.totalPrice ?? 0) * taxRate.value
-                  ).toString()
-                ).toFixed(2)
-              : "0.00",
+            tax: taxRate.value.toFixed(2),
             finalTotal: parseFloat(total.value.toString()).toFixed(2),
             currency: currencyObject === "1" ? "USD" : "CAD",
           };
