@@ -6,14 +6,13 @@ import {
   useNavigate,
 } from "@builder.io/qwik-city";
 import { Toast } from "~/components/admin/toast/toast";
-import { getRequest, postRequest } from "~/utils/fetch.utils";
+import { getRequest } from "~/utils/fetch.utils";
 import { validate } from "~/utils/validate.utils";
 import jwt from "jsonwebtoken";
 import {
   getUserEmailById,
   getUserEmailOtp,
 } from "~/express/services/user.service";
-import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
 
 export const useVerifyToken = routeLoader$(async ({ url, redirect, env }) => {
   const token = url.searchParams.get("token");
@@ -74,16 +73,6 @@ export const useFormAction = routeAction$(async (data, { cookie, env }) => {
     if (verify) {
       const request = await getUserEmailOtp(body);
       if (request.status === "success") {
-        if (!request.result?.isPhoneVerified) {
-          await sendPhoneOtp(
-            request.result?.phoneNumber ?? "",
-            request.result?.PhoneVerifyToken ?? ""
-          );
-          return {
-            status: "success",
-            token: token,
-          };
-        }
         return {
           status: "success",
         };
@@ -112,16 +101,6 @@ export const useFormAction = routeAction$(async (data, { cookie, env }) => {
       });
       const request = await getUserEmailOtp(body);
       if (request.status === "success") {
-        if (!request.result?.isPhoneVerified) {
-          await sendPhoneOtp(
-            request.result?.phoneNumber ?? "",
-            request.result?.PhoneVerifyToken ?? ""
-          );
-          return {
-            status: "success",
-            token: token,
-          };
-        }
         return {
           status: "success",
         };
@@ -155,10 +134,6 @@ export default component$(() => {
       track(() => action.value?.status);
       isLoading.value = false;
       if (action.value?.status === "success") {
-        if (action.value?.token) {
-          window.location.href = "/phoneVerify/?token=" + jsonUser.token;
-          return;
-        }
         window.location.href = "/login";
         return;
       } else {
@@ -222,13 +197,7 @@ export default component$(() => {
   });
 
   const handleSkip = $(async () => {
-    const sendPhoneOtp = await postRequest("/api/phoneOtp/send", {
-      token: jsonUser.token,
-    });
-    const response = await sendPhoneOtp.json();
-    if (response.status === "success") {
-      nav("/login/");
-    }
+    nav("/login/");
   });
 
   return (
