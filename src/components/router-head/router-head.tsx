@@ -41,6 +41,11 @@ fbq('track', 'PageView');
         a.appendChild(r);
     })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
 `;
+
+  const liveChat = `
+  (function(){var pp=document.createElement('script'), ppr=document.getElementsByTagName('script')[0]; stid='YXJCd2ltTEtMWjh1ZWJJakJMVGVwZz09';pp.type='text/javascript'; pp.async=true; pp.src=('https:' == document.location.protocol ? 'https://' : 'http://') + 's01.live2support.com/dashboardv2/chatwindow/'; ppr.parentNode.insertBefore(pp, ppr);})();
+`;
+
   const url = `https://${loc.url.host}${loc.url.pathname}`;
   return (
     <>
@@ -54,6 +59,8 @@ fbq('track', 'PageView');
           <script dangerouslySetInnerHTML={googletagmanager} />
         </>
       )}
+      <script dangerouslySetInnerHTML={liveChat} />
+
       <script dangerouslySetInnerHTML={hotJar} />
       <script dangerouslySetInnerHTML={metaScript} />
       <link rel="canonical" href={`${url}`} />

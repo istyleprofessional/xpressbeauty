@@ -10,6 +10,9 @@ body {
   flex-direction: column;
   gap: 10px;
 }
+._proprofs_footer_link {
+  display: none !important;
+}
 @keyframes bounce {
   0%,
   20%,

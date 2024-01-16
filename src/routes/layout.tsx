@@ -360,6 +360,19 @@ export default component$(() => {
 
   return (
     <div class="page flex flex-col gap-6 h-screen">
+      <noscript>
+        <a href="https://www.livechat.com/chat-with/17027997/" rel="nofollow">
+          Chat with us
+        </a>
+        , powered by{" "}
+        <a
+          href="https://www.livechat.com/?welcome"
+          rel="noopener nofollow"
+          target="_blank"
+        >
+          LiveChat
+        </a>
+      </noscript>
       <main>
         {url !== "/login/" &&
           url !== "/register/" &&
