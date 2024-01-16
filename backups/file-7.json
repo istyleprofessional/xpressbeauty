@@ -59620,6 +59620,33 @@
         }
     },
     {
+        "id": "CAN-797348",
+        "product_name": "W8Less Multi 12-in-1 Miracle Leave-In Treatment",
+        "description": "Rusk Designer Collection W8less Multi 12 in 1 Miracle Leave-In Treatment is a Multi 12 in 1 Miracle Treatment. Salon professionals who face a range of hair challenges can reach for this \"go-to\" solution with confidence. Rusk's custom formulation delivers 12 benefits in one bottle. 6 fl. oz.<br>",
+        "item_no": "",
+        "quantity_on_hand": 0,
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/W8LessMulti12in1MiracleLeaveInTreatment/primary-image-0.webp"
+        ],
+        "price": {
+            "regular": 14.29
+        },
+        "companyName": "Rusk",
+        "lineName": "Designer Collection",
+        "perfix": "wless-multi-in-miracle-leavein-treatment",
+        "categories": [
+            "Hair Care,Conditioner",
+            "Hair Care,Hair Styling",
+            "Hair Care,Textured Hair",
+            "Hair Care,Hair Care",
+            "Hair Care,Masks, Serums & Treatments"
+        ],
+        "priceType": "single",
+        "sale_price": {
+            "sale": ""
+        }
+    },
+    {
         "id": "CAN-025694",
         "product_name": "Hydro Rush Intense Moisture Leave-In Conditioner",
         "description": "Rush into a relationship with long-lasting moisture. infused with hyaluronic acid and squalane, this hydrating leave-in conditioner drenches hair with 3x more hydration* while detangling and reducing frizz. *clinically proven.",
