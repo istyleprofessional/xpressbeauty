@@ -285,8 +285,8 @@ def return_product_if_single(parsed_json, d):
     return d
 
 def upload_image(url, name):
-    AWS_ACCESS_KEY_ID = 'AKIAVLKY35Q55R5AN2MF'
-    AWS_SECRET_ACCESS_KEY = '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'
+    # AWS_ACCESS_KEY_ID = 'AKIAVLKY35Q55R5AN2MF'
+    # AWS_SECRET_ACCESS_KEY = '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'
     AWS_BUCKET_NAME = 'xpressbeauty'
 
     s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
