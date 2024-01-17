@@ -555,7 +555,7 @@ def get_skin_body():
             "Content-Type": "application/json",
     }
     update = requests.post(
-        'http://localhost:5173/api/uploadNewProducts/', data=json.dumps(data), headers=headers)
+        'https://xpressbeauty.ca/api/uploadNewProducts/', data=json.dumps(data), headers=headers)
     print(update.json())
     
 
