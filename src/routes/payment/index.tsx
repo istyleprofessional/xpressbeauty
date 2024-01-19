@@ -153,7 +153,7 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   }
 });
 
-export const paypalServer = server$(async function (data: any, user: any) {
+export const paypalServer = server$(async function (data: any) {
   try {
     // console.log(data);
     paypal.configure({
@@ -393,10 +393,7 @@ export default component$(() => {
               },
               isCoponApplied: checkCopon === "true" ? true : false,
             };
-            const paypalReq: any = await paypalServer(
-              dataToSend,
-              userContext.user
-            );
+            const paypalReq: any = await paypalServer(dataToSend);
             const paypalRes = JSON.parse(paypalReq);
 
             return paypalRes.id;
