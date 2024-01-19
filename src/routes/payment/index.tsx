@@ -65,6 +65,19 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
     const cards = [];
     if (!verified.isDummy) {
       const user = await getUserById(verified.user_id);
+      if (
+        user?.result?.generalInfo.address.country
+          .toLowerCase()
+          .includes("united")
+      ) {
+        console.log("US");
+        rate = 0;
+        return JSON.stringify({
+          status: "success",
+          cards: [],
+          rate: rate,
+        });
+      }
       const apiKey = "AIzaSyCaw8TltqjUfM0QyLnGGo8sQzRI8NtHqus";
       const components = "country:US|country:CA";
       const urls = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${user.result?.generalInfo?.address?.postalCode}&key=${apiKey}&components=${components}`;
@@ -106,6 +119,19 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
       }
     } else {
       const dummyUser = await getDummyCustomer(verified.user_id);
+      if (
+        dummyUser?.result?.generalInfo.address.country
+          .toLowerCase()
+          .includes("united")
+      ) {
+        console.log("US");
+        rate = 0;
+        return JSON.stringify({
+          status: "success",
+          cards: [],
+          rate: rate,
+        });
+      }
       const apiKey = "AIzaSyCaw8TltqjUfM0QyLnGGo8sQzRI8NtHqus";
       const components = "country:US|country:CA";
       const urls = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${dummyUser.result?.generalInfo?.address?.postalCode}&key=${apiKey}&components=${components}`;
@@ -198,12 +224,13 @@ export const paypalServer = server$(async function (data: any) {
             details: {
               subtotal: data.subTotal,
               shipping: parseFloat(data.shipping).toFixed(2), // Example shipping cost
-              tax: data.hst, // Example tax amount
+              tax: data.totalInfo.tax, // Example tax amount
             },
           },
         },
       ],
     };
+    console.log(create_payment_json.transactions[0]);
     // console.log(create_payment_json.transactions[0].item_list);
     // console.log(create_payment_json.transactions[0].amount);
     const paypalPromise = await new Promise((resolve, reject) => {
@@ -317,6 +344,7 @@ export default component$(() => {
 
   useTask$(async () => {
     taxRate.value = paymentRoute?.rate ?? 0.13;
+    console.log(taxRate.value);
   });
   console.log("user", userContext);
   useVisibleTask$(
