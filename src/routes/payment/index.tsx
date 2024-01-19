@@ -198,11 +198,7 @@ export const paypalServer = server$(async function (data: any, user: any) {
             details: {
               subtotal: data.subTotal,
               shipping: parseFloat(data.shipping).toFixed(2), // Example shipping cost
-              tax: user?.generalInfo?.address?.country
-                ?.toLowerCase()
-                ?.includes("united")
-                ? "0.00"
-                : data.hst, // Example tax amount
+              tax: data.hst, // Example tax amount
             },
           },
         },
