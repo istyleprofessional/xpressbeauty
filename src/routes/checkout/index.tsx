@@ -142,7 +142,6 @@ export default component$(() => {
   const userData: any = useContext(UserContext);
   const info: UserModel = userData ?? {};
   const action = useAddUser();
-  const verifyCardRef = useSignal<Element>();
   const messageToast = useSignal<string>("");
   const placesPredictions = useSignal<any[]>([]);
   const country = useSignal<string>("");
@@ -154,6 +153,7 @@ export default component$(() => {
   const message = useSignal<string>("");
   const shortCountryCode = useSignal<string>("");
   const shortStateCode = useSignal<string>("");
+  const showBillingAddress = useSignal<boolean>(true);
 
   useVisibleTask$(({ track }) => {
     track(() => action.value);
@@ -190,15 +190,6 @@ export default component$(() => {
     city.value = info?.generalInfo?.address?.city ?? "";
     state.value = info?.generalInfo?.address?.state ?? "";
     postalCode.value = info?.generalInfo?.address?.postalCode ?? "";
-  });
-
-  const handleSubmit = $(() => {
-    location.href = `/register`;
-  });
-
-  const handleSkip = $(() => {
-    verifyCardRef.value?.classList.add("hidden");
-    location.href = `/payment`;
   });
 
   const handlePlacesFetch = $(async (e: any) => {
@@ -251,29 +242,6 @@ export default component$(() => {
           <span>{messageToast.value}</span>
         </div>
       )}
-
-      <div
-        class="w-full h-full fixed top-0 left-0 backdrop-blur-md z-50 hidden"
-        ref={verifyCardRef}
-      >
-        <div class="card shadow-2xl p-5 w-fit h-fit fixed top-1/2 left-1/2 bg-white -translate-y-1/2 -translate-x-1/2 z-50">
-          <div class="card-body">
-            <div class="flex flex-col gap-3">
-              <label class="label">
-                Verify your email address and phone number to get 20% off
-              </label>
-            </div>
-            <div class="card-actions justify-center">
-              <button class="btn btn-primary" onClick$={handleSubmit}>
-                verify
-              </button>
-              <button class="btn btn-ghost" onClick$={handleSkip}>
-                Skip
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="flex flex-col gap-3 justify-center items-center">
         <Steps pageType="address" />
       </div>
@@ -309,7 +277,7 @@ export default component$(() => {
               <InputField
                 label="Email Address"
                 type="text"
-                placeholder="Marry"
+                placeholder="xxxxxx@xxxx.xxx"
                 value={info?.email ?? ""}
                 identifier="email"
                 validation={action?.value?.validation?.email}
@@ -482,6 +450,210 @@ export default component$(() => {
                 placeholder="12344"
               ></textarea>
             </div>
+          </div>
+          <div class="form-control w-96 p-3">
+            <label class="label cursor-pointer">
+              <span class="label-text text-black text-base">
+                Billing Address same as Shipping Address
+              </span>
+              <input
+                type="checkbox"
+                checked={true}
+                class="checkbox"
+                name="same"
+                onChange$={(e: any) => {
+                  showBillingAddress.value = e.target.checked;
+                }}
+              />
+            </label>
+          </div>
+          <div class="divider"></div>
+          {!showBillingAddress.value && (
+            <div class="w-full p-10 flex flex-col justify-center items-center">
+              <h1 class="text-2xl font-bold p-2">Billing Details</h1>
+              <div class="flex flex-col lg:flex-row w-full lg:gap-5">
+                <InputField
+                  label="First Name"
+                  type="text"
+                  placeholder="Marry"
+                  value={info?.firstName ?? ""}
+                  identifier="billing.firstName"
+                  validation={action?.value?.validation?.firstName}
+                  isMandatory={true}
+                />
+                <InputField
+                  label="Last Name"
+                  type="text"
+                  placeholder="George"
+                  value={info?.lastName ?? ""}
+                  identifier="billing.lastName"
+                  validation={action?.value?.validation?.lastName}
+                  isMandatory={true}
+                />
+              </div>
+              <div class="flex flex-col lg:flex-row w-full lg:gap-5">
+                <InputField
+                  label="Email Address"
+                  type="text"
+                  placeholder="xxxxxx@xxxx.xxx"
+                  value={info?.email ?? ""}
+                  identifier="billing.email"
+                  validation={action?.value?.validation?.email}
+                  isMandatory={true}
+                />
+                <div class="flex flex-col w-full justify-start">
+                  {message.value !== "" && (
+                    <p class="text-error text-sm font-light">{message.value}</p>
+                  )}
+                  <InputField
+                    label="Phone Number"
+                    type="text"
+                    placeholder="1234567890"
+                    value={info?.phoneNumber?.replace("+", "") ?? ""}
+                    identifier="billing.phoneNumber"
+                    validation={action?.value?.validation?.phoneNumber}
+                    isMandatory={true}
+                    handleOnChange={handlePhoneChange}
+                  />
+                </div>
+              </div>
+              <div class=" w-full relative">
+                <InputField
+                  label="Street Address"
+                  type="text"
+                  placeholder="1234"
+                  value={addressLine1.value}
+                  identifier="billing.address.addressLine1"
+                  validation={action?.value?.validation?.addressLine1}
+                  isMandatory={true}
+                  handleOnChange={handlePlacesFetch}
+                />
+                {placesPredictions.value?.length > 0 && (
+                  <ul class="menu bg-base-200 w-fit absolute rounded-box">
+                    {placesPredictions.value.map((item: any, index: number) => (
+                      <li key={index}>
+                        <button
+                          class="btn btn-ghost normal-case"
+                          type="button"
+                          onClick$={async () => {
+                            const data = await fetch(
+                              "/api/places/details?place_id=" + item.place_id
+                            );
+                            const result = await data.json();
+                            const addressResult = result.result;
+                            country.value =
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes("country");
+                                }
+                              )?.long_name;
+                            state.value = addressResult.address_components.find(
+                              (comp: any) => {
+                                return comp.types.includes(
+                                  "administrative_area_level_1"
+                                );
+                              }
+                            )?.long_name;
+                            shortCountryCode.value =
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes("country");
+                                }
+                              )?.short_name;
+                            shortStateCode.value =
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes(
+                                    "administrative_area_level_1"
+                                  );
+                                }
+                              )?.short_name;
+                            city.value = addressResult.address_components.find(
+                              (comp: any) => {
+                                return comp.types.includes("locality");
+                              }
+                            )?.long_name;
+                            postalCode.value =
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes("postal_code");
+                                }
+                              )?.long_name;
+                            addressLine1.value =
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes("street_number");
+                                }
+                              )?.long_name +
+                              " " +
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes("route");
+                                }
+                              )?.long_name;
+                            placesPredictions.value = [];
+                          }}
+                        >
+                          {item.description}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <input
+                class="hidden"
+                name="billing.address.shortCountryCode"
+                value={shortCountryCode.value}
+              />
+              <input
+                class="hidden"
+                name="billing.address.shortStateCode"
+                value={shortStateCode.value}
+              />
+              <InputField
+                label="Town / City"
+                type="text"
+                placeholder="Toronto"
+                value={city.value}
+                identifier="billing.address.city"
+                validation={action?.value?.validation?.city}
+                isMandatory={true}
+                // disabled={true}
+              />
+              <InputField
+                label="Province"
+                type="text"
+                placeholder="Ontario"
+                value={state.value}
+                identifier="billing.address.state"
+                validation={action?.value?.validation?.state}
+                isMandatory={true}
+                // disabled={true}
+              />
+              <InputField
+                label="Postal Code"
+                type="text"
+                placeholder="12344"
+                value={postalCode.value}
+                identifier="billing.address.postalCode"
+                validation={action?.value?.validation?.postalCode}
+                isMandatory={true}
+                // disabled={true}
+              />
+              <InputField
+                label="Country/ Region"
+                type="text"
+                placeholder="Canada"
+                value={country.value}
+                identifier="billing.address.country"
+                validation={action?.value?.validation?.country}
+                isMandatory={true}
+                // disabled={true}
+              />
+            </div>
+          )}
+          <div class="flex w-full justify-center items-center">
             <button
               class="btn bg-black text-white text-base m-2"
               type="submit"
