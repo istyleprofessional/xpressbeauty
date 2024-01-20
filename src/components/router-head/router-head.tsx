@@ -60,6 +60,10 @@ fbq('track', 'PageView');
         </>
       )}
       <script dangerouslySetInnerHTML={liveChat} />
+      <script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback"
+        defer
+      ></script>
 
       <script dangerouslySetInnerHTML={hotJar} />
       <script dangerouslySetInnerHTML={metaScript} />

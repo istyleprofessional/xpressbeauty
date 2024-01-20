@@ -265,9 +265,23 @@ export const callServer = server$(async function (
   cart: any,
   currency?: string,
   totalInfo?: any,
-  isCoponApplied?: boolean
+  isCoponApplied?: boolean,
+  captchaToken?: string
 ) {
   try {
+    const secretKey = this.env.get("PRIVATE_CLOUDFLARE_SECRET_KEY") ?? "";
+    const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+    const formData = new FormData();
+    formData.append("secret", secretKey);
+    formData.append("response", captchaToken ?? "");
+    const req = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+    const res = await req.json();
+    if (!res.success) {
+      return { paymentIntent: { status: "failed" }, orderId: "" };
+    }
     const stripe: any = new Stripe(
       this.env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "",
       {
@@ -341,6 +355,8 @@ export default component$(() => {
   const subTotal = useSignal<number>(0);
   const taxRate = useSignal<number>(0);
   const shipping = useSignal<number>(0);
+  const isGoodToGo = useSignal<boolean>(false);
+  const captchaToken = useSignal<string>("");
 
   useTask$(async () => {
     taxRate.value = paymentRoute?.rate ?? 0.13;
@@ -356,6 +372,28 @@ export default component$(() => {
       ) {
         window.location.href = "/checkout";
       }
+    },
+    { strategy: "document-idle" }
+  );
+
+  useVisibleTask$(
+    () => {
+      if (typeof window === "undefined") return;
+      console.log("onloadTurnstileCallback");
+      (window as any).onloadTurnstileCallback = function () {
+        // get token from turnstile
+
+        this.turnstile.render("#example-container", {
+          sitekey: import.meta.env.PUBLIC_CLOUDFLARE_SITE_KEY,
+          callback: (token: string) => {
+            if (token) {
+              console.log("token", token);
+              isGoodToGo.value = true;
+              captchaToken.value = token;
+            }
+          },
+        });
+      };
     },
     { strategy: "document-idle" }
   );
@@ -541,6 +579,7 @@ export default component$(() => {
             currency: currencyObject === "1" ? "USD" : "CAD",
           },
           isCoponApplied: coponCheck === "true" ? true : false,
+          captchaToken: captchaToken.value,
         };
 
         const req = await postRequest("/api/paymentConfirmiation", dataToSend);
@@ -551,11 +590,12 @@ export default component$(() => {
           window.location.href = `/payment/success/${res.orderId}`;
         } else {
           isLoading.value = false;
-          errorEl.innerText = res.message;
+          errorEl.innerText = (res.message || res.result) ?? "";
         }
       };
-      form.addEventListener("submit", async (e) => {
+      form.addEventListener("submit", async (e: any) => {
         e.preventDefault();
+
         isLoading.value = true;
         if (finalCard.value && isExistingPaymentMethod.value) {
           const totalInfo = {
@@ -581,7 +621,8 @@ export default component$(() => {
             cartContext?.cart ?? {},
             currencyObject === "1" ? "USD" : "CAD",
             totalInfo,
-            isCoponApplied === "true" ? true : false
+            isCoponApplied === "true" ? true : false,
+            captchaToken.value
           );
           if (pay?.paymentIntent.status === "succeeded") {
             window.location.href = `/payment/success/${pay.orderId}`;
@@ -661,7 +702,7 @@ export default component$(() => {
                     </button>
                   </div>
                 )}
-
+                <div id="example-container"></div>
                 <OrderDetails
                   taxRate={taxRate.value}
                   user={userContext}
@@ -674,6 +715,7 @@ export default component$(() => {
                   currencyObject={currencyObject}
                   shipping={shipping}
                   isLoading={isLoading}
+                  isGoodToGo={isGoodToGo.value}
                   // chargeClover={chargeClover}
                 />
               </div>

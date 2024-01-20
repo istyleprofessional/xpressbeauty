@@ -28,6 +28,7 @@ interface OrderDetailsProps {
   taxRate: number;
   shipping: any;
   isLoading: any;
+  isGoodToGo: boolean;
 }
 
 export const chargeCus = server$(async function (data: any) {
@@ -221,6 +222,7 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
     taxRate,
     shipping,
     isLoading,
+    isGoodToGo,
   } = props;
   const hst = useSignal<number>(0);
   const symbol = useSignal<string>("CAD");
@@ -404,7 +406,12 @@ export const OrderDetails = component$((props: OrderDetailsProps) => {
               </label>
             </div>
           )}
-          <button type="submit" class="btn bg-black text-white w-full">
+
+          <button
+            type="submit"
+            class="btn bg-black text-white w-full"
+            disabled={!isGoodToGo}
+          >
             <div class="flex flex-row w-full items-center text-xs">
               <div class="flex flex-row gap-1 items-center w-full justify-center text-sm">
                 Pay <NextArrowIconNoStick color="white" />

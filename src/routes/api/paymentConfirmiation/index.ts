@@ -21,6 +21,21 @@ export const onPost: RequestHandler = async ({
   env,
 }) => {
   const data: any = await parseBody();
+  const secretKey = env.get("PRIVATE_CLOUDFLARE_SECRET_KEY") ?? "";
+  const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+  const formData = new FormData();
+  formData.append("secret", secretKey);
+  formData.append("response", data.captchaToken ?? "");
+  const req = await fetch(url, {
+    method: "POST",
+    body: formData,
+  });
+  const res = await req.json();
+  if (!res.success) {
+    json(200, { status: "failed", result: "Please Verify You are Human" });
+    return;
+  }
+
   const token = cookie.get("token")?.value;
   if (!token) {
     json(200, { status: "failed", result: "Something went wrong" });
