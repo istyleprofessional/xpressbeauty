@@ -277,7 +277,8 @@ export default component$(() => {
   });
 
   useVisibleTask$(
-    () => {
+    ({ track }) => {
+      track(() => action.value?.status);
       if (typeof window === "undefined") return;
       console.log("onloadTurnstileCallback");
       (window as any).onloadTurnstileCallback = function () {
@@ -320,7 +321,11 @@ export default component$(() => {
         <Steps pageType="address" />
       </div>
       <div class="flex flex-col justify-center items-center gap-3 bg-[#F4F4F5]">
-        <Form action={action} class="w-full justify-center">
+        <Form
+          action={action}
+          class="w-full justify-center"
+          reloadDocument={true}
+        >
           <div class="w-full p-10 flex flex-col justify-center items-center">
             <h1 class="text-2xl font-bold p-2">Shipping Details</h1>
             <p class="text-base font-light p-2 text-center">
