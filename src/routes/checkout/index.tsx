@@ -25,6 +25,19 @@ import { validatePhone } from "../register";
 import { UserContext } from "~/context/user.context";
 
 export const useAddUser = routeAction$(async (data: any, requestEvent) => {
+  const secretKey = requestEvent.env.get("PRIVATE_CLOUDFLARE_SECRET_KEY") ?? "";
+  const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+  const formData = new FormData();
+  formData.append("secret", secretKey);
+  formData.append("response", data["cf-turnstile-response"]);
+  const req = await fetch(url, {
+    method: "POST",
+    body: formData,
+  });
+  const result = await req.json();
+  if (!result.success) {
+    return { status: "failed" };
+  }
   const token = requestEvent.cookie.get("token")?.value;
   if (!token) {
     return { status: "failed" };
@@ -81,6 +94,13 @@ export const useAddUser = routeAction$(async (data: any, requestEvent) => {
   }
   if (user.status === "success") {
     const newData: any = data;
+    if (newData.same === "on") {
+      newData.billing = newData.generalInfo;
+      newData.billing.firstName = newData.firstName;
+      newData.billing.lastName = newData.lastName;
+      newData.billing.email = newData.email;
+      newData.billing.phoneNumber = newData.phoneNumber;
+    }
     // check if state is valid and not includes undefined or null or purto rico or virgin islands or hawaii
     const validationObject = {
       country: (newData?.generalInfo?.address?.country?.length ?? 0) > 0,
@@ -113,6 +133,29 @@ export const useAddUser = routeAction$(async (data: any, requestEvent) => {
             : `+1${newData.phoneNumber?.trim()}`) ?? "",
           "phoneNumber"
         ) && newData?.phoneNumber.length >= 10,
+      billingCountry: (newData?.billing?.address?.country?.length ?? 0) > 0,
+      billingAddressLine1:
+        (newData?.billing?.address?.addressLine1?.length ?? 0) > 0,
+      billingCity: (newData?.billing?.address?.city?.length ?? 0) > 0,
+      billingState: (newData?.billing?.address?.state?.length ?? 0) > 0,
+      billingPostalCode:
+        (newData?.billing?.address?.postalCode?.length ?? 0) > 0,
+      billingFirstName:
+        validate(newData?.billing?.firstName?.trim() ?? "", "firstName") &&
+        newData?.billing?.firstName.length > 0,
+      billingLastName:
+        validate(newData?.billing?.lastName?.trim() ?? "", "lastName") &&
+        newData?.billing?.lastName.length > 0,
+      billingEmail:
+        validate(newData?.billing?.email?.trim() ?? "", "email") &&
+        newData?.billing?.email.length > 0,
+      billingPhoneNumber:
+        validate(
+          (newData?.billing?.phoneNumber.toString().startsWith("1")
+            ? `+${newData?.billing?.phoneNumber?.trim()}`
+            : `+1${newData?.billing?.phoneNumber?.trim()}`) ?? "",
+          "phoneNumber"
+        ) && newData?.billing?.phoneNumber.length >= 10,
     };
     const isValid = Object.values(validationObject).every((item) => item);
     newData.phoneNumber = newData.phoneNumber.toString().startsWith("1")
@@ -143,7 +186,8 @@ export default component$(() => {
   const info: UserModel = userData ?? {};
   const action = useAddUser();
   const messageToast = useSignal<string>("");
-  const placesPredictions = useSignal<any[]>([]);
+  const placesShipPredictions = useSignal<any[]>([]);
+  const placesBillPredictions = useSignal<any[]>([]);
   const country = useSignal<string>("");
   const addressLine1 = useSignal<string>("");
   const city = useSignal<string>("");
@@ -154,6 +198,12 @@ export default component$(() => {
   const shortCountryCode = useSignal<string>("");
   const shortStateCode = useSignal<string>("");
   const showBillingAddress = useSignal<boolean>(true);
+  const countryBill = useSignal<string>("");
+  const addressLine1Bill = useSignal<string>("");
+  const cityBill = useSignal<string>("");
+  const stateBill = useSignal<string>("");
+  const postalCodeBill = useSignal<string>("");
+  const captchaToken = useSignal<string>("");
 
   useVisibleTask$(({ track }) => {
     track(() => action.value);
@@ -192,13 +242,17 @@ export default component$(() => {
     postalCode.value = info?.generalInfo?.address?.postalCode ?? "";
   });
 
-  const handlePlacesFetch = $(async (e: any) => {
+  const handlePlacesFetch = $(async (e: any, source?: string) => {
     const input = e.target.value;
     const url = "/api/places/?input=" + input;
 
     const req = await fetch(url);
     const data = await req.json();
-    placesPredictions.value = data.predictions;
+    if (source === "billing") {
+      placesBillPredictions.value = data.predictions;
+      return;
+    }
+    placesShipPredictions.value = data.predictions;
   });
 
   const handlePhoneChange = $(async (e: any) => {
@@ -221,6 +275,26 @@ export default component$(() => {
     message.value = "";
     isPhoneValid.value = true;
   });
+
+  useVisibleTask$(
+    () => {
+      if (typeof window === "undefined") return;
+      console.log("onloadTurnstileCallback");
+      (window as any).onloadTurnstileCallback = function () {
+        // get token from turnstile
+
+        this.turnstile.render("#example-container", {
+          sitekey: import.meta.env.PUBLIC_CLOUDFLARE_SITE_KEY,
+          callback: (token: string) => {
+            if (token) {
+              captchaToken.value = token;
+            }
+          },
+        });
+      };
+    },
+    { strategy: "document-ready" }
+  );
 
   return (
     <div class="flex flex-col gap-10 p-4">
@@ -316,77 +390,81 @@ export default component$(() => {
                 identifier="generalInfo.address.addressLine1"
                 validation={action?.value?.validation?.addressLine1}
                 isMandatory={true}
+                source="shipping"
                 handleOnChange={handlePlacesFetch}
               />
-              {placesPredictions.value?.length > 0 && (
+              {placesShipPredictions.value?.length > 0 && (
                 <ul class="menu bg-base-200 w-fit absolute rounded-box">
-                  {placesPredictions.value.map((item: any, index: number) => (
-                    <li key={index}>
-                      <button
-                        class="btn btn-ghost normal-case"
-                        type="button"
-                        onClick$={async () => {
-                          const data = await fetch(
-                            "/api/places/details?place_id=" + item.place_id
-                          );
-                          const result = await data.json();
-                          const addressResult = result.result;
-                          country.value = addressResult.address_components.find(
-                            (comp: any) => {
-                              return comp.types.includes("country");
-                            }
-                          )?.long_name;
-                          state.value = addressResult.address_components.find(
-                            (comp: any) => {
-                              return comp.types.includes(
-                                "administrative_area_level_1"
-                              );
-                            }
-                          )?.long_name;
-                          shortCountryCode.value =
-                            addressResult.address_components.find(
-                              (comp: any) => {
-                                return comp.types.includes("country");
-                              }
-                            )?.short_name;
-                          shortStateCode.value =
-                            addressResult.address_components.find(
+                  {placesShipPredictions.value.map(
+                    (item: any, index: number) => (
+                      <li key={index}>
+                        <button
+                          class="btn btn-ghost normal-case"
+                          type="button"
+                          onClick$={async () => {
+                            const data = await fetch(
+                              "/api/places/details?place_id=" + item.place_id
+                            );
+                            const result = await data.json();
+                            const addressResult = result.result;
+                            country.value =
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes("country");
+                                }
+                              )?.long_name;
+                            state.value = addressResult.address_components.find(
                               (comp: any) => {
                                 return comp.types.includes(
                                   "administrative_area_level_1"
                                 );
                               }
-                            )?.short_name;
-                          city.value = addressResult.address_components.find(
-                            (comp: any) => {
-                              return comp.types.includes("locality");
-                            }
-                          )?.long_name;
-                          postalCode.value =
-                            addressResult.address_components.find(
+                            )?.long_name;
+                            shortCountryCode.value =
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes("country");
+                                }
+                              )?.short_name;
+                            shortStateCode.value =
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes(
+                                    "administrative_area_level_1"
+                                  );
+                                }
+                              )?.short_name;
+                            city.value = addressResult.address_components.find(
                               (comp: any) => {
-                                return comp.types.includes("postal_code");
+                                return comp.types.includes("locality");
                               }
                             )?.long_name;
-                          addressLine1.value =
-                            addressResult.address_components.find(
-                              (comp: any) => {
-                                return comp.types.includes("street_number");
-                              }
-                            )?.long_name +
-                            " " +
-                            addressResult.address_components.find(
-                              (comp: any) => {
-                                return comp.types.includes("route");
-                              }
-                            )?.long_name;
-                          placesPredictions.value = [];
-                        }}
-                      >
-                        {item.description}
-                      </button>
-                    </li>
-                  ))}
+                            postalCode.value =
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes("postal_code");
+                                }
+                              )?.long_name;
+                            addressLine1.value =
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes("street_number");
+                                }
+                              )?.long_name +
+                              " " +
+                              addressResult.address_components.find(
+                                (comp: any) => {
+                                  return comp.types.includes("route");
+                                }
+                              )?.long_name;
+                            placesShipPredictions.value = [];
+                          }}
+                        >
+                          {item.description}
+                        </button>
+                      </li>
+                    )
+                  )}
                 </ul>
               )}
             </div>
@@ -478,7 +556,7 @@ export default component$(() => {
                   placeholder="Marry"
                   value={info?.firstName ?? ""}
                   identifier="billing.firstName"
-                  validation={action?.value?.validation?.firstName}
+                  validation={action?.value?.validation?.billingFirstName}
                   isMandatory={true}
                 />
                 <InputField
@@ -487,7 +565,7 @@ export default component$(() => {
                   placeholder="George"
                   value={info?.lastName ?? ""}
                   identifier="billing.lastName"
-                  validation={action?.value?.validation?.lastName}
+                  validation={action?.value?.validation?.billingLastName}
                   isMandatory={true}
                 />
               </div>
@@ -498,7 +576,7 @@ export default component$(() => {
                   placeholder="xxxxxx@xxxx.xxx"
                   value={info?.email ?? ""}
                   identifier="billing.email"
-                  validation={action?.value?.validation?.email}
+                  validation={action?.value?.validation?.billingEmail}
                   isMandatory={true}
                 />
                 <div class="flex flex-col w-full justify-start">
@@ -511,7 +589,7 @@ export default component$(() => {
                     placeholder="1234567890"
                     value={info?.phoneNumber?.replace("+", "") ?? ""}
                     identifier="billing.phoneNumber"
-                    validation={action?.value?.validation?.phoneNumber}
+                    validation={action?.value?.validation?.billingPhoneNumber}
                     isMandatory={true}
                     handleOnChange={handlePhoneChange}
                   />
@@ -522,102 +600,83 @@ export default component$(() => {
                   label="Street Address"
                   type="text"
                   placeholder="1234"
-                  value={addressLine1.value}
+                  value={addressLine1Bill.value}
                   identifier="billing.address.addressLine1"
-                  validation={action?.value?.validation?.addressLine1}
+                  validation={action?.value?.validation?.billingAddressLine1}
                   isMandatory={true}
+                  source="billing"
                   handleOnChange={handlePlacesFetch}
                 />
-                {placesPredictions.value?.length > 0 && (
+                {placesBillPredictions.value?.length > 0 && (
                   <ul class="menu bg-base-200 w-fit absolute rounded-box">
-                    {placesPredictions.value.map((item: any, index: number) => (
-                      <li key={index}>
-                        <button
-                          class="btn btn-ghost normal-case"
-                          type="button"
-                          onClick$={async () => {
-                            const data = await fetch(
-                              "/api/places/details?place_id=" + item.place_id
-                            );
-                            const result = await data.json();
-                            const addressResult = result.result;
-                            country.value =
-                              addressResult.address_components.find(
-                                (comp: any) => {
-                                  return comp.types.includes("country");
-                                }
-                              )?.long_name;
-                            state.value = addressResult.address_components.find(
-                              (comp: any) => {
-                                return comp.types.includes(
-                                  "administrative_area_level_1"
-                                );
-                              }
-                            )?.long_name;
-                            shortCountryCode.value =
-                              addressResult.address_components.find(
-                                (comp: any) => {
-                                  return comp.types.includes("country");
-                                }
-                              )?.short_name;
-                            shortStateCode.value =
-                              addressResult.address_components.find(
-                                (comp: any) => {
-                                  return comp.types.includes(
-                                    "administrative_area_level_1"
-                                  );
-                                }
-                              )?.short_name;
-                            city.value = addressResult.address_components.find(
-                              (comp: any) => {
-                                return comp.types.includes("locality");
-                              }
-                            )?.long_name;
-                            postalCode.value =
-                              addressResult.address_components.find(
-                                (comp: any) => {
-                                  return comp.types.includes("postal_code");
-                                }
-                              )?.long_name;
-                            addressLine1.value =
-                              addressResult.address_components.find(
-                                (comp: any) => {
-                                  return comp.types.includes("street_number");
-                                }
-                              )?.long_name +
-                              " " +
-                              addressResult.address_components.find(
-                                (comp: any) => {
-                                  return comp.types.includes("route");
-                                }
-                              )?.long_name;
-                            placesPredictions.value = [];
-                          }}
-                        >
-                          {item.description}
-                        </button>
-                      </li>
-                    ))}
+                    {placesBillPredictions.value.map(
+                      (item: any, index: number) => (
+                        <li key={index}>
+                          <button
+                            class="btn btn-ghost normal-case"
+                            type="button"
+                            onClick$={async () => {
+                              const data = await fetch(
+                                "/api/places/details?place_id=" + item.place_id
+                              );
+                              const result = await data.json();
+                              const addressResult = result.result;
+                              countryBill.value =
+                                addressResult.address_components.find(
+                                  (comp: any) => {
+                                    return comp.types.includes("country");
+                                  }
+                                )?.long_name;
+                              stateBill.value =
+                                addressResult.address_components.find(
+                                  (comp: any) => {
+                                    return comp.types.includes(
+                                      "administrative_area_level_1"
+                                    );
+                                  }
+                                )?.long_name;
+                              cityBill.value =
+                                addressResult.address_components.find(
+                                  (comp: any) => {
+                                    return comp.types.includes("locality");
+                                  }
+                                )?.long_name;
+                              postalCodeBill.value =
+                                addressResult.address_components.find(
+                                  (comp: any) => {
+                                    return comp.types.includes("postal_code");
+                                  }
+                                )?.long_name;
+                              addressLine1Bill.value =
+                                addressResult.address_components.find(
+                                  (comp: any) => {
+                                    return comp.types.includes("street_number");
+                                  }
+                                )?.long_name +
+                                " " +
+                                addressResult.address_components.find(
+                                  (comp: any) => {
+                                    return comp.types.includes("route");
+                                  }
+                                )?.long_name;
+                              placesBillPredictions.value = [];
+                            }}
+                          >
+                            {item.description}
+                          </button>
+                        </li>
+                      )
+                    )}
                   </ul>
                 )}
               </div>
-              <input
-                class="hidden"
-                name="billing.address.shortCountryCode"
-                value={shortCountryCode.value}
-              />
-              <input
-                class="hidden"
-                name="billing.address.shortStateCode"
-                value={shortStateCode.value}
-              />
               <InputField
                 label="Town / City"
                 type="text"
                 placeholder="Toronto"
-                value={city.value}
+                value={cityBill.value}
                 identifier="billing.address.city"
-                validation={action?.value?.validation?.city}
+                validation={action?.value?.validation?.billingCity}
                 isMandatory={true}
                 // disabled={true}
               />
@@ -625,9 +684,9 @@ export default component$(() => {
                 label="Province"
                 type="text"
                 placeholder="Ontario"
-                value={state.value}
+                value={stateBill.value}
                 identifier="billing.address.state"
-                validation={action?.value?.validation?.state}
+                validation={action?.value?.validation?.billingState}
                 isMandatory={true}
                 // disabled={true}
               />
@@ -635,9 +694,9 @@ export default component$(() => {
                 label="Postal Code"
                 type="text"
                 placeholder="12344"
-                value={postalCode.value}
+                value={postalCodeBill.value}
                 identifier="billing.address.postalCode"
-                validation={action?.value?.validation?.postalCode}
+                validation={action?.value?.validation?.billingPostalCode}
                 isMandatory={true}
                 // disabled={true}
               />
@@ -645,23 +704,25 @@ export default component$(() => {
                 label="Country/ Region"
                 type="text"
                 placeholder="Canada"
-                value={country.value}
+                value={countryBill.value}
                 identifier="billing.address.country"
-                validation={action?.value?.validation?.country}
+                validation={action?.value?.validation?.billingCountry}
                 isMandatory={true}
                 // disabled={true}
               />
             </div>
           )}
-          <div class="flex w-full justify-center items-center">
+          <div class="flex flex-col gap-2 w-full justify-center items-center">
             <button
               class="btn bg-black text-white text-base m-2"
               type="submit"
+              disabled={isLoading.value || !captchaToken.value}
               onClick$={() => (isLoading.value = true)}
             >
               {isLoading.value && <span class="loading loading-spinner"></span>}
               Proceed Payment
             </button>
+            <div id="example-container"></div>
           </div>
         </Form>
       </div>

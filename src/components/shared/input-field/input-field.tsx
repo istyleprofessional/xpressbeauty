@@ -9,8 +9,9 @@ interface InputFieldProps {
   type: string;
   identifier?: string;
   isMandatory?: boolean;
-  handleOnChange?: PropFunction<(e: any) => void>;
+  handleOnChange?: PropFunction<(e: any, source?: string) => void>;
   disabled?: boolean;
+  source?: string;
 }
 
 export const InputField = component$((props: InputFieldProps) => {
@@ -24,6 +25,7 @@ export const InputField = component$((props: InputFieldProps) => {
     isMandatory,
     handleOnChange,
     disabled,
+    source,
   } = props;
 
   return (
@@ -43,7 +45,7 @@ export const InputField = component$((props: InputFieldProps) => {
           validation === false ? "input-error" : ""
         }`}
         style={{ color: "black" }}
-        onInput$={(e) => handleOnChange?.(e) ?? null}
+        onInput$={(e) => handleOnChange?.(e, source ?? "") ?? null}
         autoComplete={disabled ? "off" : "on"}
         // disabled={disabled}
         readOnly={disabled}

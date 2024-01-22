@@ -16,6 +16,7 @@ const userSchema = new Schema(
     paymentMethod: { type: Array, default: null },
     clientSecret: { type: String, default: null },
     cobone: { type: Array, default: null },
+    billing: { type: Object, default: null },
   },
   { timestamps: true }
 );

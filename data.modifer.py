@@ -488,7 +488,7 @@ def get_last_prices_and_upc():
                     continue
                 # print remaining products length
         
-# get_last_prices_and_upc()
+get_last_prices_and_upc()
 
 
 
@@ -559,7 +559,7 @@ def get_skin_body():
     print(update.json())
     
 
-get_skin_body()
+# get_skin_body()
 
 # json = {
 #     'upc': '676280055391',

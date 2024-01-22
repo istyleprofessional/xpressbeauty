@@ -182,6 +182,20 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
 export const paypalServer = server$(async function (data: any) {
   try {
     // console.log(data);
+    const secret = this.env.get("PRIVATE_CLOUDFLARE_SECRET_KEY") ?? "";
+    const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
+    const formData = new FormData();
+    formData.append("secret", secret);
+    formData.append("response", data.captchaToken ?? "");
+    const req = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+    const res = await req.json();
+    if (!res.success) {
+      return { paymentIntent: { status: "failed" }, orderId: "" };
+    }
     paypal.configure({
       mode: import.meta.env.VITE_PAYPAL_MODE, //sandbox or live
       client_id: import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
@@ -458,6 +472,7 @@ export default component$(() => {
                 currency: currencyObject === "1" ? "USD" : "CAD",
               },
               isCoponApplied: checkCopon === "true" ? true : false,
+              captchaToken: captchaToken.value,
             };
             const paypalReq: any = await paypalServer(dataToSend);
             const paypalRes = JSON.parse(paypalReq);
@@ -493,6 +508,7 @@ export default component$(() => {
                   currency: currencyObject === "1" ? "USD" : "CAD",
                 },
                 isCoponApplied: checkCopon === "true" ? true : false,
+                captchaToken: captchaToken.value,
               };
               const req = await postRequest(
                 "/api/paymentConfirmiation",
