@@ -391,23 +391,26 @@ export default component$(() => {
   );
 
   useVisibleTask$(
-    () => {
-      if (typeof window === "undefined") return;
-      console.log("onloadTurnstileCallback");
-      (window as any).onloadTurnstileCallback = function () {
-        // get token from turnstile
+    ({ track }) => {
+      track(() => isLoading.value);
+      if (!isLoading.value) {
+        if (typeof window === "undefined") return;
+        console.log("onloadTurnstileCallback");
+        (window as any).onloadTurnstileCallback = function () {
+          // get token from turnstile
 
-        this.turnstile.render("#example-container", {
-          sitekey: import.meta.env.PUBLIC_CLOUDFLARE_SITE_KEY,
-          callback: (token: string) => {
-            if (token) {
-              console.log("token", token);
-              isGoodToGo.value = true;
-              captchaToken.value = token;
-            }
-          },
-        });
-      };
+          this.turnstile.render("#example-container", {
+            sitekey: import.meta.env.PUBLIC_CLOUDFLARE_SITE_KEY,
+            callback: (token: string) => {
+              if (token) {
+                console.log("token", token);
+                isGoodToGo.value = true;
+                captchaToken.value = token;
+              }
+            },
+          });
+        };
+      }
     },
     { strategy: "document-idle" }
   );

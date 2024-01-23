@@ -16,7 +16,7 @@ export default component$(() => {
   const user: any = useContext(UserContext);
 
   useTask$(async () => {
-    const myOrdersString = await getMyOrdersServer(user?.user?._id);
+    const myOrdersString = await getMyOrdersServer(user?._id);
     const myOrdersServer = JSON.parse(myOrdersString);
     if (myOrdersServer.status === "success") {
       myOrders.value = myOrdersServer?.request ?? [];

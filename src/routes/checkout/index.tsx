@@ -173,7 +173,8 @@ export const useAddUser = routeAction$(async (data: any, requestEvent) => {
           user?.result?._id.toString()
         );
       }
-      return { status: "success", isDummy: isDummy, token: token };
+      // return { status: "success", isDummy: isDummy, token: token };
+      throw requestEvent.redirect(301, "/payment");
     }
     return { status: "failed", validation: validationObject };
   }
