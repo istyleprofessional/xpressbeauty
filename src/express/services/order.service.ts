@@ -146,7 +146,21 @@ export const getAllPendingOrdersCount = async () => {
 export const getTotalRevenue = async () => {
   // return revenue of each month by calculating total price of each order in that month using createdAt field
   try {
+    // don't grab order with status "Refund" or "Return"
+    // const request = await Order.aggregate([
+    //   {
+    //     $group: {
+    //       _id: { $month: "$createdAt" },
+    //       total: { $sum: "$totalPrice" },
+    //     },
+    //   },
+    // ]);
     const request = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: { $nin: ["Refund", "Return"] },
+        },
+      },
       {
         $group: {
           _id: { $month: "$createdAt" },

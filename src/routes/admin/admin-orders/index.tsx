@@ -1,10 +1,4 @@
-import {
-  component$,
-  $,
-  useSignal,
-  useStore,
-  useVisibleTask$,
-} from "@builder.io/qwik";
+import { component$, $, useSignal } from "@builder.io/qwik";
 import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import {
   CheckOrderIcon,
@@ -69,14 +63,10 @@ export const updateOrderStatusServer = server$(async function (
 export default component$(() => {
   const loc = useLocation();
   const orders = useOrderTableData();
-  const ordersData = useStore<any>({ request: [] });
-  useVisibleTask$(async () => {
-    if (orders.value?.res) {
-      ordersData.request = JSON.parse(orders.value?.res ?? "[]").request;
-    }
-  });
+  const ordersData = JSON.parse(orders.value?.res ?? "[]");
   const currentPageNo = loc.url.searchParams.get("page") ?? "1";
   const total = ordersData?.total ?? 0;
+  console.log(total);
   const totalPages = Math.ceil(total / 20);
   const orderStatus = useSignal<string>("");
   const userEmail = useSignal<string>("");
@@ -161,7 +151,7 @@ export default component$(() => {
       alert("Order status updated successfully");
     }
   });
-
+  console.log(totalPages);
   return (
     <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
       <div class="flex flex-row gap-5 items-center">
