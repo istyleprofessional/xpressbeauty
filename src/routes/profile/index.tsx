@@ -173,7 +173,7 @@ export const validatePhoneProfile = server$(async function (data) {
 });
 
 export default component$(() => {
-  const { user }: any = useContext(UserContext);
+  const user: any = useContext(UserContext);
   const action = useUpdateProfile();
   const toast = useSignal<HTMLElement>();
   const placesPredictions = useSignal<any[]>([]);

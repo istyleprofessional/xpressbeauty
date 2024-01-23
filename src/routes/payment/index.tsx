@@ -711,7 +711,7 @@ export default component$(() => {
                       </>
                     ))}
                     <button
-                      class="btn btn-primary text-white w-full"
+                      class="btn bg-black text-white w-full"
                       onClick$={() => {
                         isExistingPaymentMethod.value = false;
                       }}

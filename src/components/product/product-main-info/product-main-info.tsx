@@ -25,7 +25,6 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     product_name,
     price,
     sale_price,
-    isVerified,
     priceType,
     ratings,
     companyName,
@@ -165,77 +164,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
             </span>
           </div>
         )}
-        {!isVerified && (
-          <></>
-          // <div class="card shadow-lg w-96 hover:bg-base-300">
-          //   <label class="card-header bg-warning text-center">
-          //     <span class="text-md text-gray-500 text-center font-bold">
-          //       Join our Saver Club
-          //     </span>
-          //   </label>
-          //   <a class="cursor-pointer" href="/login">
-          //     <div class="card-body">
-          //       <div class="flex flex-row gap-2">
-          //         <div class="flex flex-col gap-1">
-          //           <p class="text-sm text-gray-500">
-          //             Login or Register and verify Phone Number and Email
-          //             Address to get up to 40% off
-          //           </p>
-          //           <h2 class="flex flex-row gap-2 text-xl lg:text-3xl">
-          //             {priceType === "single" && sale_price.sale !== "" && (
-          //               <>
-          //                 {/* <span
-          //                   class="text-gray-400 line-through"
-          //                   itemProp="price"
-          //                 >
-          //                   {verifiedPrice.value}
-          //                 </span> */}
-          //                 <span class="text-error ml-2" itemProp="price">
-          //                   {verifiedSalePrice.value}
-          //                 </span>
-          //               </>
-          //             )}
-          //             {priceType === "single" && sale_price.sale === "" && (
-          //               <span class="text-error" itemProp="price">
-          //                 {verifiedPrice.value}
-          //               </span>
-          //             )}
-          //             {priceType === "range" &&
-          //               sale_price.min === "" &&
-          //               sale_price.max === "" && (
-          //                 <span class="text-error" itemProp="price">
-          //                   {verifiedPrice.value}
-          //                 </span>
-          //               )}
-          //             {priceType === "range" &&
-          //               sale_price.min !== "" &&
-          //               sale_price.max !== "" && (
-          //                 <div class="flex flex-col gap-2">
-          //                   {/* <span
-          //                     class="text-gray-400 line-through"
-          //                     itemProp="price"
-          //                   >
-          //                     {verifiedPrice.value}
-          //                   </span> */}
-          //                   <span class="text-error" itemProp="price">
-          //                     {verifiedSalePrice.value}
-          //                   </span>
-          //                 </div>
-          //               )}
-          //           </h2>
-          //         </div>
-          //       </div>
-          //     </div>
-          //   </a>
-          // </div>
-        )}
       </div>
-      {isVerified && (
-        <></>
-        // <span class="text-sm text-gray-500 font-bold">
-        //   You're automatically getting up to 40% off !!!
-        // </span>
-      )}
     </div>
   );
 });
