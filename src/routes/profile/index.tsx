@@ -130,39 +130,6 @@ const getTheToken = server$(async function () {
   return { status: "success", token: token ?? "" };
 });
 
-const getThePhoneToken = server$(async function () {
-  const token = this.cookie.get("token")?.value;
-  if (!token) {
-    return { status: "failed" };
-  }
-  try {
-    const decoded: any = jwt.verify(
-      token ?? "",
-      this.env.get("VITE_JWTSECRET") ?? ""
-    );
-    if (decoded) {
-      const request = await getUserEmailById(decoded.user_id);
-      const PhoneVerifyToken = generateUniqueInteger();
-      const updateReq = await phoneUpdateToken(
-        decoded.user_id,
-        PhoneVerifyToken
-      );
-      if (request?.status === "success" && updateReq?.status === "success") {
-        await sendPhoneOtp(
-          request?.result?.phoneNumber ?? "",
-          PhoneVerifyToken
-        );
-        return { status: "success", token: token };
-      } else {
-        return { status: "failed" };
-      }
-    }
-  } catch (error) {
-    return { status: "failed" };
-  }
-  return { status: "failed" };
-});
-
 export const validatePhoneProfile = server$(async function (data) {
   const client: any = new (Twilio as any).Twilio(
     this.env.get("VITE_TWILIO_ACCOUNT_SID") ?? "",
