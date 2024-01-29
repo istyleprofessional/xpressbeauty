@@ -149,22 +149,15 @@ export const head: DocumentHead = ({ resolveValue }) => {
   const data = resolveValue(useLoaderSuccess);
   const successScript = `
   gtag('event', 'conversion', {
-      'send_to': 'AW-11167601664/EaRpCMn-5f0YEICokM0p',
+      'send_to': 'AW-11167601664/ApSoCLPu2IwZEICokM0p',
       'transaction_id': '${data?.dataForSurvey?.order_id}',
 `;
+
   return {
     scripts: [
       {
         script: successScript,
         key: "gtag",
-      },
-      {
-        src: "/gtag.js",
-        async: true,
-      },
-      {
-        src: "/ads.js",
-        async: true,
       },
     ],
     title: "Xpress Beauty | Thank you for your order!",
