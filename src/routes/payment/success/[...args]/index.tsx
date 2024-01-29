@@ -95,16 +95,19 @@ export default component$(() => {
     });
   }`;
 
-  useVisibleTask$(({ track }) => {
-    track(() => data?.dataForSurvey?.order_id);
-    if (!data?.dataForSurvey?.order_id) {
-      location.href = "/";
+  useVisibleTask$(() =>
+    // { track }
+    {
+      // track(() => data?.dataForSurvey?.order_id);
+      // if (!data?.dataForSurvey?.order_id) {
+      //   location.href = "/";
+      // }
+      const checkCopon = localStorage.getItem("copon");
+      if (checkCopon === "true") {
+        localStorage.removeItem("copon");
+      }
     }
-    const checkCopon = localStorage.getItem("copon");
-    if (checkCopon === "true") {
-      localStorage.removeItem("copon");
-    }
-  });
+  );
 
   return (
     <div class="flex flex-col justify-center items-center gap-10 mb-10">
