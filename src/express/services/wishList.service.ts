@@ -5,7 +5,7 @@ export const addToWishList = async (data: any) => {
     let request = await wishListSchema.findOne({ userId: data.userId });
     if (request) {
       const check = request.products.some(
-        (obj) => obj._id.toString() === data.product._id.toString()
+        (obj: any) => obj._id.toString() === data.product._id.toString()
       );
       if (check) {
         return { status: "failed", data: "Already in your wish list" };

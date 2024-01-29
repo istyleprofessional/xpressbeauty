@@ -27,7 +27,7 @@ export const onGet: RequestHandler = async ({ json }) => {
   for (const product of productsDb) {
     try {
       const checkIfCat = product.categories?.find(
-        (cat) => cat?.main === "Tools"
+        (cat: any) => cat?.main === "Tools"
       );
       const row = rows.find((r) => r.toObject().id === product._id.toString());
       if (product?.variations?.length > 0) {

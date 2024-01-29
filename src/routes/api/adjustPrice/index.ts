@@ -7,7 +7,7 @@ export const onGet: RequestHandler = async ({ json }) => {
   const products = await productSchema.find({}).lean();
   for (const product of products) {
     if (product.variations.length > 0) {
-      product.variations.forEach((variation) => {
+      product.variations.forEach((variation: any) => {
         if (variation.price) {
           variation.price = variation?.price?.toString()?.replace("$", "");
         }
