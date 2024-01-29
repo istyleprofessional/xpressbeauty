@@ -184,6 +184,7 @@ export const getTotalRevenue = async () => {
         },
       },
     ]);
+    console.log(request);
     return { status: "success", request: request };
   } catch (error: any) {
     return { status: "failed", err: error.message };
