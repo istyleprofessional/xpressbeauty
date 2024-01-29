@@ -279,7 +279,7 @@ export default component$(() => {
         </div>
 
         <div class="flex flex-col gap-5 lg:gap-20">
-          <div class="flex flex-col justify-center items-center w-full lg:grid lg:grid-cols-3 lg:gap-10 p-3 lg:p-10">
+          <div class="flex flex-col justify-center items-center w-full gap-5 lg:grid lg:grid-cols-3 lg:gap-10 p-3 lg:p-10">
             <Gallery
               product_name={product.product_name ?? ""}
               imgs={product.imgs ?? []}
