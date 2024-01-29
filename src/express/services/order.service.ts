@@ -133,13 +133,16 @@ export const getAllShippedOrdersCount = async () => {
     return { status: "failed", err: error.message };
   }
 };
-
+// for current month
 export const getAllItemsNumberInAllShippedOrders = async () => {
   try {
     const request = await Order.aggregate([
       {
         $match: {
           orderStatus: "Shipped",
+          createdAt: {
+            $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+          },
         },
       },
       {
