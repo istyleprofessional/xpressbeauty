@@ -310,7 +310,7 @@ export default component$(() => {
                     providerId: "google",
                     options: {
                       callbackUrl:
-                        "http://localhost:5173/api/auth/callback/google",
+                        "https://xpressbeauty.ca/api/auth/callback/google",
                     },
                   })
                 }
