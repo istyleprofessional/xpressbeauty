@@ -134,6 +134,27 @@ export const getAllShippedOrdersCount = async () => {
   }
 };
 
+export const getAllItemsNumberInAllShippedOrders = async () => {
+  try {
+    const request = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: "Shipped",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalQuantity" },
+        },
+      },
+    ]);
+    return { status: "success", request: request[0].total };
+  } catch (error: any) {
+    return { status: "failed", err: error.message };
+  }
+};
+
 export const getAllPendingOrdersCount = async () => {
   try {
     const request = await Order.countDocuments({ orderStatus: "Pending" });
@@ -146,15 +167,6 @@ export const getAllPendingOrdersCount = async () => {
 export const getTotalRevenue = async () => {
   // return revenue of each month by calculating total price of each order in that month using createdAt field
   try {
-    // don't grab order with status "Refund" or "Return"
-    // const request = await Order.aggregate([
-    //   {
-    //     $group: {
-    //       _id: { $month: "$createdAt" },
-    //       total: { $sum: "$totalPrice" },
-    //     },
-    //   },
-    // ]);
     const request = await Order.aggregate([
       {
         $match: {

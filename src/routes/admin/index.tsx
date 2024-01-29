@@ -5,6 +5,7 @@ import { Card } from "~/components/admin/card/card";
 import { Revenues } from "~/components/admin/revenues/revenues";
 import { getAllDummyUsersCount } from "~/express/services/dummy.user.service";
 import {
+  getAllItemsNumberInAllShippedOrders,
   getAllPendingOrdersCount,
   getAllShippedOrdersCount,
   getTotalRevenue,
@@ -13,6 +14,8 @@ import { getAllRegisteredUsersCount } from "~/express/services/user.service";
 
 export const useLoader = routeLoader$(async () => {
   const shippedOrders = await getAllShippedOrdersCount();
+  const totalItems = await getAllItemsNumberInAllShippedOrders();
+  console.log(totalItems);
   const shippedOrdersCount =
     shippedOrders.status === "success"
       ? shippedOrders.request?.toString()
