@@ -13,7 +13,7 @@ export const sendForgetPasswordEmail = async (email: string, token: string) => {
   const mailOptions = {
     from: import.meta.env.VITE_EMAIL ?? "",
     to: email,
-    subject: "Xpress Beauty Verification",
+    subject: "Xpress Beauty Reset Password",
     html: `
     <body style="margin: 0; padding: 0; background-color: #f7f7f7; font-family: Arial, sans-serif;">
       <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">

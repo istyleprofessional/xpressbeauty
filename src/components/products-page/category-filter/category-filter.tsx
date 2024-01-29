@@ -59,7 +59,7 @@ export const CategoryFilter = component$((props: CategoryFilterProps) => {
                 checked={
                   filterCategoriessArray.value.includes(category) ? true : false
                 }
-                class="checkbox checkbox-primary checkbox-sm"
+                class="checkbox checkbox-sm"
                 onChange$={(e) => handleCategoryCheckBoxChange(e, category)}
                 name={category}
                 id={category}

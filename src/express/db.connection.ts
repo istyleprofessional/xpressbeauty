@@ -13,8 +13,8 @@ export const connect = () => {
       mongoose.set("strictQuery", false);
       mongoose
         .connect(mongoUrl, {
-          user: import.meta.env.VITE_QWIK_APP_MONGO_USERNAME,
-          pass: import.meta.env.VITE_QWIK_APP_MONGO_PWD,
+          // user: import.meta.env.VITE_QWIK_APP_MONGO_USERNAME,
+          // pass: import.meta.env.VITE_QWIK_APP_MONGO_PWD,
         })
         .then(() => {
           resolve(undefined);

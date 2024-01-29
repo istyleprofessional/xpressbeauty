@@ -20,7 +20,7 @@ export const Steps = component$((props: StepsProps) => {
           pageType === "confirmation"
             ? "step-success"
             : ""
-        } step-accent text-black text-xs lg:text-base`}
+        } step text-black text-xs lg:text-base`}
       >
         My Cart
       </li>
@@ -33,7 +33,7 @@ export const Steps = component$((props: StepsProps) => {
           pageType === "confirmation"
             ? "step-success"
             : ""
-        } step-accent text-black text-xs lg:text-base`}
+        } step text-black text-xs lg:text-base`}
       >
         Address
       </li>
@@ -44,7 +44,7 @@ export const Steps = component$((props: StepsProps) => {
           pageType === "payment" || pageType === "confirmation"
             ? "step-success"
             : ""
-        } step-accent text-black text-xs lg:text-base`}
+        } step text-black text-xs lg:text-base`}
       >
         Payment
       </li>
@@ -52,7 +52,7 @@ export const Steps = component$((props: StepsProps) => {
         data-content=""
         class={`step ${
           pageType === "confirmation" ? "step-success" : ""
-        } step-accent text-black text-xs lg:text-base`}
+        } step text-black text-xs lg:text-base`}
       >
         Confirmation
       </li>

@@ -1,12 +1,12 @@
 import { component$ } from "@builder.io/qwik";
-import { useDocumentHead } from "@builder.io/qwik-city";
+import { useDocumentHead, useLocation } from "@builder.io/qwik-city";
 
 /**
  * The RouterHead component is placed inside of the document `<head>` element.
  */
 export const RouterHead = component$(() => {
   const head = useDocumentHead();
-  // const loc = useLocation();
+  const loc = useLocation();
 
   // const url = loc.url.href.split(".ca")[1];
 
@@ -31,7 +31,22 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 fbq('init', '628174676061797');
 fbq('track', 'PageView');
 `;
+  const hotJar = `
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:3826566,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+`;
 
+  const liveChat = `
+  (function(){var pp=document.createElement('script'), ppr=document.getElementsByTagName('script')[0]; stid='YXJCd2ltTEtMWjh1ZWJJakJMVGVwZz09';pp.type='text/javascript'; pp.async=true; pp.src=('https:' == document.location.protocol ? 'https://' : 'http://') + 's01.live2support.com/dashboardv2/chatwindow/'; ppr.parentNode.insertBefore(pp, ppr);})();
+`;
+
+  const url = `https://${loc.url.host}${loc.url.pathname}`;
   return (
     <>
       <title>{head.title}</title>
@@ -44,8 +59,15 @@ fbq('track', 'PageView');
           <script dangerouslySetInnerHTML={googletagmanager} />
         </>
       )}
+      <script dangerouslySetInnerHTML={liveChat} />
+      <script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback"
+        defer
+      ></script>
+
+      <script dangerouslySetInnerHTML={hotJar} />
       <script dangerouslySetInnerHTML={metaScript} />
-      {/* <link rel="canonical" href={`https://xpressbeauty.ca${url}`} /> */}
+      <link rel="canonical" href={`${url}`} />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="icon" type="image/svg+xml" href="/logoX2.jpg" />
       <meta name="robots" content="max-snippet:50, max-image-preview:large" />

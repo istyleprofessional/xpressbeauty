@@ -12,6 +12,8 @@ export const Revenues = component$((props: RevenuesProps) => {
   useVisibleTask$(
     async ({ track }) => {
       track(() => rev.length);
+      if (!columnChart.value) return;
+      columnChart.value.innerHTML = "is loading...";
       const months = [
         rev
           .map((r) => {
@@ -239,18 +241,18 @@ export const Revenues = component$((props: RevenuesProps) => {
           },
         },
         dataLabels: {
-          enabled: false,
+          enabled: true,
         },
         legend: {
-          show: false,
+          show: true,
         },
         xaxis: {
-          floating: false,
+          floating: true,
           labels: {
             show: true,
             style: {
               fontFamily: "Inter, sans-serif",
-              cssClass: "text-xs font-normal fill-gray-500 dark:fill-gray-400",
+              cssClass: "text-xs font-normal fill-gray-500 text-gray-500 ",
             },
           },
           axisBorder: {
@@ -267,6 +269,7 @@ export const Revenues = component$((props: RevenuesProps) => {
           opacity: 1,
         },
       };
+      columnChart.value.innerHTML = "";
       // const ApexCharts = await import("apexcharts");
       if (columnChart.value && ApexCharts && rev.length > 0) {
         const chart = new ApexCharts(columnChart.value, options);
@@ -279,7 +282,7 @@ export const Revenues = component$((props: RevenuesProps) => {
   );
 
   return (
-    <div class="w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+    <div class="w-full bg-white rounded-lg shadow p-4 md:p-6">
       <div class="flex justify-between pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
         <div class="flex items-center">
           <div>
@@ -338,56 +341,6 @@ export const Revenues = component$((props: RevenuesProps) => {
               />
             </svg>
           </button>
-          <div
-            id="lastDaysdropdown"
-            class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
-          >
-            <ul
-              class="py-2 text-sm text-gray-700 dark:text-gray-200"
-              aria-labelledby="dropdownDefaultButton"
-            >
-              <li>
-                <a
-                  href="#"
-                  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  Yesterday
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  Today
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  Last 7 days
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  Last 30 days
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  Last 90 days
-                </a>
-              </li>
-            </ul>
-          </div>
           <a
             href="#"
             class="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500  hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2"

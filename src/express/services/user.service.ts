@@ -13,7 +13,7 @@ export const userRegistration = async (userObject: any) => {
       password: encryptedString,
       firstName: userObject.firstName?.trim(),
       lastName: userObject.lastName?.trim(),
-      phoneNumber: userObject.phoneNumber?.trim(),
+      phoneNumber: userObject.phoneNumber?.trim() ?? "",
       EmailVerifyToken: userObject.EmailVerifyToken?.trim(),
       PhoneVerifyToken: phoneVerifyToken,
       stripeCustomerId: userObject.stripeCustomerId,
@@ -80,6 +80,19 @@ export const findUserByUserId = async (id: string) => {
     return { status: "failed", err: err };
   }
 };
+
+export const userGoogleLogin = async (userObject: any) => {
+  try {
+    const result = await User.findOne({ email: userObject.email });
+    if (result) {
+      return { status: "success", result: result };
+    } else {
+      return { status: "failed", err: "User not found" };
+    }
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+}
 
 export const userLogin = async (userObject: any) => {
   try {

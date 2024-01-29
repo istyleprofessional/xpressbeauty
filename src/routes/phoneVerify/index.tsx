@@ -240,9 +240,8 @@ export default component$(() => {
               </div>
             </div>
             <script
-              src={`https://www.google.com/recaptcha/api.js?render=${
-                import.meta.env.VITE_RECAPTCHA_SITE_KEY
-              }`}
+              src={`https://www.google.com/recaptcha/api.js?render=${import.meta.env.VITE_RECAPTCHA_SITE_KEY
+                }`}
             ></script>
             <Form action={action} reloadDocument={false}>
               <div class="flex flex-col space-y-16">
@@ -322,7 +321,7 @@ export default component$(() => {
 
                   <div class="flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
                     <button
-                      class="flex flex-row items-center text-blue-600 btn btn-ghost text-black"
+                      class="flex flex-row items-center  btn btn-ghost text-black"
                       onClick$={handleSendTokenAgain}
                       type="button"
                       disabled={recaptchaToken.value.length === 0}
@@ -331,7 +330,7 @@ export default component$(() => {
                     </button>
                   </div>
                   <button
-                    class="flex flex-row items-center text-blue-600 btn btn-ghost text-black"
+                    class="flex flex-row items-center btn btn-ghost text-black"
                     onClick$={handleSkip}
                     type="button"
                   >

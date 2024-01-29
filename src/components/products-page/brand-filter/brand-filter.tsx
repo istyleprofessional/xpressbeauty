@@ -52,7 +52,7 @@ export const BrandFilter = component$((props: BrandFilterProps) => {
               checked={
                 filterBrandsArray.value.includes(brand.name) ? true : false
               }
-              class="checkbox checkbox-primary checkbox-sm w-fit"
+              class="checkbox checkbox-sm w-fit"
               onChange$={(e: QwikChangeEvent<HTMLInputElement>) =>
                 handleBrandCheckBoxChange(e, brand.name)
               }

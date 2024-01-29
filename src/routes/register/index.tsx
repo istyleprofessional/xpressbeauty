@@ -11,6 +11,7 @@ import { validate } from "~/utils/validate.utils";
 import Twilio from "twilio";
 import { sendVerficationMail } from "~/utils/sendVerficationMail";
 import Stripe from "stripe";
+import { useAuthSignin } from "../plugin@auth";
 
 export const useRegisterForm = routeAction$(async (data, { env }) => {
   await connect();
@@ -113,6 +114,7 @@ export default component$(() => {
   const passwordValidation = useSignal<boolean>(true);
   const isPhoneValid = useSignal<boolean>(false);
   const phoneMessage = useSignal<string>("");
+  const signIn = useAuthSignin();
 
   const handleAlertClose = $(() => {
     message.value = "";
@@ -301,6 +303,29 @@ export default component$(() => {
               {isLoading.value && <span class="loading loading-spinner"></span>}
               Sign up
             </button>
+            <div class="flex items-center justify-center dark:bg-gray-800">
+              <button
+                onClick$={() =>
+                  signIn.submit({
+                    providerId: "google",
+                    options: {
+                      callbackUrl:
+                        "https://xpressbeauty.ca/api/auth/callback/google",
+                    },
+                  })
+                }
+                type="button"
+                class="px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150"
+              >
+                <img
+                  class="w-6 h-6"
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  loading="lazy"
+                  alt="google logo"
+                />
+                <span>Register with Google</span>
+              </button>
+            </div>
           </div>
         </Form>
       </div>

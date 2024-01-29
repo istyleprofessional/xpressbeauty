@@ -130,18 +130,9 @@ export const ProductCard = component$((props: ProductCardProps) => {
               cardSize === "sm" ? "lg:text-lg" : "lg:text-lg"
             } text-sm text-black font-semibold`}
           >
-            {product.priceType === "single" &&
-              product.sale_price.sale !== "" && (
-                <>
-                  <span class=" text-neutral-800">
-                    {finalRegularPrice.value}
-                  </span>
-                </>
-              )}
-            {product.priceType === "single" &&
-              product.sale_price.sale === "" && (
-                <span class=" text-neutral-800">{finalRegularPrice.value}</span>
-              )}
+            {product.priceType === "single" && (
+              <span class=" text-neutral-800">{finalRegularPrice.value}</span>
+            )}
             {product.priceType === "range" && (
               <span class=" text-neutral-800">{finalRegularPrice.value}</span>
             )}

@@ -64,22 +64,37 @@ export const Footer = component$(() => {
           <div class="flex flex-col gap-10">
             <h3 class="text-white font-bold text-lg">Categories</h3>
             <div class="flex flex-col gap-4">
-              <a href="/products/filterCategories/Hair-Care/" class="text-white font-light text-base">
+              <a
+                href="/products/filterCategories/Hair-Care/"
+                class="text-white font-light text-base"
+              >
                 Hair care
               </a>
               <a href="/products/" class="text-white font-light text-base">
                 Barbering
               </a>
-              <a href="/products/filterCategories/Textured-Hair/" class="text-white font-light text-base">
+              <a
+                href="/products/filterCategories/Textured-Hair/"
+                class="text-white font-light text-base"
+              >
                 Textured Hair
               </a>
-              <a href="/products/filterCategories/Men's-Hair-Care+Wax-&-Pomade/" class="text-white font-light text-base">
+              <a
+                href="/products/filterCategories/Men's-Hair-Care+Wax-&-Pomade/"
+                class="text-white font-light text-base"
+              >
                 Men’s Grooming
               </a>
-              <a href="/products/filter/Hair/haircolor/" class="text-white font-light text-base">
+              <a
+                href="/products/filter/Hair/haircolor/"
+                class="text-white font-light text-base"
+              >
                 Hair Colour
               </a>
-              <a href="/products/filter/Tools/" class="text-white font-light text-base">
+              <a
+                href="/products/filter/Tools/"
+                class="text-white font-light text-base"
+              >
                 Hair Tools
               </a>
             </div>
@@ -139,7 +154,7 @@ export const Footer = component$(() => {
                 Contact Us
               </a>
               <a
-                href="terms-and-conditions"
+                href="/terms-and-conditions"
                 class="text-white font-light text-base"
               >
                 Terms & Conditions
@@ -163,22 +178,37 @@ export const Footer = component$(() => {
               Categories
             </h3>
             <div class="flex flex-col gap-4">
-              <a href="/products/filterCategories/Hair-Care/" class="text-white font-light text-base">
+              <a
+                href="/products/filterCategories/Hair-Care/"
+                class="text-white font-light text-base"
+              >
                 Hair care
               </a>
               <a href="/products/" class="text-white font-light text-base">
                 Barbering
               </a>
-              <a href="/products/filterCategories/Textured-Hair/" class="text-white font-light text-base">
+              <a
+                href="/products/filterCategories/Textured-Hair/"
+                class="text-white font-light text-base"
+              >
                 Textured Hair
               </a>
-              <a href="/products/filterCategories/Men's-Hair-Care+Wax-&-Pomade/" class="text-white font-light text-base">
+              <a
+                href="/products/filterCategories/Men's-Hair-Care+Wax-&-Pomade/"
+                class="text-white font-light text-base"
+              >
                 Men’s Grooming
               </a>
-              <a href="/products/filter/Hair/haircolor/" class="text-white font-light text-base">
+              <a
+                href="/products/filter/Hair/haircolor/"
+                class="text-white font-light text-base"
+              >
                 Hair Colour
               </a>
-              <a href="/products/filter/Tools/" class="text-white font-light text-base">
+              <a
+                href="/products/filter/Tools/"
+                class="text-white font-light text-base"
+              >
                 Hair Tools
               </a>
             </div>

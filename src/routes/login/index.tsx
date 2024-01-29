@@ -10,6 +10,7 @@ import {
   getCartByUserId,
   updateUserCart,
 } from "~/express/services/cart.service";
+import { useAuthSignin } from "../plugin@auth";
 
 export const useAction = routeAction$(async (data, requestEvent) => {
   const secret_key = requestEvent.env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
@@ -90,6 +91,7 @@ export default component$(() => {
   const message = useSignal<string>("");
   const action = useAction();
   const recaptchaToken = useSignal<string>("");
+  const signIn = useAuthSignin();
 
   useVisibleTask$(
     ({ track }) => {
@@ -100,6 +102,14 @@ export default component$(() => {
       } else {
         message.value = action.value?.err ?? "";
       }
+      isLoading.value = false;
+    },
+    { strategy: "document-idle" }
+  );
+
+  useVisibleTask$(
+    ({ track }) => {
+      track(() => action.value?.status);
       (window as any).grecaptcha.ready(async () => {
         const token = await (window as any).grecaptcha.execute(
           import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "",
@@ -134,7 +144,7 @@ export default component$(() => {
             import.meta.env.VITE_RECAPTCHA_SITE_KEY
           }`}
         ></script>
-        <Form action={action} reloadDocument={true}>
+        <Form action={action} reloadDocument={false}>
           <div class="card w-[90%] md:w-[35rem] h-fit m-6 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
             {message.value && (
               <div class="w-full">
@@ -171,9 +181,12 @@ export default component$(() => {
               class={`btn w-full bg-black text-white text-lg`}
               type="submit"
               disabled={recaptchaToken.value.length === 0}
+              onClick$={() => {
+                isLoading.value = true;
+              }}
             >
               {isLoading.value && (
-                <span class="loading-spinner loading-spinner-white"></span>
+                <span class="loading loading-spinner-white"></span>
               )}
               Sign In
             </button>
@@ -182,7 +195,7 @@ export default component$(() => {
               <button
                 class="btn btn-ghost text-black"
                 type="button"
-                disabled={recaptchaToken.value.length === 0}
+                disabled={recaptchaToken.value.length === 0 || isLoading.value}
                 onClick$={() => {
                   window.location.href = "/forget-password";
                 }}
@@ -197,6 +210,29 @@ export default component$(() => {
               >
                 Don't have an account? Register Now
               </a>
+            </div>
+            <div class="flex items-center justify-center dark:bg-gray-800">
+              <button
+                onClick$={() =>
+                  signIn.submit({
+                    providerId: "google",
+                    options: {
+                      callbackUrl:
+                        "https://xpressbeauty.ca/api/auth/callback/google",
+                    },
+                  })
+                }
+                type="button"
+                class="px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150"
+              >
+                <img
+                  class="w-6 h-6"
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  loading="lazy"
+                  alt="google logo"
+                />
+                <span>Login with Google</span>
+              </button>
             </div>
           </div>
         </Form>

@@ -208,7 +208,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
               </span>
               <div class="card-actions">
                 <button
-                  class="btn btn-primary btn-block"
+                  class="btn bg-black btn-block text-white"
                   onClick$={handleOnCartClick}
                 >
                   View cart
@@ -249,7 +249,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
                 {(wishList as any)?.wishList?.data?.length ?? 0} Items
               </span>
               <div class="card-actions">
-                <a href="/wishlist" class="btn btn-primary btn-block">
+                <a href="/wishlist" class="btn bg-black text-white btn-block">
                   View wishlist
                 </a>
               </div>

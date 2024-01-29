@@ -28,94 +28,130 @@ export const useFilterData = routeLoader$(async () => {
   return JSON.stringify({ brand: requestBrand, cat: requestCat });
 });
 
-export const useDomContentLoaded = routeLoader$(async ({ params, url }) => {
-  const page = url.searchParams.get("page") ?? "1";
-  const searchQuery = url.searchParams.get("search") ?? "";
-  const filters = params.args.split("/");
-  const filterBrands = () => {
-    const index = filters.findIndex((filter: string) => {
-      return filter === "filterBrands";
+export const useDomContentLoaded = routeLoader$(
+  async ({ params, url, redirect }) => {
+    const page = url.searchParams.get("page") ?? "1";
+    const searchQuery = url.searchParams.get("search") ?? "";
+    if (
+      params.args.split("/")[0] &&
+      params.args.split("/")[0].includes("pid")
+    ) {
+      throw redirect(301, `/products/${params.args.split("/")[0]}`);
+    }
+    const filters = params.args.split("/");
+    const filterBrands = () => {
+      const index = filters.findIndex((filter: string) => {
+        return filter === "filterBrands";
+      });
+      if (index !== -1) {
+        return filters[index + 1];
+      } else {
+        return "";
+      }
+    };
+    const filter = () => {
+      const index = filters.findIndex((filter: string) => {
+        return filter === "filter";
+      });
+      if (index !== -1) {
+        return filters[index + 1];
+      } else {
+        return "";
+      }
+    };
+    const search = () => {
+      const index = filters.findIndex((filter: string) => {
+        return filter === "search";
+      });
+      if (index !== -1) {
+        return filters[index + 1];
+      } else {
+        return "";
+      }
+    };
+    const filterCategories = () => {
+      const index = filters.findIndex((filter: string) => {
+        return filter === "filterCategories";
+      });
+      if (index !== -1) {
+        return filters[index + 1];
+      } else {
+        return "";
+      }
+    };
+    const filterPrices = () => {
+      const index = filters.findIndex((filter: string) => {
+        return filter === "filterPrices";
+      });
+      if (index !== -1) {
+        return filters[index + 1];
+      } else {
+        return "";
+      }
+    };
+    const filterBrandsArray =
+      filterBrands() !== "" ? filterBrands().split("+") : [];
+    const filterCategoriesArray =
+      filterCategories() !== "" ? filterCategories().split("+") : [];
+    const filterPricesArray =
+      filterPrices() !== "" ? filterPrices().split("+") : [];
+    const finalFilterBrandsArray = filterBrandsArray.map((brand: string) => {
+      return brand.replace(/-/g, " ");
     });
-    if (index !== -1) {
-      return filters[index + 1];
-    } else {
-      return "";
-    }
-  };
-  const filter = () => {
-    const index = filters.findIndex((filter: string) => {
-      return filter === "filter";
-    });
-    if (index !== -1) {
-      return filters[index + 1];
-    } else {
-      return "";
-    }
-  };
-  const search = () => {
-    const index = filters.findIndex((filter: string) => {
-      return filter === "search";
-    });
-    if (index !== -1) {
-      return filters[index + 1];
-    } else {
-      return "";
-    }
-  };
-  const filterCategories = () => {
-    const index = filters.findIndex((filter: string) => {
-      return filter === "filterCategories";
-    });
-    if (index !== -1) {
-      return filters[index + 1];
-    } else {
-      return "";
-    }
-  };
-  const filterPrices = () => {
-    const index = filters.findIndex((filter: string) => {
-      return filter === "filterPrices";
-    });
-    if (index !== -1) {
-      return filters[index + 1];
-    } else {
-      return "";
-    }
-  };
-  const filterBrandsArray =
-    filterBrands() !== "" ? filterBrands().split("+") : [];
-  const filterCategoriesArray =
-    filterCategories() !== "" ? filterCategories().split("+") : [];
-  const filterPricesArray =
-    filterPrices() !== "" ? filterPrices().split("+") : [];
-  const finalFilterBrandsArray = filterBrandsArray.map((brand: string) => {
-    return brand.replace(/-/g, " ");
-  });
-  const finalFilter = filter() === "Brands" ? "" : filter();
-  const finalFilterCategoriesArray = filterCategoriesArray.map(
-    (category: string) => {
-      return category.replace(/-/g, " ");
-    }
-  );
+    const finalFilter = filter() === "Brands" ? "" : filter();
+    const finalFilterCategoriesArray = filterCategoriesArray.map(
+      (category: string) => {
+        return category.replace(/-/g, " ");
+      }
+    );
 
-  const request = await get_products_data(
-    finalFilterBrandsArray,
-    finalFilterCategoriesArray,
-    filterPricesArray,
-    finalFilter,
-    parseInt(page),
-    search() !== "" ? search() : searchQuery
-  );
+    const finalUrl = `${
+      filterBrandsArray.length > 0
+        ? `filterBrands/${filterBrandsArray.join("+")}/`
+        : ""
+    }${
+      filterCategoriesArray.length > 0
+        ? `filterCategories/${filterCategoriesArray.join("+")}/`
+        : ""
+    }${
+      filterPricesArray.length > 0
+        ? `filterPrices/${filterPricesArray.join("+")}/`
+        : ""
+    }/${search() !== "" ? `search/${search()}/` : ""}/${
+      filter() !== "" ? `filter/${filter()}/` : ""
+    }`;
+    const finalLength =
+      finalUrl?.split("/")?.filter((item: string) => {
+        return item !== "";
+      })?.length ?? 0;
 
-  const data = JSON.parse(request);
-  return JSON.stringify({
-    finalFilter,
-    finalFilterBrandsArray,
-    finalFilterCategoriesArray,
-    filterPricesArray,
-    serverData: data,
-  });
-});
+    if (
+      finalLength !==
+      params.args.split("/").filter((e: string) => e !== "").length
+    ) {
+      //make sure finalUrl ends with only one / any extra remove it
+      const urlToRedirect = finalUrl.replace(/\/$/, "");
+      throw redirect(301, `/products/${urlToRedirect}`);
+    }
+    const request = await get_products_data(
+      finalFilterBrandsArray,
+      finalFilterCategoriesArray,
+      filterPricesArray,
+      finalFilter,
+      parseInt(page),
+      search() !== "" ? search() : searchQuery
+    );
+
+    const data = JSON.parse(request);
+    return JSON.stringify({
+      finalFilter,
+      finalFilterBrandsArray,
+      finalFilterCategoriesArray,
+      filterPricesArray,
+      serverData: data,
+    });
+  }
+);
 
 export default component$(() => {
   const firstRender = useDomContentLoaded();
@@ -728,24 +764,6 @@ export const head: DocumentHead = ({ resolveValue }) => {
     metaDescription += ` in all beauty categories and more at XpressBeauty`;
   }
   return {
-    links: [
-      {
-        rel: "canonical",
-        href: `https://xpressbeauty.ca/products/${
-          json.finalFilterBrandsArray.length > 0
-            ? `filterBrands/${json.finalFilterBrandsArray.join("+")}/`
-            : ""
-        }${
-          json.finalFilterCategoriesArray.length > 0
-            ? `filterCategories/${json.finalFilterCategoriesArray.join("+")}/`
-            : ""
-        }${
-          json.filterPricesArray.length > 0
-            ? `filterPrices/${json.filterPricesArray.join("+")}/`
-            : ""
-        }`,
-      },
-    ],
     title: `${
       mainFilter
         ? `${mainFilter} products`

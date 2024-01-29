@@ -84,6 +84,7 @@ export default component$(() => {
       } else {
         message.value = action.value?.err ?? "";
       }
+      isLoading.value = false;
     },
     { strategy: "document-idle" }
   );
@@ -156,10 +157,13 @@ export default component$(() => {
             <button
               class={`btn w-full bg-black text-white text-lg`}
               type="submit"
-              disabled={recaptchaToken.value.length === 0}
+              disabled={recaptchaToken.value.length === 0 || isLoading.value}
+              onClick$={() => {
+                isLoading.value = true;
+              }}
             >
               {isLoading.value && (
-                <span class="loading-spinner loading-spinner-white"></span>
+                <span class="loading loading-spinner-white"></span>
               )}
               Send Email
             </button>

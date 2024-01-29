@@ -1,3 +1,24 @@
+// import { component$ } from "@builder.io/qwik";
+// import { routeLoader$ } from "@builder.io/qwik-city";
+
+// export const useCloverTest = routeLoader$(async ({ redirect }) => {
+//   // const client_id = env.get("VITE_APP_ID");
+//   // const url = `${env.get(
+//   //   "VITE_CLOVER_URL"
+//   // )}/oauth/authorize?client_id=${client_id}&redirect_uri=${env.get(
+//   //   "VITE_APPURL"
+//   // )}/api/cloveroAuth`;
+//   throw redirect(301, "/payment/pay/54782");
+// });
+
+// export default component$(() => {
+//   return (
+//     <div>
+//       <h1>Payment</h1>
+//     </div>
+//   );
+// });
+
 import {
   component$,
   useContext,
@@ -44,6 +65,19 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
     const cards = [];
     if (!verified.isDummy) {
       const user = await getUserById(verified.user_id);
+      if (
+        user?.result?.generalInfo.address.country
+          .toLowerCase()
+          .includes("united")
+      ) {
+        console.log("US");
+        rate = 0;
+        return JSON.stringify({
+          status: "success",
+          cards: [],
+          rate: rate,
+        });
+      }
       const apiKey = "AIzaSyCaw8TltqjUfM0QyLnGGo8sQzRI8NtHqus";
       const components = "country:US|country:CA";
       const urls = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${user.result?.generalInfo?.address?.postalCode}&key=${apiKey}&components=${components}`;
@@ -85,6 +119,19 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
       }
     } else {
       const dummyUser = await getDummyCustomer(verified.user_id);
+      if (
+        dummyUser?.result?.generalInfo.address.country
+          .toLowerCase()
+          .includes("united")
+      ) {
+        console.log("US");
+        rate = 0;
+        return JSON.stringify({
+          status: "success",
+          cards: [],
+          rate: rate,
+        });
+      }
       const apiKey = "AIzaSyCaw8TltqjUfM0QyLnGGo8sQzRI8NtHqus";
       const components = "country:US|country:CA";
       const urls = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${dummyUser.result?.generalInfo?.address?.postalCode}&key=${apiKey}&components=${components}`;
@@ -132,9 +179,23 @@ export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   }
 });
 
-export const paypalServer = server$(async function (data: any, user: any) {
+export const paypalServer = server$(async function (data: any) {
   try {
     // console.log(data);
+    const secret = this.env.get("PRIVATE_CLOUDFLARE_SECRET_KEY") ?? "";
+    const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
+    const formData = new FormData();
+    formData.append("secret", secret);
+    formData.append("response", data.captchaToken ?? "");
+    const req = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+    const res = await req.json();
+    if (!res.success) {
+      return { paymentIntent: { status: "failed" }, orderId: "" };
+    }
     paypal.configure({
       mode: import.meta.env.VITE_PAYPAL_MODE, //sandbox or live
       client_id: import.meta.env.VITE_PAYPAL_CLIENT_ID ?? "",
@@ -177,16 +238,13 @@ export const paypalServer = server$(async function (data: any, user: any) {
             details: {
               subtotal: data.subTotal,
               shipping: parseFloat(data.shipping).toFixed(2), // Example shipping cost
-              tax: user?.generalInfo?.address?.country
-                ?.toLowerCase()
-                ?.includes("united")
-                ? "0.00"
-                : data.hst, // Example tax amount
+              tax: data.totalInfo.tax, // Example tax amount
             },
           },
         },
       ],
     };
+    console.log(create_payment_json.transactions[0]);
     // console.log(create_payment_json.transactions[0].item_list);
     // console.log(create_payment_json.transactions[0].amount);
     const paypalPromise = await new Promise((resolve, reject) => {
@@ -221,9 +279,23 @@ export const callServer = server$(async function (
   cart: any,
   currency?: string,
   totalInfo?: any,
-  isCoponApplied?: boolean
+  isCoponApplied?: boolean,
+  captchaToken?: string
 ) {
   try {
+    const secretKey = this.env.get("PRIVATE_CLOUDFLARE_SECRET_KEY") ?? "";
+    const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+    const formData = new FormData();
+    formData.append("secret", secretKey);
+    formData.append("response", captchaToken ?? "");
+    const req = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+    const res = await req.json();
+    if (!res.success) {
+      return { paymentIntent: { status: "failed" }, orderId: "" };
+    }
     const stripe: any = new Stripe(
       this.env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "",
       {
@@ -266,12 +338,8 @@ export const callServer = server$(async function (
         `${user.result?.firstName} ${user.result?.lastName}`,
         data.shipping_address,
         data.products
-        // currency?.toLocaleLowerCase() ?? "CAD",
-        // rate
       );
-      console.log(data);
       if (isCoponApplied) {
-        // update status of copon in cobone array of object
         await usersSchema.updateOne(
           { _id: verified.user_id, "cobone.code": "xpressbeauty10" },
           { $set: { "cobone.$.status": true } }
@@ -301,15 +369,47 @@ export default component$(() => {
   const subTotal = useSignal<number>(0);
   const taxRate = useSignal<number>(0);
   const shipping = useSignal<number>(0);
+  const isGoodToGo = useSignal<boolean>(false);
+  const captchaToken = useSignal<string>("");
 
   useTask$(async () => {
     taxRate.value = paymentRoute?.rate ?? 0.13;
+    console.log(taxRate.value);
   });
-
+  console.log("user", userContext);
   useVisibleTask$(
     () => {
-      if (paymentRoute.status === "failed") {
-        window.location.href = "/cart";
+      if (
+        !userContext?.email ||
+        !userContext?.phoneNumber ||
+        !userContext?.generalInfo?.address?.postalCode
+      ) {
+        window.location.href = "/checkout";
+      }
+    },
+    { strategy: "document-idle" }
+  );
+
+  useVisibleTask$(
+    ({ track }) => {
+      track(() => isLoading.value);
+      if (!isLoading.value) {
+        if (typeof window === "undefined") return;
+        console.log("onloadTurnstileCallback");
+        (window as any).onloadTurnstileCallback = function () {
+          // get token from turnstile
+
+          this.turnstile.render("#example-container", {
+            sitekey: import.meta.env.PUBLIC_CLOUDFLARE_SITE_KEY,
+            callback: (token: string) => {
+              if (token) {
+                console.log("token", token);
+                isGoodToGo.value = true;
+                captchaToken.value = token;
+              }
+            },
+          });
+        };
       }
     },
     { strategy: "document-idle" }
@@ -375,11 +475,9 @@ export default component$(() => {
                 currency: currencyObject === "1" ? "USD" : "CAD",
               },
               isCoponApplied: checkCopon === "true" ? true : false,
+              captchaToken: captchaToken.value,
             };
-            const paypalReq: any = await paypalServer(
-              dataToSend,
-              userContext.user
-            );
+            const paypalReq: any = await paypalServer(dataToSend);
             const paypalRes = JSON.parse(paypalReq);
 
             return paypalRes.id;
@@ -413,6 +511,7 @@ export default component$(() => {
                   currency: currencyObject === "1" ? "USD" : "CAD",
                 },
                 isCoponApplied: checkCopon === "true" ? true : false,
+                captchaToken: captchaToken.value,
               };
               const req = await postRequest(
                 "/api/paymentConfirmiation",
@@ -499,6 +598,7 @@ export default component$(() => {
             currency: currencyObject === "1" ? "USD" : "CAD",
           },
           isCoponApplied: coponCheck === "true" ? true : false,
+          captchaToken: captchaToken.value,
         };
 
         const req = await postRequest("/api/paymentConfirmiation", dataToSend);
@@ -509,11 +609,12 @@ export default component$(() => {
           window.location.href = `/payment/success/${res.orderId}`;
         } else {
           isLoading.value = false;
-          errorEl.innerText = res.message;
+          errorEl.innerText = (res.message || res.result) ?? "";
         }
       };
-      form.addEventListener("submit", async (e) => {
+      form.addEventListener("submit", async (e: any) => {
         e.preventDefault();
+
         isLoading.value = true;
         if (finalCard.value && isExistingPaymentMethod.value) {
           const totalInfo = {
@@ -539,18 +640,19 @@ export default component$(() => {
             cartContext?.cart ?? {},
             currencyObject === "1" ? "USD" : "CAD",
             totalInfo,
-            isCoponApplied === "true" ? true : false
+            isCoponApplied === "true" ? true : false,
+            captchaToken.value
           );
           if (pay?.paymentIntent.status === "succeeded") {
-            isLoading.value = false;
             window.location.href = `/payment/success/${pay.orderId}`;
-          } else {
             isLoading.value = false;
+          } else {
             alert("Payment Failed");
+            isLoading.value = false;
           }
           return;
         } else {
-          stripe.createToken(cardNo).then((res) => {
+          stripe.createToken(cardNo).then((res: any) => {
             if (res.error) errorEl.innerText = res?.error?.message ?? "";
             else stripeTokenHandler(res.token);
             isLoading.value = false;
@@ -609,7 +711,7 @@ export default component$(() => {
                       </>
                     ))}
                     <button
-                      class="btn btn-primary text-white w-full"
+                      class="btn bg-black text-white w-full"
                       onClick$={() => {
                         isExistingPaymentMethod.value = false;
                       }}
@@ -619,10 +721,10 @@ export default component$(() => {
                     </button>
                   </div>
                 )}
-
+                <div id="example-container"></div>
                 <OrderDetails
                   taxRate={taxRate.value}
-                  user={userContext?.user}
+                  user={userContext}
                   subTotal={subTotal}
                   cart={cartContext?.cart}
                   total={total}
@@ -631,6 +733,9 @@ export default component$(() => {
                   acceptSaveCard={acceptSaveCard}
                   currencyObject={currencyObject}
                   shipping={shipping}
+                  isLoading={isLoading}
+                  isGoodToGo={isGoodToGo.value}
+                  // chargeClover={chargeClover}
                 />
               </div>
             </div>

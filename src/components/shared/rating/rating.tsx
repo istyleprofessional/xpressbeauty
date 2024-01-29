@@ -37,7 +37,7 @@ export const Rating = component$((props: RatingInterface) => {
                 type="radio"
                 aria-label="Rate 0.5 stars"
                 name="rating-10"
-                class={`bg-green-500 mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
+                class={`bg-orange-400 mask mask-star-2 mask-half-1 `}
                 checked={index + 0.5 === averageRating.value ? true : false}
                 disabled={true}
               />
@@ -46,7 +46,7 @@ export const Rating = component$((props: RatingInterface) => {
                 type="radio"
                 name="rating-10"
                 aria-label="Rate 1 stars"
-                class={`bg-green-500 mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
+                class={`bg-orange-400 mask mask-star-2 mask-half-2 `}
                 checked={index + 1 === averageRating.value ? true : false}
                 disabled={true}
               />

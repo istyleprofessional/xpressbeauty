@@ -33,16 +33,20 @@ import { CurContext } from "~/context/cur.context";
 export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
   const product = params.product;
+
   if (!product.includes("pid")) {
     const result: any = await get_product_by_name(product);
     if (!result || result?.err || result?.perfix === "") {
+      console.log("here");
       throw redirect(301, `/products/`);
     }
+    console.log("here");
     throw redirect(301, `/products/${result?.perfix}`);
   }
   const result: any = await get_product_by_name(product);
   const ratings = await getRatingByProductId(result?._id ?? "");
   if (!result) {
+    console.log("here");
     throw redirect(301, "/products/");
   }
   return JSON.stringify({ ...result, ratings: ratings });
@@ -126,6 +130,7 @@ export default component$(() => {
       totalQuantity += value;
       productsToAdd.push(productToAdd);
     }
+    console.log(userObj);
     const data = {
       products: productsToAdd,
       totalQuantity: totalQuantity,
@@ -133,7 +138,9 @@ export default component$(() => {
       isSaverClub: !(user.isEmailVerified && user.isPhoneVerified)
         ? true
         : false,
+      user: userObj,
     };
+    console.log(data);
     const result = await postRequest("/api/cart", JSON.stringify(data));
     const response = await result.json();
     const totalPrice = response?.products?.reduce(
@@ -192,7 +199,7 @@ export default component$(() => {
       {isLoading.value && (
         <>
           <div class="w-full backdrop-blur-lg drop-shadow-lg fixed z-20 m-auto inset-x-0 inset-y-0 ">
-            <progress class="progress progress-secondary  w-56 fixed z-20 m-auto inset-x-0 inset-y-0"></progress>
+            <progress class="progress progress-white w-56 fixed z-20 m-auto inset-x-0 inset-y-0  bg-white"></progress>
           </div>
         </>
       )}
@@ -366,12 +373,6 @@ export const head: DocumentHead = ({ resolveValue }) => {
   const jsonData = JSON.parse(doc)._doc;
 
   return {
-    links: [
-      {
-        rel: "canonical",
-        href: `https://xpressbeauty.ca/products/${jsonData?.perfix ?? ""}`,
-      },
-    ],
     title: `${jsonData?.product_name ?? ""} | ${
       jsonData.companyName.name && jsonData.companyName.name !== ""
         ? `${jsonData.companyName.name} |`

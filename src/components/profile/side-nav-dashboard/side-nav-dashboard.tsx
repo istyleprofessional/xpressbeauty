@@ -13,8 +13,8 @@ export const SideNavDashboard = component$(() => {
       <a
         href="/profile/"
         role="tab"
-        class={`tab ${
-          !loc.url.toString().includes("my-order") ? "tab-active" : ""
+        class={`tab [--tab-bg:yellow] [--tab-border-color:orange] text-primary ${
+          !loc.url.toString().includes("my-order") ? "tab-active " : ""
         }`}
       >
         <EditProfileIcon
@@ -25,8 +25,8 @@ export const SideNavDashboard = component$(() => {
       <a
         href="/profile/my-order"
         role="tab"
-        class={`tab ${
-          loc.url.toString().includes("my-order") ? "tab-active" : ""
+        class={`tab [--tab-bg:black] ${
+          loc.url.toString().includes("my-order") ? "tab-active " : ""
         }`}
       >
         <OrderProfileIcon

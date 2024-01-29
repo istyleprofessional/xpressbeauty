@@ -5,20 +5,22 @@ import { NavBar } from "~/components/admin/nav-bar/nav-bar";
 import { SideNav } from "~/components/admin/side-nav/side.nav";
 import jwt from "jsonwebtoken";
 
-export const useProfileLoader = routeLoader$(async ({ cookie, redirect }) => {
-  const token = cookie.get("admin-token")?.value;
-  try {
-    const validateToken = jwt.verify(
-      token ?? "",
-      import.meta.env.VITE_JWTSECRET
-    );
-    if (!validateToken) {
+export const useProfileLoader = routeLoader$(
+  async ({ cookie, redirect, env }) => {
+    const token = cookie.get("admin-token")?.value;
+    try {
+      const validateToken = jwt.verify(
+        token ?? "",
+        env.get("VITE_JWTSECRET") ?? ""
+      );
+      if (!validateToken) {
+        throw redirect(301, "/admin-login/");
+      }
+    } catch (error) {
       throw redirect(301, "/admin-login/");
     }
-  } catch (error) {
-    throw redirect(301, "/admin-login/");
   }
-});
+);
 
 export default component$(() => {
   return (

@@ -15,14 +15,12 @@ import jwt from "jsonwebtoken";
 import {
   emailUpdateToken,
   getUserEmailById,
-  phoneUpdateToken,
   updateExistingUser,
 } from "~/express/services/user.service";
 import { validate } from "~/utils/validate.utils";
 import { Toast } from "~/components/admin/toast/toast";
 import { sendVerficationMail } from "~/utils/sendVerficationMail";
 import Twilio from "twilio";
-import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
 
 export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
   const formData: any = data;
@@ -130,39 +128,6 @@ const getTheToken = server$(async function () {
   return { status: "success", token: token ?? "" };
 });
 
-const getThePhoneToken = server$(async function () {
-  const token = this.cookie.get("token")?.value;
-  if (!token) {
-    return { status: "failed" };
-  }
-  try {
-    const decoded: any = jwt.verify(
-      token ?? "",
-      this.env.get("VITE_JWTSECRET") ?? ""
-    );
-    if (decoded) {
-      const request = await getUserEmailById(decoded.user_id);
-      const PhoneVerifyToken = generateUniqueInteger();
-      const updateReq = await phoneUpdateToken(
-        decoded.user_id,
-        PhoneVerifyToken
-      );
-      if (request?.status === "success" && updateReq?.status === "success") {
-        await sendPhoneOtp(
-          request?.result?.phoneNumber ?? "",
-          PhoneVerifyToken
-        );
-        return { status: "success", token: token };
-      } else {
-        return { status: "failed" };
-      }
-    }
-  } catch (error) {
-    return { status: "failed" };
-  }
-  return { status: "failed" };
-});
-
 export const validatePhoneProfile = server$(async function (data) {
   const client: any = new (Twilio as any).Twilio(
     this.env.get("VITE_TWILIO_ACCOUNT_SID") ?? "",
@@ -173,7 +138,7 @@ export const validatePhoneProfile = server$(async function (data) {
 });
 
 export default component$(() => {
-  const { user }: any = useContext(UserContext);
+  const user: any = useContext(UserContext);
   const action = useUpdateProfile();
   const toast = useSignal<HTMLElement>();
   const placesPredictions = useSignal<any[]>([]);
@@ -348,22 +313,6 @@ export default component$(() => {
                   </span>
                 </div>
                 <div class="flex flex-col gap-1">
-                  {user?.isPhoneVerified ? (
-                    <h1 style="color:green">Phone Number Verified</h1>
-                  ) : (
-                    <button
-                      onClick$={async () => {
-                        const res = await getThePhoneToken();
-                        if (res?.status === "success") {
-                          location.href = `/phoneVerify/?token=${res.token}`;
-                          return;
-                        }
-                      }}
-                      class="btn normal-case btn-sm btn-warning"
-                    >
-                      Verify Phone
-                    </button>
-                  )}
                   {phoneMessage.value !== "" && (
                     <p class="text-error text-sm font-light">
                       {phoneMessage.value}

@@ -61,7 +61,6 @@ export const useUserData = routeLoader$(
     const referrer = request.headers.get("referer");
     const visitPage = url.href;
     const token = cookie.get("token")?.value ?? "";
-
     const userAgent = request.headers.get("user-agent");
     const data = {
       generalInfo: {
@@ -110,6 +109,7 @@ export const useUserData = routeLoader$(
           env.get("VITE_JWTSECRET") ?? "",
           { expiresIn: "1h" }
         );
+        console.log(requestDum?.result?._id?.toString() ?? "");
         cookie.set("token", token, {
           httpOnly: true,
           path: "/",
@@ -123,6 +123,7 @@ export const useUserData = routeLoader$(
     }
     try {
       const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
+
       let user: any;
       let isDummy = true;
       if (verify.isDummy) {
@@ -260,7 +261,7 @@ export default component$(() => {
   });
   const userContextObject = useStore<any>(
     {
-      user: userData?.user,
+      ...userData?.user,
       isDummy: userData?.isDummy,
     },
     { deep: true }
@@ -359,6 +360,19 @@ export default component$(() => {
 
   return (
     <div class="page flex flex-col gap-6 h-screen">
+      <noscript>
+        <a href="https://www.livechat.com/chat-with/17027997/" rel="nofollow">
+          Chat with us
+        </a>
+        , powered by{" "}
+        <a
+          href="https://www.livechat.com/?welcome"
+          rel="noopener nofollow"
+          target="_blank"
+        >
+          LiveChat
+        </a>
+      </noscript>
       <main>
         {url !== "/login/" &&
           url !== "/register/" &&
