@@ -1,4 +1,4 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model } from "mongoose";
 
 const cartSchema = new Schema(
   {
@@ -12,4 +12,4 @@ const cartSchema = new Schema(
   { timestamps: true }
 );
 
-export const cart = models.carts || model("carts", cartSchema);
+export const cart = model("carts", cartSchema);

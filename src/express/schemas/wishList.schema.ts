@@ -1,4 +1,4 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model } from "mongoose";
 
 const wishListSchema = new Schema(
   {
@@ -10,5 +10,5 @@ const wishListSchema = new Schema(
   { timestamps: true }
 );
 
-const wishList = models.wishList || model("wishList", wishListSchema);
+const wishList = model("wishList", wishListSchema);
 export default wishList;

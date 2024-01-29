@@ -1,4 +1,4 @@
-import { model, Schema, models } from "mongoose";
+import { model, Schema } from "mongoose";
 
 const productsSchema = new Schema(
   {
@@ -38,5 +38,5 @@ productsSchema.index({
   companyName: "text",
 });
 
-const products = models.products || model("products", productsSchema);
+const products = model("products", productsSchema);
 export default products;
