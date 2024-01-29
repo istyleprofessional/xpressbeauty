@@ -15,14 +15,12 @@ import jwt from "jsonwebtoken";
 import {
   emailUpdateToken,
   getUserEmailById,
-  phoneUpdateToken,
   updateExistingUser,
 } from "~/express/services/user.service";
 import { validate } from "~/utils/validate.utils";
 import { Toast } from "~/components/admin/toast/toast";
 import { sendVerficationMail } from "~/utils/sendVerficationMail";
 import Twilio from "twilio";
-import { sendPhoneOtp } from "~/utils/sendPhoneOtp";
 
 export const useUpdateProfile = routeAction$(async (data, requestEvent) => {
   const formData: any = data;
