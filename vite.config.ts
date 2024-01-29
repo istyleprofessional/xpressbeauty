@@ -10,10 +10,18 @@ export default defineConfig(() => {
       qwikVite(),
       tsconfigPaths(),
     ],
-    preview: {
+    dev: {
       headers: {
-        "Cache-Control": "public, max-age=600",
+        'Cache-Control': 'public, max-age=0',
       },
     },
+    preview: {
+      headers: {
+        'Cache-Control': 'public, max-age=600',
+      },
+    },
+    optimizeDeps: {
+      include: ["@auth/core"]
+    }
   };
 });

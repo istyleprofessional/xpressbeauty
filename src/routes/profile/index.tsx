@@ -348,22 +348,6 @@ export default component$(() => {
                   </span>
                 </div>
                 <div class="flex flex-col gap-1">
-                  {user?.isPhoneVerified ? (
-                    <h1 style="color:green">Phone Number Verified</h1>
-                  ) : (
-                    <button
-                      onClick$={async () => {
-                        const res = await getThePhoneToken();
-                        if (res?.status === "success") {
-                          location.href = `/phoneVerify/?token=${res.token}`;
-                          return;
-                        }
-                      }}
-                      class="btn normal-case btn-sm btn-warning"
-                    >
-                      Verify Phone
-                    </button>
-                  )}
                   {phoneMessage.value !== "" && (
                     <p class="text-error text-sm font-light">
                       {phoneMessage.value}

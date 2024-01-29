@@ -47,6 +47,7 @@ export const checkIfDisplayCard = server$(async function () {
   }
 });
 
+
 export default component$(() => {
   const status = import.meta.env.VITE_STATUS;
   const newArrivalProducts: ProductModel[] = JSON.parse(
