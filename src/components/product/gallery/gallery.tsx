@@ -9,7 +9,7 @@ export const Gallery = component$((props: GalleryProps) => {
   const { product_name, imgs } = props;
 
   return (
-    <div class="w-96 h-96 self-start">
+    <div class="w-96 h-96 lg:self-start">
       <img
         itemProp="image"
         src={imgs[0] ?? ""}
