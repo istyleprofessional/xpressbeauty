@@ -10,7 +10,7 @@ import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 import { CartContext } from "~/context/cart.context";
 import { UserContext } from "~/context/user.context";
 import productSchema from "~/express/schemas/product.schema";
-import usersSchema from "~/express/schemas/users.schema";
+import { User } from "~/express/schemas/users.schema";
 
 export const checkCatServer = server$(async function (products: any) {
   if (!(products && products?.length)) return false;
@@ -36,7 +36,7 @@ export const checkCoponServer = server$(async function (
 ) {
   if (copon === "xpressbeauty10") {
     // find user id and check if he used this copon before in cobone array
-    const checkIfUserUsed = await usersSchema.findOne({
+    const checkIfUserUsed = await User.findOne({
       _id: user_id,
       cobone: { $elemMatch: { code: copon } },
     });
@@ -50,7 +50,7 @@ export const checkCoponServer = server$(async function (
         return true;
       }
     }
-    await usersSchema.updateOne(
+    await User.updateOne(
       { _id: user_id },
       { $push: { cobone: { code: copon, status: false } } }
     );
@@ -91,7 +91,7 @@ export const CartDetails = component$((props: any) => {
   const handleAddCopon = $(async () => {
     const checkCopon = await checkCoponServer(
       coponSignal.value,
-      userContext?.user?._id
+      userContext?._id
     );
     if (checkCopon) {
       subTotal.value = cartContext?.cart?.totalPrice;

@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 const orderSchema = new Schema(
   {
@@ -20,4 +20,5 @@ const orderSchema = new Schema(
   { timestamps: true }
 );
 
-export default model("orders", orderSchema);
+const orders = models.orders || model("orders", orderSchema);
+export default orders;

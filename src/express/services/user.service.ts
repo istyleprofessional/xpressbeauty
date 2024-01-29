@@ -1,4 +1,4 @@
-import User from "../schemas/users.schema";
+import { User } from "../schemas/users.schema";
 import Cryptr from "cryptr";
 import { generateUniqueInteger } from "~/utils/generateOTP";
 
@@ -92,7 +92,7 @@ export const userGoogleLogin = async (userObject: any) => {
   } catch (err) {
     return { status: "failed", err: err };
   }
-}
+};
 
 export const userLogin = async (userObject: any) => {
   try {
@@ -315,10 +315,7 @@ export const updateUserPassword = async (email: string, password: string) => {
   }
 };
 
-export const updatePaymentMethod = async (
-  paymentMethod: string,
-  id: string
-) => {
+export const updatePaymentMethod = async (paymentMethod: any, id: string) => {
   try {
     const req = await User.findOneAndUpdate(
       { _id: id },

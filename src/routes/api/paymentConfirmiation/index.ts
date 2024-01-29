@@ -12,7 +12,7 @@ import { sendConfirmationOrderForAdmin } from "~/utils/sendConfirmationOrderForA
 import Stripe from "stripe";
 import { refreshToken } from "~/utils/refreshToken";
 import { verifyTokenUtil } from "~/utils/verifyTokenUtil";
-import usersSchema from "~/express/schemas/users.schema";
+import { User } from "~/express/schemas/users.schema";
 
 export const onPost: RequestHandler = async ({
   json,
@@ -65,11 +65,13 @@ export const onPost: RequestHandler = async ({
       const source = await stripe.customers.createSource(customer.id, {
         source: data.token,
       });
-      const charges = await stripe.charges.create({
+      const charges = await stripe.paymentIntents.create({
         amount: Math.round(parseFloat(data.order_amount) * 100),
         currency: data?.currency?.toLowerCase(),
-        source: source.id,
         customer: customer.id,
+        payment_method: source.id,
+        off_session: true,
+        confirm: true,
       });
       if (charges.status !== "succeeded") {
         json(200, { status: "failed", result: "Something went wrong" });
@@ -118,15 +120,18 @@ export const onPost: RequestHandler = async ({
           request.result?.stripeCustomerId ?? "",
           { source: data.token }
         );
-        const charges = await stripe.charges.create({
+        const charges = await stripe.paymentIntents.create({
           amount: Math.round(parseFloat(data.order_amount) * 100),
           currency: data?.currency?.toLowerCase(),
-          source: source.id,
           customer: request.result?.stripeCustomerId ?? "",
+          payment_method: source.id,
+          off_session: true,
+          confirm: true,
         });
+        console.log("charges", charges.payment_method);
         if (data.acceptSaveCard) {
           await updatePaymentMethod(
-            charges.payment_method ?? "",
+            charges.payment_method,
             verifiedToken.user_id
           );
         }
@@ -152,7 +157,7 @@ export const onPost: RequestHandler = async ({
       data.order_status = "Pending";
       data.order_number = generateOrderNumber();
       if (coponCheck) {
-        await usersSchema.updateOne(
+        await User.updateOne(
           { _id: verifiedToken.user_id, "cobone.code": "xpressbeauty10" },
           { $set: { "cobone.$.status": true } }
         );

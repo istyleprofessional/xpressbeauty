@@ -48,7 +48,7 @@ import paypal from "paypal-rest-sdk";
 import SalesTax from "sales-tax";
 import { getDummyCustomer } from "~/express/services/dummy.user.service";
 import { CurContext } from "~/context/cur.context";
-import usersSchema from "~/express/schemas/users.schema";
+import { User } from "~/express/schemas/users.schema";
 
 export const usePaymentRoute = routeLoader$(async ({ cookie, env }) => {
   const token = cookie.get("token")?.value;
@@ -340,7 +340,7 @@ export const callServer = server$(async function (
         data.products
       );
       if (isCoponApplied) {
-        await usersSchema.updateOne(
+        await User.updateOne(
           { _id: verified.user_id, "cobone.code": "xpressbeauty10" },
           { $set: { "cobone.$.status": true } }
         );
@@ -445,7 +445,7 @@ export default component$(() => {
           createOrder: async () => {
             const dataToSend = {
               subTotal: subTotal.value.toFixed(2),
-              hst: !userContext?.user?.generalInfo?.address?.country
+              hst: !userContext?.generalInfo?.address?.country
                 ?.toLowerCase()
                 ?.includes("united")
                 ? parseFloat(
@@ -456,13 +456,13 @@ export default component$(() => {
                 : "0.00",
               ...cartContext?.cart,
               order_amount: parseFloat(total.value.toString()).toFixed(2),
-              email: userContext?.user?.email,
+              email: userContext?.email,
               products: cartContext?.cart?.products,
               // shipping:
               shipping: shipping.value,
               totalInfo: {
                 shipping: shipping.value,
-                tax: !userContext?.user?.generalInfo?.address?.country
+                tax: !userContext?.generalInfo?.address?.country
                   ?.toLowerCase()
                   ?.includes("united")
                   ? parseFloat(
@@ -487,7 +487,7 @@ export default component$(() => {
               const dataToSend = {
                 ...cartContext?.cart,
                 order_amount: parseFloat(total.value.toString()).toFixed(2),
-                email: userContext?.user?.email,
+                email: userContext?.email,
                 products: cartContext?.cart?.products,
                 paymentSource: "PAYPAL",
                 paypalObj: {
@@ -498,7 +498,7 @@ export default component$(() => {
                 currency: currencyObject === "1" ? "USD" : "CAD",
                 totalInfo: {
                   shipping: shipping.value,
-                  tax: !userContext?.user?.generalInfo?.address?.country
+                  tax: !userContext?.generalInfo?.address?.country
                     ?.toLowerCase()
                     ?.includes("united")
                     ? parseFloat(
@@ -579,13 +579,13 @@ export default component$(() => {
           currency: currencyObject === "1" ? "USD" : "CAD",
           token: token.id,
           order_amount: parseFloat(total.value.toString()).toFixed(2),
-          email: userContext?.user?.email,
+          email: userContext?.email,
           products: cartContext?.cart?.products,
           acceptSaveCard: acceptSaveCard.value,
           paymentSource: "STRIPE",
           totalInfo: {
             shipping: shipping.value,
-            tax: !userContext?.user?.generalInfo?.address?.country
+            tax: !userContext?.generalInfo?.address?.country
               ?.toLowerCase()
               ?.includes("united")
               ? parseFloat(
@@ -619,7 +619,7 @@ export default component$(() => {
         if (finalCard.value && isExistingPaymentMethod.value) {
           const totalInfo = {
             shipping: shipping.value,
-            tax: !userContext?.user?.generalInfo?.address?.country
+            tax: !userContext?.generalInfo?.address?.country
               ?.toLowerCase()
               ?.includes("united")
               ? parseFloat(
@@ -632,10 +632,9 @@ export default component$(() => {
             currency: currencyObject === "1" ? "USD" : "CAD",
           };
           const isCoponApplied = localStorage.getItem("copon");
-
           const pay = await callServer(
             finalCard.value.id,
-            userContext?.user?.stripeCustomerId,
+            userContext?.stripeCustomerId,
             total.value,
             cartContext?.cart ?? {},
             currencyObject === "1" ? "USD" : "CAD",
@@ -653,6 +652,7 @@ export default component$(() => {
           return;
         } else {
           stripe.createToken(cardNo).then((res: any) => {
+            console.log(res);
             if (res.error) errorEl.innerText = res?.error?.message ?? "";
             else stripeTokenHandler(res.token);
             isLoading.value = false;

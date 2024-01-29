@@ -43,11 +43,13 @@ export const sendForgetPasswordEmail = async (email: string, token: string) => {
 
   try {
     await transporter.sendMail(mailOptions);
+    console.log("Email Sent");
     return {
       status: "success",
       err: null,
     };
   } catch (error: any) {
+    console.log(error);
     return {
       status: "failed",
       err: error.message,

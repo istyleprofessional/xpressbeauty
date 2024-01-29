@@ -9,7 +9,7 @@ import { server$ } from "@builder.io/qwik-city";
 import { verify } from "jsonwebtoken";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 import productSchema from "~/express/schemas/product.schema";
-import usersSchema from "~/express/schemas/users.schema";
+import { User } from "~/express/schemas/users.schema";
 import { deleteCart } from "~/express/services/cart.service";
 import { createOrder } from "~/express/services/order.service";
 import { generateOrderNumber } from "~/utils/generateOrderNo";
@@ -85,7 +85,7 @@ export const chargeCus = server$(async function (data: any) {
     );
     if (data.isCoponApplied) {
       // update status of copon in cobone array of object
-      await usersSchema.updateOne(
+      await User.updateOne(
         { _id: data.user._id, "cobone.code": "xpressbeauty10" },
         { $set: { "cobone.$.status": true } }
       );

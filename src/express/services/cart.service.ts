@@ -1,8 +1,8 @@
-import Cart from "../schemas/cart.schema";
+import { cart } from "../schemas/cart.schema";
 
 export const updateUserCart = async (data: any) => {
   try {
-    const result = await Cart.findOne({ userId: data.userId });
+    const result = await cart.findOne({ userId: data.userId });
     if (result) {
       result.products.push(...data.products);
       const massageData = result.products.reduce((acc: any, curr: any) => {
@@ -24,7 +24,7 @@ export const updateUserCart = async (data: any) => {
       await result.save();
       return result;
     } else {
-      const result = await Cart.create({
+      const result = await cart.create({
         userId: data.userId,
         products: data.products,
         totalQuantity: data.totalQuantity,
@@ -39,7 +39,7 @@ export const updateUserCart = async (data: any) => {
 
 export const getCartByUserId = async (userId: string) => {
   try {
-    const result = await Cart.findOne({ userId: userId });
+    const result = await cart.findOne({ userId: userId });
     return result;
   } catch (err) {
     return { status: "failed", err: err };
@@ -48,7 +48,7 @@ export const getCartByUserId = async (userId: string) => {
 
 export const deleteProductCart = async (product: any) => {
   try {
-    const result = await Cart.findOneAndUpdate(
+    const result = await cart.findOneAndUpdate(
       { userId: product.userId },
       {
         $pull: { products: { id: product.id } },
@@ -57,7 +57,7 @@ export const deleteProductCart = async (product: any) => {
       { new: true, upsert: true }
     );
     if (result.products.length === 0) {
-      await Cart.deleteOne({ userId: product.userId });
+      await cart.deleteOne({ userId: product.userId });
     }
     return result;
   } catch (err) {
@@ -67,7 +67,7 @@ export const deleteProductCart = async (product: any) => {
 
 export const deleteCart = async (userId: string) => {
   try {
-    const request = await Cart.deleteOne({ userId: userId });
+    const request = await cart.deleteOne({ userId: userId });
     return request;
   } catch (err) {
     return { status: "failed", err: err };
@@ -87,7 +87,7 @@ export const handleDecIncVariationProducts = async (data: any) => {
       [`products.$.price`]: data.product.price,
       [`products.$.currency`]: data.product.currency,
     };
-    const result = await Cart.findOneAndUpdate(filter, update, {
+    const result = await cart.findOneAndUpdate(filter, update, {
       new: true,
       upsert: true,
     });
@@ -99,59 +99,60 @@ export const handleDecIncVariationProducts = async (data: any) => {
 
 export const getCartsPerPageService = async (page: number) => {
   try {
-    const request = await Cart.aggregate([
-      {
-        $addFields: {
-          userIdObj: { $toObjectId: "$userId" },
+    const request = await cart
+      .aggregate([
+        {
+          $addFields: {
+            userIdObj: { $toObjectId: "$userId" },
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userIdObj",
-          foreignField: "_id",
-          as: "user",
+        {
+          $lookup: {
+            from: "users",
+            localField: "userIdObj",
+            foreignField: "_id",
+            as: "user",
+          },
         },
-      },
-      { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: "dummyusers",
-          localField: "userIdObj",
-          foreignField: "_id",
-          as: "dummyUser",
+        { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: "dummyusers",
+            localField: "userIdObj",
+            foreignField: "_id",
+            as: "dummyUser",
+          },
         },
-      },
-      {
-        $unwind: { path: "$dummyUser", preserveNullAndEmptyArrays: true },
-      },
-      {
-        $project: {
-          _id: 1,
-          userId: 1,
-          "user.email": 1,
-          "user.firstName": 1,
-          "user.lastName": 1,
-          "user.phoneNumber": 1,
-          "user.generalInfo": 1,
-          "user.isEmailVerified": 1,
-          "user.isPhoneNumberVerified": 1,
-          "dummyUser.phoneNumber": 1,
-          "dummyUser.generalInfo": 1,
-          "dummyUser.email": 1,
-          "dummyUser.firstName": 1,
-          "dummyUser.lastName": 1,
-          products: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          totalQuantity: 1,
+        {
+          $unwind: { path: "$dummyUser", preserveNullAndEmptyArrays: true },
         },
-      },
-    ])
+        {
+          $project: {
+            _id: 1,
+            userId: 1,
+            "user.email": 1,
+            "user.firstName": 1,
+            "user.lastName": 1,
+            "user.phoneNumber": 1,
+            "user.generalInfo": 1,
+            "user.isEmailVerified": 1,
+            "user.isPhoneNumberVerified": 1,
+            "dummyUser.phoneNumber": 1,
+            "dummyUser.generalInfo": 1,
+            "dummyUser.email": 1,
+            "dummyUser.firstName": 1,
+            "dummyUser.lastName": 1,
+            products: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            totalQuantity: 1,
+          },
+        },
+      ])
       .sort({ createdAt: -1 })
       .skip((page - 1) * 20)
       .limit(20);
-    const count = await Cart.countDocuments();
+    const count = await cart.countDocuments();
     return { status: "success", result: request, total: count };
   } catch (err: any) {
     return { status: "failed", err: err.message };

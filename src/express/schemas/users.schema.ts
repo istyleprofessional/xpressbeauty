@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 const userSchema = new Schema(
   {
@@ -6,7 +6,7 @@ const userSchema = new Schema(
     password: { type: String },
     firstName: { type: String, default: null },
     lastName: { type: String, default: null },
-    phoneNumber: { type: String, },
+    phoneNumber: { type: String },
     generalInfo: { type: Object, default: null },
     EmailVerifyToken: { type: String },
     PhoneVerifyToken: { type: String },
@@ -21,4 +21,4 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-export default model("users", userSchema);
+export const User = models.User || model("User", userSchema);
