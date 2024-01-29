@@ -102,6 +102,15 @@ export default component$(() => {
       // if (!data?.dataForSurvey?.order_id) {
       //   location.href = "/";
       // }
+      const successScript = `
+      gtag('event', 'conversion', {
+          'send_to': 'AW-11167601664/ApSoCLPu2IwZEICokM0p',
+          'transaction_id': '${data?.dataForSurvey?.order_id}',
+    `;
+      const script = document.createElement("script");
+      script.innerHTML = successScript;
+      document.head.appendChild(script);
+
       const checkCopon = localStorage.getItem("copon");
       if (checkCopon === "true") {
         localStorage.removeItem("copon");
@@ -148,21 +157,8 @@ export default component$(() => {
   );
 });
 
-export const head: DocumentHead = ({ resolveValue }) => {
-  const data = resolveValue(useLoaderSuccess);
-  const successScript = `
-  gtag('event', 'conversion', {
-      'send_to': 'AW-11167601664/ApSoCLPu2IwZEICokM0p',
-      'transaction_id': '${data?.dataForSurvey?.order_id}',
-`;
-
+export const head: DocumentHead = () => {
   return {
-    scripts: [
-      {
-        script: successScript,
-        key: "gtag",
-      },
-    ],
     title: "Xpress Beauty | Thank you for your order!",
     links: [
       {
