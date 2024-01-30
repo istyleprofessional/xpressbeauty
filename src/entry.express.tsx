@@ -75,7 +75,7 @@ app.get("/sitemap.xml", async (req, res) => {
   }
 
   try {
-    const pages = await productSchema.find({});
+    const pages = await productSchema.find({ isHidden: false });
     const dynamic_urls = pages.map((project: any) => {
       return {
         url: `products/${project.perfix}/`,
