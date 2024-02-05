@@ -29,7 +29,6 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
   const paymentMethodTypes: any[] = [
     "card",
     data.currencyObject !== "1" ? "afterpay_clearpay" : "",
-    data.currencyObject !== "1" ? "alipay" : "",
   ];
   const session = await stripe.checkout.sessions.create({
     ui_mode: "embedded",
