@@ -199,6 +199,33 @@ export default component$(() => {
   useOnWindow(
     "load",
     $(async () => {
+      if (product.priceType === "range") {
+        const stripe = await loadStripe(
+          import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
+        );
+
+        const elements: any = stripe?.elements({
+          locale: "en-GB",
+        });
+
+        const options = {
+          amount: (product.price?.min ?? 0) * 100,
+          currency: currencyObject === "1" ? "USD" : "CAD",
+          logoType: "badge",
+          lockupTheme: "black",
+          modalLinkStyle: "learn-more-text",
+          modalTheme: "mint",
+          introText: "Pay",
+        };
+
+        const afterpayClearpayMessageElement = elements?.create(
+          "afterpayClearpayMessage",
+          options
+        );
+
+        afterpayClearpayMessageElement.mount("#afterpay-clearpay-message");
+        return;
+      }
       const stripe = await loadStripe(
         import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
       );
