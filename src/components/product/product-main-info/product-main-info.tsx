@@ -164,6 +164,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
             </span>
           </div>
         )}
+        <div id="afterpay-clearpay-message"> </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import {
   useStore,
   Fragment,
   useTask$,
+  useOnWindow,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
@@ -29,6 +30,7 @@ import { Toast } from "~/components/admin/toast/toast";
 import { getRatingByProductId } from "~/express/services/rating.reviews.service";
 import { UserContext } from "~/context/user.context";
 import { CurContext } from "~/context/cur.context";
+import { loadStripe } from "@stripe/stripe-js";
 
 export const useServerData = routeLoader$(async ({ params, redirect }) => {
   await connect();
@@ -193,6 +195,36 @@ export default component$(() => {
     message.value = "";
     isToastCardOpen.value = false;
   });
+
+  useOnWindow(
+    "load",
+    $(async () => {
+      const stripe = await loadStripe(
+        import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
+      );
+
+      const elements: any = stripe?.elements({
+        locale: "en-GB",
+      });
+
+      const options = {
+        amount: (product.price?.regular ?? 0) * 100,
+        currency: currencyObject === "1" ? "USD" : "CAD",
+        logoType: "badge",
+        lockupTheme: "black",
+        modalLinkStyle: "learn-more-text",
+        modalTheme: "mint",
+        introText: "Pay",
+      };
+
+      const afterpayClearpayMessageElement = elements?.create(
+        "afterpayClearpayMessage",
+        options
+      );
+
+      afterpayClearpayMessageElement.mount("#afterpay-clearpay-message");
+    })
+  );
 
   return (
     <>
