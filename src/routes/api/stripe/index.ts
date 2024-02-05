@@ -38,7 +38,6 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     automatic_tax: {
       enabled: true,
     },
-    customer_email: data.user?.email ?? "",
 
     payment_method_types: paymentMethodTypes.filter((type) => type !== ""),
     shipping_address_collection: {
