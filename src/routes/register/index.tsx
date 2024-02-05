@@ -55,9 +55,7 @@ export const useRegisterForm = routeAction$(async (data, { env }) => {
     };
   }
   newData.EmailVerifyToken = generateUniqueInteger();
-  const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "", {
-    apiVersion: "2022-11-15",
-  });
+  const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
   const createStripeCustomer = await stripe.customers.create({
     email: newData?.email,
     name: `${newData?.firstName} ${newData?.lastName}`,
