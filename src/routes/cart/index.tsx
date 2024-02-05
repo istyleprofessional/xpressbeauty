@@ -17,8 +17,7 @@ export const useRequest = routeLoader$(() => {
   return {
     status: "success",
   };
-})
-
+});
 
 export const changeToken = server$(async function (token: string) {
   this.cookie.set("token", token, {

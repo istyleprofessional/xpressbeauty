@@ -26,19 +26,6 @@ export const Steps = component$((props: StepsProps) => {
       </li>
       <li
         data-content=""
-        onClick$={() => (location.href = "/checkout")}
-        class={`step cursor-pointer ${
-          pageType === "address" ||
-          pageType === "payment" ||
-          pageType === "confirmation"
-            ? "step-success"
-            : ""
-        } step text-black text-xs lg:text-base`}
-      >
-        Address
-      </li>
-      <li
-        data-content=""
         onClick$={() => (location.href = "/payment")}
         class={`step cursor-pointer ${
           pageType === "payment" || pageType === "confirmation"

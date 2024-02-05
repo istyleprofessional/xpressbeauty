@@ -182,7 +182,7 @@ export const CartDetails = component$((props: any) => {
               ? "disabled"
               : ""
           }`}
-          href="/checkout"
+          href="/payment"
         >
           Checkout <NextArrowIconNoStick color="black" width="10%" />
         </a>
@@ -220,7 +220,7 @@ export const CartDetails = component$((props: any) => {
                 ? "disabled"
                 : ""
             }`}
-            href="/checkout"
+            href="/payment"
           >
             Guest Checkout <NextArrowIconNoStick color="black" width="10%" />
           </a>

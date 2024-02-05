@@ -2,15 +2,16 @@ import Order from "../schemas/order.schema";
 
 export const createOrder = async (data: any) => {
   try {
+    console.log("order", data);
     const request = await Order.create({
-      shippingAddress: data.shipping_address,
-      shippingName: data.shipping_name,
+      shippingAddress: data.shippingAddress,
+      shippingName: data.shippingName,
       totalQuantity: data.totalQuantity,
-      paymentStatus: data.payment_status,
+      paymentStatus: data.paymentStatus,
       paymentMethod: data.paymentMethod,
-      orderStatus: data.order_status,
-      paymentId: data.payment_id,
-      totalPrice: data.order_amount,
+      orderStatus: data.orderStatus,
+      paymentId: data.paymentId,
+      totalPrice: data.totalPrice,
       products: data.products,
       userId: data.userId,
       order_number: data.order_number,
