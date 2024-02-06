@@ -145,7 +145,7 @@ export default component$(() => {
                 {order?.totalInfo?.shipping?.toLocaleString("en-US", {
                   style: "currency",
                   currency: order?.totalInfo?.currency?.toUpperCase() ?? "USD",
-                }) ?? "Free"}
+                }) ?? "$15.00"}
               </span>
             </div>
           </div>
