@@ -56,11 +56,12 @@ export default component$(() => {
                   <td>
                     {order?.totalInfo?.finalTotal?.toLocaleString("en-US", {
                       style: "currency",
-                      currency: order?.currency ?? "USD",
+                      currency:
+                        order?.totalInfo?.currency.toUpperCase() ?? "USD",
                     }) ??
                       order?.totalPrice?.toLocaleString("en-US", {
                         style: "currency",
-                        currency: order?.currency ?? "USD",
+                        currency: order?.currency.toUpperCase() ?? "USD",
                       })}
                   </td>
                   <td>
