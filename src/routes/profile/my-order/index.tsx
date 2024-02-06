@@ -54,10 +54,14 @@ export default component$(() => {
                   <td class="uppercase">{order.order_number}</td>
 
                   <td>
-                    {order.totalPrice.toLocaleString("en-US", {
+                    {order?.totalInfo?.finalTotal?.toLocaleString("en-US", {
                       style: "currency",
                       currency: order?.currency ?? "USD",
-                    })}
+                    }) ??
+                      order?.totalPrice?.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: order?.currency ?? "USD",
+                      })}
                   </td>
                   <td>
                     {date.toLocaleString("en-US", {
