@@ -222,10 +222,14 @@ export default component$(() => {
                       <span>{order?.shippingAddress?.postalCode}</span>
                     </td>
                     <td>
-                      {order.totalPrice.toLocaleString("en-US", {
+                      {order?.totalInfo?.finalTotal?.toLocaleString("en-US", {
                         style: "currency",
-                        currency: "CAD",
-                      })}
+                        currency: order?.totalInfo?.currency?.toUpperCase(),
+                      }) ??
+                        order?.totalPrice?.toLocaleString("en-US", {
+                          style: "currency",
+                          currency: "CAD",
+                        })}
                     </td>
                     <td>
                       {date.toLocaleString("en-CA", {
