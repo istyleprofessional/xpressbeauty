@@ -14,7 +14,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import undetected_chromedriver as uc
-import boto3
 
 def run_chrome():
 
@@ -488,7 +487,7 @@ def get_last_prices_and_upc():
                     continue
                 # print remaining products length
         
-get_last_prices_and_upc()
+# get_last_prices_and_upc()
 
 
 
@@ -561,14 +560,145 @@ def get_skin_body():
 
 # get_skin_body()
 
-# json = {
-#     'upc': '676280055391',
-#     'price': 0,
-#     'priceType': 'single',
-#     'quantity_on_hand': 110,
-#     'product_name': 'Fresh Start Trio',
-#     'description': 'Gentle Foaming Facial Cleanser + Hydrating Serum + Hydrating Daily Moisturizer. Hyaluronic Acid to help skin retain moisture.<br>\r\n<br>\r\n<b>Promotion Includes:</b>\r\n<ul>\r\n<li>(1) NEW! Ocean Breeze Gentle Facial Foaming Cleanser - 6 oz.</li>\r\n<li>(1) NEW! Ocean Breeze Hydrating Day Serum - 1 oz.</li>\r\n<li>(1) NEW! Ocean Breeze Hydrating Daily Moisturizer - 3 oz.</li>\r\n</ul>',
-#     'imgs': ['https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/FreshStartTrio-0.webp'],
-#     'category': {'main': 'Skin', 'name': 'Skin Care'},
-#     'brand': 'HEMPZ/PBI GROUP LLC-JDA US'
-#      }
+def get_all_categories_from_cosomoprof():
+    page = requests.get('https://www.cosmoprofbeauty.ca/', headers={'User-Agent': 'Mozilla/5.0'})
+    soup = BeautifulSoup(page.content, 'html.parser')
+    categories = soup.find_all('a', class_='nav-link')
+    all_categories = []
+    for category in categories:
+        category_object = {}
+        if category.text == 'Hair Colour':
+            sub_categories = category.find_next('ul').find_all('a')
+            for sub_category in sub_categories:
+                if(sub_category.text == '\xa0Find a Store'):
+                    continue
+                if('\n' in sub_category.text):
+                    continue
+                if('Customer Service' in sub_category.text):
+                    continue
+                if('Quick Order' in sub_category.text):
+                    continue
+                category_object['main'] = category.text
+                category_object['name'] = sub_category.text
+                category_object['url'] = sub_category['href']
+                all_categories.append(category_object)
+                category_object= {}
+        elif category.text == 'Hair Care':
+            sub_categories = category.find_next('ul').find_all('a')
+            for sub_category in sub_categories:
+                if(sub_category.text == '\xa0Find a Store'):
+                    continue
+                if('\n' in sub_category.text):
+                    continue
+                if('Customer Service' in sub_category.text):
+                    continue
+                if('Quick Order' in sub_category.text):
+                    continue
+                category_object['main'] = category.text
+                category_object['name'] = sub_category.text
+                category_object['url'] = sub_category['href']
+                all_categories.append(category_object)
+                category_object= {}
+        elif category.text == 'Skin & Body':
+            sub_categories = category.find_next('ul').find_all('a')
+            for sub_category in sub_categories:
+                if(sub_category.text == '\xa0Find a Store'):
+                    continue
+                if('\n' in sub_category.text):
+                    continue
+                if('Customer Service' in sub_category.text):
+                    continue
+                if('Quick Order' in sub_category.text):
+                    continue
+                category_object['main'] = category.text
+                category_object['name'] = sub_category.text
+                category_object['url'] = sub_category['href']
+                all_categories.append(category_object)
+                category_object= {}
+        elif category.text == 'Nails':
+            sub_categories = category.find_next('ul').find_all('a')
+            for sub_category in sub_categories:
+                if(sub_category.text == '\xa0Find a Store'):
+                    continue
+                if('\n' in sub_category.text):
+                    continue
+                if('Customer Service' in sub_category.text):
+                    continue
+                if('Quick Order' in sub_category.text):
+                    continue
+                category_object['main'] = category.text
+                category_object['name'] = sub_category.text
+                category_object['url'] = sub_category['href']
+                all_categories.append(category_object)
+                category_object= {}
+    print(all_categories)
+    with open('cosmoprof_categories.json', 'w') as f:
+        json.dump(all_categories, f)
+
+
+# get_all_categories_from_cosomoprof()
+
+def get_all_products_ids_for_each_cat_cosmoprof():
+    driver = uc.Chrome() 
+    products=[]
+    with open('cosmoprof_categories.json', 'r') as f:
+        categories = json.load(f)
+        for category in categories:
+            try:
+                driver.get(f'''https://www.cosmoprofbeauty.ca{category['url']}''')
+                time.sleep(5)
+                last_height = driver.execute_script("return document.body.scrollHeight")
+                while True:
+                    # Scroll down to bottom
+                    driver.execute_script(
+                        "window.scrollTo(0, document.body.scrollHeight);")
+                    # Wait to load page
+                    time.sleep(15)
+                    # Calculate new scroll height and compare with last scroll height
+                    new_height = driver.execute_script(
+                        "return document.body.scrollHeight")
+                    if new_height == last_height:
+                        break
+                    last_height = new_height
+                soup = BeautifulSoup(driver.page_source, 'html.parser')
+                products_divs = soup.find_all('div', class_='product-tile')
+                for product_div in products_divs:
+                    data_pid = product_div['data-product-item-id']
+                    products.append({
+                        "id": data_pid,
+                        "category": {
+                            "main": category['main'],
+                            "name": category['name']
+                        }
+                    })
+            except Exception as e:
+                time.sleep(60)
+                driver.get(f'''https://www.cosmoprofbeauty.ca{category['url']}''')
+                time.sleep(5)
+                last_height = driver.execute_script("return document.body.scrollHeight")
+                while True:
+                    # Scroll down to bottom
+                    driver.execute_script(
+                        "window.scrollTo(0, document.body.scrollHeight);")
+                    # Wait to load page
+                    time.sleep(15)
+                    # Calculate new scroll height and compare with last scroll height
+                    new_height = driver.execute_script(
+                        "return document.body.scrollHeight")
+                    if new_height == last_height:
+                        break
+                    last_height = new_height
+                soup = BeautifulSoup(driver.page_source, 'html.parser')
+                products_divs = soup.find_all('div', class_='product-tile')
+                for product_div in products_divs:
+                    data_pid = product_div['data-product-item-id']
+                    products.append({
+                        "id": data_pid,
+                        "category": {
+                            "main": category['main'],
+                            "name": category['name']
+                        }
+                    })
+    with open('cosmoprof_products_ids_cat.json', 'w') as f:
+        json.dump(products, f)
+get_all_products_ids_for_each_cat_cosmoprof()

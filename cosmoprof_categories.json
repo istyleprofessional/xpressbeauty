@@ -1,0 +1,372 @@
+[
+    {
+        "main": "Hair Colour",
+        "name": "Permanent",
+        "url": "/permanent"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Demi & Semi Permanent",
+        "url": "/demi-permanent"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Temporary Colour",
+        "url": "/temporary"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Express Colour",
+        "url": "/express-color"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Direct Dye",
+        "url": "/direct-dye"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Blonding",
+        "url": "/blonding"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Bonding Systems",
+        "url": "/bonder"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Bleach & Lighteners",
+        "url": "/bleach-lighteners"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Developers",
+        "url": "/developers"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Toners",
+        "url": "/toner"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Colour Depositing",
+        "url": "/color-depositing"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Additives & Boosters",
+        "url": "/additive-booster"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Colour Correctors & Removers",
+        "url": "/stain-remover"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Men's Hair Colour",
+        "url": "/mens-color"
+    },
+    {
+        "main": "Hair Colour",
+        "name": "Colouring Tools",
+        "url": "/color-accessories-1"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Shampoo",
+        "url": "/shampoo"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Dry Shampoo",
+        "url": "/dry-shampoo"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Conditioner",
+        "url": "/conditioner"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Cleansing Conditioner",
+        "url": "/cleansing-conditioner"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Hair Styling",
+        "url": "/styling"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Hair Spray",
+        "url": "/hair-spray"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Gel & Glaze",
+        "url": "/gels-and-glazes"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Mousse",
+        "url": "/mousse"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Heat Styling & Blow Dry Spray",
+        "url": "/heat-styling-and-blow-dry"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Root Lift",
+        "url": "/root-lift"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Wax & Pomade",
+        "url": "/wax-and-pomade"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Bonding & Repairing",
+        "url": "/bond-repair"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Textured Hair",
+        "url": "/texture"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Hair Care",
+        "url": "/naturalhaircare"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Treatments",
+        "url": "/natural-hair-treatments"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Relaxers",
+        "url": "/relaxers"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Waves & Perms",
+        "url": "/waves-perms"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Smoothing Systems",
+        "url": "/smoothing-system"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Tools & Accessories",
+        "url": "/texture-accessories"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Blonding Hair Care",
+        "url": "/blonding-hair-care"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Thinning Hair Solutions",
+        "url": "/thinninghairsolutions"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Masks, Serums & Treatments",
+        "url": "/treatments"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Men's Hair Care",
+        "url": "/men"
+    },
+    {
+        "main": "Hair Care",
+        "name": "Kid's Hair Care",
+        "url": "/kids"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Facial Skin Care",
+        "url": "/facial-skin-care"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Masks",
+        "url": "/mask"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Body Care",
+        "url": "/body-care"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Waxing & Tanning",
+        "url": "/waxing-and-tanning"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Tanning",
+        "url": "/tanning"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Waxing",
+        "url": "/waxing"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Tools & Accessories",
+        "url": "/skin-tools-accressories"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Eyelashes & Brows",
+        "url": "/eyelashesandbrows"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Strip Lashes",
+        "url": "/striplashes"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Individual Lashes",
+        "url": "/individuallashes"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Magnetic Lashes",
+        "url": "/magneticlashes"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Dyes & Tints",
+        "url": "/dyesandtints"
+    },
+    {
+        "main": "Skin & Body",
+        "name": "Tools & Adhesives",
+        "url": "/lashtoolsandadhesives"
+    },
+    {
+        "main": "Nails",
+        "name": "Nail Polish",
+        "url": "/nail-color"
+    },
+    {
+        "main": "Nails",
+        "name": "Gel Colour",
+        "url": "/gel-color"
+    },
+    {
+        "main": "Nails",
+        "name": "Dip Powders",
+        "url": "/dip-powders"
+    },
+    {
+        "main": "Nails",
+        "name": "Top & Base Coats",
+        "url": "/top-base-coats"
+    },
+    {
+        "main": "Nails",
+        "name": "Nail Extensions",
+        "url": "/artificial-nails"
+    },
+    {
+        "main": "Nails",
+        "name": "Acrylic Powders",
+        "url": "/acrylic-powders"
+    },
+    {
+        "main": "Nails",
+        "name": "Nail Tips & Glue",
+        "url": "/nail-tips-and-glue"
+    },
+    {
+        "main": "Nails",
+        "name": "Nail Care",
+        "url": "/mani-pedi"
+    },
+    {
+        "main": "Nails",
+        "name": "Cuticle Oils",
+        "url": "/cuticle-oils"
+    },
+    {
+        "main": "Nails",
+        "name": "Nail Treatments",
+        "url": "/nail-treatments"
+    },
+    {
+        "main": "Nails",
+        "name": "Colour Removers",
+        "url": "/nail-polish-removers"
+    },
+    {
+        "main": "Nails",
+        "name": "Sanitizers & Disinfectants",
+        "url": "/nail-sanitizers-disinfectants"
+    },
+    {
+        "main": "Nails",
+        "name": "Nail Tools",
+        "url": "/nail-implements-tools"
+    },
+    {
+        "main": "Nails",
+        "name": "Nail & Cuticle Clippers",
+        "url": "/nail-and-cuticle-clippers"
+    },
+    {
+        "main": "Nails",
+        "name": "Nail Files",
+        "url": "/nail-files"
+    },
+    {
+        "main": "Nails",
+        "name": "Buffers & Brushes",
+        "url": "/buffers-and-brushes"
+    },
+    {
+        "main": "Nails",
+        "name": "Mani & Pedi Accessories",
+        "url": "/mani-and-pedi-accessories"
+    },
+    {
+        "main": "Nails",
+        "name": "Nail Appliances",
+        "url": "/nail-appliances"
+    },
+    {
+        "main": "Nails",
+        "name": "Lamps",
+        "url": "/lamps"
+    },
+    {
+        "main": "Nails",
+        "name": "Drills & Bits",
+        "url": "/drills-and-bits"
+    },
+    {
+        "main": "Nails",
+        "name": "Pedicure",
+        "url": "/pedicure"
+    },
+    {
+        "main": "Nails",
+        "name": "Displays & Kits",
+        "url": "/nail-displays-and-kits"
+    }
+]
