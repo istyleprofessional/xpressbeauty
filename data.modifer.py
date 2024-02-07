@@ -14,6 +14,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import undetected_chromedriver as uc
+import boto3
+import os
 
 def run_chrome():
 
@@ -284,13 +286,13 @@ def return_product_if_single(parsed_json, d):
     return d
 
 def upload_image(url, name):
-    AWS_ACCESS_KEY_ID = ''
-    AWS_SECRET_ACCESS_KEY = ''
+    AWS_ACCESS_KEY_ID = 'AKIAVLKY35Q55R5AN2MF'
+    AWS_SECRET_ACCESS_KEY = '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'
     AWS_BUCKET_NAME = 'xpressbeauty'
 
     s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     # download the image from the url and save it in a folder called skin_care
-    image_path = f'''./skin_care/{name}.webp'''
+    image_path = f'''./newProductsImages/{name}.webp'''
     with open(image_path, 'wb') as handle:
         response = requests.get(url, stream=True)
         if not response.ok:
@@ -306,7 +308,7 @@ def upload_image(url, name):
     os.remove(image_path)
     # 'https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/'
     # return f'''https://xpressbeauty.s3.amazonaws.com/{name}.jpg'''
-    urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/{name}.webp'''
+    urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/newProductsImages/{name}.webp'''
     print(urlToBeReturned)
     return urlToBeReturned
 
@@ -701,4 +703,166 @@ def get_all_products_ids_for_each_cat_cosmoprof():
                     })
     with open('cosmoprof_products_ids_cat.json', 'w') as f:
         json.dump(products, f)
-get_all_products_ids_for_each_cat_cosmoprof()
+# get_all_products_ids_for_each_cat_cosmoprof()
+        
+def get_duplicates_from_cosmoprof_new_file_by_id():
+    with open('cosmoprof_products_ids_cat.json', 'r') as f:
+        data = json.load(f)
+        # check if there are any duplicates by id and append the category to the categories array
+        ids = []
+        for d in data:
+            found = False
+            for item in ids:
+                if item['id'] == d['id']:
+                    item['categories'].append(d['category'])
+                    found = True
+                    break
+            if not found:
+                ids.append({
+                    "id": d['id'],
+                    "categories": [d['category']]
+                })
+    with open('cosmoprof_products_ids_cat_no_duplicates.json', 'w') as f:
+        json.dump(ids, f)
+
+# get_duplicates_from_cosmoprof_new_file_by_id()
+        
+def get_all_details_for_each_product_from_cosmoprof_api():
+    driver = uc.Chrome()
+    driver.get('https://www.cosmoprofbeauty.ca/')
+    time.sleep(40)
+    final_products = []
+    with open('cosmoprof_products_ids_cat_no_duplicates.json', 'r') as f:
+        data = json.load(f)
+        for d in data:
+            try:
+                driver.get(f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}''')
+                soup = BeautifulSoup(driver.page_source, 'html.parser')
+                json_element = soup.find('pre')
+                json_data = json_element.get_text()
+                parsed_json = json.loads(json_data)
+                productJson = {}
+                productJson['cosmoprof_id'] = d['id']
+                productJson['product_name'] = parsed_json['product']['productName']
+                productJson['companyName'] = {
+                    'name': parsed_json['product']['manufacturerName']
+                }
+                if(parsed_json['product']['price']['type'] == 'range'):
+                    productJson['price'] = {
+                        "min": parsed_json['product']['price']['min']['sales']['value'] + 7,
+                        "max": parsed_json['product']['price']['max']['sales']['value'] + 7
+                    }
+                    productJson['priceType'] = 'range'
+                elif(parsed_json['product']['price']['type'] == 'tiered'):
+                    productJson['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 7
+                    productJson['priceType'] = 'single'
+                else:
+                    if parsed_json['product']['price']['list'] != None and parsed_json['product']['price']['list']['value'] != None:
+                        productJson['price'] = parsed_json['product']['price']['list']['value'] + 7
+                    elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+                        productJson['price'] = parsed_json['product']['price']['sales']['value'] + 7
+                    else:
+                        productJson['price'] = 0
+                    productJson['priceType'] = 'single'
+                productJson['variations'] = []
+                if 'variationAttributes' in parsed_json['product'] and parsed_json['product']['variationAttributes'] != None and len(parsed_json['product']['variationAttributes']) > 0:
+                    productJson['variation_type'] =  parsed_json['product']['variationAttributes'][0]['displayName']
+      
+                    for variation in parsed_json['product']['variationAttributes'][0]['values']:
+                        if(parsed_json['product']['variationAttributes'][0]['values'] == "Size"):
+                            productJson['variations']= {
+                                "variation_name": variation['displayValue'],
+                            } 
+                        elif(parsed_json['product']['variationAttributes'][0]['values'] == "Color"):
+                            variant_img = []
+                            for i, img in enumerate(variation['images']['swatch']):
+                                if 'url' not in img:
+                                    continue
+                                imageName = f'''{productJson['product_name'].replace(' ', '').replace('/', '').replace('?', '').replace(os.sep, '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')}-{variation['id'].replace('/', '').replace('?', '').replace(os.sep, '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')}-{i}'''
+                                imgUrl = upload_image(img['url'], imageName)
+                                variant_img.append(imgUrl)
+                            productJson['variations'].append({
+                                "variation_name": variation['displayValue'],
+                                "variation_image": variant_img
+                            })
+                productJson['imgs'] = []
+                for i, image in enumerate(parsed_json['product']['images']['pdpLarge']):
+                    imageName = f'''{productJson['product_name'].replace(' ', '').replace('/', '').replace('?', '').replace(os.sep, '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')}-{i}-{i}'''
+                    imgUrl = upload_image(image['url'], imageName)
+                    productJson['imgs'].append(imgUrl)
+                productJson['description'] = parsed_json['product']['longDescription']
+                productJson['directions'] = parsed_json['product']['directions']
+                productJson['ingredients'] = parsed_json['product']['ingredients']
+                productJson['categories'] = d['categories']
+                productJson['upc'] = parsed_json['product']['upc']
+
+            except Exception as e:
+                print(e)
+                time.sleep(10)
+                driver.get(f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}''')
+                soup = BeautifulSoup(driver.page_source, 'html.parser')
+                json_element = soup.find('pre')
+                json_data = json_element.get_text()
+                parsed_json = json.loads(json_data)
+                productJson = {}
+                productJson['cosmoprof_id'] = d['id']
+                productJson['product_name'] = parsed_json['product']['productName']
+                productJson['companyName'] = {
+                    'name': parsed_json['product']['manufacturerName']
+                }
+                if(parsed_json['product']['price']['type'] == 'range'):
+                    productJson['price'] = {
+                        "min": parsed_json['product']['price']['min']['sales']['value'] + 7,
+                        "max": parsed_json['product']['price']['max']['sales']['value'] + 7
+                    }
+                    productJson['priceType'] = 'range'
+                elif(parsed_json['product']['price']['type'] == 'tiered'):
+                    productJson['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 7
+                    productJson['priceType'] = 'single'
+                else:
+                    if parsed_json['product']['price']['list'] != None and parsed_json['product']['price']['list']['value'] != None:
+                        productJson['price'] = parsed_json['product']['price']['list']['value'] + 7
+                    elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+                        productJson['price'] = parsed_json['product']['price']['sales']['value'] + 7
+                    else:
+                        productJson['price'] = 0
+                    productJson['priceType'] = 'single'
+                productJson['variations'] = []
+                if 'variationAttributes' in parsed_json['product'] and parsed_json['product']['variationAttributes'] != None and  len(parsed_json['product']['variationAttributes']) > 0:
+                    productJson['variation_type'] =  parsed_json['product']['variationAttributes'][0]['displayName']
+                    for variation in parsed_json['product']['variationAttributes'][0]['values']:
+                        if(parsed_json['product']['variationAttributes'][0]['values'] == "Size"):
+                            productJson['variations']= {
+                                "variation_name": variation['displayValue'],
+                            } 
+                        elif(parsed_json['product']['variationAttributes'][0]['values'] == "Color"):
+                            variant_img = []
+                            for i, img in enumerate(variation['images']['swatch']):
+                                if 'url' not in img:
+                                    continue
+                                imageName = f'''{productJson['product_name'].replace(' ', '').replace('/', '').replace('?', '').replace(os.sep, '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')}-{variation['id'].replace('/', '').replace('?', '').replace(os.sep, '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')}-{i}'''
+                                imgUrl = upload_image(img['url'], imageName)
+                                variant_img.append(imgUrl)
+                            productJson['variations'].append({
+                                "variation_name": variation['displayValue'],
+                                "variation_image": variant_img
+                            })
+                productJson['imgs'] = []
+                for i, image in enumerate(parsed_json['product']['images']['pdpLarge']):
+                    imageName = f'''{productJson['product_name'].replace(' ', '').replace('/', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace(os.sep, '').replace('>', '').replace('|', '').replace(':', '')}-{i}-{i}'''
+                    imgUrl = upload_image(image['url'], imageName)
+                    productJson['imgs'].append(imgUrl)
+                productJson['description'] = parsed_json['product']['longDescription']
+                productJson['directions'] = parsed_json['product']['directions']
+                productJson['ingredients'] = parsed_json['product']['ingredients']
+                productJson['categories'] = d['categories']
+                productJson['upc'] = parsed_json['product']['upc']
+
+            final_products.append(productJson)
+    with open('cosmoprof_products_details.json', 'w') as f:
+        json.dump(final_products, f)
+                    
+            # print pretty json
+    
+
+get_all_details_for_each_product_from_cosmoprof_api()

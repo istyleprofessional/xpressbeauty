@@ -57,10 +57,14 @@ export default component$(() => {
       cartData.cart.shipping = shipping.value;
       cartData.cart.currencyObject = currencyObject;
       cartData.cart.user = userObject;
+      console.log(cartData.cart.user);
       const response = await postRequest("/api/stripe", cartData.cart);
       const { clientSecret } = await response.json();
       const checkout = await stripe.initEmbeddedCheckout({
         clientSecret,
+        onComplete: () => {
+          console.log("Checkout completed");
+        },
       });
 
       // Mount Checkout
