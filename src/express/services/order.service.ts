@@ -2,8 +2,8 @@ import Order from "../schemas/order.schema";
 
 export const createOrder = async (data: any) => {
   try {
-    console.log("order", data);
     const request = await Order.create({
+      notes: data.notes,
       shippingAddress: data.shippingAddress,
       shippingName: data.shippingName,
       totalQuantity: data.totalQuantity,
@@ -19,8 +19,10 @@ export const createOrder = async (data: any) => {
       currency: data.currency,
       totalInfo: data.totalInfo,
     });
+    console.log("order created", request);
     return { status: "success", request: request };
   } catch (error: any) {
+    console.log("order error", error);
     return { status: "failed", err: error.message };
   }
 };

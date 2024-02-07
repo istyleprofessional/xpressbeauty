@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 
 const orderSchema = new Schema(
   {
+    notes: { type: String, default: null },
     userId: { type: String, default: null },
     products: { type: Array, default: [] },
     totalPrice: { type: Number, default: 0 },

@@ -37,17 +37,17 @@ export const sendConfirmationOrderForAdmin = async (
                 <th style="border: 1px solid #ccc; padding: 8px;">Price</th>
             </tr>
             ${products
-              .map(
-                (product) =>
-                  `
+        .map(
+          (product) =>
+            `
                <tr>
                 <td style="border: 1px solid #ccc; padding: 8px;">${product.product_name}</td>
                 <td style="border: 1px solid #ccc; padding: 8px;">${product.quantity}</td>
                 <td style="border: 1px solid #ccc; padding: 8px;">$${product.price}</td>
                 </tr>
                 `
-              )
-              .join("")}
+        )
+        .join("")}
         </table>
         <div style="text-align: right;">
             <p>Tax: $${parseFloat(tax.toString()).toFixed(2)}</p>

@@ -1,6 +1,6 @@
 import type { RequestHandler } from "@builder.io/qwik-city";
 import Stripe from "stripe";
-import { deleteCart } from "~/express/services/cart.service";
+import { deleteCart, getCartByUserId } from "~/express/services/cart.service";
 import { update_dummy_user } from "~/express/services/dummy.user.service";
 import { createOrder } from "~/express/services/order.service";
 import { updateExistingUser } from "~/express/services/user.service";
@@ -52,7 +52,27 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
         message:
           "Please Note: We are not shipping to Puerto Rico, Virgin Islands and Hawaii.",
       },
+      terms_of_service_acceptance: {
+        message: 'I agree to the [Terms of Service](https://xpressbeauty.ca/terms-and-conditions/)',
+      },
     },
+    phone_number_collection: {
+      enabled: true,
+    },
+    consent_collection: {
+      terms_of_service: 'required',
+    },
+    custom_fields: [
+      {
+        key: 'notes',
+        label: {
+          type: 'custom',
+          custom: 'Add a note to your order',
+        },
+        "optional": true,
+        type: 'text',
+      },
+    ],
     shipping_options: [
       {
         shipping_rate_data: {
@@ -61,7 +81,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
             amount: data.shipping * 100,
             currency: data.currencyObject === "1" ? "usd" : "cad",
           },
-          display_name: "shipping cost",
+          display_name: "Shipping Cost (Tax not included)",
 
           delivery_estimate: {
             minimum: {
@@ -79,13 +99,10 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     mode: "payment",
     return_url: `${env.get(
       "VITE_APPURL"
-    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${
-      data.userId
-    }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${
-      data.user.isDummy
-    }`,
+    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${data.userId
+      }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${data.user.isDummy
+      }`,
   });
-  // console.log(session);
   json(200, { clientSecret: session.client_secret });
   return;
 };
@@ -94,19 +111,34 @@ export const onGet: RequestHandler = async ({
   query,
   env,
   url,
-  // redirect,
+  redirect,
 }) => {
+
   if (url.searchParams.get("session_id")) {
     const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
     const session = await stripe.checkout.sessions.retrieve(
-      query.get("session_id") + ""
+      query.get("session_id") + "", {
+      expand: ['line_items']
+    }
     );
+    const productsFromCart: any = await getCartByUserId(query.get("userId") ?? "");
+
+    const productsData = session?.line_items?.data.map((item: any) => {
+      return {
+        product_name: item.description,
+        quantity: item.quantity,
+        price: item.amount_total / 100,
+        currency: item.currency,
+      };
+    });
+    console.log(session?.custom_fields[0],);
     const isDummy = query.get("isGuest") === "true" ? true : false;
     const orderData = {
       userId: query.get("userId") ?? "",
-      products: session?.line_items?.data ?? [],
+      products: productsFromCart.products ?? [],
       currency: "cad",
-      // totalQuantity: session?.amount_total ?? 0,
+      notes: session?.custom_fields[0].text?.value ?? "",
+      totalQuantity: session?.line_items?.data?.length ?? 0,
       totalPrice: Number(session?.amount_total ?? 0) / 100,
       order_number: generateOrderNumber(),
       paymentMethod: "Card",
@@ -124,29 +156,32 @@ export const onGet: RequestHandler = async ({
       shippingName: session.shipping_details?.name ?? "",
       totalInfo: {
         shipping: Number(session.shipping_cost?.amount_total ?? 0) / 100,
+        shippingTax: Number(session.shipping_cost?.amount_tax ?? 0) / 100,
         tax: Number(session.total_details?.amount_tax ?? 0) / 100,
         finalTotal: Number(session.amount_total ?? 0) / 100,
         currency: session.currency ?? "cad",
       },
     };
+    // console.log("session", session);
+    await createOrder(orderData);
     await sendConfirmationEmail(
       session.customer_details?.email ?? "",
       session.customer_details?.name ?? "",
       orderData.shippingAddress,
-      productsData,
-      orderData.totalInfo
+      productsData ?? [],
+      orderData.totalInfo,
+      orderData.order_number
     );
     await sendConfirmationOrderForAdmin(
       session.customer_details?.name ?? "",
       orderData.shippingAddress,
-      productsData
+      productsData ?? []
     );
-    console.log(isDummy);
     if (isDummy) {
-      const update = await update_dummy_user(
+      await update_dummy_user(
         {
-          firstName: session.shipping_details?.name?.split(" ")[0] ?? "",
-          lastName: session.shipping_details?.name?.split(" ")[1] ?? "",
+          firstName: session.customer_details?.name?.split(" ")[0] ?? "",
+          lastName: session.customer_details?.name?.split(" ")[1] ?? "",
           email: session.customer_details?.email ?? "",
           phoneNumber: session.customer_details?.phone ?? "",
           generalInfo: {
@@ -162,7 +197,6 @@ export const onGet: RequestHandler = async ({
         },
         query.get("userId") ?? ""
       );
-      console.log(update);
     } else {
       await updateExistingUser(
         {
@@ -180,7 +214,7 @@ export const onGet: RequestHandler = async ({
         query.get("userId") ?? ""
       );
     }
-    await createOrder(orderData);
+
     await deleteCart(query.get("userId") ?? "");
     if (session.status == "open") {
       throw redirect(301, "/checkout");
