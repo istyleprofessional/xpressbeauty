@@ -1,12 +1,12 @@
-import type { PropFunction, QwikChangeEvent } from "@builder.io/qwik";
+import type { QRL, QwikChangeEvent } from "@builder.io/qwik";
 import { component$, useTask$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { uuid } from "~/utils/uuid";
 
 export interface BrandFilterProps {
   filterBrandsArray: any;
-  filterBrands: any[];
-  handleBrandCheckBoxChange: PropFunction<
+  filterBrands: any;
+  handleBrandCheckBoxChange: QRL<
     (e: QwikChangeEvent<HTMLInputElement>, brandName: string) => void
   >;
 }
@@ -19,14 +19,14 @@ export const BrandFilter = component$((props: BrandFilterProps) => {
     () => {
       const args = loc.params.args;
       const filters = args.split("/");
-      const filterBrands = () => {
+      const filterBrandss = () => {
         const index = filters.findIndex((filter) => filter === "filterBrands");
         if (index !== -1) {
           return filters[index + 1];
         }
         return "";
       };
-      const brandsFilters = filterBrands();
+      const brandsFilters = filterBrandss();
       if (brandsFilters !== "") {
         filterBrandsArray.value = brandsFilters
           .split("+")
@@ -37,8 +37,8 @@ export const BrandFilter = component$((props: BrandFilterProps) => {
   );
 
   return (
-    <ul class="rounded-box flex flex-col gap-1">
-      {filterBrands
+    <ul class="rounded-box flex flex-col gap-1 h-96 overflow-y-auto">
+      {filterBrands.value
         ?.sort(function (a: any, b: any) {
           return a.name.localeCompare(b.name);
         })

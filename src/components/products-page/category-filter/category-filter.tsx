@@ -1,5 +1,10 @@
 import type { PropFunction } from "@builder.io/qwik";
-import { component$, useTask$ } from "@builder.io/qwik";
+import {
+  component$,
+  useSignal,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { uuid } from "~/utils/uuid";
 
@@ -44,12 +49,12 @@ export const CategoryFilter = component$((props: CategoryFilterProps) => {
 
   return (
     <>
-      {Object.keys(categoriesSetObject).map((key: any, index: number) => (
-        <ul class="w-full pl-2 rounded-box" key={index}>
-          <li class="text-base text-black p-3 font-bold ">
+      {Object.keys(categoriesSetObject.value).map((key: any, index: number) => (
+        <ul class="w-full pl-2 rounded-box  h-96 overflow-y-auto" key={index}>
+          <li class="text-base text-black p-3 font-bold">
             <span>{key}</span>
           </li>
-          {categoriesSetObject[key].map((category: any) => (
+          {categoriesSetObject.value[key]?.map((category: any) => (
             <li
               class="flex flex-row w-full gap-1 text-black items-center"
               key={uuid()}

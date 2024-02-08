@@ -169,6 +169,7 @@ export default component$(() => {
   const filterPrices = useSignal<any[]>([]);
   const query = useSignal<string>(loc.url.searchParams.get("search") ?? "");
   const currencyObject: any = useContext(CurContext);
+  const allBrandz = useSignal<any[]>(filterServerData?.brand?.result);
   const isChecked = useStore<any>(
     {
       Hair: false,
@@ -181,9 +182,21 @@ export default component$(() => {
   const nav = useNavigate();
   const filterType = useSignal<string>("");
   const isLoading = useSignal<boolean>(false);
+  const searchQuery = useSignal<string>("");
 
   useTask$(() => {
     const filters = loc.params.args.split("/");
+    const searchFun = () => {
+      const index = filters.findIndex((filter: string) => {
+        return filter === "search";
+      });
+      if (index !== -1) {
+        return filters[index + 1];
+      } else {
+        return "";
+      }
+    };
+    searchQuery.value = searchFun();
     const filter = () => {
       const index = filters.findIndex((filter: string) => {
         return filter === "filter";
@@ -266,7 +279,7 @@ export default component$(() => {
       filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }`;
+    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
     const checkPage = url.searchParams.get("page") ?? "1";
     const result = await postRequest("/api/products/get", {
       filterBrands: filterBrandsArray.value,
@@ -389,7 +402,7 @@ export default component$(() => {
       filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }`;
+    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
     url.searchParams.set("sort", e.target.value);
     url.searchParams.set("page", "1");
     const checkPage = url.searchParams.get("page") ?? "1";
@@ -449,7 +462,8 @@ export default component$(() => {
         filterPrices.value.length
           ? `filterPrices/${filterPrices.value.join("+")}/`
           : ""
-      }`;
+      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+
       url.searchParams.set("page", "1");
       page.value = "1";
       nav(url.pathname, {
@@ -510,6 +524,7 @@ export default component$(() => {
       filterPrices.value.length
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
+    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
     }`;
 
     url.searchParams.set("page", "1");
@@ -532,6 +547,18 @@ export default component$(() => {
     const data = await result.json();
     productData.value = JSON.parse(data);
     isLoading.value = false;
+  });
+
+  const handleSearchBrandz = $((_: any, elem: HTMLInputElement) => {
+    const searchValue = elem.value.toLowerCase();
+    if (!searchValue) {
+      allBrandz.value = filterServerData?.brand?.result;
+      return;
+    }
+    const brands = allBrandz?.value?.filter((brand: any) => {
+      return brand.name.toLowerCase().includes(searchValue);
+    });
+    allBrandz.value = brands;
   });
 
   return (
@@ -642,11 +669,19 @@ export default component$(() => {
                   <h3 class="text-base font-bold text-black">Brands</h3>
                 </div>
                 <div class="collapse-content">
-                  <BrandFilter
-                    filterBrands={filterServerData?.brand?.result}
-                    filterBrandsArray={filterBrandsArray}
-                    handleBrandCheckBoxChange={handleBrandCheckBoxChange}
-                  />
+                  <div class="flex flex-col gap-2">
+                    <input
+                      type="text"
+                      class="input input-sm"
+                      placeholder="Search Brands"
+                      onInput$={(e: any, el: any) => handleSearchBrandz(e, el)}
+                    />
+                    <BrandFilter
+                      filterBrands={allBrandz}
+                      filterBrandsArray={filterBrandsArray}
+                      handleBrandCheckBoxChange={handleBrandCheckBoxChange}
+                    />
+                  </div>
                 </div>
               </li>
               <li class="collapse collapse-arrow w-fit">
@@ -669,11 +704,15 @@ export default component$(() => {
                   <h3 class="text-base font-bold text-black">Categories</h3>
                 </div>
                 <div class="collapse-content flex flex-col">
-                  <CategoryFilter
-                    filterCategoriessArray={filterCategoriessArray}
-                    categoriesSetObject={categoriesSetObject.value}
-                    handleCategoryCheckBoxChange={handleCategoryCheckBoxChange}
-                  />
+                  <div class="flex flex-col gap-2">
+                    <CategoryFilter
+                      filterCategoriessArray={filterCategoriessArray}
+                      categoriesSetObject={categoriesSetObject}
+                      handleCategoryCheckBoxChange={
+                        handleCategoryCheckBoxChange
+                      }
+                    />
+                  </div>
                 </div>
               </li>
               <li class="collapse collapse-arrow w-fit">
