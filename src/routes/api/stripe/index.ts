@@ -224,6 +224,6 @@ export const onGet: RequestHandler = async ({ query, env, url, json }) => {
     }
 
     await deleteCart(query.get("userId") ?? "");
-    json(200, { message: "Order created successfully" });
+    json(200, { order_id: orderData.order_number });
   }
 };

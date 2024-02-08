@@ -32,16 +32,10 @@ export const checkCatServer = server$(async function (products: any) {
   }
 });
 
-export function gtag_report_conversion(url: string, transactionId: string) {
-  const callback = function () {
-    if (typeof url != "undefined") {
-      window.location.href = url;
-    }
-  };
+export function gtag_report_conversion(transactionId: string) {
   gtag("event", "conversion", {
     send_to: "AW-11167601664",
     transaction_id: transactionId,
-    event_callback: callback,
   });
   return false;
 }
@@ -80,13 +74,6 @@ export default component$(() => {
         clientSecret,
         // pass sessionId to the callback to complete the checkout
         onComplete: async () => {
-          // gtag_report_conversion("/thank-you", clientSecret);
-          confirmationStep.value = "confirmation";
-          console.log(userObject);
-          if (checkoutRef.value) {
-            const text = checkoutRef.value.querySelector(".Payment__Checkout");
-            if (text) text.innerHTML = "Thank you for your purchase!";
-          }
           const req: any = await getRequest(
             `${
               import.meta.env.VITE_APPURL
@@ -97,7 +84,13 @@ export default component$(() => {
             }`
           );
           const data = await req.json();
-          console.log(data);
+          gtag_report_conversion(data.order_id);
+          confirmationStep.value = "confirmation";
+
+          if (checkoutRef.value) {
+            const text = checkoutRef.value.querySelector(".Payment__Checkout");
+            if (text) text.innerHTML = "Thank you for your purchase!";
+          }
         }, //pass sessionId to the callback to complete the checkout
       });
 
