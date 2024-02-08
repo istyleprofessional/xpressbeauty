@@ -34,7 +34,7 @@ export const checkCatServer = server$(async function (products: any) {
 
 export function gtag_report_conversion(transactionId: string) {
   gtag("event", "conversion", {
-    send_to: "AW-11167601664",
+    send_to: "AW-11167601664/ApSoCLPu2IwZEICokM0p",
     transaction_id: transactionId,
   });
   return false;
@@ -84,6 +84,7 @@ export default component$(() => {
             }`
           );
           const data = await req.json();
+
           gtag_report_conversion(data.order_id);
           confirmationStep.value = "confirmation";
 
