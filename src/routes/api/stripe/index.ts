@@ -39,7 +39,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     automatic_tax: {
       enabled: true,
     },
-
+    redirect_on_completion: "if_required",
     payment_method_types: paymentMethodTypes.filter((type) => type !== ""),
     shipping_address_collection: {
       allowed_countries: ["US", "CA"],
@@ -47,30 +47,38 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     tax_id_collection: {
       enabled: true,
     },
+
     custom_text: {
       shipping_address: {
         message:
           "Please Note: We are not shipping to Puerto Rico, Virgin Islands and Hawaii.",
       },
       terms_of_service_acceptance: {
-        message: 'I agree to the [Terms of Service](https://xpressbeauty.ca/terms-and-conditions/)',
+        message:
+          "I agree to the [Terms of Service](https://xpressbeauty.ca/terms-and-conditions/)",
+      },
+      after_submit: {
+        message: "Thank you for your order! you will receive an email shortly.",
+      },
+      submit: {
+        message: "Pay",
       },
     },
     phone_number_collection: {
       enabled: true,
     },
     consent_collection: {
-      terms_of_service: 'required',
+      terms_of_service: "required",
     },
     custom_fields: [
       {
-        key: 'notes',
+        key: "notes",
         label: {
-          type: 'custom',
-          custom: 'Add a note to your order',
+          type: "custom",
+          custom: "Add a note to your order",
         },
-        "optional": true,
-        type: 'text',
+        optional: true,
+        type: "text",
       },
     ],
     shipping_options: [
@@ -99,29 +107,30 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     mode: "payment",
     return_url: `${env.get(
       "VITE_APPURL"
-    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${data.userId
-      }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${data.user.isDummy
-      }`,
+    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${
+      data.userId
+    }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${
+      data.user.isDummy
+    }`,
   });
-  json(200, { clientSecret: session.client_secret });
+  json(200, { clientSecret: session.client_secret, sessionId: session.id });
   return;
 };
 
-export const onGet: RequestHandler = async ({
-  query,
-  env,
-  url,
-  redirect,
-}) => {
-
+export const onGet: RequestHandler = async ({ query, env, url, json }) => {
   if (url.searchParams.get("session_id")) {
     const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
+    console.log("session_id", query.get("session_id"));
     const session = await stripe.checkout.sessions.retrieve(
-      query.get("session_id") + "", {
-      expand: ['line_items']
-    }
+      query.get("session_id") + "",
+      {
+        expand: ["line_items"],
+      }
     );
-    const productsFromCart: any = await getCartByUserId(query.get("userId") ?? "");
+    console.log("session", session);
+    const productsFromCart: any = await getCartByUserId(
+      query.get("userId") ?? ""
+    );
 
     const productsData = session?.line_items?.data.map((item: any) => {
       return {
@@ -131,7 +140,6 @@ export const onGet: RequestHandler = async ({
         currency: item.currency,
       };
     });
-    console.log(session?.custom_fields[0],);
     const isDummy = query.get("isGuest") === "true" ? true : false;
     const orderData = {
       userId: query.get("userId") ?? "",
@@ -216,10 +224,6 @@ export const onGet: RequestHandler = async ({
     }
 
     await deleteCart(query.get("userId") ?? "");
-    if (session.status == "open") {
-      throw redirect(301, "/checkout");
-    } else if (session.status == "complete") {
-      throw redirect(301, "/payment/success");
-    }
+    json(200, { message: "Order created successfully" });
   }
 };

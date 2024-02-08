@@ -11,7 +11,8 @@ import { CartContext } from "~/context/cart.context";
 import { CurContext } from "~/context/cur.context";
 import { UserContext } from "~/context/user.context";
 import productSchema from "~/express/schemas/product.schema";
-import { postRequest } from "~/utils/fetch.utils";
+import { getRequest, postRequest } from "~/utils/fetch.utils";
+declare const gtag: Function;
 
 export const checkCatServer = server$(async function (products: any) {
   if (!(products && products?.length)) return false;
@@ -31,6 +32,20 @@ export const checkCatServer = server$(async function (products: any) {
   }
 });
 
+export function gtag_report_conversion(url: string, transactionId: string) {
+  const callback = function () {
+    if (typeof url != "undefined") {
+      window.location.href = url;
+    }
+  };
+  gtag("event", "conversion", {
+    send_to: "AW-11167601664",
+    transaction_id: transactionId,
+    event_callback: callback,
+  });
+  return false;
+}
+
 export default component$(() => {
   const cartData: any = useContext(CartContext);
   const shipping = useSignal<number>(0);
@@ -38,6 +53,8 @@ export default component$(() => {
   const currencyObject = currencyObjectConx?.cur;
   const userObject: any = useContext(UserContext);
   const isLoading = useSignal<boolean>(true);
+  const confirmationStep = useSignal<string>("payment");
+  const checkoutRef = useSignal<HTMLDivElement>();
 
   useVisibleTask$(async () => {
     try {
@@ -57,18 +74,36 @@ export default component$(() => {
       cartData.cart.shipping = shipping.value;
       cartData.cart.currencyObject = currencyObject;
       cartData.cart.user = userObject;
-      console.log(cartData.cart.user);
-      const response = await postRequest("/api/stripe", cartData.cart);
-      const { clientSecret } = await response.json();
+      const response = await postRequest("/api/stripe/", cartData.cart);
+      const { clientSecret, sessionId } = await response.json();
       const checkout = await stripe.initEmbeddedCheckout({
         clientSecret,
-        onComplete: () => {
-          console.log("Checkout completed");
-        },
+        // pass sessionId to the callback to complete the checkout
+        onComplete: async () => {
+          // gtag_report_conversion("/thank-you", clientSecret);
+          confirmationStep.value = "confirmation";
+          console.log(userObject);
+          if (checkoutRef.value) {
+            const text = checkoutRef.value.querySelector(".Payment__Checkout");
+            if (text) text.innerHTML = "Thank you for your purchase!";
+          }
+          const req: any = await getRequest(
+            `${
+              import.meta.env.VITE_APPURL
+            }/api/stripe?session_id=${sessionId}&userId=${
+              cartData.cart.userId
+            }&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${
+              userObject.isDummy
+            }`
+          );
+          const data = await req.json();
+          console.log(data);
+        }, //pass sessionId to the callback to complete the checkout
       });
 
       // Mount Checkout
       checkout.mount("#checkout");
+
       isLoading.value = false;
     } catch (error) {
       console.log(error);
@@ -78,7 +113,7 @@ export default component$(() => {
   return (
     <>
       <div class="flex flex-col gap-5 md:p-10 justify-center items-center">
-        <Steps pageType="payment" />
+        <Steps pageType={confirmationStep.value} />
         {isLoading.value && (
           <div class="flex flex-col gap-4 w-52">
             <div class="skeleton h-32 w-full"></div>
@@ -89,7 +124,7 @@ export default component$(() => {
         )}
       </div>
 
-      <div id="checkout" class="checkout pb-6"></div>
+      <div id="checkout" ref={checkoutRef} class="checkout pb-6"></div>
     </>
   );
 });
