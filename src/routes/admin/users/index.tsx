@@ -65,7 +65,11 @@ export default component$(() => {
     // Email	First Name	Last Name	Country	Zip	Email	Zip	Phone	Phone
     let csv = `Email,First Name,Last Name,Country,Zip,Email,Zip,Phone,Phone`;
     users.forEach((user: any) => {
-      csv += `\n${user.email},${user.firstName},${user.lastName},${user.generalInfo.address.country},${user.generalInfo.address.postalCode},${user.email},${user.generalInfo.address.postalCode},${user.phoneNumber},${user.phoneNumber}`;
+      csv += `\n${user.email},${user.firstName},${user.lastName},${
+        user.generalInfo?.address?.country ?? ""
+      },${user.generalInfo?.address?.postalCode ?? ""},${user.email},${
+        user.generalInfo?.address?.postalCode ?? ""
+      },${user?.phoneNumber ?? ""},${user?.phoneNumber ?? ""}`;
     });
     const blob = new Blob([csv], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
