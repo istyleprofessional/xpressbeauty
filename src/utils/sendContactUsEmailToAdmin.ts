@@ -12,7 +12,7 @@ export const sendContactUsEmailToAdmin = async (data: any) => {
   });
 
   const mailOptions = {
-    from: import.meta.env.VITE_EMAIL ?? "",
+    from: `XpressBeauty <${import.meta.env.VITE_EMAIL ?? ""}>`,
     to: "isbeautysupply@gmail.com",
     subject: "Contact Us Form Submission",
     html: `

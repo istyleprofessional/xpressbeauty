@@ -21,7 +21,9 @@ export const sendShippedEmail = async (
   });
 
   const mailOptions = {
-    from: import.meta.env.VITE_EMAIL ?? "",
+    from: `XpressBeauty Order ${orderNumber} Update <${
+      import.meta.env.VITE_EMAIL ?? ""
+    }>`,
     to: email.trim(),
     subject: `Your order ${orderNumber} has been shipped!`,
     html: `<body>

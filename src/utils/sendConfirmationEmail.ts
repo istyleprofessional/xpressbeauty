@@ -29,7 +29,7 @@ export const sendConfirmationEmail = async (
   const finalTotal = totalInfo?.finalTotal ?? 0;
   console.log("email", totalInfo);
   const mailOptions = {
-    from: import.meta.env.VITE_EMAIL ?? "",
+    from: `XpressBeauty Order Confirmed <${import.meta.env.VITE_EMAIL ?? ""}>`,
     to: email.trim(),
     subject: `Thank you for your order no. ${orderNumber}`,
     html: `<body>
@@ -45,26 +45,30 @@ export const sendConfirmationEmail = async (
                 <th style="border: 1px solid #ccc; padding: 8px;">Price</th>
             </tr>
             ${products
-        .map(
-          (product) =>
-            `
+              .map(
+                (product) =>
+                  `
                <tr>
-                <td style="border: 1px solid #ccc; padding: 8px;">${product.product_name
-            }</td>
-                <td style="border: 1px solid #ccc; padding: 8px;">${product.quantity
-            }</td>
+                <td style="border: 1px solid #ccc; padding: 8px;">${
+                  product.product_name
+                }</td>
+                <td style="border: 1px solid #ccc; padding: 8px;">${
+                  product.quantity
+                }</td>
                 <td style="border: 1px solid #ccc; padding: 8px;">$${parseFloat(
-              product.price
-            ).toFixed(2)}</td>
+                  product.price
+                ).toFixed(2)}</td>
                 </tr>
                 `
-        )
-        .join("")}
+              )
+              .join("")}
         </table>
         <div style="text-align: right;">
             <p>Tax: $${parseFloat(tax.toString()).toFixed(2)}</p>
             <p>Shipping: $${parseFloat(shipping.toString()).toFixed(2)}</p>
-            <p>Shipping Tax: $${parseFloat(shippingTax.toString()).toFixed(2)}</p>
+            <p>Shipping Tax: $${parseFloat(shippingTax.toString()).toFixed(
+              2
+            )}</p>
             <p>Final Total: $${parseFloat(finalTotal.toString()).toFixed(2)}</p>
         </div>
         <div style="text-align: center;">

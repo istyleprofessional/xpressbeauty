@@ -18,7 +18,7 @@ export const sendReminderEmailService = async (data: any) => {
     import.meta.env.VITE_JWTSECRET ?? ""
   );
   const mailOptions = {
-    from: import.meta.env.VITE_EMAIL ?? "",
+    from: `XpressBeauty <${import.meta.env.VITE_EMAIL ?? ""}>`,
     to: email.trim(),
     subject: "Your Cart Is Missing You!",
     html: `<body>
