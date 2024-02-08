@@ -2,10 +2,12 @@ import { component$, $, useSignal } from "@builder.io/qwik";
 import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import { OrderFilterIcon } from "~/components/shared/icons/icons";
 import {
+  getAllUsersForDownload,
   getUsers,
   getuserBySearchAdmin,
 } from "~/express/services/user.service";
 import { connect } from "~/express/db.connection";
+import { LegacyContentPage } from "twilio/lib/rest/content/v1/legacyContent";
 
 export const useUserTableData = routeLoader$(async ({ url }) => {
   const page = url.searchParams.get("page") ?? "1";
@@ -23,6 +25,12 @@ export const getUserServer = server$(async function (value: string) {
   const page = this.url.searchParams.get("page") ?? "1";
   const Users = await getuserBySearchAdmin(value, parseInt(page));
   return JSON.stringify(Users);
+});
+
+export const getAllUsersServer = server$(async function () {
+  await connect();
+  const users = await getAllUsersForDownload();
+  return JSON.stringify(users.result);
 });
 
 export default component$(() => {
@@ -50,6 +58,25 @@ export default component$(() => {
     history.pushState({}, "", url.toString());
   });
 
+  const handleDownloadAllUsers = $(async () => {
+    const usersObj = await getAllUsersServer();
+    const users = JSON.parse(usersObj);
+    console.log(users);
+    // format a csv file and download
+    // Email	First Name	Last Name	Country	Zip	Email	Zip	Phone	Phone
+    let csv = `Email,First Name,Last Name,Country,Zip,Email,Zip,Phone,Phone`;
+    users.forEach((user: any) => {
+      csv += `\n${user.email},${user.firstName},${user.lastName},${user.generalInfo.address.country},${user.generalInfo.address.postalCode},${user.email},${user.generalInfo.address.postalCode},${user.phoneNumber},${user.phoneNumber}`;
+    });
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "users.csv";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  });
+
   return (
     <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
       <div class="flex flex-row gap-5 items-center">
@@ -61,6 +88,9 @@ export default component$(() => {
           onInput$={handleSearchUsers}
           value={searchValue}
         />
+        <button class="btn btn-primary" onClick$={handleDownloadAllUsers}>
+          Download Users
+        </button>
       </div>
 
       <div class="overflow-x-auto h-[80vh] bg-[#FFF]">

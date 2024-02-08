@@ -347,6 +347,15 @@ export const getUsers = async (page: number) => {
   }
 };
 
+export const getAllUsersForDownload = async () => {
+  try {
+    const result = await User.find({}, { password: 0 }).sort({ createdAt: -1 });
+    return { status: "success", result: result };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
+
 export const getAllRegisteredUsersCount = async () => {
   try {
     const result = await User.countDocuments();
