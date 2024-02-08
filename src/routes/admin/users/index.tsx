@@ -7,7 +7,6 @@ import {
   getuserBySearchAdmin,
 } from "~/express/services/user.service";
 import { connect } from "~/express/db.connection";
-import { LegacyContentPage } from "twilio/lib/rest/content/v1/legacyContent";
 
 export const useUserTableData = routeLoader$(async ({ url }) => {
   const page = url.searchParams.get("page") ?? "1";
