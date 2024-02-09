@@ -15,17 +15,15 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
   const lineItemsArray: any = [];
 
   productArray.forEach((product) => {
-    console.log("data", product);
     lineItemsArray.push({
       // tax_rates:['123'],
       quantity: product.quantity,
       price_data: {
-        // make sure product price is in cents and has 2 decimal points
         unit_amount: product.price * 100,
         currency: data.currencyObject === "1" ? "usd" : "cad",
         product_data: {
           name: product.product_name,
-          images: [product?.product_img ?? ""],
+          images: [product.product_img],
         },
       },
     });
@@ -61,9 +59,6 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
       },
       after_submit: {
         message: "Thank you for your order! you will receive an email shortly.",
-      },
-      submit: {
-        message: "Pay",
       },
     },
     phone_number_collection: {
@@ -182,11 +177,11 @@ export const onGet: RequestHandler = async ({ query, env, url, json }) => {
       orderData.totalInfo,
       orderData.order_number
     );
-    await sendConfirmationOrderForAdmin(
-      session.customer_details?.name ?? "",
-      orderData.shippingAddress,
-      productsData ?? []
-    );
+    // await sendConfirmationOrderForAdmin(
+    //   session.customer_details?.name ?? "",
+    //   orderData.shippingAddress,
+    //   productsData ?? []
+    // );
     if (isDummy) {
       await update_dummy_user(
         {
@@ -225,7 +220,7 @@ export const onGet: RequestHandler = async ({ query, env, url, json }) => {
       );
     }
 
-    await deleteCart(query.get("userId") ?? "");
-    json(200, { order_id: orderData.order_number });
+    // await deleteCart(query.get("userId") ?? "");
+    json(200, { message: "Order created successfully" });
   }
 };
