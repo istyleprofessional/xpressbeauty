@@ -53,6 +53,7 @@ export const CartDetails = component$((props: any) => {
 
   useVisibleTask$(async ({ track }) => {
     track(() => cartContext?.cart?.totalPrice);
+    track(() => cartContext?.cart?.shipping);
     track(() => props?.currencyObject.cur);
 
     subTotal.value = cartContext?.cart?.totalPrice;
