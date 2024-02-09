@@ -17,8 +17,8 @@ import render from "./entry.ssr";
 import express from "express";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
-import Server from "quickbooks-js";
-import qbXMLHandler from "./qbXMLHandler";
+// import Server from "quickbooks-js";
+// import qbXMLHandler from "./qbXMLHandler";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import type { EnumChangefreq } from "sitemap";
@@ -36,9 +36,9 @@ import { update_hair_product_service } from "./express/services/product.service"
 
 dotenv.config();
 let sitemap: any;
-const soapServer = new Server.Server();
-soapServer.setQBXMLHandler(qbXMLHandler);
-soapServer.run();
+// const soapServer = new Server.Server();
+// soapServer.setQBXMLHandler(qbXMLHandler);
+// soapServer.run();
 
 declare global {
   interface QwikCityPlatform extends PlatformNode {}
