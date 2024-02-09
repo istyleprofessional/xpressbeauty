@@ -1,4 +1,4 @@
-import { component$, $, useStylesScoped$ } from "@builder.io/qwik";
+import { component$, $, useStylesScoped$, useOnWindow } from "@builder.io/qwik";
 import {
   NextArrowIconNoStick,
   PerviousArrowIconNoStick,
@@ -25,6 +25,27 @@ export const Hero = component$(() => {
     const scrollAmount = -carousel.offsetWidth / 2; // Scroll half the width of the carousel
     carousel.scrollBy({ left: scrollAmount, behavior: "smooth" });
   });
+
+  useOnWindow(
+    "load",
+    $(() => {
+      const timer = setInterval(() => {
+        // check if the carousel is in the DOM and scroll till the end
+        // then reset the scroll position to 0 but not instantly
+        const carousel = document.querySelector<HTMLElement>(".carousel");
+        if (carousel) {
+          carousel.scrollBy({ left: carousel.offsetWidth, behavior: "smooth" });
+          if (
+            carousel.scrollLeft ===
+            carousel.scrollWidth - carousel.offsetWidth
+          ) {
+            carousel.scrollLeft = 0;
+          }
+        }
+      }, 5000);
+      return () => clearInterval(timer);
+    })
+  );
   return (
     <div class="flex flex-col justify-center items-center">
       <div class="flex flex-row items-center justify-center w-full">

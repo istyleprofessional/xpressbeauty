@@ -4,33 +4,13 @@ import {
   useSignal,
   useVisibleTask$,
 } from "@builder.io/qwik";
-import { server$ } from "@builder.io/qwik-city";
 import { loadStripe } from "@stripe/stripe-js";
 import { Steps } from "~/components/shared/steps/steps";
 import { CartContext } from "~/context/cart.context";
 import { CurContext } from "~/context/cur.context";
 import { UserContext } from "~/context/user.context";
-import productSchema from "~/express/schemas/product.schema";
 import { getRequest, postRequest } from "~/utils/fetch.utils";
 declare const gtag: Function;
-
-export const checkCatServer = server$(async function (products: any) {
-  if (!(products && products?.length)) return false;
-  for (const prod of products) {
-    if (prod.id.includes(".")) continue;
-    const req = await productSchema.find({ _id: prod.id });
-    if (req.length !== 0) {
-      const cat = req[0]?.categories;
-      if (!(cat && cat?.length > 0)) continue;
-      if (
-        cat[0]?.name?.includes("Trimmers") ||
-        cat[0]?.name?.includes("Clippers")
-      ) {
-        return true;
-      }
-    }
-  }
-});
 
 export function gtag_report_conversion(transactionId: string) {
   gtag("event", "conversion", {
@@ -55,12 +35,7 @@ export default component$(() => {
       if (!cartData.cart || cartData.cart?.products?.length === 0) {
         window.location.href = "/cart";
       }
-      const checker = await checkCatServer(cartData.cart?.products);
-      if (checker) {
-        shipping.value = 0;
-      } else {
-        shipping.value = 15;
-      }
+      shipping.value = cartData.cart.shipping;
       const stripe: any = await loadStripe(
         import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
       );

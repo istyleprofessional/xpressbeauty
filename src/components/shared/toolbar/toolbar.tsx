@@ -5,7 +5,6 @@ import {
   $,
   useSignal,
   Fragment,
-  useTask$,
   useVisibleTask$,
 } from "@builder.io/qwik";
 import { SearchIcon } from "../icons/icons";
@@ -59,6 +58,8 @@ export const ToolBar = component$((props: ToolBarProps) => {
   const wishList = useContext(WishListContext);
   const isDummy = useSignal<boolean>(false);
   const curr = useSignal<string>("1");
+  const shippingText = useSignal<string>("");
+  const shippingStep = useSignal<number>(0);
 
   useVisibleTask$(async () => {
     const check = await checker();
@@ -66,10 +67,46 @@ export const ToolBar = component$((props: ToolBarProps) => {
     curr.value = await currency();
   });
 
-  useTask$(({ track }) => {
+  useVisibleTask$(({ track }) => {
     track(() => context?.cart?.totalQuantity);
+    track(() => context?.cart?.totalPrice);
+    track(() => context?.cart?.shipping);
     quantity.value = context?.cart?.totalQuantity;
-    totalPrice.value = parseFloat(context?.cart?.totalPrice ?? "0").toFixed(2);
+    if (context?.cart?.totalPrice < 80) {
+      shippingText.value = `Spend $${
+        (80 - context?.cart?.totalPrice).toFixed(2) ?? 0
+      } more to get 30% off shipping`;
+      shippingStep.value = 0;
+    } else if (
+      context.cart.totalPrice > 80 &&
+      context?.cart?.totalPrice < 100
+    ) {
+      shippingText.value = `Spend $${
+        (100 - context?.cart?.totalPrice).toFixed(2) ?? 0
+      } more to get 50% off shipping`;
+      shippingStep.value = 1;
+    } else if (
+      context.cart.totalPrice > 100 &&
+      context?.cart?.totalPrice < 150
+    ) {
+      shippingText.value = `Spend $${
+        (150 - context?.cart?.totalPrice).toFixed(2) ?? 0
+      } more to get 70% off shipping`;
+      shippingStep.value = 2;
+    } else if (
+      context.cart.totalPrice > 150 &&
+      context?.cart?.totalPrice < 200
+    ) {
+      shippingText.value = `Spend $${
+        (200 - context?.cart?.totalPrice).toFixed(2) ?? 0
+      } more to get free shipping`;
+      shippingStep.value = 3;
+    } else if (context.cart.totalPrice > 200) {
+      shippingText.value = `You get free shipping`;
+      shippingStep.value = 4;
+    }
+    console.log(shippingStep.value);
+    totalPrice.value = parseFloat(context?.cart?.totalPrice).toFixed(2);
   });
 
   const handleSearchInput = $(async (event: any) => {
@@ -198,9 +235,9 @@ export const ToolBar = component$((props: ToolBarProps) => {
           </label>
           <div
             tabIndex={0}
-            class="mt-3 z-50 card card-compact dropdown-content w-52 bg-base-100 shadow"
+            class="mt-3 z-50 card card-compact dropdown-content w-72 bg-base-100 shadow"
           >
-            <div class="card-body">
+            <div class="card-body w-72">
               <span class="font-bold text-lg">{quantity.value} Items</span>
               <span class="text-info">
                 Subtotal: {curr.value === "1" ? "$" : "CA$"}{" "}
@@ -213,6 +250,35 @@ export const ToolBar = component$((props: ToolBarProps) => {
                 >
                   View cart
                 </button>
+                <p class="text-xs text-gray-500">
+                  {shippingText.value ? shippingText.value : ""}
+                </p>
+                <ul class="steps steps-horizontal">
+                  <li
+                    class={`step ${
+                      shippingStep.value !== 0 ? "step-info" : ""
+                    }`}
+                  >
+                    30%
+                  </li>
+                  <li
+                    class={`step ${shippingStep.value >= 2 ? "step-info" : ""}`}
+                  >
+                    50%
+                  </li>
+                  <li
+                    class={`step ${shippingStep.value >= 3 ? "step-info" : ""}`}
+                  >
+                    70%
+                  </li>
+                  <li
+                    class={`step ${
+                      shippingStep.value === 4 ? "step-info" : ""
+                    }`}
+                  >
+                    Free
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

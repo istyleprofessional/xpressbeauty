@@ -9,26 +9,7 @@ import { server$ } from "@builder.io/qwik-city";
 import { NextArrowIconNoStick } from "~/components/shared/icons/icons";
 import { CartContext } from "~/context/cart.context";
 import { UserContext } from "~/context/user.context";
-import productSchema from "~/express/schemas/product.schema";
 import { User } from "~/express/schemas/users.schema";
-
-export const checkCatServer = server$(async function (products: any) {
-  if (!(products && products?.length)) return false;
-  for (const prod of products) {
-    if (prod.id.includes(".")) continue;
-    const req = await productSchema.find({ _id: prod.id });
-    if (req.length !== 0) {
-      const cat = req[0].categories;
-      if (!(cat && cat?.length > 0)) continue;
-      if (
-        cat[0]?.name?.includes("Trimmers") ||
-        cat[0]?.name?.includes("Clippers")
-      ) {
-        return true;
-      }
-    }
-  }
-});
 
 export const checkCoponServer = server$(async function (
   copon: string,
@@ -96,14 +77,7 @@ export const CartDetails = component$((props: any) => {
     if (checkCopon) {
       subTotal.value = cartContext?.cart?.totalPrice;
       subTotal.value = subTotal.value - subTotal.value * 0.1;
-      const checker = await checkCatServer(cartContext?.cart?.products);
-      if (checker) {
-        shipping.value = 0.0;
-      } else if (subTotal.value > 200) {
-        shipping.value = 0.0;
-      } else {
-        shipping.value = 15;
-      }
+      shipping.value = cartContext.cart.shipping;
       total.value = subTotal.value + shipping.value;
       if (props?.currencyObject?.cur === "1") {
         symbol.value = "USD";
@@ -170,7 +144,11 @@ export const CartDetails = component$((props: any) => {
         <div class="grid grid-cols-2 w-full">
           <p class="text-white text-xs font-light">Shipping</p>
           <p class="justify-self-end text-white text-xs font-light">
-            Continue To Calculate Shipping...
+            {cartContext?.cart?.shipping &&
+              cartContext?.cart?.shipping?.toLocaleString("en-US", {
+                style: "currency",
+                currency: symbol.value,
+              })}
           </p>
         </div>
       </div>

@@ -279,6 +279,7 @@ export default component$(() => {
       cartContextObject.cart = JSON.parse(cart);
       if (cartContextObject?.cart?.products?.length > 0) {
         let totalPrice = 0;
+        let shipping = 15;
         if (
           cartContextObject.cart.currency === "USD" &&
           curContextObject.cur === "2"
@@ -290,6 +291,16 @@ export default component$(() => {
           });
           cartContextObject.cart.products.forEach((element: any) => {
             totalPrice += element.price * element.quantity;
+            shipping =
+              totalPrice > 80 && totalPrice < 100
+                ? 15 - 15 * 0.3
+                : totalPrice > 100 && totalPrice < 150
+                ? 15 - 15 * 0.5
+                : totalPrice > 150 && totalPrice < 200
+                ? 15 - 15 * 0.7
+                : totalPrice > 200
+                ? 0
+                : 15;
           });
         } else if (
           cartContextObject.cart.currency === "CAD" &&
@@ -303,15 +314,37 @@ export default component$(() => {
           cartContextObject.cart.products.forEach((element: any) => {
             element.price = Math.round(element.price * 100) / 100;
             totalPrice += element.price * element.quantity;
+            shipping =
+              totalPrice > 80 && totalPrice < 100
+                ? 15 - 15 * 0.3
+                : totalPrice > 100 && totalPrice < 150
+                ? 15 - 15 * 0.5
+                : totalPrice > 150 && totalPrice < 200
+                ? 15 - 15 * 0.7
+                : totalPrice > 200
+                ? 0
+                : 15;
           });
         } else {
           cartContextObject.cart.products.forEach((element: any) => {
             // make sure the price is 2 decimal using math
             element.price = Math.round(element.price * 100) / 100;
             totalPrice += element.price * element.quantity;
+            shipping =
+              totalPrice > 80 && totalPrice < 100
+                ? 15 - 15 * 0.3
+                : totalPrice > 100 && totalPrice < 150
+                ? 15 - 15 * 0.5
+                : totalPrice > 150 && totalPrice < 200
+                ? 15 - 15 * 0.7
+                : totalPrice > 200
+                ? 0
+                : 15;
           });
         }
+
         cartContextObject.cart.totalPrice = parseFloat(totalPrice.toFixed(2));
+        cartContextObject.cart.shipping = parseFloat(shipping.toFixed(2));
         cartContextObject.cart.totalQuantity =
           cartContextObject.cart.products.reduce(
             (total: any, item: any) => total + item.quantity,
@@ -360,19 +393,6 @@ export default component$(() => {
 
   return (
     <div class="page flex flex-col gap-6 h-screen">
-      <noscript>
-        <a href="https://www.livechat.com/chat-with/17027997/" rel="nofollow">
-          Chat with us
-        </a>
-        , powered by{" "}
-        <a
-          href="https://www.livechat.com/?welcome"
-          rel="noopener nofollow"
-          target="_blank"
-        >
-          LiveChat
-        </a>
-      </noscript>
       <main>
         {url !== "/login/" &&
           url !== "/register/" &&
