@@ -15,6 +15,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
   const lineItemsArray: any = [];
 
   productArray.forEach((product: any) => {
+    // const testImage = product.product_img;
     lineItemsArray.push({
       // tax_rates:['123'],
       quantity: product.quantity,
@@ -23,7 +24,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
         currency: data.currencyObject === "1" ? "usd" : "cad",
         product_data: {
           name: product.product_name,
-          images: [product.product_img],
+          // images: [product.product_img],
         },
       },
     });
