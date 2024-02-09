@@ -53,11 +53,10 @@ export const CartDetails = component$((props: any) => {
 
   useVisibleTask$(async ({ track }) => {
     track(() => cartContext?.cart?.totalPrice);
-    track(() => cartContext?.cart?.shipping);
     track(() => props?.currencyObject.cur);
 
     subTotal.value = cartContext?.cart?.totalPrice;
-    shipping.value = cartContext?.cart?.shipping;
+
     const checkCopon = localStorage.getItem("copon");
     if (checkCopon === "true") {
       subTotal.value = subTotal.value - subTotal.value * 0.1;
@@ -71,6 +70,11 @@ export const CartDetails = component$((props: any) => {
     }
   });
 
+  useVisibleTask$(({ track }) => {
+    track(() => cartContext?.cart?.shipping);
+    shipping.value = cartContext?.cart?.shipping;
+    console.log("shipping", shipping.value);
+  });
   const handleAddCopon = $(async () => {
     const checkCopon = await checkCoponServer(
       coponSignal.value,

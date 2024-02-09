@@ -54,6 +54,23 @@ export const ItemQuantity = component$((props: ItemQuantityProps) => {
       (acc: number, curr: any) => acc + curr.price * curr.quantity,
       0
     );
+    let shipping = 15;
+    if (totalPrice > 80 && totalPrice < 100) {
+      shipping = shipping - shipping * 0.3;
+    }
+
+    if (totalPrice > 100 && totalPrice < 150) {
+      shipping = shipping - shipping * 0.5;
+    }
+
+    if (totalPrice > 150 && totalPrice < 200) {
+      shipping = shipping - shipping * 0.7;
+    }
+
+    if (totalPrice > 200) {
+      shipping = 0;
+    }
+    context.cart.shipping = shipping;
     context.cart.totalPrice = totalPrice;
   });
 
@@ -84,6 +101,24 @@ export const ItemQuantity = component$((props: ItemQuantityProps) => {
       (acc: number, curr: any) => acc + curr.price * curr.quantity,
       0
     );
+    let shipping = 15;
+    if (totalPrice > 80 && totalPrice < 100) {
+      shipping = shipping - shipping * 0.3;
+    }
+
+    if (totalPrice > 100 && totalPrice < 150) {
+      shipping = shipping - shipping * 0.5;
+    }
+
+    if (totalPrice > 150 && totalPrice < 200) {
+      shipping = shipping - shipping * 0.7;
+    }
+
+    if (totalPrice > 200) {
+      shipping = 0;
+    }
+    console.log("shipping", shipping);
+    context.cart.shipping = shipping;
     context.cart.totalPrice = totalPrice;
   });
 
