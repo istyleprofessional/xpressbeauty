@@ -84,7 +84,7 @@ export const update_on_hand_quantity = async (
 ) => {
   try {
     const result = await Product.findOneAndUpdate(
-      { item_no: item_no },
+      { item_no: item_no, isHidden: { $ne: true } },
       {
         quantity_on_hand: quantity,
         manufacturer_part_number: manufacturerPartNumber,

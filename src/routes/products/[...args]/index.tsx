@@ -568,10 +568,7 @@ export default component$(() => {
         <div class="drawer lg:drawer-open flex flex-col gap-5">
           <input id="my-drawer" type="checkbox" class="drawer-toggle" />
           <div class="drawer-content">
-            <label
-              for="my-drawer"
-              class="btn btn-primary drawer-button lg:hidden"
-            >
+            <label for="my-drawer" class="btn btn-info drawer-button lg:hidden">
               Filter By
               <svg
                 xmlns="http://www.w3.org/2000/svg"
