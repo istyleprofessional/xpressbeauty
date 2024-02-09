@@ -211,7 +211,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
           )}
         </div>
 
-        <div class="dropdown dropdown-end">
+        <div class="dropdown dropdown-end dropdown-hover ">
           <label tabIndex={0} class="btn btn-ghost btn-circle">
             <div class="indicator">
               <svg
@@ -235,9 +235,9 @@ export const ToolBar = component$((props: ToolBarProps) => {
           </label>
           <div
             tabIndex={0}
-            class="mt-3 z-50 card card-compact dropdown-content w-72 bg-base-100 shadow"
+            class="mt-3 z-50 card card-compact dropdown-content w-72  bg-white rounded-lg shadow justify-center items-center "
           >
-            <div class="card-body w-72">
+            <div class="card-body w-full h-full  rounded-lg bg-white ">
               <span class="font-bold text-lg">{quantity.value} Items</span>
               <span class="text-info">
                 Subtotal: {curr.value === "1" ? "$" : "CA$"}{" "}
