@@ -1,10 +1,5 @@
 import type { PropFunction } from "@builder.io/qwik";
-import {
-  component$,
-  useSignal,
-  useTask$,
-  useVisibleTask$,
-} from "@builder.io/qwik";
+import { component$, useTask$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { uuid } from "~/utils/uuid";
 
