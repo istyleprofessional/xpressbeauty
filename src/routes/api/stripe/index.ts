@@ -21,7 +21,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
       quantity: product.quantity,
       price_data: {
         // make sure product price is in cents and has 2 decimal points
-        unit_amount: product.price.toFixed(2) * 100,
+        unit_amount: product.price * 100,
         currency: data.currencyObject === "1" ? "usd" : "cad",
         product_data: {
           name: product.product_name,
