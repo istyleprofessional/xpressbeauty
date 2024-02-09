@@ -23,7 +23,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
         currency: data.currencyObject === "1" ? "usd" : "cad",
         product_data: {
           name: product.product_name,
-          images: [product.product_img],
+          images: [product.product_img] ?? "",
         },
       },
     });
