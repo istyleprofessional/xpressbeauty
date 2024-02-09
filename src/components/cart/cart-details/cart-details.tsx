@@ -56,6 +56,7 @@ export const CartDetails = component$((props: any) => {
     track(() => props?.currencyObject.cur);
 
     subTotal.value = cartContext?.cart?.totalPrice;
+    shipping.value = cartContext?.cart?.shipping;
     const checkCopon = localStorage.getItem("copon");
     if (checkCopon === "true") {
       subTotal.value = subTotal.value - subTotal.value * 0.1;
