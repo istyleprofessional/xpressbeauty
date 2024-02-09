@@ -91,7 +91,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
   return (
     <a
       class={`btn btn-ghost grid grid-rows-4 justify-items-center items-center ${
-        cardSize === "sm" ? " lg:h-64 lg:w-64" : "lg:w-96 lg:h-96"
+        cardSize === "sm" ? "lg:w-72 lg:h-72" : "lg:w-96 lg:h-96"
       } w-40 h-72 bg-[#FFFFFF] shadow-sm
        shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center items-center normal-case`}
       href={`/products/${encodeURIComponent(
@@ -111,7 +111,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
         alt={product.product_name}
         class={`${
           cardSize === "sm" ? "lg:w-32 lg:h-32" : " lg:w-52 lg:h-52"
-        } w-32 h-32 object-contain mt-8 row-span-2 bg-white rounded-lg`}
+        } w-32 h-32 object-contain row-span-2 bg-white rounded-lg`}
         itemProp="image"
       />
       <h2
