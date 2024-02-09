@@ -68,7 +68,8 @@ export const sendTextSer = server$(async function () {
 
 export default component$(() => {
   const handleSendText = $(() => {
-    alert("Send Text To All Users");
+    sendTextSer();
+    alert("Sending Text To All Users");
   });
 
   return (
