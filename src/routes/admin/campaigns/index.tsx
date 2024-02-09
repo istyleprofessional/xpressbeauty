@@ -1,6 +1,6 @@
 import { component$, $ } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
-import { Twilio } from "twilio";
+import Twilio from "twilio";
 import dummyUsers from "~/express/schemas/dummy.user.schema";
 import { User } from "~/express/schemas/users.schema";
 
@@ -40,26 +40,6 @@ export const sendTextSer = server$(async function () {
     } else {
       return { status: "failed" };
     }
-
-    // const result = await client.messages.create({
-    //   body: `🎉 Exciting Offer Alert! 🎉
-
-    //   Get ready to save big on your next purchase with our exclusive shipping discounts:
-
-    //   🛒 Spend less than $80 ➡️ Enjoy 30% off shipping!
-    //   🚚 Spend less than $100 ➡️ Enjoy 50% off shipping!
-    //   📦 Spend more than $150 ➡️ Enjoy a whopping 70% off shipping!
-    //   🎁 Spend over $200 ➡️ Get FREE shipping on us!
-
-    //   Hurry, this offer won't last forever! Shop now and save on shipping costs while stocking up on your favorite items. Visit our website or shop in-store today! 🛍️✨`,
-    //   from: "+12134014667",
-    //   to: `+${phoneNumber}`,
-    // });
-    // if (result) {
-    //   return { status: "success", result: result };
-    // } else {
-    //   return { status: "failed" };
-    // }
   } catch (err) {
     console.log(err);
     return { status: "failed", err: err };
