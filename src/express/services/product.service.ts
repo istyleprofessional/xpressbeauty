@@ -243,7 +243,7 @@ export const get_products_data = async (
     const buildQuery: any = {};
 
     if (filterByBrand.length > 0) {
-      buildQuery["companyName"] = { $in: filterByBrand };
+      buildQuery["companyName.name"] = { $in: filterByBrand };
     }
     if (filterByCategory.length > 0) {
       buildQuery["categories"] = {
