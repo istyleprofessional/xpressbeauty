@@ -15,6 +15,7 @@ import { uuid } from "~/utils/uuid";
 import { server$ } from "@builder.io/qwik-city";
 import { WishListContext } from "~/context/wishList.context";
 import { verify } from "jsonwebtoken";
+import { Image } from "@unpic/qwik";
 
 interface ToolBarProps {
   user?: any;
@@ -188,9 +189,9 @@ export const ToolBar = component$((props: ToolBarProps) => {
                                   {item.product_name}
                                 </span>
 
-                                <img
+                                <Image
                                   src={
-                                    (item as any).imgs[0] ?? "/placeholder.webp"
+                                    (item as any).imgs[0].includes("http") ? (item as any).imgs[0] : `${(item as any).imgs[0].replace(".", "")}`
                                   }
                                   alt={item.product_name}
                                   class="w-20 h-20 md:w-52 md:h-52 object-contain"
