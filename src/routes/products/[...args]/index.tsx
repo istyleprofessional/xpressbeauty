@@ -9,7 +9,7 @@ import {
   useContext,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { routeLoader$, useLocation, useNavigate } from "@builder.io/qwik-city";
+import { routeLoader$, server$, useLocation, useNavigate } from "@builder.io/qwik-city";
 import { BrandFilter } from "~/components/products-page/brand-filter/brand-filter";
 import { CategoryFilter } from "~/components/products-page/category-filter/category-filter";
 import { PriceFilter } from "~/components/products-page/price-filter/price-filter";
@@ -20,6 +20,12 @@ import { get_all_brands } from "~/express/services/brand.service";
 import { get_all_categories } from "~/express/services/category.service";
 import { get_products_data, get_random_products } from "~/express/services/product.service";
 import { postRequest } from "~/utils/fetch.utils";
+
+export const get_random_products_Ser = server$(async () => {
+  await connect();
+  const request = await get_random_products();
+  return request;
+});
 
 export const useFilterData = routeLoader$(async () => {
   await connect();
@@ -332,18 +338,8 @@ export default component$(() => {
       replaceState: false,
       scroll: false,
     });
-    const checkPage = url.searchParams.get("page") ?? "1";
-    const result = await postRequest("/api/products/get", {
-      filterBrands: filterBrandsArray.value,
-      filterCategories: filterCategoriessArray.value,
-      filterPrices: filterPrices.value,
-      filter: "",
-      query: "",
-      page: checkPage,
-      sort: sort.value,
-    });
-    const data = await result.json();
-    productData.value = JSON.parse(data);
+    const result = await get_random_products_Ser();
+    productData.value = JSON.parse(result);
     query.value = "";
     filtersNo.value = 0;
     isLoading.value = false;
