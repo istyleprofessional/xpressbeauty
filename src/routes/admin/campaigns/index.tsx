@@ -18,6 +18,7 @@ export const sendTextSer = server$(async function () {
     for (const user of allUsers) {
       try {
         // without country code and start with 1
+        console.log(user.phoneNumber);
         const checkPhonenumberReg = /^[1]\d{10}$/;
         if (!checkPhonenumberReg.test(user.phoneNumber ?? "")) {
           continue;
