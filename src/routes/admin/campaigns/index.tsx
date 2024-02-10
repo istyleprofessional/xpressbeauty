@@ -15,10 +15,16 @@ export const sendTextSer = server$(async function () {
     });
     const users = await User.find({ phoneNumber: { $ne: null } });
     const allUsers = [...getGesutsUsersHasPhone, ...users];
-    for (const user of allUsers) {
+    // get unique phone numbers
+    const uniqueUsers = allUsers.filter(
+      (v, i, a) =>
+        a.findIndex(
+          (t) => t.phoneNumber === v.phoneNumber && t.phoneNumber !== null
+        ) === i
+    );
+    for (const user of uniqueUsers) {
       try {
         // without country code and start with +1
-        console.log(user.phoneNumber);
         const checkPhonenumberReg = /^\+1\d{10}$/;
         if (!checkPhonenumberReg.test(user.phoneNumber ?? "")) {
           continue;

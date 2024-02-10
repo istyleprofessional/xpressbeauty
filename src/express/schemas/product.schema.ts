@@ -37,7 +37,10 @@ productsSchema.index({
   product_name: "text",
   description: "text",
   lineName: "text",
-  companyName: "text",
+  "companyName.name": "text",
+  //create index for categories array of objects main key and name key for search
+  "categories.main": "text",
+  "categories.name": "text",
 });
 
 const products = model("products", productsSchema);

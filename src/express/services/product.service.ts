@@ -9,7 +9,7 @@ export const get_products_service = async (token: string, page: number) => {
       const perPage = 20;
       const pageNumber = page;
       const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
-      const result = await Product.find({ isDeleted: { $ne: true } })
+      const result = await Product.find({ isDeleted: { $ne: true }, isHidden: { $ne: true } })
         .skip(skip)
         .limit(perPage);
       return result as ProductModel;
@@ -25,7 +25,7 @@ export const get_products_count_service = async (token: string) => {
   const isAdmin = verifyTokenAdmin(token);
   if (isAdmin) {
     try {
-      const result = await Product.count({});
+      const result = await Product.count({ isDeleted: { $ne: true }, isHidden: { $ne: true } });
       return result;
     } catch (e) {
       return { e: e };
@@ -137,12 +137,15 @@ export const get_new_arrivals_products = async (filter?: string) => {
     if (filter && filter !== "") {
       const result = await Product.find({
         isHidden: { $ne: true },
+        isDeleted: { $ne: true },
         categories: { $elemMatch: { main: { $regex: filter, $options: "i" } } },
       }).limit(8);
       return result as ProductModel;
     } else {
       const query = {
         quantity_on_hand: { $nin: ["0", ""] },
+        isHidden: { $ne: true },
+        isDeleted: { $ne: true },
       };
       const result = await Product.aggregate([
         { $match: query },
@@ -180,6 +183,8 @@ export const getRelatedProducts = async (
       };
     }
     query["product_name"] = { $ne: productName };
+    query["isHidden"] = { $ne: true };
+    query["isDeleted"] = { $ne: true };
     const result = await Product.find(query).limit(10);
 
     return result as ProductModel;
@@ -211,7 +216,11 @@ export const getProductById = async (id: string) => {
 
 export const get_random_data = async () => {
   try {
-    const result = await Product.aggregate([{ $sample: { size: 20 } }]);
+    // get sample of 20 products from the database with condition that the product is not hidden and not deleted
+    const result = await Product.aggregate([
+      { $match: { isHidden: { $ne: true }, isDeleted: { $ne: true } } },
+      { $sample: { size: 20 } },
+    ]);
     return result;
   } catch (err) {
     return { status: "failed", err: err };
@@ -234,7 +243,7 @@ export const get_products_data = async (
     const buildQuery: any = {};
 
     if (filterByBrand.length > 0) {
-      buildQuery["companyName.name"] = { $in: filterByBrand };
+      buildQuery["companyName"] = { $in: filterByBrand };
     }
     if (filterByCategory.length > 0) {
       buildQuery["categories"] = {
@@ -326,12 +335,14 @@ export const get_products_data = async (
         }
       }
     }
-    console.log(buildQuery);
+
     if (query && query !== "") {
       buildQuery["$text"] = { $search: query };
       // console.log(buildQuery);
     }
     buildQuery["isHidden"] = { $ne: true };
+    buildQuery["isDeleted"] = { $ne: true };
+    console.log(buildQuery);
     const request = await Product.find(buildQuery)
       .sort(
         sort && sort !== "" ? { product_name: sort === "ASC" ? 1 : -1 } : {}
@@ -348,7 +359,7 @@ export const get_products_data = async (
 
 export const get_random_products = async () => {
   try {
-    const result = await Product.aggregate([{ $sample: { size: 25 } }]);
+    const result = await Product.aggregate([{ $match: { isHidden: { $ne: true }, isDeleted: { $ne: true } } }, { $sample: { size: 20 } }]);
     const total = await Product.count({});
     return JSON.stringify({ status: "success", result: result, total: total });
   } catch (err) {
@@ -371,6 +382,8 @@ export const get_products_on_filter_service = async (
     if (filter.brands.length > 0) {
       query["companyName"] = { $in: filter.brands };
     }
+    query["isHidden"] = { $ne: true };
+    query["isDeleted"] = { $ne: true };
     const request = await Product.find(query)
       .skip(skip)
       .limit(perPage)
@@ -389,7 +402,9 @@ export const getSearchResults = async (search: string) => {
         $or: [
           { product_name: { $regex: search, $options: "i" } },
           { category: { $regex: search, $options: "i" } },
-          // Add more attributes as needed
+          { companyName: { $regex: search, $options: "i" } },
+          { isHidden: { $ne: true } },
+          { isDeleted: { $ne: true } },
         ],
       },
       { product_name: 1, perfix: 1, _id: 0, imgs: 1 }
@@ -412,6 +427,8 @@ export const getProductBySearch = async (search: string, page: number) => {
         { description: { $regex: search, $options: "i" } },
         { companyName: { $regex: search, $options: "i" } },
         { lineName: { $regex: search, $options: "i" } },
+        { isHidden: { $ne: true } },
+        { isDeleted: { $ne: true } },
       ],
     })
       .skip(skip)
