@@ -17,7 +17,7 @@ async function changeCurrency() {
       for (const variant of product.variations) {
         variant.price = parseFloat(
           variant?.price?.toString()?.replace("$", "")
-        );
+        )
       }
       product.price.max = parseFloat(
         product?.price?.max?.toString()?.replace("$", "")

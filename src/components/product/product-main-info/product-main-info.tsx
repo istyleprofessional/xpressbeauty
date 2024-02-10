@@ -28,10 +28,8 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     ratings,
     companyName,
   } = props;
-  const finalSalePrice = useSignal<string>("");
   const finalRegularPrice = useSignal<string>("");
   const verifiedPrice = useSignal<string>("");
-  const verifiedSalePrice = useSignal<string>("");
 
   useTask$(() => {
     if (priceType === "range") {
@@ -68,24 +66,10 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           currency: currencyObject === "1" ? "USD" : "CAD",
         }
       );
-      finalSalePrice.value = parseFloat(sale_price?.sale)?.toLocaleString(
-        "en-US",
-        {
-          style: "currency",
-          currency: currencyObject === "1" ? "USD" : "CAD",
-        }
-      );
       verifiedPrice.value = (
         parseFloat(price?.regular) -
         parseFloat(price?.regular) * 0.2
       ).toLocaleString("en-US", {
-        style: "currency",
-        currency: currencyObject === "1" ? "USD" : "CAD",
-      });
-      verifiedSalePrice.value = (
-        parseFloat(sale_price?.sale) -
-        parseFloat(sale_price?.sale) * 0.2
-      )?.toLocaleString("en-US", {
         style: "currency",
         currency: currencyObject === "1" ? "USD" : "CAD",
       });
