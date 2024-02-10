@@ -23,7 +23,6 @@ export const sendTextSer = server$(async function () {
         if (!checkPhonenumberReg.test(user.phoneNumber ?? "")) {
           continue;
         }
-        console.log(user.phoneNumber);
         await client.messages.create({
           body: `
           XPRESS BEAUTY 
@@ -41,7 +40,7 @@ export const sendTextSer = server$(async function () {
           
           Shop now at xpressbeauty.ca to avail these amazing shipping discounts!`,
           from: "+12134014667",
-          to: `+${user.phoneNumber}`,
+          to: `${user.phoneNumber}`,
         });
       } catch (err) {
         console.log(err);
