@@ -17,6 +17,11 @@ export const sendTextSer = server$(async function () {
     const allUsers = [...getGesutsUsersHasPhone, ...users];
     for (const user of allUsers) {
       try {
+        // without country code and start with 1
+        const checkPhonenumberReg = /^[1]\d{10}$/;
+        if (!checkPhonenumberReg.test(user.phoneNumber ?? "")) {
+          continue;
+        }
         await client.messages.create({
           body: `
           XPRESS BEAUTY 
