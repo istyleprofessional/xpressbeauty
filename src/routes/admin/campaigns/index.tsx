@@ -16,8 +16,9 @@ export const sendTextSer = server$(async function () {
     const users = await User.find({ phone: { $ne: "" } });
     const allUsers = [...getGesutsUsersHasPhone, ...users];
     for (const user of allUsers) {
-      await client.messages.create({
-        body: `
+      try {
+        await client.messages.create({
+          body: `
           XPRESS BEAUTY 
     
           💝💝 Valentines Day Savings STARTS NOW!! 💝💝 
@@ -32,9 +33,13 @@ export const sendTextSer = server$(async function () {
           Hurry, this offer won't last forever! Shop now and save on shipping costs while stocking up on your favorite items. Visit our website today! 🛍️✨
           
           Shop now at xpressbeauty.ca to avail these amazing shipping discounts!`,
-        from: "+12134014667",
-        to: `+${user.phoneNumber}`,
-      });
+          from: "+12134014667",
+          to: `+${user.phoneNumber}`,
+        });
+      } catch (err) {
+        console.log(err);
+        continue;
+      }
     }
     return { status: "success" };
   } catch (err) {
