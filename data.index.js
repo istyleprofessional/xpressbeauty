@@ -43,10 +43,10 @@ async function changeCurrency() {
   await connection.close();
 }
 
-changeCurrency();
+// changeCurrency();
 
 async function updateCategory() {
-  const json = require("./cosmoprof_products_details.json");
+  const json = require("./backups/file-7.json");
   const shopEmpireData = require("./shopEmpireData.json");
   const products = [...json, ...shopEmpireData]
   await connect(mongoUrl);
@@ -61,4 +61,4 @@ async function updateCategory() {
   await connection.close();
 }
 
-// updateCategory()
+updateCategory()
