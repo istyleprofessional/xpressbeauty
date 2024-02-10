@@ -44,4 +44,16 @@ async function changeCurrency() {
   await connection.close();
 }
 
-changeCurrency();
+// changeCurrency();
+
+async function updateCategory() {
+  const json = require("./cosmoprof_products_details.json");
+  await connect(mongoUrl);
+  for (const product of json) {
+    const updateProduct = await Product.findOneAndUpdate({ product_name: product.product_name }, { category: product.category });
+    console.log(updateProduct);
+  }
+  await connection.close();
+}
+
+updateCategory()
