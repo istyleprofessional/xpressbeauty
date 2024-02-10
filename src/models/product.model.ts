@@ -25,4 +25,6 @@ export interface ProductModel {
   perfix?: string;
   priceType?: string;
   currency?: string;
+  ingredients?: string;
+  directions?: string;
 }

@@ -13,13 +13,15 @@ import { Toast } from "~/components/admin/toast/toast";
 
 interface RatingAndDescriptionProps {
   product_description: string;
+  ingredients: string;
+  directions: string;
   user?: any;
   productId: string;
 }
 
 export const RatingAndDescription = component$(
   (props: RatingAndDescriptionProps) => {
-    const { product_description, user, productId } = props;
+    const { product_description, user, productId, ingredients, directions } = props;
     const nav = useNavigate();
     const isDescriptionActive = useSignal<boolean>(true);
     const isReviewActive = useSignal<boolean>(false);
@@ -38,6 +40,7 @@ export const RatingAndDescription = component$(
     );
     const ratings = useSignal<any[]>([]);
     const recaptchaToken = useSignal<string>("");
+    const tabState = useSignal<string>("description");
 
     useVisibleTask$(
       async () => {
@@ -117,24 +120,21 @@ export const RatingAndDescription = component$(
         <div class="bg-[#F4F4F5] w-96 md:w-[32rem] h-20 justify-center flex items-center rounded-lg">
           {isRecaptcha.value === true && (
             <script
-              src={`https://www.google.com/recaptcha/api.js?render=${
-                import.meta.env.VITE_RECAPTCHA_SITE_KEY
-              }`}
+              src={`https://www.google.com/recaptcha/api.js?render=${import.meta.env.VITE_RECAPTCHA_SITE_KEY
+                }`}
             ></script>
           )}
           <div class="btn-group w-96 flex justify-center items-center">
             <button
-              class={`btn ${
-                isDescriptionActive.value ? "btn-active" : ""
-              } w-22 md:w-60 text-xs md:text-base`}
+              class={`btn ${isDescriptionActive.value ? "btn-active" : ""
+                } w-22 md:w-60 text-xs md:text-base`}
               onClick$={handleDescription}
             >
               Product Description
             </button>
             <button
-              class={`btn ${
-                !isDescriptionActive.value ? "btn-active" : ""
-              } w-22 md:w-60 text-xs font-inter md:text-base`}
+              class={`btn ${!isDescriptionActive.value ? "btn-active" : ""
+                } w-22 md:w-60 text-xs font-inter md:text-base`}
               onClick$={handleRatingAndReviews}
             >
               Ratings and Reviews
@@ -143,13 +143,51 @@ export const RatingAndDescription = component$(
         </div>
         <div class="w-3/4">
           {isDescriptionActive.value ? (
-            <div
-              class="text-black font-normal text-sm md:text-lg"
-              itemProp="description"
-              dangerouslySetInnerHTML={product_description
-                .replace(/<img .*?>/g, "")
-                .replace(/Cosmo Prof/g, "Xpress Beauty")}
-            ></div>
+            <div class="flex flex-col gap-2">
+              <div role="tablist" class="tabs tabs-bordered">
+                <button role="tab" onClick$={() => {
+                  const mainDiv = document.getElementById("mainDiv");
+                  if (mainDiv) {
+                    // dangerouslySetInnerHTML={product_description} 
+                    mainDiv.innerHTML =
+                      product_description
+                        .replace(/<img .*?>/g, "")
+                        .replace(/Cosmo Prof/g, "Xpress Beauty")
+                    tabState.value = "description";
+                  }
+                }} class={`tab ${tabState.value === 'description' ? 'tab-active' : ''}`}>Description</button>
+                <button role="tab"
+                  onClick$={() => {
+                    const mainDiv = document.getElementById("mainDiv");
+                    if (mainDiv) {
+                      mainDiv.innerHTML = ingredients
+                        .replace(/<img .*?>/g, "")
+                        .replace(/Cosmo Prof/g, "Xpress Beauty")
+                      tabState.value = "ingredients";
+                    }
+
+                  }} class={`tab ${tabState.value === 'ingredients' ? 'tab-active' : ''}`}>Ingredients</button>
+                <button role="tab"
+                  onClick$={() => {
+                    const mainDiv = document.getElementById("mainDiv");
+                    if (mainDiv) {
+                      mainDiv.innerHTML = directions
+                        .replace(/<img .*?>/g, "")
+                        .replace(/Cosmo Prof/g, "Xpress Beauty")
+                      tabState.value = "directions";
+                    }
+                  }}
+                  class={`tab ${tabState.value === 'directions' ? 'tab-active' : ''}`}>Directions</button>
+              </div>
+              <div
+                class="text-black font-normal text-sm md:text-sm"
+                id="mainDiv"
+                itemProp="description"
+
+                dangerouslySetInnerHTML={product_description.replace(/<img .*?>/g, "")
+                  .replace(/Cosmo Prof/g, "Xpress Beauty")}
+              ></div>
+            </div>
           ) : (
             <div class="flex flex-col gap-10">
               <div class="flex flex-col gap-4">

@@ -26,6 +26,9 @@ const productsSchema = new mongoose.Schema(
     priceType: { type: String, default: null },
     updateQuickBooks: { type: Boolean, default: true },
     oldPerfix: { type: String, default: null },
+    ingredients: { type: String, default: null },
+    directions: { type: String, default: null },
+
   },
   { timestamps: true }
 );

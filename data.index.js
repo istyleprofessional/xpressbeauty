@@ -50,9 +50,10 @@ async function updateCategory() {
   const json = require("./cosmoprof_products_details.json");
   await connect(mongoUrl);
   for (const product of json) {
-    const updateProduct = await Product.findOneAndUpdate({ product_name: product.product_name }, { categories: product.categories });
-    console.log(updateProduct);
+    await Product.findOneAndUpdate({ product_name: product.product_name }, { categories: product.categories, ingredients: product.ingredients, directions: product.directions });
+    // console.log(updateProduct);
   }
+  console.log("done");
   await connection.close();
 }
 

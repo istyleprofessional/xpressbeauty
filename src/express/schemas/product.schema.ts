@@ -27,6 +27,8 @@ const productsSchema = new Schema(
     oldPerfix: { type: String, default: null },
     currency: { type: String, default: null },
     gtin: { type: String, default: null },
+    ingredients: { type: String, default: null },
+    directions: { type: String, default: null },
   },
   { timestamps: true }
 );
