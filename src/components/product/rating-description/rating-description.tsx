@@ -256,14 +256,14 @@ export const RatingAndDescription = component$(
                                   id={`${index + 0.5}`}
                                   type="radio"
                                   name="rating-10"
-                                  class={`bg-green-500 mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
+                                  class={`mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
                                   onChange$={handleRatingStarsChange}
                                 />
                                 <input
                                   id={`${index + 1}`}
                                   type="radio"
                                   name="rating-10"
-                                  class={`bg-green-500 mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
+                                  class={` mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
                                   onChange$={handleRatingStarsChange}
                                 />
                               </Fragment>

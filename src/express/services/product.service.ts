@@ -257,8 +257,7 @@ export const get_products_data = async (
                 main: { $regex: filter },
               },
             },
-          },
-          { product_name: { $regex: filter, $options: "i" } },
+          }
         ]
       );
     }
@@ -332,6 +331,16 @@ export const get_products_data = async (
       .limit(perPage);
     const total = await Product.count(buildQuery);
     return JSON.stringify({ status: "success", result: request, total: total });
+  } catch (err) {
+    return JSON.stringify({ status: "failed", err: err });
+  }
+};
+
+export const get_random_products = async () => {
+  try {
+    const result = await Product.aggregate([{ $sample: { size: 25 } }]);
+    const total = await Product.count({});
+    return JSON.stringify({ status: "success", result: result, total: total });
   } catch (err) {
     return JSON.stringify({ status: "failed", err: err });
   }

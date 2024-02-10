@@ -18,7 +18,7 @@ import { CurContext } from "~/context/cur.context";
 import { connect } from "~/express/db.connection";
 import { get_all_brands } from "~/express/services/brand.service";
 import { get_all_categories } from "~/express/services/category.service";
-import { get_products_data } from "~/express/services/product.service";
+import { get_products_data, get_random_products } from "~/express/services/product.service";
 import { postRequest } from "~/utils/fetch.utils";
 
 export const useFilterData = routeLoader$(async () => {
@@ -38,6 +38,7 @@ export const useDomContentLoaded = routeLoader$(
     ) {
       throw redirect(301, `/products/${params.args.split("/")[0]}`);
     }
+
     const filters = params.args.split("/");
     const filterBrands = () => {
       const index = filters.findIndex((filter: string) => {
@@ -105,21 +106,17 @@ export const useDomContentLoaded = routeLoader$(
       }
     );
 
-    const finalUrl = `${
-      filterBrandsArray.length > 0
-        ? `filterBrands/${filterBrandsArray.join("+")}/`
-        : ""
-    }${
-      filterCategoriesArray.length > 0
+    const finalUrl = `${filterBrandsArray.length > 0
+      ? `filterBrands/${filterBrandsArray.join("+")}/`
+      : ""
+      }${filterCategoriesArray.length > 0
         ? `filterCategories/${filterCategoriesArray.join("+")}/`
         : ""
-    }${
-      filterPricesArray.length > 0
+      }${filterPricesArray.length > 0
         ? `filterPrices/${filterPricesArray.join("+")}/`
         : ""
-    }/${search() !== "" ? `search/${search()}/` : ""}/${
-      filter() !== "" ? `filter/${filter()}/` : ""
-    }`;
+      }/${search() !== "" ? `search/${search()}/` : ""}/${filter() !== "" ? `filter/${filter()}/` : ""
+      }`;
     const finalLength =
       finalUrl?.split("/")?.filter((item: string) => {
         return item !== "";
@@ -141,7 +138,17 @@ export const useDomContentLoaded = routeLoader$(
       parseInt(page),
       search() !== "" ? search() : searchQuery
     );
-
+    if (url.pathname === "/products/") {
+      const request = await get_random_products();
+      const data = JSON.parse(request);
+      return JSON.stringify({
+        finalFilter,
+        finalFilterBrandsArray,
+        finalFilterCategoriesArray,
+        filterPricesArray,
+        serverData: data,
+      });
+    }
     const data = JSON.parse(request);
     return JSON.stringify({
       finalFilter,
@@ -267,19 +274,16 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${
-      newFilterBrands.length > 0
-        ? `filterBrands/${newFilterBrands.join("+")}/`
-        : ""
-    }${
-      filterCategoriessArray.value.length
+    url.pathname = `/products/${newFilterBrands.length > 0
+      ? `filterBrands/${newFilterBrands.join("+")}/`
+      : ""
+      }${filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-    }${
-      filterPrices.value.length > 0
+      }${filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
     const checkPage = url.searchParams.get("page") ?? "1";
     const result = await postRequest("/api/products/get", {
       filterBrands: filterBrandsArray.value,
@@ -390,19 +394,16 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${
-      newFilterBrands.length > 0
-        ? `filterBrands/${newFilterBrands.join("+")}/`
-        : ""
-    }${
-      filterCategoriessArray.value.length
+    url.pathname = `/products/${newFilterBrands.length > 0
+      ? `filterBrands/${newFilterBrands.join("+")}/`
+      : ""
+      }${filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-    }${
-      filterPrices.value.length > 0
+      }${filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
     url.searchParams.set("sort", e.target.value);
     url.searchParams.set("page", "1");
     const checkPage = url.searchParams.get("page") ?? "1";
@@ -450,19 +451,16 @@ export default component$(() => {
           }
         );
       }
-      url.pathname = `/products/${
-        newFilterBrands.length > 0
-          ? `filterBrands/${newFilterBrands.join("+")}/`
-          : ""
-      }${
-        filterCategoriessArray.value.length
+      url.pathname = `/products/${newFilterBrands.length > 0
+        ? `filterBrands/${newFilterBrands.join("+")}/`
+        : ""
+        }${filterCategoriessArray.value.length
           ? `filterCategories/${newFilterCategories.join("+")}/`
           : ""
-      }${
-        filterPrices.value.length
+        }${filterPrices.value.length
           ? `filterPrices/${filterPrices.value.join("+")}/`
           : ""
-      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+        }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
 
       url.searchParams.set("page", "1");
       page.value = "1";
@@ -512,19 +510,16 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${
-      newFilterBrands.length > 0
-        ? `filterBrands/${newFilterBrands.join("+")}/`
-        : ""
-    }${
-      filterCategoriessArray.value.length
+    url.pathname = `/products/${newFilterBrands.length > 0
+      ? `filterBrands/${newFilterBrands.join("+")}/`
+      : ""
+      }${filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-    }${
-      filterPrices.value.length
+      }${filterPrices.value.length
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
+      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
     }`;
 
     url.searchParams.set("page", "1");
@@ -800,15 +795,14 @@ export const head: DocumentHead = ({ resolveValue }) => {
     metaDescription += ` in all beauty categories and more at XpressBeauty`;
   }
   return {
-    title: `${
-      mainFilter
-        ? `${mainFilter} products`
-        : categories
+    title: `${mainFilter
+      ? `${mainFilter} products`
+      : categories
         ? `${categories} products`
         : brands
-        ? `${brands} products`
-        : "beauty products"
-    } | XpressBeauty`,
+          ? `${brands} products`
+          : "beauty products"
+      } | XpressBeauty`,
     meta: [
       {
         name: "description",
@@ -828,15 +822,14 @@ export const head: DocumentHead = ({ resolveValue }) => {
       },
       {
         property: "og:title",
-        content: `${
-          mainFilter
-            ? `${mainFilter} products`
-            : categories
+        content: `${mainFilter
+          ? `${mainFilter} products`
+          : categories
             ? `${categories} products`
             : brands
-            ? `${brands} products`
-            : "beauty products"
-        } | XpressBeauty`,
+              ? `${brands} products`
+              : "beauty products"
+          } | XpressBeauty`,
       },
       {
         property: "og:description",
