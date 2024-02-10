@@ -72,9 +72,9 @@ export default component$(() => {
               : "You have 0 item in your cart"}
           </p>
         </div>
-        <div class="flex flex-col md:flex-row gap-5 justify-center items-start">
+        <div class="flex flex-col md:flex-row gap-5 justify-center items-start p-3">
           <ProductList currencyObject={currencyObject} />
-          <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 lg:m-5 md:sticky md:top-0">
+          <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 lg:m-5 md:sticky md:top-0 ">
             <CartDetails currencyObject={currencyObject} />
           </div>
         </div>
