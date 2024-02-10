@@ -1,4 +1,4 @@
-import { component$, useSignal } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 
 interface GalleryProps {
   product_name: string;
@@ -7,7 +7,6 @@ interface GalleryProps {
 
 export const Gallery = component$((props: GalleryProps) => {
   const { product_name, imgs } = props;
-  const currentImage = useSignal<string>(imgs[0]);
 
   return (
     <div class="flex flex-col gap-3 justify-center items-center w-full">
