@@ -12,7 +12,6 @@ async function changeCurrency() {
   await connect(mongoUrl);
   const products = await Product.find({});
 
-  console.log(products);
   for (const product of products) {
     if (product.priceType === "range") {
       for (const variant of product.variations) {
@@ -39,8 +38,8 @@ async function changeCurrency() {
       product,
       { new: true }
     );
-    console.log(updateProduct);
   }
+  console.log("done");
   await connection.close();
 }
 

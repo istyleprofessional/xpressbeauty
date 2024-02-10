@@ -263,6 +263,7 @@ export const get_products_data = async (
     }
     if (filterPrices.length > 0) {
       for (let i = 0; i < filterPrices.length; i++) {
+        console.log(filterPrices);
         if (filterPrices[i].includes(">")) {
           if (!buildQuery["$or"]) {
             buildQuery["$or"] = [];
@@ -283,6 +284,9 @@ export const get_products_data = async (
           });
         } else if (filterPrices[i].includes("<")) {
           const vars = filterPrices[i].split("<");
+          if (!buildQuery["$or"]) {
+            buildQuery["$or"] = [];
+          }
           buildQuery["$or"].push({
             "price.regular": { $gte: parseFloat(vars[1]) },
           });
@@ -297,6 +301,10 @@ export const get_products_data = async (
           });
         } else if (filterPrices[i].includes("-")) {
           const vars = filterPrices[i].split("-");
+          console.log(vars);
+          if (!buildQuery["$or"]) {
+            buildQuery["$or"] = [];
+          }
           buildQuery["$or"].push({
             "price.regular": {
               $gte: parseFloat(vars[0]),
@@ -318,6 +326,7 @@ export const get_products_data = async (
         }
       }
     }
+    console.log(buildQuery);
     if (query && query !== "") {
       buildQuery["$text"] = { $search: query };
       // console.log(buildQuery);
@@ -332,6 +341,7 @@ export const get_products_data = async (
     const total = await Product.count(buildQuery);
     return JSON.stringify({ status: "success", result: request, total: total });
   } catch (err) {
+    console.log(err);
     return JSON.stringify({ status: "failed", err: err });
   }
 };
