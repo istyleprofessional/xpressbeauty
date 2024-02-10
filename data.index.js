@@ -48,9 +48,14 @@ async function changeCurrency() {
 
 async function updateCategory() {
   const json = require("./cosmoprof_products_details.json");
+  const shopEmpireData = require("./shopEmpireData.json");
+  const products = [...json, ...shopEmpireData]
   await connect(mongoUrl);
-  for (const product of json) {
-    await Product.findOneAndUpdate({ product_name: product.product_name }, { categories: product.categories, ingredients: product.ingredients, directions: product.directions });
+  for (const product of products) {
+    const updateProduct = product.imgs.map((img) => {
+      return img.replace('newProductsImages', 'products-images-2')
+    })
+    await Product.findOneAndUpdate({ product_name: product.product_name }, { imgs: updateProduct });
     // console.log(updateProduct);
   }
   console.log("done");

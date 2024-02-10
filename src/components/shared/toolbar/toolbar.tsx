@@ -72,34 +72,32 @@ export const ToolBar = component$((props: ToolBarProps) => {
     track(() => context?.cart?.totalPrice);
     track(() => context?.cart?.shipping);
     quantity.value = context?.cart?.totalQuantity;
+    shippingText.value = "Spend $80 more to get 30% off shipping";
+    shippingStep.value = 0;
     if (context?.cart?.totalPrice < 80) {
-      shippingText.value = `Spend $${
-        (80 - context?.cart?.totalPrice).toFixed(2) ?? 0
-      } more to get 30% off shipping`;
+      shippingText.value = `Spend $${(80 - context?.cart?.totalPrice).toFixed(2) ?? 0
+        } more to get 30% off shipping`;
       shippingStep.value = 0;
     } else if (
       context.cart.totalPrice > 80 &&
       context?.cart?.totalPrice < 100
     ) {
-      shippingText.value = `Spend $${
-        (100 - context?.cart?.totalPrice).toFixed(2) ?? 0
-      } more to get 50% off shipping`;
+      shippingText.value = `Spend $${(100 - context?.cart?.totalPrice).toFixed(2) ?? 0
+        } more to get 50% off shipping`;
       shippingStep.value = 1;
     } else if (
       context.cart.totalPrice > 100 &&
       context?.cart?.totalPrice < 150
     ) {
-      shippingText.value = `Spend $${
-        (150 - context?.cart?.totalPrice).toFixed(2) ?? 0
-      } more to get 70% off shipping`;
+      shippingText.value = `Spend $${(150 - context?.cart?.totalPrice).toFixed(2) ?? 0
+        } more to get 70% off shipping`;
       shippingStep.value = 2;
     } else if (
       context.cart.totalPrice > 150 &&
       context?.cart?.totalPrice < 200
     ) {
-      shippingText.value = `Spend $${
-        (200 - context?.cart?.totalPrice).toFixed(2) ?? 0
-      } more to get free shipping`;
+      shippingText.value = `Spend $${(200 - context?.cart?.totalPrice).toFixed(2) ?? 0
+        } more to get free shipping`;
       shippingStep.value = 3;
     } else if (context.cart.totalPrice > 200) {
       shippingText.value = `You get free shipping`;
@@ -255,9 +253,8 @@ export const ToolBar = component$((props: ToolBarProps) => {
                 </p>
                 <ul class="steps steps-horizontal">
                   <li
-                    class={`step ${
-                      shippingStep.value !== 0 ? "step-info" : ""
-                    }`}
+                    class={`step ${shippingStep.value !== 0 ? "step-info" : ""
+                      }`}
                   >
                     30%
                   </li>
@@ -272,9 +269,8 @@ export const ToolBar = component$((props: ToolBarProps) => {
                     70%
                   </li>
                   <li
-                    class={`step ${
-                      shippingStep.value === 4 ? "step-info" : ""
-                    }`}
+                    class={`step ${shippingStep.value === 4 ? "step-info" : ""
+                      }`}
                   >
                     Free
                   </li>

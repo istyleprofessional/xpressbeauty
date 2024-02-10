@@ -54,7 +54,10 @@ export const ProductList = component$((props: any) => {
                 <figure>
                   <Image
                     layout="fill"
-                    src={product?.product_img}
+                    src={product?.product_img.includes("http") ? product?.product_img : product?.product_img.replace(".", "")}
+                    onError$={(e: any) => {
+                      e.target.src = "/placeholder.webp";
+                    }}
                     alt={product?.product_name}
                     class=" object-contain self-center w-32 h-32"
                   />
