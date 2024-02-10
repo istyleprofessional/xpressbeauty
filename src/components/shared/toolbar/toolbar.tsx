@@ -80,27 +80,27 @@ export const ToolBar = component$((props: ToolBarProps) => {
         } more to get 30% off shipping`;
       shippingStep.value = 0;
     } else if (
-      context.cart.totalPrice > 80 &&
+      context.cart?.totalPrice > 80 &&
       context?.cart?.totalPrice < 100
     ) {
       shippingText.value = `Spend $${(100 - context?.cart?.totalPrice).toFixed(2) ?? 0
         } more to get 50% off shipping`;
       shippingStep.value = 1;
     } else if (
-      context.cart.totalPrice > 100 &&
+      context.cart?.totalPrice > 100 &&
       context?.cart?.totalPrice < 150
     ) {
       shippingText.value = `Spend $${(150 - context?.cart?.totalPrice).toFixed(2) ?? 0
         } more to get 70% off shipping`;
       shippingStep.value = 2;
     } else if (
-      context.cart.totalPrice > 150 &&
+      context.cart?.totalPrice > 150 &&
       context?.cart?.totalPrice < 200
     ) {
       shippingText.value = `Spend $${(200 - context?.cart?.totalPrice).toFixed(2) ?? 0
         } more to get free shipping`;
       shippingStep.value = 3;
-    } else if (context.cart.totalPrice > 200) {
+    } else if (context.cart?.totalPrice > 200) {
       shippingText.value = `You get free shipping`;
       shippingStep.value = 4;
     }

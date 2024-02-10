@@ -38,7 +38,6 @@ productsSchema.index({
   description: "text",
   lineName: "text",
   "companyName.name": "text",
-  //create index for categories array of objects main key and name key for search
   "categories.main": "text",
   "categories.name": "text",
 });
