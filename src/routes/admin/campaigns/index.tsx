@@ -11,9 +11,9 @@ export const sendTextSer = server$(async function () {
       this.env.get("VITE_TWILIO_AUTH_TOKEN") ?? ""
     );
     const getGesutsUsersHasPhone = await dummyUsers.find({
-      phone: { $ne: "" },
+      phoneNumber: { $ne: "" },
     });
-    const users = await User.find({ phone: { $ne: "" } });
+    const users = await User.find({ phoneNumber: { $ne: "" } });
     const allUsers = [...getGesutsUsersHasPhone, ...users];
     for (const user of allUsers) {
       try {
