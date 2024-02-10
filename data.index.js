@@ -18,21 +18,21 @@ async function changeCurrency() {
       for (const variant of product.variations) {
         variant.price = parseFloat(
           variant?.price?.toString()?.replace("$", "")
-        ).toFixed(2);
+        );
       }
       product.price.max = parseFloat(
         product?.price?.max?.toString()?.replace("$", "")
-      ).toFixed(2);
+      );
       product.price.min = parseFloat(
         product?.price?.min?.toString()?.replace("$", "")
-      ).toFixed(2);
+      );
     } else {
       product.price.regular = parseFloat(
         product?.price?.regular?.toString()?.replace("$", "")
-      ).toFixed(2);
+      )
       product.sale_price.sale = parseFloat(
         product?.price?.regular?.toString()?.replace("$", "")
-      ).toFixed(2);
+      )
     }
     const updateProduct = await Product.findByIdAndUpdate(
       product._id,
@@ -44,7 +44,7 @@ async function changeCurrency() {
   await connection.close();
 }
 
-// changeCurrency();
+changeCurrency();
 
 async function updateCategory() {
   const json = require("./cosmoprof_products_details.json");
@@ -62,4 +62,4 @@ async function updateCategory() {
   await connection.close();
 }
 
-updateCategory()
+// updateCategory()
