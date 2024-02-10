@@ -141,7 +141,7 @@ export const RatingAndDescription = component$(
             </button>
           </div>
         </div>
-        <div class="w-3/4">
+        <div class="w-full lg:w-2/5">
           {isDescriptionActive.value ? (
             <div class="flex flex-col gap-2">
               <div role="tablist" class="tabs tabs-bordered">
@@ -156,18 +156,20 @@ export const RatingAndDescription = component$(
                     tabState.value = "description";
                   }
                 }} class={`tab ${tabState.value === 'description' ? 'tab-active' : ''}`}>Description</button>
-                <button role="tab"
-                  onClick$={() => {
-                    const mainDiv = document.getElementById("mainDiv");
-                    if (mainDiv) {
-                      mainDiv.innerHTML = ingredients
-                        .replace(/<img .*?>/g, "")
-                        .replace(/Cosmo Prof/g, "Xpress Beauty")
-                      tabState.value = "ingredients";
-                    }
+                {ingredients && (
+                  <button role="tab"
+                    onClick$={() => {
+                      const mainDiv = document.getElementById("mainDiv");
+                      if (mainDiv) {
+                        mainDiv.innerHTML = ingredients
+                          .replace(/<img .*?>/g, "")
+                          .replace(/Cosmo Prof/g, "Xpress Beauty")
+                        tabState.value = "ingredients";
+                      }
 
-                  }} class={`tab ${tabState.value === 'ingredients' ? 'tab-active' : ''}`}>Ingredients</button>
-                <button role="tab"
+                    }} class={`tab ${tabState.value === 'ingredients' ? 'tab-active' : ''}`}>Ingredients</button>
+                )}
+                {directions && <button role="tab"
                   onClick$={() => {
                     const mainDiv = document.getElementById("mainDiv");
                     if (mainDiv) {
@@ -177,7 +179,7 @@ export const RatingAndDescription = component$(
                       tabState.value = "directions";
                     }
                   }}
-                  class={`tab ${tabState.value === 'directions' ? 'tab-active' : ''}`}>Directions</button>
+                  class={`tab ${tabState.value === 'directions' ? 'tab-active' : ''}`}>Directions</button>}
               </div>
               <div
                 class="text-black font-normal text-sm md:text-sm"

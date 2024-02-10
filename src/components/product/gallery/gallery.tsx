@@ -11,7 +11,7 @@ export const Gallery = component$((props: GalleryProps) => {
 
   return (
     <div class="flex flex-col gap-3 justify-center items-center w-full">
-      <div class="w-full h-full self-start">
+      <div class="w-full h-full flex justify-center items-center">
         <img
           itemProp="image"
           src={imgs[0].includes('http') ? imgs[0] : imgs[0].replace(".", "")}
@@ -20,7 +20,7 @@ export const Gallery = component$((props: GalleryProps) => {
           }}
           id="product-image"
           alt={product_name}
-          class="object-contain w-96 h-96"
+          class="object-contain w-96 h-96 "
         />
       </div>
       <div class="w-full h-full flex flex-row flex-wrap justify-center items-center">
@@ -38,9 +38,18 @@ export const Gallery = component$((props: GalleryProps) => {
               if (imgs) {
                 imgs.setAttribute("src", img.includes('http') ? img : img.replace(".", ""));
               }
-              currentImage.value = img;
+              const statusImgs = document.querySelectorAll(".imgs");
+              statusImgs.forEach((img) => {
+                img.classList.remove("border-2");
+                img.classList.add('opacity-50')
+              });
+              const statusImg = document.querySelector(`.status-img-${i}`);
+              if (statusImg) {
+                statusImg.classList.add("border-2");
+                statusImg.classList.remove('opacity-50')
+              }
             }}
-            class={`object-contain w-16 h-16 lg:w-24 lg:h-24 m-1 cursor-pointer hover:opacity-50 transition duration-300 ease-in-out ${currentImage.value === img ? 'opacity-100' : 'opacity-50'}`}
+            class={`object-contain w-16 h-16 lg:w-24 ${i === 0 ? 'border-2' : 'opacity-50'} lg:h-24 m-1 cursor-pointer transition duration-300 ease-in-out imgs status-img-${i}`}
           />
 
         ))}
