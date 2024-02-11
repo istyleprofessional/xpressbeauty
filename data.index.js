@@ -61,4 +61,20 @@ async function updateCategory() {
   await connection.close();
 }
 
-updateCategory()
+// change quantity on hand to number
+async function changeQuantity() {
+  await connect(mongoUrl);
+  const products = await Product.find({});
+  for (const product of products) {
+    product.quantity_on_hand = parseInt(product.quantity_on_hand);
+    await Product.findByIdAndUpdate(
+      product._id,
+      product,
+      { new: true }
+    );
+  }
+  console.log("done");
+  await connection.close();
+}
+changeQuantity()
+// updateCategory()

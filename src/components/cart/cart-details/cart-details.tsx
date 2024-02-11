@@ -44,9 +44,9 @@ export const checkCoponServer = server$(async function (
 export const CartDetails = component$((props: any) => {
   const cartContext: any = useContext(CartContext);
   const userContext: any = useContext(UserContext);
-  const subTotal = useSignal<number>(0);
-  const total = useSignal<number>(0);
-  const shipping = useSignal<number>(0);
+  const subTotal = useSignal<number>(0.00);
+  const total = useSignal<number>(0.00);
+  const shipping = useSignal<number>(0.00);
   const coponSignal = useSignal<string>("");
   const symbol = useSignal<string>("CAD");
   const applyCoponMessage = useSignal<string>("");
@@ -142,35 +142,43 @@ export const CartDetails = component$((props: any) => {
       )}
       <div class="flex flex-col gap-5 justify-center">
         <div class="grid grid-cols-2 w-full">
-          <p class="text-white text-xs font-light">Subtotal</p>
-          <p class="justify-self-end text-white text-sm font-light">
-            {subTotal?.value &&
-              subTotal?.value?.toLocaleString("en-US", {
+          <p class="text-white text-sm font-light">Subtotal</p>
+          <p class="justify-self-end text-white text-base font-light">
+            {
+              subTotal.value ? subTotal.value.toLocaleString("en-US", {
                 style: "currency",
                 currency: symbol.value,
-              })}
+              }) : 0.00.toLocaleString("en-US", {
+                style: "currency",
+                currency: symbol.value,
+              })
+            }
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
-          <p class="text-white text-xs font-light">TAX</p>
+          <p class="text-white text-sm font-light">TAX</p>
           <p class="justify-self-end text-white text-xs font-light w-full">
             Continue To Calculate Tax...
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
-          <p class="text-white text-xs font-light">Shipping Discount</p>
+          <p class="text-white text-sm font-light">Shipping Discount</p>
           {/* <p class="justify-self-end text-red-400 text-xs font-light w-full"> */}
-          <div class="justify-self-end text-red-400 text-base font-light w-full" dangerouslySetInnerHTML={shippingText.value}></div>
+          <div class="justify-self-end text-red-400 text-sm font-light w-full" dangerouslySetInnerHTML={shippingText.value}></div>
           {/* </p> */}
         </div>
         <div class="grid grid-cols-2 w-full">
-          <p class="text-white text-xs font-light">Shipping</p>
-          <p class="justify-self-end text-white text-xs font-light">
-            {cartContext?.cart?.shipping &&
+          <p class="text-white text-sm font-light">Shipping</p>
+          <p class="justify-self-end text-white text-base font-light">
+            {cartContext?.cart?.shipping ?
               cartContext?.cart?.shipping?.toLocaleString("en-US", {
                 style: "currency",
                 currency: symbol.value,
-              })}
+              }) : 0.00.toLocaleString("en-US", {
+                style: "currency",
+                currency: symbol.value,
+              })
+            }
           </p>
         </div>
       </div>

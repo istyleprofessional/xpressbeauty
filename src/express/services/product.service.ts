@@ -362,6 +362,31 @@ export const get_products_data = async (
   }
 };
 
+export const update_product_quantity = async (products: any) => {
+  try {
+    for (const product of products) {
+      // check if product id contains a dot, if it does, then it is a variant and we need to update the quantity of the variant
+      if (product.id.includes(".")) {
+        const mainId = product.id.split(".")[0];
+        const variation_id = product.id.split(".")[1];
+        await Product.findOneAndUpdate(
+          { _id: mainId, variations: { $elemMatch: { variation_id: variation_id } } },
+          { $inc: { "variations.$.quantity_on_hand": -product.quantity } }
+        );
+      } else {
+        const resutl = await
+          Product.findOneAndUpdate(
+            { _id: product.id },
+            { $inc: { quantity_on_hand: -product.quantity } }
+          );
+        console.log(resutl);
+      }
+    }
+    return { status: "success" };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+}
 export const get_random_products = async () => {
   try {
     const result = await Product.aggregate([{ $match: { isHidden: { $ne: true }, isDeleted: { $ne: true } } }, { $sample: { size: 20 } }]);
@@ -560,7 +585,7 @@ export const getTotalQuantityService = async (
       });
       return {
         status: "success",
-        result: parseInt(total?.quantity_on_hand ?? ""),
+        result: total?.quantity_on_hand,
       };
     }
   } catch (err) {

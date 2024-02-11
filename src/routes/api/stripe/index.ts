@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { deleteCart, getCartByUserId } from "~/express/services/cart.service";
 import { update_dummy_user } from "~/express/services/dummy.user.service";
 import { createOrder } from "~/express/services/order.service";
+import { update_product_quantity } from "~/express/services/product.service";
 import { updateExistingUser } from "~/express/services/user.service";
 import { generateOrderNumber } from "~/utils/generateOrderNo";
 import { sendConfirmationEmail } from "~/utils/sendConfirmationEmail";
@@ -105,11 +106,9 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     mode: "payment",
     return_url: `${env.get(
       "VITE_APPURL"
-    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${
-      data.userId
-    }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${
-      data.user.isDummy
-    }`,
+    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${data.userId
+      }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${data.user.isDummy
+      }`,
   });
   json(200, { clientSecret: session.client_secret, sessionId: session.id });
   return;
@@ -170,6 +169,7 @@ export const onGet: RequestHandler = async ({ query, env, url, json }) => {
     };
     // console.log("session", session);
     await createOrder(orderData);
+    await update_product_quantity(productsFromCart.products ?? []);
     await sendConfirmationEmail(
       session.customer_details?.email ?? "",
       session.customer_details?.name ?? "",
