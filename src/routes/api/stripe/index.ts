@@ -17,11 +17,12 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
 
   productArray.forEach((product: any) => {
     // const testImage = product.product_img;
+
     lineItemsArray.push({
       // tax_rates:['123'],
       quantity: product.quantity,
       price_data: {
-        unit_amount: parseFloat(product.price.toFixed(2)) * 100,
+        unit_amount: Math.round(product.price * 100),
         currency: data.currencyObject === "1" ? "usd" : "cad",
         product_data: {
           name: product.product_name,

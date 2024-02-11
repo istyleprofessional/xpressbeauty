@@ -4,6 +4,7 @@ import {
   useSignal,
   useVisibleTask$,
 } from "@builder.io/qwik";
+import { useNavigate } from "@builder.io/qwik-city";
 import { loadStripe } from "@stripe/stripe-js";
 import { Steps } from "~/components/shared/steps/steps";
 import { CartContext } from "~/context/cart.context";
@@ -29,6 +30,7 @@ export default component$(() => {
   const isLoading = useSignal<boolean>(true);
   const confirmationStep = useSignal<string>("payment");
   const checkoutRef = useSignal<HTMLDivElement>();
+  const nav = useNavigate();
 
   useVisibleTask$(async () => {
     try {
@@ -50,15 +52,16 @@ export default component$(() => {
         // pass sessionId to the callback to complete the checkout
         onComplete: async () => {
           const req: any = await getRequest(
-            `${
-              import.meta.env.VITE_APPURL
-            }/api/stripe?session_id=${sessionId}&userId=${
-              cartData.cart.userId
-            }&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${
-              userObject.isDummy
+            `${import.meta.env.VITE_APPURL
+            }/api/stripe?session_id=${sessionId}&userId=${cartData.cart.userId
+            }&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${userObject.isDummy
             }`
           );
           const data = await req.json();
+          if (data.message === "Payment failed") {
+            nav("/payment");
+            alert("Payment failed");
+          }
 
           gtag_report_conversion(data.order_id);
           confirmationStep.value = "confirmation";
