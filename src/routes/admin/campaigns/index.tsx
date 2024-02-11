@@ -33,17 +33,18 @@ export const sendTextSer = server$(async function () {
           body: `
           XPRESS BEAUTY 
     
-          💝💝 Valentines Day Savings STARTS NOW!! 💝💝 
-    
+
+          🎉🎉 Valentines Day Savings START NOW! 🎉🎉
+
           Get ready to save big on your next purchase with our exclusive shipping discounts:
-          
-          🛒 Spend more than $80 less than $100 ➡️ Enjoy 30% off shipping!
-          🚚 Spend more than $100 less than $150 ➡️ Enjoy 50% off shipping!
-          📦 Spend more than $150 less than $200 ➡️ Enjoy a whopping 70% off shipping!
+
+          🛒 Spend $80-$100 ➡️ Enjoy 30% off shipping!
+          🚚 Spend $100-$150 ➡️ Get 50% off shipping!
+          📦 Spend $150-$200 ➡️ Enjoy a whopping 70% off shipping!
           🎁 Spend over $200 ➡️ Get FREE shipping on us!
-          
+
           Hurry, this offer won't last forever! Shop now and save on shipping costs while stocking up on your favorite items. Visit our website today! 🛍️✨
-          
+
           Shop now at xpressbeauty.ca to avail these amazing shipping discounts!`,
           from: "+12134014667",
           to: `${user.phoneNumber}`,
