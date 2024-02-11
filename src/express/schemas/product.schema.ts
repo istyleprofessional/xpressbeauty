@@ -40,6 +40,15 @@ productsSchema.index({
   "companyName.name": "text",
   "categories.main": "text",
   "categories.name": "text",
+}, {
+  name: "textScore", weights: {
+    product_name: 10,
+    description: 5,
+    lineName: 5,
+    "companyName.name": 5,
+    "categories.main": 5,
+    "categories.name": 5,
+  },
 });
 
 const products = model("products", productsSchema);

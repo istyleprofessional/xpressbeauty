@@ -289,7 +289,7 @@ export default component$(() => {
       }${filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+      }`;
     const checkPage = url.searchParams.get("page") ?? "1";
     const result = await postRequest("/api/products/get", {
       filterBrands: filterBrandsArray.value,
@@ -399,7 +399,7 @@ export default component$(() => {
       }${filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+      }`;
     url.searchParams.set("sort", e.target.value);
     url.searchParams.set("page", "1");
     const checkPage = url.searchParams.get("page") ?? "1";
@@ -456,7 +456,7 @@ export default component$(() => {
         }${filterPrices.value.length
           ? `filterPrices/${filterPrices.value.join("+")}/`
           : ""
-        }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+        }`;
 
       url.searchParams.set("page", "1");
       page.value = "1";

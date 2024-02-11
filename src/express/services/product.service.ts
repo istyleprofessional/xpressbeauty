@@ -338,14 +338,19 @@ export const get_products_data = async (
 
     if (query && query !== "") {
       buildQuery["$text"] = { $search: query };
+
       // console.log(buildQuery);
     }
     buildQuery["isHidden"] = { $ne: true };
     buildQuery["isDeleted"] = { $ne: true };
     console.log(buildQuery);
-    const request = await Product.find(buildQuery)
+    const request = await Product.find(buildQuery, query && query !== "" ? {
+      "score": { $meta: "textScore" }
+    } : {})
       .sort(
-        sort && sort !== "" ? { product_name: sort === "ASC" ? 1 : -1 } : {}
+        sort && sort !== "" ? { product_name: sort === "ASC" ? 1 : -1 } : query && query !== "" ? {
+          score: { $meta: "textScore" }
+        } : {}
       )
       .skip(skip)
       .limit(perPage);
