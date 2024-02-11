@@ -125,6 +125,10 @@ export const onGet: RequestHandler = async ({ query, env, url, json }) => {
       }
     );
     console.log("session", session);
+    if (session.payment_status === 'unpaid') {
+      json(200, { message: "Payment failed" });
+      return;
+    }
     const productsFromCart: any = await getCartByUserId(
       query.get("userId") ?? ""
     );
