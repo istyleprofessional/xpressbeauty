@@ -431,11 +431,13 @@ export const getSearchResults = async (search: string) => {
       {
         $or: [
           { product_name: { $regex: search, $options: "i" } },
-          { category: { $regex: search, $options: "i" } },
-          { companyName: { $regex: search, $options: "i" } },
-          { isHidden: { $ne: true } },
-          { isDeleted: { $ne: true } },
+          { "category.main": { $regex: search, $options: "i" } },
+          { "category.name": { $regex: search, $options: "i" } },
+          { "companyName.name": { $regex: search, $options: "i" } },
+
         ],
+        isHidden: { $ne: true },
+        isDeleted: { $ne: true },
       },
       { product_name: 1, perfix: 1, _id: 0, imgs: 1 }
     ).limit(20);
