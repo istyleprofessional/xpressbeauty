@@ -43,7 +43,7 @@ export const CategoryFilter = component$((props: CategoryFilterProps) => {
   );
 
   return (
-    <div class="">
+    <div class="overflow-y-auto h-full">
       {Object.keys(categoriesSetObject.value).map((key: any, index: number) => (
         <ul class="rounded-box flex flex-col gap-1 h-fit" key={index}>
           <li class="text-base text-black p-3 font-bold bg-white sticky top-0">

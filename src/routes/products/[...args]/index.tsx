@@ -721,7 +721,7 @@ export default component$(() => {
                   <div class="collapse-title text-sm md:text-base font-medium h-fit">
                     <h3 class="text-base font-bold text-black">Categories</h3>
                   </div>
-                  <div class="collapse-content overflow-y-auto h-full">
+                  <div class="collapse-content ">
                     {/* <div class="flex flex-col gap-2"> */}
                     <CategoryFilter
                       filterCategoriessArray={filterCategoriessArray}
