@@ -90,9 +90,8 @@ export const ProductCard = component$((props: ProductCardProps) => {
 
   return (
     <a
-      class={`btn btn-ghost grid grid-rows-4 justify-items-center items-center ${
-        cardSize === "sm" ? "lg:w-72 lg:h-72" : "lg:w-96 lg:h-96"
-      } w-40 h-72 bg-[#FFFFFF] shadow-sm
+      class={`btn btn-ghost grid grid-rows-4 justify-items-center items-center ${cardSize === "sm" ? "lg:w-72 lg:h-72" : "lg:w-96 lg:h-96"
+        } w-40 h-72 bg-[#FFFFFF] shadow-sm
        shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center items-center normal-case`}
       href={`/products/${encodeURIComponent(
         product.product_name
@@ -104,29 +103,26 @@ export const ProductCard = component$((props: ProductCardProps) => {
       <Image
         layout="constrained"
         key={i}
-        src={(product.imgs ?? [])[0]}
+        src={((product.imgs ?? [])[0]).includes("http") ? (product.imgs ?? [])[0] : (product.imgs ?? [])[0].replace(".", "")}
         onError$={(e: any) => {
           e.target.src = "/placeholder.webp";
         }}
         alt={product.product_name}
-        class={`${
-          cardSize === "sm" ? "lg:w-32 lg:h-32" : " lg:w-44 lg:h-44"
-        } w-32 h-32 object-contain row-span-2 bg-white rounded-lg`}
+        class={`${cardSize === "sm" ? "lg:w-32 lg:h-32" : " lg:w-44 lg:h-44"
+          } w-32 h-32 object-contain row-span-2 bg-white rounded-lg`}
         itemProp="image"
       />
       <h2
-        class={`overflow-hidden truncate ${
-          cardSize === "sm" ? "lg:text-base" : "lg:text-lg"
-        } text-sm text-black whitespace-normal font-semibold pt-5 text-center`}
+        class={`overflow-hidden truncate ${cardSize === "sm" ? "lg:text-base" : "lg:text-lg"
+          } text-sm text-black whitespace-normal font-semibold pt-5 text-center`}
         itemProp="name"
       >
         {product.product_name}
       </h2>
       <div class="flex flex-col gap-2">
         <p
-          class={`text-sm text-gray-500 font-semibold ${
-            cardSize === "sm" ? "lg:text-base" : "lg:text-lg"
-          }`}
+          class={`text-sm text-gray-500 font-semibold ${cardSize === "sm" ? "lg:text-base" : "lg:text-lg"
+            }`}
         >
           {product.priceType === "single" && (
             <span class=" text-gray-600">{finalRegularPrice.value}</span>

@@ -8,7 +8,7 @@ export const NavBar = component$((props: NavBarProps) => {
   const { categories } = props;
 
   return (
-    <div class="bg-black hidden lg:flex justify-center items-center h-12">
+    <div class="bg-black hidden md:flex justify-center items-center h-12">
       <ul class="menu menu-horizontal rounded-box text-white gap-20">
         <li>
           <a class="lg:text-lg" href="/" aria-label="home">

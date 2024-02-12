@@ -4,6 +4,7 @@ import {
   useSignal,
   useVisibleTask$,
 } from "@builder.io/qwik";
+import { useLocation } from "@builder.io/qwik-city";
 import { loadStripe } from "@stripe/stripe-js";
 import { Steps } from "~/components/shared/steps/steps";
 import { CartContext } from "~/context/cart.context";
@@ -27,8 +28,10 @@ export default component$(() => {
   const currencyObject = currencyObjectConx?.cur;
   const userObject: any = useContext(UserContext);
   const isLoading = useSignal<boolean>(true);
-  const confirmationStep = useSignal<string>("payment");
   const checkoutRef = useSignal<HTMLDivElement>();
+  const loc = useLocation();
+  const error = loc.url.searchParams.get("error");
+  const errorSignal = useSignal<string>(error ?? "");
 
   useVisibleTask$(async () => {
     try {
@@ -47,27 +50,15 @@ export default component$(() => {
       const { clientSecret, sessionId } = await response.json();
       const checkout = await stripe.initEmbeddedCheckout({
         clientSecret,
-        // pass sessionId to the callback to complete the checkout
         onComplete: async () => {
-          const req: any = await getRequest(
-            `${
-              import.meta.env.VITE_APPURL
-            }/api/stripe?session_id=${sessionId}&userId=${
-              cartData.cart.userId
-            }&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${
-              userObject.isDummy
+          gtag_report_conversion(sessionId);
+          await getRequest(
+            `${import.meta.env.VITE_APPURL
+            }/api/stripe?session_id=${sessionId}&userId=${cartData.cart.userId
+            }&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${userObject.isDummy
             }`
           );
-          const data = await req.json();
-
-          gtag_report_conversion(data.order_id);
-          confirmationStep.value = "confirmation";
-
-          if (checkoutRef.value) {
-            const text = checkoutRef.value.querySelector(".Payment__Checkout");
-            if (text) text.innerHTML = "Thank you for your purchase!";
-          }
-        }, //pass sessionId to the callback to complete the checkout
+        },
       });
 
       // Mount Checkout
@@ -79,10 +70,31 @@ export default component$(() => {
     }
   });
 
+  useVisibleTask$(({ track, cleanup }) => {
+    track(() => errorSignal.value)
+    if (errorSignal.value !== "") {
+      const timer = setTimeout(() => {
+        errorSignal.value = "";
+      }
+        , 3000);
+      cleanup(() => clearTimeout(timer));
+    }
+  });
+
+
   return (
     <>
+      {errorSignal.value && (
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong class="font-bold">Error! </strong>
+          <span class="block sm:inline">
+            {error === "payment-failed" ? "Payment failed. Please try again." : "An error occurred. Please try again."}
+
+          </span>
+        </div>
+      )}
       <div class="flex flex-col gap-5 md:p-10 justify-center items-center">
-        <Steps pageType={confirmationStep.value} />
+        <Steps pageType="payment" />
         {isLoading.value && (
           <div class="flex flex-col gap-4 w-52">
             <div class="skeleton h-32 w-full"></div>

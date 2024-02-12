@@ -10,7 +10,7 @@ const productsSchema = new mongoose.Schema(
     price: { type: Object },
     categories: { type: Array },
     imgs: { type: Array },
-    quantity_on_hand: { type: String },
+    quantity_on_hand: { type: Number, default: 0 },
     sku: { type: String },
     manufacturer_part_number: { type: String },
     bar_code_value: { type: String },
@@ -26,6 +26,9 @@ const productsSchema = new mongoose.Schema(
     priceType: { type: String, default: null },
     updateQuickBooks: { type: Boolean, default: true },
     oldPerfix: { type: String, default: null },
+    ingredients: { type: String, default: null },
+    directions: { type: String, default: null },
+
   },
   { timestamps: true }
 );

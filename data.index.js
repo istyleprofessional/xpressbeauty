@@ -12,36 +12,69 @@ async function changeCurrency() {
   await connect(mongoUrl);
   const products = await Product.find({});
 
-  console.log(products);
   for (const product of products) {
     if (product.priceType === "range") {
       for (const variant of product.variations) {
         variant.price = parseFloat(
           variant?.price?.toString()?.replace("$", "")
-        ).toFixed(2);
+        )
       }
       product.price.max = parseFloat(
         product?.price?.max?.toString()?.replace("$", "")
-      ).toFixed(2);
+      );
       product.price.min = parseFloat(
         product?.price?.min?.toString()?.replace("$", "")
-      ).toFixed(2);
+      );
     } else {
       product.price.regular = parseFloat(
         product?.price?.regular?.toString()?.replace("$", "")
-      ).toFixed(2);
+      )
       product.sale_price.sale = parseFloat(
         product?.price?.regular?.toString()?.replace("$", "")
-      ).toFixed(2);
+      )
     }
     const updateProduct = await Product.findByIdAndUpdate(
       product._id,
       product,
       { new: true }
     );
-    console.log(updateProduct);
   }
+  console.log("done");
   await connection.close();
 }
 
-changeCurrency();
+// changeCurrency();
+
+async function updateCategory() {
+  const json = require("./backups/file-7.json");
+  const shopEmpireData = require("./shopEmpireData.json");
+  const products = [...json, ...shopEmpireData]
+  await connect(mongoUrl);
+  for (const product of products) {
+    const updateProduct = product.imgs.map((img) => {
+      return img.replace('newProductsImages', 'products-images-2')
+    })
+    await Product.findOneAndUpdate({ product_name: product.product_name }, { imgs: updateProduct });
+    // console.log(updateProduct);
+  }
+  console.log("done");
+  await connection.close();
+}
+
+// change quantity on hand to number
+async function changeQuantity() {
+  await connect(mongoUrl);
+  const products = await Product.find({});
+  for (const product of products) {
+    product.quantity_on_hand = parseInt(product.quantity_on_hand);
+    await Product.findByIdAndUpdate(
+      product._id,
+      product,
+      { new: true }
+    );
+  }
+  console.log("done");
+  await connection.close();
+}
+changeQuantity()
+// updateCategory()

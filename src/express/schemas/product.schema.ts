@@ -9,7 +9,7 @@ const productsSchema = new Schema(
     price: { type: Object },
     categories: { type: Array },
     imgs: { type: Array },
-    quantity_on_hand: { type: String },
+    quantity_on_hand: { type: Number, default: 0 },
     sku: { type: String },
     manufacturer_part_number: { type: String },
     bar_code_value: { type: String },
@@ -27,6 +27,8 @@ const productsSchema = new Schema(
     oldPerfix: { type: String, default: null },
     currency: { type: String, default: null },
     gtin: { type: String, default: null },
+    ingredients: { type: String, default: null },
+    directions: { type: String, default: null },
   },
   { timestamps: true }
 );
@@ -35,7 +37,18 @@ productsSchema.index({
   product_name: "text",
   description: "text",
   lineName: "text",
-  companyName: "text",
+  "companyName.name": "text",
+  "categories.main": "text",
+  "categories.name": "text",
+}, {
+  name: "textScore", weights: {
+    product_name: 10,
+    description: 5,
+    lineName: 5,
+    "companyName.name": 5,
+    "categories.main": 5,
+    "categories.name": 5,
+  },
 });
 
 const products = model("products", productsSchema);

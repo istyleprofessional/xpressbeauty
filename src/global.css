@@ -32,6 +32,26 @@ body {
   }
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: black;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: gainsboro;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: gainsboro;
+  border-radius: 20px;
+  border: 3px solid gray;
+}
+
 @keyframes rotate {
   0%,
   100% {

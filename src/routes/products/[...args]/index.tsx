@@ -9,7 +9,7 @@ import {
   useContext,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { routeLoader$, useLocation, useNavigate } from "@builder.io/qwik-city";
+import { routeLoader$, server$, useLocation, useNavigate } from "@builder.io/qwik-city";
 import { BrandFilter } from "~/components/products-page/brand-filter/brand-filter";
 import { CategoryFilter } from "~/components/products-page/category-filter/category-filter";
 import { PriceFilter } from "~/components/products-page/price-filter/price-filter";
@@ -18,8 +18,14 @@ import { CurContext } from "~/context/cur.context";
 import { connect } from "~/express/db.connection";
 import { get_all_brands } from "~/express/services/brand.service";
 import { get_all_categories } from "~/express/services/category.service";
-import { get_products_data } from "~/express/services/product.service";
+import { get_products_data, get_random_products } from "~/express/services/product.service";
 import { postRequest } from "~/utils/fetch.utils";
+
+export const get_random_products_Ser = server$(async () => {
+  await connect();
+  const request = await get_random_products();
+  return request;
+});
 
 export const useFilterData = routeLoader$(async () => {
   await connect();
@@ -38,6 +44,7 @@ export const useDomContentLoaded = routeLoader$(
     ) {
       throw redirect(301, `/products/${params.args.split("/")[0]}`);
     }
+
     const filters = params.args.split("/");
     const filterBrands = () => {
       const index = filters.findIndex((filter: string) => {
@@ -105,21 +112,17 @@ export const useDomContentLoaded = routeLoader$(
       }
     );
 
-    const finalUrl = `${
-      filterBrandsArray.length > 0
-        ? `filterBrands/${filterBrandsArray.join("+")}/`
-        : ""
-    }${
-      filterCategoriesArray.length > 0
+    const finalUrl = `${filterBrandsArray.length > 0
+      ? `filterBrands/${filterBrandsArray.join("+")}/`
+      : ""
+      }${filterCategoriesArray.length > 0
         ? `filterCategories/${filterCategoriesArray.join("+")}/`
         : ""
-    }${
-      filterPricesArray.length > 0
+      }${filterPricesArray.length > 0
         ? `filterPrices/${filterPricesArray.join("+")}/`
         : ""
-    }/${search() !== "" ? `search/${search()}/` : ""}/${
-      filter() !== "" ? `filter/${filter()}/` : ""
-    }`;
+      }/${search() !== "" ? `search/${search()}/` : ""}/${filter() !== "" ? `filter/${filter()}/` : ""
+      }`;
     const finalLength =
       finalUrl?.split("/")?.filter((item: string) => {
         return item !== "";
@@ -141,7 +144,17 @@ export const useDomContentLoaded = routeLoader$(
       parseInt(page),
       search() !== "" ? search() : searchQuery
     );
-
+    if (url.pathname === "/products/") {
+      const request = await get_random_products();
+      const data = JSON.parse(request);
+      return JSON.stringify({
+        finalFilter,
+        finalFilterBrandsArray,
+        finalFilterCategoriesArray,
+        filterPricesArray,
+        serverData: data,
+      });
+    }
     const data = JSON.parse(request);
     return JSON.stringify({
       finalFilter,
@@ -267,19 +280,16 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${
-      newFilterBrands.length > 0
-        ? `filterBrands/${newFilterBrands.join("+")}/`
-        : ""
-    }${
-      filterCategoriessArray.value.length
+    url.pathname = `/products/${newFilterBrands.length > 0
+      ? `filterBrands/${newFilterBrands.join("+")}/`
+      : ""
+      }${filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-    }${
-      filterPrices.value.length > 0
+      }${filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+      }`;
     const checkPage = url.searchParams.get("page") ?? "1";
     const result = await postRequest("/api/products/get", {
       filterBrands: filterBrandsArray.value,
@@ -328,18 +338,8 @@ export default component$(() => {
       replaceState: false,
       scroll: false,
     });
-    const checkPage = url.searchParams.get("page") ?? "1";
-    const result = await postRequest("/api/products/get", {
-      filterBrands: filterBrandsArray.value,
-      filterCategories: filterCategoriessArray.value,
-      filterPrices: filterPrices.value,
-      filter: "",
-      query: "",
-      page: checkPage,
-      sort: sort.value,
-    });
-    const data = await result.json();
-    productData.value = JSON.parse(data);
+    const result = await get_random_products_Ser();
+    productData.value = JSON.parse(result);
     query.value = "";
     filtersNo.value = 0;
     isLoading.value = false;
@@ -390,19 +390,16 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${
-      newFilterBrands.length > 0
-        ? `filterBrands/${newFilterBrands.join("+")}/`
-        : ""
-    }${
-      filterCategoriessArray.value.length
+    url.pathname = `/products/${newFilterBrands.length > 0
+      ? `filterBrands/${newFilterBrands.join("+")}/`
+      : ""
+      }${filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-    }${
-      filterPrices.value.length > 0
+      }${filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+      }`;
     url.searchParams.set("sort", e.target.value);
     url.searchParams.set("page", "1");
     const checkPage = url.searchParams.get("page") ?? "1";
@@ -450,19 +447,16 @@ export default component$(() => {
           }
         );
       }
-      url.pathname = `/products/${
-        newFilterBrands.length > 0
-          ? `filterBrands/${newFilterBrands.join("+")}/`
-          : ""
-      }${
-        filterCategoriessArray.value.length
+      url.pathname = `/products/${newFilterBrands.length > 0
+        ? `filterBrands/${newFilterBrands.join("+")}/`
+        : ""
+        }${filterCategoriessArray.value.length
           ? `filterCategories/${newFilterCategories.join("+")}/`
           : ""
-      }${
-        filterPrices.value.length
+        }${filterPrices.value.length
           ? `filterPrices/${filterPrices.value.join("+")}/`
           : ""
-      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+        }`;
 
       url.searchParams.set("page", "1");
       page.value = "1";
@@ -512,19 +506,16 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${
-      newFilterBrands.length > 0
-        ? `filterBrands/${newFilterBrands.join("+")}/`
-        : ""
-    }${
-      filterCategoriessArray.value.length
+    url.pathname = `/products/${newFilterBrands.length > 0
+      ? `filterBrands/${newFilterBrands.join("+")}/`
+      : ""
+      }${filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-    }${
-      filterPrices.value.length
+      }${filterPrices.value.length
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
+      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
     }`;
 
     url.searchParams.set("page", "1");
@@ -601,10 +592,10 @@ export default component$(() => {
               Clear All
             </button>
           </div>
-          <div class=" w-full drawer-side z-50">
+          <div class=" w-full drawer-side z-50 h-full overflow-y-auto">
             <label for="my-drawer" class="drawer-overlay"></label>
-            <ul class="menu mt-12 lg:mt-0 bg-base-200 lg:bg-transparent flex flex-col lg:gap-10">
-              <li class="lg:flex flex-row gap-4 items-center hidden">
+            <ul class="h-full mt-12 lg:mt-0 bg-base-200 lg:bg-transparent flex flex-col lg:gap-10">
+              <li class="lg:flex flex-row gap-4 items-center hidden ">
                 <p class="text-black lg:text-base md:text-xs font-bold">
                   Filters Applied :{" "}
                   <span class="text-black text-xs font-normal">
@@ -620,29 +611,28 @@ export default component$(() => {
                 </button>
               </li>
               <li class="flex flex-col gap-1 w-full">
-                <p class="text-black text-base font-bold">Filter By :</p>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none">
-                    <svg
-                      class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                      />
-                    </svg>
-                  </div>
+                <div class="relative m-2">
+                  <svg
+                    class="w-4 h-4 text-gray-500 dark:text-gray-400 
+                      absolute left-3 top-1/2 transform -translate-y-1/2"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                    />
+                  </svg>
                   <input
                     id="default-search"
-                    class="block w-full p-6 text-xs border-0 focus:border-none rounded-lg bg-gray-50"
-                    placeholder="Search by name or brand"
+                    class="input input-bordered w-full pl-10"
+                    placeholder="Search Products"
+                    aria-label="Search Products"
                     onInput$={handleSearchInput}
                     value={query.value}
                   />
@@ -662,15 +652,16 @@ export default component$(() => {
                   }}
                   checked={isChecked.Brands}
                 />
-                <div class="collapse-title text-sm md:text-base font-medium">
+                <div class="collapse-title text-sm md:text-base font-medium h-full">
                   <h3 class="text-base font-bold text-black">Brands</h3>
                 </div>
                 <div class="collapse-content">
                   <div class="flex flex-col gap-2">
                     <input
                       type="text"
-                      class="input input-sm"
-                      placeholder="Search Brands"
+                      class="input input-sm border-2 border-gray-200 rounded-lg p-2 w-full"
+                      placeholder="Search For Brands"
+                      aria-label="Search For Brands"
                       onInput$={(e: any, el: any) => handleSearchBrandz(e, el)}
                     />
                     <BrandFilter
@@ -681,7 +672,7 @@ export default component$(() => {
                   </div>
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-fit">
+              <li class="collapse collapse-arrow w-full">
                 <input
                   type="radio"
                   name="my-accordion-2"
@@ -697,22 +688,22 @@ export default component$(() => {
                   }}
                   checked={isChecked.Tools || isChecked.Hair}
                 />
-                <div class="collapse-title text-sm md:text-base font-medium">
+                <div class="collapse-title text-sm md:text-base font-medium h-fit">
                   <h3 class="text-base font-bold text-black">Categories</h3>
                 </div>
-                <div class="collapse-content flex flex-col">
-                  <div class="flex flex-col gap-2">
-                    <CategoryFilter
-                      filterCategoriessArray={filterCategoriessArray}
-                      categoriesSetObject={categoriesSetObject}
-                      handleCategoryCheckBoxChange={
-                        handleCategoryCheckBoxChange
-                      }
-                    />
-                  </div>
+                <div class="collapse-content">
+                  {/* <div class="flex flex-col gap-2"> */}
+                  <CategoryFilter
+                    filterCategoriessArray={filterCategoriessArray}
+                    categoriesSetObject={categoriesSetObject}
+                    handleCategoryCheckBoxChange={
+                      handleCategoryCheckBoxChange
+                    }
+                  />
+                  {/* </div> */}
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-fit">
+              <li class="collapse collapse-arrow w-full overflow-y-auto">
                 <input
                   type="radio"
                   name="my-accordion-2"
@@ -800,15 +791,14 @@ export const head: DocumentHead = ({ resolveValue }) => {
     metaDescription += ` in all beauty categories and more at XpressBeauty`;
   }
   return {
-    title: `${
-      mainFilter
-        ? `${mainFilter} products`
-        : categories
+    title: `${mainFilter
+      ? `${mainFilter} products`
+      : categories
         ? `${categories} products`
         : brands
-        ? `${brands} products`
-        : "beauty products"
-    } | XpressBeauty`,
+          ? `${brands} products`
+          : "beauty products"
+      } | XpressBeauty`,
     meta: [
       {
         name: "description",
@@ -828,15 +818,14 @@ export const head: DocumentHead = ({ resolveValue }) => {
       },
       {
         property: "og:title",
-        content: `${
-          mainFilter
-            ? `${mainFilter} products`
-            : categories
+        content: `${mainFilter
+          ? `${mainFilter} products`
+          : categories
             ? `${categories} products`
             : brands
-            ? `${brands} products`
-            : "beauty products"
-        } | XpressBeauty`,
+              ? `${brands} products`
+              : "beauty products"
+          } | XpressBeauty`,
       },
       {
         property: "og:description",

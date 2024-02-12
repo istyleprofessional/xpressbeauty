@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { deleteCart, getCartByUserId } from "~/express/services/cart.service";
 import { update_dummy_user } from "~/express/services/dummy.user.service";
 import { createOrder } from "~/express/services/order.service";
+import { update_product_quantity } from "~/express/services/product.service";
 import { updateExistingUser } from "~/express/services/user.service";
 import { generateOrderNumber } from "~/utils/generateOrderNo";
 import { sendConfirmationEmail } from "~/utils/sendConfirmationEmail";
@@ -16,11 +17,12 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
 
   productArray.forEach((product: any) => {
     // const testImage = product.product_img;
+
     lineItemsArray.push({
       // tax_rates:['123'],
       quantity: product.quantity,
       price_data: {
-        unit_amount: parseFloat(product.price.toFixed(2)) * 100,
+        unit_amount: Math.round(product.price * 100),
         currency: data.currencyObject === "1" ? "usd" : "cad",
         product_data: {
           name: product.product_name,
@@ -40,7 +42,6 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     automatic_tax: {
       enabled: true,
     },
-    redirect_on_completion: "if_required",
     payment_method_types: paymentMethodTypes.filter((type) => type !== ""),
     shipping_address_collection: {
       allowed_countries: ["US", "CA"],
@@ -62,6 +63,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
         message: "Thank you for your order! you will receive an email shortly.",
       },
     },
+    redirect_on_completion: 'if_required',
     phone_number_collection: {
       enabled: true,
     },
@@ -105,17 +107,15 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     mode: "payment",
     return_url: `${env.get(
       "VITE_APPURL"
-    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${
-      data.userId
-    }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${
-      data.user.isDummy
-    }`,
+    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${data.userId
+      }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${data.user.isDummy
+      }`,
   });
   json(200, { clientSecret: session.client_secret, sessionId: session.id });
   return;
 };
 
-export const onGet: RequestHandler = async ({ query, env, url, json }) => {
+export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
   if (url.searchParams.get("session_id")) {
     const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
     console.log("session_id", query.get("session_id"));
@@ -126,6 +126,9 @@ export const onGet: RequestHandler = async ({ query, env, url, json }) => {
       }
     );
     console.log("session", session);
+    if (session.payment_status === 'unpaid') {
+      throw redirect(302, `/payment/?error=payment-failed`);
+    }
     const productsFromCart: any = await getCartByUserId(
       query.get("userId") ?? ""
     );
@@ -170,6 +173,7 @@ export const onGet: RequestHandler = async ({ query, env, url, json }) => {
     };
     // console.log("session", session);
     await createOrder(orderData);
+    await update_product_quantity(productsFromCart.products ?? []);
     await sendConfirmationEmail(
       session.customer_details?.email ?? "",
       session.customer_details?.name ?? "",
@@ -222,6 +226,6 @@ export const onGet: RequestHandler = async ({ query, env, url, json }) => {
     }
 
     await deleteCart(query.get("userId") ?? "");
-    json(200, { message: "Order created successfully" });
+    throw redirect(302, `/payment/success/${orderData.order_number}`);
   }
 };

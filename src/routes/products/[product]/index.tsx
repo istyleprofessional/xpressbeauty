@@ -94,7 +94,6 @@ export default component$(() => {
         product.price.max = product.price.max * 0.9;
       } else {
         product.price.regular = product.price.regular * 0.9;
-        product.sale_price.sale = product.sale_price.sale * 0.9;
       }
     }
   });
@@ -303,13 +302,13 @@ export default component$(() => {
             content={
               product.priceType === "range"
                 ? product?.price?.min
-                    ?.toString()
-                    ?.replace("$", "")
-                    ?.toLocaleString("en-US")
+                  ?.toString()
+                  ?.replace("$", "")
+                  ?.toLocaleString("en-US")
                 : product?.price?.regular
-                    ?.toString()
-                    ?.replace("$", "")
-                    ?.toLocaleString("en-US")
+                  ?.toString()
+                  ?.replace("$", "")
+                  ?.toLocaleString("en-US")
             }
           />
           <meta
@@ -317,13 +316,13 @@ export default component$(() => {
             content={
               product.priceType === "range"
                 ? product?.price?.max
-                    ?.toString()
-                    ?.replace("$", "")
-                    ?.toLocaleString("en-US")
+                  ?.toString()
+                  ?.replace("$", "")
+                  ?.toLocaleString("en-US")
                 : product?.price?.regular
-                    ?.toString()
-                    ?.replace("$", "")
-                    ?.toLocaleString("en-US")
+                  ?.toString()
+                  ?.replace("$", "")
+                  ?.toLocaleString("en-US")
             }
           />
           <meta itemProp="priceCurrency" content="CAD" />
@@ -338,7 +337,7 @@ export default component$(() => {
         </div>
 
         <div class="flex flex-col gap-5 lg:gap-20">
-          <div class="flex flex-col justify-center items-center w-full gap-5 lg:grid lg:grid-cols-3 lg:gap-10 p-3 lg:p-10">
+          <div class="flex flex-col justify-start items-start w-full gap-5 lg:grid lg:grid-cols-3 lg:gap-10 p-3 lg:p-10">
             <Gallery
               product_name={product.product_name ?? ""}
               imgs={product.imgs ?? []}
@@ -409,6 +408,8 @@ export default component$(() => {
           </div>
           <div class="flex flex-col gap-5 lg:gap-10 p-3 lg:p-10">
             <RatingAndDescription
+              ingredients={product.ingredients ?? ""}
+              directions={product.directions ?? ""}
               product_description={product.description ?? ""}
               user={user.email ? user : null}
               productId={product._id ?? ""}
@@ -432,39 +433,33 @@ export const head: DocumentHead = ({ resolveValue }) => {
   const jsonData = JSON.parse(doc)._doc;
 
   return {
-    title: `${jsonData?.product_name ?? ""} | ${
-      jsonData.companyName.name && jsonData.companyName.name !== ""
-        ? `${jsonData.companyName.name} |`
-        : ""
-    } ${`${jsonData.categories[0].main ?? ""}`}`,
+    title: `${jsonData?.product_name ?? ""} | ${jsonData.companyName.name && jsonData.companyName.name !== ""
+      ? `${jsonData.companyName.name} |`
+      : ""
+      } ${`${jsonData.categories[0].main ?? ""}`}`,
     meta: [
       {
         name: "description",
-        content: `Discover ${jsonData?.product_name ?? ""}${
-          jsonData.companyName.name && jsonData.companyName.name !== ""
-            ? ` by ${jsonData.companyName.name}`
-            : " "
-        }${
-          jsonData.lineName && jsonData.lineName !== ""
+        content: `Discover ${jsonData?.product_name ?? ""}${jsonData.companyName.name && jsonData.companyName.name !== ""
+          ? ` by ${jsonData.companyName.name}`
+          : " "
+          }${jsonData.lineName && jsonData.lineName !== ""
             ? ` from the ${jsonData.lineName} collection `
             : " "
-        }at Xpress Beauty. Get it for just ${
-          jsonData.priceType === "range"
+          }at Xpress Beauty. Get it for just ${jsonData.priceType === "range"
             ? `$${jsonData.price.min}-$${jsonData.price.max}`
             : `$${jsonData.price.regular}`
-        } in our ${
-          jsonData.categories
+          } in our ${jsonData.categories
             .map((cat: any) => `${cat.main}, ${cat.name}`)
             .join(", ") ?? ""
-        } category.`,
+          } category.`,
       },
       {
         name: "keywords",
-        content: `${jsonData?.product_name ?? ""}, ${
-          jsonData.companyName && jsonData.companyName !== ""
-            ? `${jsonData.companyName},`
-            : ""
-        } ${jsonData.categories.join(", ") ?? ""}`,
+        content: `${jsonData?.product_name ?? ""}, ${jsonData.companyName && jsonData.companyName !== ""
+          ? `${jsonData.companyName},`
+          : ""
+          } ${jsonData.categories.join(", ") ?? ""}`,
       },
     ],
   };

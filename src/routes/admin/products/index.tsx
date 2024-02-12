@@ -12,6 +12,7 @@ import {
   HideAdminIcon,
   OrderFilterIcon,
 } from "~/components/shared/icons/icons";
+import { Image } from "@unpic/qwik";
 
 export const useProductData = routeLoader$(async (ev) => {
   const pageNumber = parseInt(ev.url.searchParams.get("page") ?? "1");
@@ -109,9 +110,9 @@ export default component$(() => {
         // maxium 9999 characters
         product.description
           ? product.description
-              .replace(/<img .*?>/g, "")
-              .replace(/Cosmo Prof/g, "Xpress Beauty")
-              .substring(0, 9999)
+            .replace(/<img .*?>/g, "")
+            .replace(/Cosmo Prof/g, "Xpress Beauty")
+            .substring(0, 9999)
           : "",
         parseInt(product.quantity_on_hand) > 0 ? "in stock" : "out of stock",
         "new",
@@ -187,10 +188,10 @@ export default component$(() => {
                     </label>
                   </th>
                   <th>
-                    <img
-                      src={(product?.imgs as any[])[0] ?? ""}
+                    <Image
+                      src={(product?.imgs as any[])[0].includes("http") ? (product?.imgs as any[])[0] : (product?.imgs as any[])[0].replace(".", "")}
                       class="w-12 h-12 object-contain"
-                      onError$={(_, element: HTMLImageElement) => {
+                      onError$={(_: any, element: HTMLImageElement) => {
                         element.src = "/placeholder.webp";
                       }}
                     />
@@ -205,11 +206,10 @@ export default component$(() => {
                   <th>{product.sku}</th>
                   <th>
                     <p
-                      class={`badge ${
-                        !product.isHidden
-                          ? "bg-[#D1FAE5] text-[#059669]"
-                          : "bg-[#FEF2F2] text-[#DC2626]"
-                      }`}
+                      class={`badge ${!product.isHidden
+                        ? "bg-[#D1FAE5] text-[#059669]"
+                        : "bg-[#FEF2F2] text-[#DC2626]"
+                        }`}
                     >
                       {!product.isHidden ? "Active" : "In Active"}
                     </p>
@@ -248,9 +248,8 @@ export default component$(() => {
       <div class="bg-[#fff]">
         <div class="flex flex-row justify-between gap-2 p-2">
           <button
-            class={`btn btn-ghost btn-sm ${
-              currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
-            } text-xs`}
+            class={`btn btn-ghost btn-sm ${currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
+              } text-xs`}
             disabled={currentPageNo === "1"}
             onClick$={() => {
               const url = new URL(window.location.href);
@@ -267,11 +266,10 @@ export default component$(() => {
             {currentPageNo} of {totalPages}
           </p>
           <button
-            class={`btn btn-ghost btn-sm text-xs ${
-              currentPageNo === totalPages.toString()
-                ? "text-[#D1D5DB]"
-                : "text-[#7C3AED]"
-            }`}
+            class={`btn btn-ghost btn-sm text-xs ${currentPageNo === totalPages.toString()
+              ? "text-[#D1D5DB]"
+              : "text-[#7C3AED]"
+              }`}
             disabled={currentPageNo === totalPages.toString()}
             onClick$={() => {
               const url = new URL(window.location.href);

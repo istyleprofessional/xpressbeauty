@@ -9,7 +9,7 @@ export const get_products_service = async (token: string, page: number) => {
       const perPage = 20;
       const pageNumber = page;
       const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
-      const result = await Product.find({ isDeleted: { $ne: true } })
+      const result = await Product.find({ isDeleted: { $ne: true }, isHidden: { $ne: true } })
         .skip(skip)
         .limit(perPage);
       return result as ProductModel;
@@ -25,7 +25,7 @@ export const get_products_count_service = async (token: string) => {
   const isAdmin = verifyTokenAdmin(token);
   if (isAdmin) {
     try {
-      const result = await Product.count({});
+      const result = await Product.count({ isDeleted: { $ne: true }, isHidden: { $ne: true } });
       return result;
     } catch (e) {
       return { e: e };
@@ -137,12 +137,15 @@ export const get_new_arrivals_products = async (filter?: string) => {
     if (filter && filter !== "") {
       const result = await Product.find({
         isHidden: { $ne: true },
+        isDeleted: { $ne: true },
         categories: { $elemMatch: { main: { $regex: filter, $options: "i" } } },
       }).limit(8);
       return result as ProductModel;
     } else {
       const query = {
         quantity_on_hand: { $nin: ["0", ""] },
+        isHidden: { $ne: true },
+        isDeleted: { $ne: true },
       };
       const result = await Product.aggregate([
         { $match: query },
@@ -180,6 +183,8 @@ export const getRelatedProducts = async (
       };
     }
     query["product_name"] = { $ne: productName };
+    query["isHidden"] = { $ne: true };
+    query["isDeleted"] = { $ne: true };
     const result = await Product.find(query).limit(10);
 
     return result as ProductModel;
@@ -211,7 +216,11 @@ export const getProductById = async (id: string) => {
 
 export const get_random_data = async () => {
   try {
-    const result = await Product.aggregate([{ $sample: { size: 20 } }]);
+    // get sample of 20 products from the database with condition that the product is not hidden and not deleted
+    const result = await Product.aggregate([
+      { $match: { isHidden: { $ne: true }, isDeleted: { $ne: true } } },
+      { $sample: { size: 20 } },
+    ]);
     return result;
   } catch (err) {
     return { status: "failed", err: err };
@@ -257,13 +266,13 @@ export const get_products_data = async (
                 main: { $regex: filter },
               },
             },
-          },
-          { product_name: { $regex: filter, $options: "i" } },
+          }
         ]
       );
     }
     if (filterPrices.length > 0) {
       for (let i = 0; i < filterPrices.length; i++) {
+        console.log(filterPrices);
         if (filterPrices[i].includes(">")) {
           if (!buildQuery["$or"]) {
             buildQuery["$or"] = [];
@@ -284,6 +293,9 @@ export const get_products_data = async (
           });
         } else if (filterPrices[i].includes("<")) {
           const vars = filterPrices[i].split("<");
+          if (!buildQuery["$or"]) {
+            buildQuery["$or"] = [];
+          }
           buildQuery["$or"].push({
             "price.regular": { $gte: parseFloat(vars[1]) },
           });
@@ -298,6 +310,10 @@ export const get_products_data = async (
           });
         } else if (filterPrices[i].includes("-")) {
           const vars = filterPrices[i].split("-");
+          console.log(vars);
+          if (!buildQuery["$or"]) {
+            buildQuery["$or"] = [];
+          }
           buildQuery["$or"].push({
             "price.regular": {
               $gte: parseFloat(vars[0]),
@@ -319,19 +335,63 @@ export const get_products_data = async (
         }
       }
     }
+
     if (query && query !== "") {
       buildQuery["$text"] = { $search: query };
+
       // console.log(buildQuery);
     }
     buildQuery["isHidden"] = { $ne: true };
-    const request = await Product.find(buildQuery)
+    buildQuery["isDeleted"] = { $ne: true };
+    console.log(buildQuery);
+    const request = await Product.find(buildQuery, query && query !== "" ? {
+      "score": { $meta: "textScore" }
+    } : {})
       .sort(
-        sort && sort !== "" ? { product_name: sort === "ASC" ? 1 : -1 } : {}
+        sort && sort !== "" ? { product_name: sort === "ASC" ? 1 : -1 } : query && query !== "" ? {
+          score: { $meta: "textScore" }
+        } : {}
       )
       .skip(skip)
       .limit(perPage);
     const total = await Product.count(buildQuery);
     return JSON.stringify({ status: "success", result: request, total: total });
+  } catch (err) {
+    console.log(err);
+    return JSON.stringify({ status: "failed", err: err });
+  }
+};
+
+export const update_product_quantity = async (products: any) => {
+  try {
+    for (const product of products) {
+      // check if product id contains a dot, if it does, then it is a variant and we need to update the quantity of the variant
+      if (product.id.includes(".")) {
+        const mainId = product.id.split(".")[0];
+        const variation_id = product.id.split(".")[1];
+        await Product.findOneAndUpdate(
+          { _id: mainId, variations: { $elemMatch: { variation_id: variation_id } } },
+          { $inc: { "variations.$.quantity_on_hand": -product.quantity } }
+        );
+      } else {
+        const resutl = await
+          Product.findOneAndUpdate(
+            { _id: product.id },
+            { $inc: { quantity_on_hand: -product.quantity } }
+          );
+        console.log(resutl);
+      }
+    }
+    return { status: "success" };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+}
+export const get_random_products = async () => {
+  try {
+    const result = await Product.aggregate([{ $match: { isHidden: { $ne: true }, isDeleted: { $ne: true } } }, { $sample: { size: 20 } }]);
+    const total = await Product.count({});
+    return JSON.stringify({ status: "success", result: result, total: total });
   } catch (err) {
     return JSON.stringify({ status: "failed", err: err });
   }
@@ -352,6 +412,8 @@ export const get_products_on_filter_service = async (
     if (filter.brands.length > 0) {
       query["companyName"] = { $in: filter.brands };
     }
+    query["isHidden"] = { $ne: true };
+    query["isDeleted"] = { $ne: true };
     const request = await Product.find(query)
       .skip(skip)
       .limit(perPage)
@@ -369,9 +431,13 @@ export const getSearchResults = async (search: string) => {
       {
         $or: [
           { product_name: { $regex: search, $options: "i" } },
-          { category: { $regex: search, $options: "i" } },
-          // Add more attributes as needed
+          { "category.main": { $regex: search, $options: "i" } },
+          { "category.name": { $regex: search, $options: "i" } },
+          { "companyName.name": { $regex: search, $options: "i" } },
+
         ],
+        isHidden: { $ne: true },
+        isDeleted: { $ne: true },
       },
       { product_name: 1, perfix: 1, _id: 0, imgs: 1 }
     ).limit(20);
@@ -393,6 +459,8 @@ export const getProductBySearch = async (search: string, page: number) => {
         { description: { $regex: search, $options: "i" } },
         { companyName: { $regex: search, $options: "i" } },
         { lineName: { $regex: search, $options: "i" } },
+        { isHidden: { $ne: true } },
+        { isDeleted: { $ne: true } },
       ],
     })
       .skip(skip)
@@ -519,7 +587,7 @@ export const getTotalQuantityService = async (
       });
       return {
         status: "success",
-        result: parseInt(total?.quantity_on_hand ?? ""),
+        result: total?.quantity_on_hand,
       };
     }
   } catch (err) {
