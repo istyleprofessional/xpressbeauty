@@ -45,6 +45,7 @@ export const useFilterData = routeLoader$(async () => {
 export const useDomContentLoaded = routeLoader$(
   async ({ params, url, redirect }) => {
     const page = url.searchParams.get("page") ?? "1";
+    const inStock = url.searchParams.get("inStock") ?? "false";
     const searchQuery = url.searchParams.get("search") ?? "";
     if (
       params.args.split("/")[0] &&
@@ -154,10 +155,14 @@ export const useDomContentLoaded = routeLoader$(
       filterPricesArray,
       finalFilter,
       parseInt(page),
-      search() !== "" ? search() : searchQuery
+      search() !== "" ? search() : searchQuery,
+      "",
+      inStock === "true" ? true : false
     );
     if (url.pathname === "/products/") {
-      const request = await get_random_products();
+      const request = await get_random_products(
+        inStock === "true" ? true : false
+      );
       const data = JSON.parse(request);
       return JSON.stringify({
         finalFilter,
@@ -195,6 +200,7 @@ export default component$(() => {
   const query = useSignal<string>(loc.url.searchParams.get("search") ?? "");
   const currencyObject: any = useContext(CurContext);
   const allBrandz = useSignal<any[]>(filterServerData?.brand?.result);
+  const inStock = useSignal<boolean>();
   const isChecked = useStore<any>(
     {
       Hair: false,
@@ -314,6 +320,7 @@ export default component$(() => {
       query: "",
       page: checkPage,
       sort: sort.value,
+      inStock: inStock.value,
     });
     const data = await result.json();
     productData.value = JSON.parse(data);
@@ -374,6 +381,7 @@ export default component$(() => {
       query: query.value,
       page: checkPage,
       sort: sort.value,
+      inStock: inStock.value,
     });
 
     url.searchParams.set("search", value);
@@ -429,6 +437,7 @@ export default component$(() => {
       query: "",
       page: checkPage,
       sort: sort.value,
+      inStock: inStock.value,
     });
     const data = await result.json();
     productData.value = JSON.parse(data);
@@ -495,6 +504,7 @@ export default component$(() => {
         query: "",
         page: checkPage,
         sort: sort.value,
+        inStock: inStock.value,
       });
       const data = await result.json();
       productData.value = JSON.parse(data);
@@ -558,10 +568,21 @@ export default component$(() => {
       query: "",
       page: checkPage,
       sort: sort.value,
+      inStock: inStock.value,
     });
     const data = await result.json();
     productData.value = JSON.parse(data);
     isLoading.value = false;
+  });
+
+  useVisibleTask$(() => {
+    const inStockStr = loc.url.searchParams.get("inStock") ?? "false";
+    if (inStockStr === "true") {
+      inStock.value = true;
+    }
+    if (inStockStr === "false") {
+      inStock.value = false;
+    }
   });
 
   const handleSearchBrandz = $((_: any, elem: HTMLInputElement) => {
@@ -583,10 +604,10 @@ export default component$(() => {
         <div class="lg:sticky lg:top-0">
           <div class="drawer lg:drawer-open lg:sticky lg:top-0 flex flex-col gap-5">
             <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-            <div class="drawer-content">
+            <div class="drawer-content p-2">
               <label
                 for="my-drawer"
-                class="btn btn-info drawer-button lg:hidden"
+                class="btn btn-info drawer-button lg:hidden p-2"
               >
                 Filter By
                 <svg
@@ -722,7 +743,6 @@ export default component$(() => {
                     <h3 class="text-base font-bold text-black">Categories</h3>
                   </div>
                   <div class="collapse-content ">
-                    {/* <div class="flex flex-col gap-2"> */}
                     <CategoryFilter
                       filterCategoriessArray={filterCategoriessArray}
                       categoriesSetObject={categoriesSetObject}
@@ -730,7 +750,6 @@ export default component$(() => {
                         handleCategoryCheckBoxChange
                       }
                     />
-                    {/* </div> */}
                   </div>
                 </li>
                 <li class="collapse collapse-arrow w-full overflow-y-auto">
@@ -772,23 +791,22 @@ export default component$(() => {
             </div>
           </div>
         </div>
-        <div class="md:col-span-3">
-          <div class="md:flex md:flex-col gap-16">
-            {isLoading.value && (
-              <div class="flex flex-col items-center justify-center gap-3 p-3 bg-white rounded-lg shadow-lg">
-                <h2 class="text-lg font-bold">Loading...</h2>
-                <progress class="progress w-56"></progress>
-              </div>
-            )}
-            {!isLoading.value && (
-              <ProductsSection
-                currencyObject={currencyObject.cur}
-                products={productData}
-                currentPage={page.value}
-                handleSorting={handleSorting}
-              />
-            )}
-          </div>
+        <div class="md:flex md:flex-col gap-16 w-full">
+          {isLoading.value && (
+            <div class="flex flex-col items-center justify-center gap-3 p-3 bg-white rounded-lg shadow-lg">
+              <h2 class="text-lg font-bold">Loading...</h2>
+              <progress class="progress w-56"></progress>
+            </div>
+          )}
+          {!isLoading.value && (
+            <ProductsSection
+              inStock={inStock}
+              currencyObject={currencyObject.cur}
+              products={productData}
+              currentPage={page.value}
+              handleSorting={handleSorting}
+            />
+          )}
         </div>
       </div>
     </>

@@ -1,4 +1,4 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, useSignal, useTask$ } from "@builder.io/qwik";
 import { BackArrowIcon, NextArrowIcon } from "../icons/icons";
 
 interface PaginationProps {
@@ -13,24 +13,20 @@ export const Pagination = component$((props: PaginationProps) => {
   const totalCols = useSignal<number[]>([]);
   const totalPages = useSignal<number>(0);
 
-  useVisibleTask$(
-    ({ track }) => {
-      track(() => {
-        totalProductsNo;
-      });
-      pages.value = totalProductsNo;
-    },
-    { strategy: "document-idle" }
-  );
+  useTask$(({ track }) => {
+    track(() => {
+      totalProductsNo;
+    });
+    pages.value = totalProductsNo;
+  });
 
-  useVisibleTask$(({ track }) => {
+  useTask$(({ track }) => {
     track(() => {
       page;
       pages.value;
     });
     totalCols.value = [];
     const floatPages = pages.value / (perPage ?? 12);
-    // totalPages.value = Math.floor(floatPages + 1);
     totalPages.value = Math.ceil(floatPages);
     const start = (parseInt(page) ?? 1) - 1;
     const end = (parseInt(page) ?? 1) + 1;

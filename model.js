@@ -28,7 +28,6 @@ const productsSchema = new mongoose.Schema(
     oldPerfix: { type: String, default: null },
     ingredients: { type: String, default: null },
     directions: { type: String, default: null },
-
   },
   { timestamps: true }
 );

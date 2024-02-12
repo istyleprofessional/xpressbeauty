@@ -1,4 +1,4 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, useSignal, useTask$ } from "@builder.io/qwik";
 import type { ProductModel } from "~/models/product.model";
 import { Image } from "@unpic/qwik";
 
@@ -15,30 +15,28 @@ export const ProductCard = component$((props: ProductCardProps) => {
   const finalRegularPrice = useSignal<string>("");
   const verifiedPrice = useSignal<string>("");
   const verifiedSalePrice = useSignal<string>("");
+  const isInStock = useSignal<boolean>(false);
 
-  useVisibleTask$(
-    ({ track }) => {
-      track(() => currencyObject);
-      if (currencyObject === "1") {
-        if (product.priceType === "range") {
-          product.price.min = parseFloat(product?.price?.min?.toString()) * 0.9;
+  useTask$(({ track }) => {
+    track(() => currencyObject);
+    if (currencyObject === "1") {
+      if (product.priceType === "range") {
+        product.price.min = parseFloat(product?.price?.min?.toString()) * 0.9;
 
-          product.price.max = parseFloat(product.price?.max?.toString()) * 0.9;
-        } else {
-          product.price.regular =
-            parseFloat(product.price?.regular?.toString()) * 0.9;
-          product.sale_price.sale = isNaN(
-            parseFloat(product?.sale_price?.sale?.toString()) * 0.9
-          )
-            ? ""
-            : parseFloat(product?.sale_price?.sale?.toString()) * 0.9;
-        }
+        product.price.max = parseFloat(product.price?.max?.toString()) * 0.9;
+      } else {
+        product.price.regular =
+          parseFloat(product.price?.regular?.toString()) * 0.9;
+        product.sale_price.sale = isNaN(
+          parseFloat(product?.sale_price?.sale?.toString()) * 0.9
+        )
+          ? ""
+          : parseFloat(product?.sale_price?.sale?.toString()) * 0.9;
       }
-    },
-    { strategy: "intersection-observer" }
-  );
+    }
+  });
 
-  useVisibleTask$(() => {
+  useTask$(() => {
     if (product.priceType === "range") {
       if (product.price.min !== "" && product.price.max !== "") {
         finalRegularPrice.value = `${parseFloat(
@@ -88,11 +86,26 @@ export const ProductCard = component$((props: ProductCardProps) => {
     }
   });
 
+  useTask$(() => {
+    // check if product has a variants and if it does, check if the quantity of the variants is greater than 0
+    if ((product?.variations ?? []).length > 0) {
+      for (const variant of product.variations ?? []) {
+        if (variant.quantity_on_hand > 0) {
+          isInStock.value = true;
+          break;
+        }
+      }
+    } else {
+      if (parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0) {
+        isInStock.value = true;
+      }
+    }
+  });
+
   return (
     <a
-      class={`btn btn-ghost grid grid-rows-4 justify-items-center items-center ${cardSize === "sm" ? "lg:w-72 lg:h-72" : "lg:w-96 lg:h-96"
-        } w-40 h-72 bg-[#FFFFFF] shadow-sm
-       shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center items-center normal-case`}
+      class={`btn btn-ghost grid grid-rows-4 justify-items-center items-center md:h-96
+       w-32 h-72 md:w-52 bg-[#FFFFFF] shadow-sm shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center normal-case`}
       href={`/products/${encodeURIComponent(
         product.product_name
           ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
@@ -103,34 +116,46 @@ export const ProductCard = component$((props: ProductCardProps) => {
       <Image
         layout="constrained"
         key={i}
-        src={((product.imgs ?? [])[0]).includes("http") ? (product.imgs ?? [])[0] : (product.imgs ?? [])[0].replace(".", "")}
+        src={
+          (product.imgs ?? [])[0].includes("http")
+            ? (product.imgs ?? [])[0]
+            : (product.imgs ?? [])[0].replace(".", "")
+        }
         onError$={(e: any) => {
           e.target.src = "/placeholder.webp";
         }}
         alt={product.product_name}
-        class={`${cardSize === "sm" ? "lg:w-32 lg:h-32" : " lg:w-44 lg:h-44"
-          } w-32 h-32 object-contain row-span-2 bg-white rounded-lg`}
+        class={`${
+          cardSize === "sm" ? "lg:w-32 lg:h-32" : " lg:w-44 lg:h-44"
+        } w-32 h-32 object-contain row-span-2 bg-white rounded-lg`}
         itemProp="image"
       />
       <h2
-        class={`overflow-hidden truncate ${cardSize === "sm" ? "lg:text-base" : "lg:text-lg"
-          } text-sm text-black whitespace-normal font-semibold pt-5 text-center`}
+        class={`overflow-hidden truncate lg:text-base text-sm text-black whitespace-normal font-semibold pt-5 text-center`}
         itemProp="name"
       >
         {product.product_name}
       </h2>
       <div class="flex flex-col gap-2">
-        <p
-          class={`text-sm text-gray-500 font-semibold ${cardSize === "sm" ? "lg:text-base" : "lg:text-lg"
-            }`}
-        >
-          {product.priceType === "single" && (
-            <span class=" text-gray-600">{finalRegularPrice.value}</span>
-          )}
-          {product.priceType === "range" && (
-            <span class=" text-gray-600">{finalRegularPrice.value}</span>
-          )}
-        </p>
+        {isInStock.value ? (
+          <>
+            <p class={`text-xs text-green-700 font-semibold lg:text-base`}>
+              In Stock
+            </p>
+            <p class={`text-sm text-gray-500 font-semibold lg:text-base`}>
+              {product.priceType === "single" && (
+                <span class=" text-gray-600">{finalRegularPrice.value}</span>
+              )}
+              {product.priceType === "range" && (
+                <span class=" text-gray-600">{finalRegularPrice.value}</span>
+              )}
+            </p>
+          </>
+        ) : (
+          <p class={`text-xs text-red-700 font-semibold lg:text-base`}>
+            Out of Stock
+          </p>
+        )}
       </div>
     </a>
   );

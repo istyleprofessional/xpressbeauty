@@ -17,7 +17,7 @@ async function changeCurrency() {
       for (const variant of product.variations) {
         variant.price = parseFloat(
           variant?.price?.toString()?.replace("$", "")
-        )
+        );
       }
       product.price.max = parseFloat(
         product?.price?.max?.toString()?.replace("$", "")
@@ -28,10 +28,10 @@ async function changeCurrency() {
     } else {
       product.price.regular = parseFloat(
         product?.price?.regular?.toString()?.replace("$", "")
-      )
+      );
       product.sale_price.sale = parseFloat(
         product?.price?.regular?.toString()?.replace("$", "")
-      )
+      );
     }
     const updateProduct = await Product.findByIdAndUpdate(
       product._id,
@@ -48,13 +48,16 @@ async function changeCurrency() {
 async function updateCategory() {
   const json = require("./backups/file-7.json");
   const shopEmpireData = require("./shopEmpireData.json");
-  const products = [...json, ...shopEmpireData]
+  const products = [...json, ...shopEmpireData];
   await connect(mongoUrl);
   for (const product of products) {
     const updateProduct = product.imgs.map((img) => {
-      return img.replace('newProductsImages', 'products-images-2')
-    })
-    await Product.findOneAndUpdate({ product_name: product.product_name }, { imgs: updateProduct });
+      return img.replace("newProductsImages", "products-images-2");
+    });
+    await Product.findOneAndUpdate(
+      { product_name: product.product_name },
+      { imgs: updateProduct }
+    );
     // console.log(updateProduct);
   }
   console.log("done");
@@ -67,14 +70,22 @@ async function changeQuantity() {
   const products = await Product.find({});
   for (const product of products) {
     product.quantity_on_hand = parseInt(product.quantity_on_hand);
-    await Product.findByIdAndUpdate(
-      product._id,
-      product,
-      { new: true }
-    );
+    await Product.findByIdAndUpdate(product._id, product, { new: true });
   }
   console.log("done");
   await connection.close();
 }
-changeQuantity()
+// changeQuantity()
 // updateCategory()
+
+async function updateQuantity() {
+  await connect(mongoUrl);
+  const products = await Product.find({});
+  for (const product of products) {
+    product.quantity_on_hand = parseInt(product.quantity_on_hand);
+    await Product.findByIdAndUpdate(product._id, product, { new: true });
+  }
+  console.log("done");
+  await connection.close();
+}
+updateQuantity();

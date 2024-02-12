@@ -9,7 +9,10 @@ export const get_products_service = async (token: string, page: number) => {
       const perPage = 20;
       const pageNumber = page;
       const skip = pageNumber && pageNumber > 0 ? (pageNumber - 1) * 20 : 0;
-      const result = await Product.find({ isDeleted: { $ne: true }, isHidden: { $ne: true } })
+      const result = await Product.find({
+        isDeleted: { $ne: true },
+        isHidden: { $ne: true },
+      })
         .skip(skip)
         .limit(perPage);
       return result as ProductModel;
@@ -25,7 +28,10 @@ export const get_products_count_service = async (token: string) => {
   const isAdmin = verifyTokenAdmin(token);
   if (isAdmin) {
     try {
-      const result = await Product.count({ isDeleted: { $ne: true }, isHidden: { $ne: true } });
+      const result = await Product.count({
+        isDeleted: { $ne: true },
+        isHidden: { $ne: true },
+      });
       return result;
     } catch (e) {
       return { e: e };
@@ -234,7 +240,8 @@ export const get_products_data = async (
   filter: string,
   page: number,
   query?: string,
-  sort?: string
+  sort?: string,
+  inStock?: boolean
 ) => {
   try {
     const perPage = 20;
@@ -266,7 +273,7 @@ export const get_products_data = async (
                 main: { $regex: filter },
               },
             },
-          }
+          },
         ]
       );
     }
@@ -335,7 +342,20 @@ export const get_products_data = async (
         }
       }
     }
+    const sortObj: any = {};
+    if (sort && sort !== "") {
+      if (sort === "ASC") {
+        sortObj["product_name"] = 1;
+      } else if (sort === "DESC") {
+        sortObj["product_name"] = -1;
+      }
+    }
 
+    if (query && query !== "") {
+      buildQuery["$text"] = { $search: query };
+
+      // console.log(buildQuery);
+    }
     if (query && query !== "") {
       buildQuery["$text"] = { $search: query };
 
@@ -343,15 +363,31 @@ export const get_products_data = async (
     }
     buildQuery["isHidden"] = { $ne: true };
     buildQuery["isDeleted"] = { $ne: true };
-    console.log(buildQuery);
-    const request = await Product.find(buildQuery, query && query !== "" ? {
-      "score": { $meta: "textScore" }
-    } : {})
-      .sort(
-        sort && sort !== "" ? { product_name: sort === "ASC" ? 1 : -1 } : query && query !== "" ? {
-          score: { $meta: "textScore" }
-        } : {}
-      )
+    if (inStock) {
+      console.log(inStock);
+      if (!("$and" in buildQuery)) {
+        buildQuery["$and"] = [];
+      }
+      buildQuery["$and"].push({
+        $or: [
+          {
+            quantity_on_hand: { $gt: 0 },
+          },
+          {
+            "variations.quantity_on_hand": { $gt: 0 },
+          },
+        ],
+      });
+    }
+    const request = await Product.find(
+      buildQuery,
+      query && query !== ""
+        ? {
+            score: { $meta: "textScore" },
+          }
+        : {}
+    )
+      .sort(sortObj)
       .skip(skip)
       .limit(perPage);
     const total = await Product.count(buildQuery);
@@ -370,15 +406,17 @@ export const update_product_quantity = async (products: any) => {
         const mainId = product.id.split(".")[0];
         const variation_id = product.id.split(".")[1];
         await Product.findOneAndUpdate(
-          { _id: mainId, variations: { $elemMatch: { variation_id: variation_id } } },
+          {
+            _id: mainId,
+            variations: { $elemMatch: { variation_id: variation_id } },
+          },
           { $inc: { "variations.$.quantity_on_hand": -product.quantity } }
         );
       } else {
-        const resutl = await
-          Product.findOneAndUpdate(
-            { _id: product.id },
-            { $inc: { quantity_on_hand: -product.quantity } }
-          );
+        const resutl = await Product.findOneAndUpdate(
+          { _id: product.id },
+          { $inc: { quantity_on_hand: -product.quantity } }
+        );
         console.log(resutl);
       }
     }
@@ -386,10 +424,32 @@ export const update_product_quantity = async (products: any) => {
   } catch (err) {
     return { status: "failed", err: err };
   }
-}
-export const get_random_products = async () => {
+};
+export const get_random_products = async (inStock?: boolean) => {
   try {
-    const result = await Product.aggregate([{ $match: { isHidden: { $ne: true }, isDeleted: { $ne: true } } }, { $sample: { size: 20 } }]);
+    const matchObj: any = {};
+    if (inStock) {
+      matchObj["$or"] = [
+        {
+          quantity_on_hand: { $gt: 0 },
+        },
+        {
+          "variations.quantity_on_hand": { $gt: 0 },
+        },
+      ];
+    }
+
+    const result = await Product.aggregate([
+      {
+        $match: {
+          isHidden: { $ne: true },
+          isDeleted: { $ne: true },
+          ...matchObj,
+        },
+      },
+      { $sample: { size: 20 } },
+      { $sort: { quantity_on_hand: -1 } },
+    ]);
     const total = await Product.count({});
     return JSON.stringify({ status: "success", result: result, total: total });
   } catch (err) {
@@ -434,7 +494,6 @@ export const getSearchResults = async (search: string) => {
           { "category.main": { $regex: search, $options: "i" } },
           { "category.name": { $regex: search, $options: "i" } },
           { "companyName.name": { $regex: search, $options: "i" } },
-
         ],
         isHidden: { $ne: true },
         isDeleted: { $ne: true },
