@@ -88,4 +88,28 @@ async function updateQuantity() {
   console.log("done");
   await connection.close();
 }
-updateQuantity();
+// updateQuantity();
+
+async function updateBabylissPrices() {
+  await connect(mongoUrl);
+  const products = await Product.find({});
+  for (const product of products) {
+    if (!product.companyName.name) continue;
+    if (product.companyName.name.toLowerCase().includes("babyliss")) {
+      for (const category of product.categories) {
+        if (category.main === "Trimmers" || category.main === "Clippers") {
+          product.price.regular =
+            product.price.regular * 0.3 + product.price.regular;
+          product.sale_price.sale =
+            product.sale_price.sale * 0.3 + product.sale_price.sale;
+          await Product.findByIdAndUpdate(product._id, product, { new: true });
+          break;
+        }
+      }
+    }
+  }
+  console.log("done");
+  await connection.close();
+}
+
+updateBabylissPrices();
