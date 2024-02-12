@@ -42,7 +42,6 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     automatic_tax: {
       enabled: true,
     },
-    redirect_on_completion: "if_required",
     payment_method_types: paymentMethodTypes.filter((type) => type !== ""),
     shipping_address_collection: {
       allowed_countries: ["US", "CA"],
@@ -115,7 +114,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
   return;
 };
 
-export const onGet: RequestHandler = async ({ query, env, url, json }) => {
+export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
   if (url.searchParams.get("session_id")) {
     const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
     console.log("session_id", query.get("session_id"));
@@ -127,8 +126,7 @@ export const onGet: RequestHandler = async ({ query, env, url, json }) => {
     );
     console.log("session", session);
     if (session.payment_status === 'unpaid') {
-      json(200, { message: "Payment failed" });
-      return;
+      throw redirect(302, `/payment/?error=payment-failed`);
     }
     const productsFromCart: any = await getCartByUserId(
       query.get("userId") ?? ""
@@ -227,6 +225,6 @@ export const onGet: RequestHandler = async ({ query, env, url, json }) => {
     }
 
     await deleteCart(query.get("userId") ?? "");
-    json(200, { message: "Order created successfully" });
+    throw redirect(302, `/payment/success/${orderData.order_number}`);
   }
 };
