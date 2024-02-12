@@ -105,7 +105,9 @@ export const ProductCard = component$((props: ProductCardProps) => {
   return (
     <a
       class={`btn btn-ghost grid grid-rows-4 justify-items-center items-center md:h-96
-       w-44 h-72 md:w-52 bg-[#FFFFFF] shadow-sm shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center normal-case`}
+      ${
+        cardSize === "sm" ? "lg:w-52 lg:h-96" : " lg:w-72 lg:h-96"
+      } w-32 h-72 md:w-52 bg-[#FFFFFF] shadow-sm shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center normal-case`}
       href={`/products/${encodeURIComponent(
         product.product_name
           ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
@@ -125,9 +127,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
           e.target.src = "/placeholder.webp";
         }}
         alt={product.product_name}
-        class={`${
-          cardSize === "sm" ? "lg:w-32 lg:h-32" : " lg:w-44 lg:h-44"
-        } w-32 h-32 object-contain row-span-2 bg-white rounded-lg`}
+        class={` w-32 h-32 object-contain row-span-2 bg-white rounded-lg`}
         itemProp="image"
       />
       <h2
