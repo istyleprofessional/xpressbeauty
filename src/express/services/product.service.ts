@@ -145,6 +145,15 @@ export const get_new_arrivals_products = async (filter?: string) => {
         isHidden: { $ne: true },
         isDeleted: { $ne: true },
         categories: { $elemMatch: { main: { $regex: filter, $options: "i" } } },
+        $and: [
+          {
+            $or: [
+              { quantity_on_hand: { $ne: "0" } },
+              { quantity_on_hand: { $ne: "" } },
+            ],
+          },
+          { $or: [{ "variations.quantity_on_hand": { $ne: "0" } }] },
+        ],
       }).limit(8);
       return result as ProductModel;
     } else {

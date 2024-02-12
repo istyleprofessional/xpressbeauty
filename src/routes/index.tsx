@@ -6,7 +6,6 @@ import { WhyChooseUs } from "~/components/home/why-choose-us/why-choose-us";
 import { connect } from "~/express/db.connection";
 import { get_new_arrivals_products } from "~/express/services/product.service";
 import type { ProductModel } from "~/models/product.model";
-// import BannerImage from "~/media/Year6.jpg?jsx";
 import { Hero } from "~/components/home/hero/hero";
 import { UserContext } from "~/context/user.context";
 import { CurContext } from "~/context/cur.context";
@@ -55,7 +54,6 @@ export default component$(() => {
   const bestSellerProducts: ProductModel[] = JSON.parse(
     useToolsProducts().value
   );
-  // const nav = useNavigate();
   const bestSellerProducts2: ProductModel[] = JSON.parse(
     useBestSellerProducts().value
   );
