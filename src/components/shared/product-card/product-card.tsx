@@ -105,7 +105,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
   return (
     <a
       class={`btn btn-ghost grid grid-rows-4 justify-items-center items-center md:h-96
-       w-32 h-72 md:w-52 bg-[#FFFFFF] shadow-sm shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center normal-case`}
+       w-44 h-72 md:w-52 bg-[#FFFFFF] shadow-sm shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center normal-case`}
       href={`/products/${encodeURIComponent(
         product.product_name
           ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
@@ -131,7 +131,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
         itemProp="image"
       />
       <h2
-        class={`overflow-hidden truncate lg:text-base text-sm text-black whitespace-normal font-semibold pt-5 text-center`}
+        class={`overflow-hidden truncate lg:text-base text-sm text-black whitespace-normal max-w-40 max-h-14 md:max-h-24 font-semibold pt-5 text-center`}
         itemProp="name"
       >
         {product.product_name}

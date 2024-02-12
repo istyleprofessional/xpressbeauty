@@ -71,7 +71,7 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
         {/** In stock checkbox */}
       </div>
       {viewToggle.value === "grid" ? (
-        <div class="flex flex-row flex-wrap justify-center gap-1 md:gap-2 lg:gap-4">
+        <div class="flex flex-row flex-wrap justify-center gap-4">
           {products.value?.result?.map((product: any, index: number) => (
             <div key={index}>
               <ProductCard
