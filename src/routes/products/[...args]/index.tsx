@@ -787,6 +787,31 @@ export default component$(() => {
                     checked={isChecked.Price}
                   />
                 </li>
+                <li class="flex flex-row gap-1 justify-center items-center lg:hidden">
+                  <input
+                    type="checkbox"
+                    id="checkbox"
+                    name="checkbox"
+                    class="checkbox checkbox-success"
+                    checked={inStock.value}
+                    onChange$={(_: any, elem: HTMLInputElement) => {
+                      if (elem.checked) {
+                        inStock.value = true;
+                        const url = new URL(window.location.href);
+                        url.searchParams.set("inStock", "true");
+                        location.href = url.pathname + url.search;
+                      } else {
+                        inStock.value = false;
+                        const url = new URL(window.location.href);
+                        url.searchParams.set("inStock", "false");
+                        location.href = url.pathname + url.search;
+                      }
+                    }}
+                  />
+                  <label for="checkbox" class="font-bold">
+                    In Stock
+                  </label>
+                </li>
               </ul>
             </div>
           </div>

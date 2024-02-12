@@ -33,7 +33,7 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
   return (
     <div class="flex flex-col gap-7 w-full">
       <div class="h-24 w-[100%] lg:flex lg:flex-row items-center hidden md:hidden">
-        <div class="flex flex-row gap-1 justify-center items-center">
+        <div class=" flex-row gap-1 justify-center items-center hidden lg:flex">
           <input
             type="checkbox"
             id="checkbox"
