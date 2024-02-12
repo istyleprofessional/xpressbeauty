@@ -148,23 +148,37 @@ export const get_new_arrivals_products = async (filter?: string) => {
         $and: [
           {
             $or: [
-              { quantity_on_hand: { $ne: "0" } },
-              { quantity_on_hand: { $ne: "" } },
+              {
+                quantity_on_hand: { $gt: 0 },
+              },
+              {
+                "variations.quantity_on_hand": { $gt: 0 },
+              },
             ],
           },
-          { $or: [{ "variations.quantity_on_hand": { $ne: "0" } }] },
         ],
-      }).limit(8);
+      }).limit(5);
       return result as ProductModel;
     } else {
       const query = {
-        quantity_on_hand: { $nin: ["0", ""] },
+        $and: [
+          {
+            $or: [
+              {
+                quantity_on_hand: { $gt: 0 },
+              },
+              {
+                "variations.quantity_on_hand": { $gt: 0 },
+              },
+            ],
+          },
+        ],
         isHidden: { $ne: true },
         isDeleted: { $ne: true },
       };
       const result = await Product.aggregate([
         { $match: query },
-        { $sample: { size: 8 } },
+        { $sample: { size: 5 } },
       ]);
       return result as ProductModel;
     }
@@ -373,7 +387,6 @@ export const get_products_data = async (
     buildQuery["isHidden"] = { $ne: true };
     buildQuery["isDeleted"] = { $ne: true };
     if (inStock) {
-      console.log(inStock);
       if (!("$and" in buildQuery)) {
         buildQuery["$and"] = [];
       }
