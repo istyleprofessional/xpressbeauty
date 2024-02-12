@@ -107,7 +107,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
       class={`btn btn-ghost grid grid-rows-4 justify-items-center items-center md:h-96
       ${
         cardSize === "sm" ? "lg:w-52 lg:h-96" : " lg:w-72 lg:h-96"
-      } w-32 h-72 md:w-52 bg-[#FFFFFF] shadow-sm shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center normal-case`}
+      } w-44 h-72 md:w-52 bg-[#FFFFFF] shadow-sm shadow-neutral-500 rounded-lg border-2 border-[#D4D4D8] border-solid justify-center normal-case`}
       href={`/products/${encodeURIComponent(
         product.product_name
           ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
