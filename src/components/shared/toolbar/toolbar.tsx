@@ -21,6 +21,7 @@ interface ToolBarProps {
   user?: any;
   handleOnCartClick: PropFunction<() => void>;
   handleLogout: PropFunction<() => void>;
+  categories: any;
 }
 
 export const checker = server$(function () {
@@ -50,7 +51,7 @@ export const currency = server$(function () {
 });
 
 export const ToolBar = component$((props: ToolBarProps) => {
-  const { handleOnCartClick, handleLogout } = props;
+  const { handleOnCartClick, handleLogout, categories } = props;
   const isSearchOpen = useSignal<boolean>(false);
   const context: any = useContext(CartContext);
   const searchResults = useSignal<any[]>([]);
@@ -395,26 +396,24 @@ export const ToolBar = component$((props: ToolBarProps) => {
                       Home
                     </a>
                   </li>
+                  {categories.result.map((category: any, i: number) => (
+                    <li key={i}>
+                      <a
+                        class="lg:text-lg"
+                        href={`/products/filter/${category._id}`}
+                        aria-label={category._id}
+                      >
+                        {category._id}
+                      </a>
+                    </li>
+                  ))}
                   <li>
                     <a
-                      class="lg:text-lg"
-                      href="/products/filter/Hair"
-                      aria-label="Hair"
+                      class="lg:text-lg
+                    "
+                      href="/brands"
+                      aria-label="Brands"
                     >
-                      Hair
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="lg:text-lg"
-                      href="/products/filter/Tools"
-                      aria-label="Tools"
-                    >
-                      Tools
-                    </a>
-                  </li>
-                  <li>
-                    <a class="lg:text-lg" href="/brands" aria-label="Brands">
                       Brands
                     </a>
                   </li>
@@ -434,26 +433,24 @@ export const ToolBar = component$((props: ToolBarProps) => {
                       Home
                     </a>
                   </li>
+                  {categories.result.map((category: any, i: number) => (
+                    <li key={i}>
+                      <a
+                        class="lg:text-lg"
+                        href={`/products/filter/${category._id}`}
+                        aria-label={category._id}
+                      >
+                        {category._id}
+                      </a>
+                    </li>
+                  ))}
                   <li>
                     <a
-                      class="lg:text-lg"
-                      href="/products/filter/Hair"
-                      aria-label="Hair"
+                      class="lg:text-lg
+                    "
+                      href="/brands"
+                      aria-label="Brands"
                     >
-                      Hair
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="lg:text-lg"
-                      href="/products/filter/Tools"
-                      aria-label="Tools"
-                    >
-                      Tools
-                    </a>
-                  </li>
-                  <li>
-                    <a class="lg:text-lg" href="/brands" aria-label="Brands">
                       Brands
                     </a>
                   </li>
