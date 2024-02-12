@@ -1,6 +1,12 @@
 import { component$ } from "@builder.io/qwik";
 
-export const NavBar = component$(() => {
+export interface NavBarProps {
+  categories: any;
+}
+
+export const NavBar = component$((props: NavBarProps) => {
+  const { categories } = props;
+
   return (
     <div class="bg-black hidden lg:flex justify-center items-center h-12">
       <ul class="menu menu-horizontal rounded-box text-white gap-20">
@@ -9,29 +15,17 @@ export const NavBar = component$(() => {
             Home
           </a>
         </li>
-        <li>
-          <a class="lg:text-lg" href="/products/filter/Hair/" aria-label="Hair">
-            Hair
-          </a>
-        </li>
-        <li>
-          <a
-            class="lg:text-lg"
-            href="/products/filter/Tools/"
-            aria-label="Tools"
-          >
-            Tools
-          </a>
-        </li>
-        <li>
-          <a
-            class="lg:text-lg"
-            href="/products/filterCategories/Skin-Care/"
-            aria-label="Brands"
-          >
-            Skin Care
-          </a>
-        </li>
+        {categories.result.map((category: any, i: number) => (
+          <li key={i}>
+            <a
+              class="lg:text-lg"
+              href={`/products/filter/${category._id}/`}
+              aria-label={category._id}
+            >
+              {category._id}
+            </a>
+          </li>
+        ))}
         <li>
           <a class="lg:text-lg" href="/brands" aria-label="Brands">
             Brands

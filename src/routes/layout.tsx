@@ -22,6 +22,7 @@ import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 import ip2location from "ip-to-location";
 import { CurContext } from "~/context/cur.context";
+import { getUniqueMainCategories } from "~/express/services/category.service";
 // import GmailFactory from "gmail-js";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
@@ -248,9 +249,16 @@ export const clearUser = server$(async function () {
   return true;
 });
 
+export const useGetMainCategories = routeLoader$(async () => {
+  await connect();
+  const categories = await getUniqueMainCategories();
+  return JSON.stringify(categories);
+});
+
 export default component$(() => {
   const user = useUserData().value;
   const userData = JSON.parse(user ?? "{}");
+  const categories = useGetMainCategories().value;
   const cartContextObject = useStore<any>({
     userId: userData._id,
     cart: {},
@@ -405,7 +413,7 @@ export default component$(() => {
                 user={userData?.cart}
                 handleOnCartClick={handleOnCartClick}
               />
-              <NavBar />
+              <NavBar categories={JSON.parse(categories)} />
             </>
           )}
         <Slot />

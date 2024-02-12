@@ -56,3 +56,18 @@ export const updateVisibility = async (id: string, isHidden: boolean) => {
     return { status: "failed", message: err.message };
   }
 };
+
+export const getUniqueMainCategories = async () => {
+  try {
+    const categories = await Category.aggregate([
+      {
+        $group: {
+          _id: "$main",
+        },
+      },
+    ]);
+    return { status: "success", result: categories };
+  } catch (err: any) {
+    return { status: "failed", message: err.message };
+  }
+};

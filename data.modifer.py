@@ -489,7 +489,7 @@ def get_last_prices_and_upc():
                     continue
                 # print remaining products length
         
-# get_last_prices_and_upc()
+get_last_prices_and_upc()
 
 
 
@@ -865,4 +865,4 @@ def get_all_details_for_each_product_from_cosmoprof_api():
             # print pretty json
     
 
-get_all_details_for_each_product_from_cosmoprof_api()
+# get_all_details_for_each_product_from_cosmoprof_api()
