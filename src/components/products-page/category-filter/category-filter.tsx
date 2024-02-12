@@ -46,7 +46,7 @@ export const CategoryFilter = component$((props: CategoryFilterProps) => {
     <div class="">
       {Object.keys(categoriesSetObject.value).map((key: any, index: number) => (
         <ul
-          class="rounded-box flex flex-col gap-1 h-96 overflow-y-auto"
+          class="rounded-box flex flex-col gap-1 h-64 overflow-y-auto"
           key={index}
         >
           <li class="text-base text-black p-3 font-bold bg-white sticky top-0">

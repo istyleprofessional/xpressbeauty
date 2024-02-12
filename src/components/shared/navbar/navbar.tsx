@@ -6,7 +6,6 @@ export interface NavBarProps {
 
 export const NavBar = component$((props: NavBarProps) => {
   const { categories } = props;
-
   return (
     <div class="bg-black hidden md:flex justify-center items-center h-12">
       <ul class="menu menu-horizontal rounded-box text-white flex flex-row justify-between items-center w-[80%]">
@@ -15,17 +14,19 @@ export const NavBar = component$((props: NavBarProps) => {
             Home
           </a>
         </li>
-        {categories.map((category: any, i: number) => (
-          <li key={i}>
-            <a
-              class="lg:text-lg"
-              href={`/products/filter/${category._id}/`}
-              aria-label={category._id}
-            >
-              {category._id}
-            </a>
-          </li>
-        ))}
+        {categories
+          .sort((a: any, b: any) => (a._id < b._id ? 1 : -1))
+          .map((category: any, i: number) => (
+            <li key={i}>
+              <a
+                class="lg:text-lg"
+                href={`/products/filter/${category._id}/`}
+                aria-label={category._id}
+              >
+                {category._id}
+              </a>
+            </li>
+          ))}
         <li>
           <a class="lg:text-lg" href="/brands" aria-label="Brands">
             Brands
