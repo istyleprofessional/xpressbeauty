@@ -31,8 +31,8 @@ export const PriceFilter = component$((props: PriceFilterInterface) => {
   );
 
   return (
-    <ul class="w-full pl-2 rounded-box">
-      <li class="flex flex-row w-full gap-1 text-black items-center">
+    <ul class="w-full pl-2 rounded-box overflow-y-auto">
+      <li class="flex flex-row w-full gap-1 text-black items-center p-2">
         <input
           type="checkbox"
           checked={filterPrices.value.includes(">25") ? true : false}
@@ -45,7 +45,7 @@ export const PriceFilter = component$((props: PriceFilterInterface) => {
           {"> $25"}
         </label>
       </li>
-      <li class="flex flex-row w-full gap-1 text-black items-center">
+      <li class="flex flex-row w-full gap-1 text-black items-center p-2">
         <input
           type="checkbox"
           checked={filterPrices.value.includes("25-50") ? true : false}
@@ -58,7 +58,7 @@ export const PriceFilter = component$((props: PriceFilterInterface) => {
           {"$25 - $50"}
         </label>
       </li>
-      <li class="flex flex-row w-full gap-1 text-black items-center">
+      <li class="flex flex-row w-full gap-1 text-black items-center p-2">
         <input
           type="checkbox"
           checked={filterPrices.value.includes("50-100") ? true : false}
@@ -71,7 +71,7 @@ export const PriceFilter = component$((props: PriceFilterInterface) => {
           {"$50 - $100"}
         </label>
       </li>
-      <li class="flex flex-row w-full gap-1 text-black items-center">
+      <li class="flex flex-row w-full gap-1 text-black items-center p-2">
         <input
           type="checkbox"
           checked={filterPrices.value.includes("100-500") ? true : false}
@@ -84,7 +84,7 @@ export const PriceFilter = component$((props: PriceFilterInterface) => {
           {"$100 - $500"}
         </label>
       </li>
-      <li class="flex flex-row w-full gap-1 text-black items-center">
+      <li class="flex flex-row w-full gap-1 text-black items-center p-2">
         <input
           type="checkbox"
           checked={filterPrices.value.includes("<500") ? true : false}

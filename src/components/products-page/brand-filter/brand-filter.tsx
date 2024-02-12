@@ -45,7 +45,7 @@ export const BrandFilter = component$((props: BrandFilterProps) => {
         .map((brand: any) => (
           <li
             key={uuid()}
-            class="p-1 flex flex-row gap-1 items-center text-black"
+            class="p-2 flex flex-row gap-1 items-center text-black"
           >
             <input
               type="checkbox"

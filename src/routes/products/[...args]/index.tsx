@@ -592,10 +592,10 @@ export default component$(() => {
               Clear All
             </button>
           </div>
-          <div class=" w-full drawer-side z-50">
+          <div class=" w-full drawer-side z-50 h-full overflow-y-auto">
             <label for="my-drawer" class="drawer-overlay"></label>
-            <ul class="menu mt-12 lg:mt-0 bg-base-200 lg:bg-transparent flex flex-col lg:gap-10">
-              <li class="lg:flex flex-row gap-4 items-center hidden">
+            <ul class="h-full mt-12 lg:mt-0 bg-base-200 lg:bg-transparent flex flex-col lg:gap-10">
+              <li class="lg:flex flex-row gap-4 items-center hidden ">
                 <p class="text-black lg:text-base md:text-xs font-bold">
                   Filters Applied :{" "}
                   <span class="text-black text-xs font-normal">
@@ -611,29 +611,28 @@ export default component$(() => {
                 </button>
               </li>
               <li class="flex flex-col gap-1 w-full">
-                <p class="text-black text-base font-bold">Filter By :</p>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none">
-                    <svg
-                      class="w-4 h-4 text-gray-500 dark:text-gray-400"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                      />
-                    </svg>
-                  </div>
+                <div class="relative m-2">
+                  <svg
+                    class="w-4 h-4 text-gray-500 dark:text-gray-400 
+                      absolute left-3 top-1/2 transform -translate-y-1/2"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                    />
+                  </svg>
                   <input
                     id="default-search"
-                    class="block w-full p-6 text-xs border-0 focus:border-none rounded-lg bg-gray-50"
-                    placeholder="Search by name or brand"
+                    class="input input-bordered w-full pl-10"
+                    placeholder="Search Products"
+                    aria-label="Search Products"
                     onInput$={handleSearchInput}
                     value={query.value}
                   />
@@ -653,15 +652,16 @@ export default component$(() => {
                   }}
                   checked={isChecked.Brands}
                 />
-                <div class="collapse-title text-sm md:text-base font-medium">
+                <div class="collapse-title text-sm md:text-base font-medium h-full">
                   <h3 class="text-base font-bold text-black">Brands</h3>
                 </div>
                 <div class="collapse-content">
                   <div class="flex flex-col gap-2">
                     <input
                       type="text"
-                      class="input input-sm"
-                      placeholder="Search Brands"
+                      class="input input-sm border-2 border-gray-200 rounded-lg p-2 w-full"
+                      placeholder="Search For Brands"
+                      aria-label="Search For Brands"
                       onInput$={(e: any, el: any) => handleSearchBrandz(e, el)}
                     />
                     <BrandFilter
@@ -672,7 +672,7 @@ export default component$(() => {
                   </div>
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-fit">
+              <li class="collapse collapse-arrow w-full">
                 <input
                   type="radio"
                   name="my-accordion-2"
@@ -688,22 +688,22 @@ export default component$(() => {
                   }}
                   checked={isChecked.Tools || isChecked.Hair}
                 />
-                <div class="collapse-title text-sm md:text-base font-medium">
+                <div class="collapse-title text-sm md:text-base font-medium h-fit">
                   <h3 class="text-base font-bold text-black">Categories</h3>
                 </div>
-                <div class="collapse-content flex flex-col">
-                  <div class="flex flex-col gap-2">
-                    <CategoryFilter
-                      filterCategoriessArray={filterCategoriessArray}
-                      categoriesSetObject={categoriesSetObject}
-                      handleCategoryCheckBoxChange={
-                        handleCategoryCheckBoxChange
-                      }
-                    />
-                  </div>
+                <div class="collapse-content">
+                  {/* <div class="flex flex-col gap-2"> */}
+                  <CategoryFilter
+                    filterCategoriessArray={filterCategoriessArray}
+                    categoriesSetObject={categoriesSetObject}
+                    handleCategoryCheckBoxChange={
+                      handleCategoryCheckBoxChange
+                    }
+                  />
+                  {/* </div> */}
                 </div>
               </li>
-              <li class="collapse collapse-arrow w-fit">
+              <li class="collapse collapse-arrow w-full overflow-y-auto">
                 <input
                   type="radio"
                   name="my-accordion-2"

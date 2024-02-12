@@ -166,7 +166,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
                       content="https://xpressbeauty.ca/search/{search_term_string}/"
                     />
                     <input
-                      class="input input-md w-96 md:w-full border-black border-5"
+                      class="input input-md w-full md:w-96 border-black border-5"
                       type="search"
                       name="search"
                       placeholder="Search"
@@ -175,6 +175,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
                       onKeyUp$={handleSearchInput}
                     />
                   </form>
+
                   <>
                     {searchResults.value.length > 0 && (
                       <ul
@@ -456,9 +457,12 @@ export const ToolBar = component$((props: ToolBarProps) => {
         </div>
 
       </div>
+      { /* Mobile search display as animated dropdown */}
       {
+
         isSearchOpen.value && (
-          <div class="flex flex-col ml-auto md:hidden">
+
+          <div class="" >
             <form
               itemProp="potentialAction"
               itemScope
@@ -478,6 +482,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
                 onKeyUp$={handleSearchInput}
               />
             </form>
+            <div class="divider"></div>
             <>
               {searchResults.value.length > 0 && (
                 <ul
