@@ -63,6 +63,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
         message: "Thank you for your order! you will receive an email shortly.",
       },
     },
+    redirect_on_completion: 'if_required',
     phone_number_collection: {
       enabled: true,
     },

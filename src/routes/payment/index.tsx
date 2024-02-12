@@ -10,7 +10,7 @@ import { Steps } from "~/components/shared/steps/steps";
 import { CartContext } from "~/context/cart.context";
 import { CurContext } from "~/context/cur.context";
 import { UserContext } from "~/context/user.context";
-import { postRequest } from "~/utils/fetch.utils";
+import { getRequest, postRequest } from "~/utils/fetch.utils";
 declare const gtag: Function;
 
 export function gtag_report_conversion(transactionId: string) {
@@ -28,7 +28,6 @@ export default component$(() => {
   const currencyObject = currencyObjectConx?.cur;
   const userObject: any = useContext(UserContext);
   const isLoading = useSignal<boolean>(true);
-  const confirmationStep = useSignal<string>("payment");
   const checkoutRef = useSignal<HTMLDivElement>();
   const loc = useLocation();
   const error = loc.url.searchParams.get("error");
@@ -48,9 +47,18 @@ export default component$(() => {
       cartData.cart.currencyObject = currencyObject;
       cartData.cart.user = userObject;
       const response = await postRequest("/api/stripe/", cartData.cart);
-      const { clientSecret } = await response.json();
+      const { clientSecret, sessionId } = await response.json();
       const checkout = await stripe.initEmbeddedCheckout({
         clientSecret,
+        onComplete: async () => {
+          gtag_report_conversion(sessionId);
+          await getRequest(
+            `${import.meta.env.VITE_APPURL
+            }/api/stripe?session_id=${sessionId}&userId=${cartData.cart.userId
+            }&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${userObject.isDummy
+            }`
+          );
+        },
       });
 
       // Mount Checkout
@@ -86,7 +94,7 @@ export default component$(() => {
         </div>
       )}
       <div class="flex flex-col gap-5 md:p-10 justify-center items-center">
-        <Steps pageType={confirmationStep.value} />
+        <Steps pageType="payment" />
         {isLoading.value && (
           <div class="flex flex-col gap-4 w-52">
             <div class="skeleton h-32 w-full"></div>
