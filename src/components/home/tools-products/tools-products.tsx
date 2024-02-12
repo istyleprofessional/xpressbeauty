@@ -18,7 +18,7 @@ export const FeatureProducts = component$((props: BestSellerProps) => {
       style="background-image: url(Dash-lines.webp)"
     >
       <h2 class="font-inter font-bold text-4xl text-black">{type}</h2>
-      <div class="m-6 flex flex-row flex-wrap gap-10 justify-center items-center w-full">
+      <div class="m-6 flex flex-row flex-wrap gap-3 md:gap-6 lg:gap-10 justify-center items-center w-full">
         {bestSellerProducts.map((item: ProductModel, i: number) => (
           <ProductCard
             product={item}
