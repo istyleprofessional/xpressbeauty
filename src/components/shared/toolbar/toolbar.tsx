@@ -76,29 +76,33 @@ export const ToolBar = component$((props: ToolBarProps) => {
     shippingText.value = "Spend $80 more to get 30% off shipping";
     shippingStep.value = 0;
     if (context?.cart?.totalPrice < 80) {
-      shippingText.value = `Spend $${(80 - context?.cart?.totalPrice).toFixed(2) ?? 0
-        } more to get 30% off shipping`;
+      shippingText.value = `Spend $${
+        (80 - context?.cart?.totalPrice).toFixed(2) ?? 0
+      } more to get 30% off shipping`;
       shippingStep.value = 0;
     } else if (
       context.cart?.totalPrice > 80 &&
       context?.cart?.totalPrice < 100
     ) {
-      shippingText.value = `Spend $${(100 - context?.cart?.totalPrice).toFixed(2) ?? 0
-        } more to get 50% off shipping`;
+      shippingText.value = `Spend $${
+        (100 - context?.cart?.totalPrice).toFixed(2) ?? 0
+      } more to get 50% off shipping`;
       shippingStep.value = 1;
     } else if (
       context.cart?.totalPrice > 100 &&
       context?.cart?.totalPrice < 150
     ) {
-      shippingText.value = `Spend $${(150 - context?.cart?.totalPrice).toFixed(2) ?? 0
-        } more to get 70% off shipping`;
+      shippingText.value = `Spend $${
+        (150 - context?.cart?.totalPrice).toFixed(2) ?? 0
+      } more to get 70% off shipping`;
       shippingStep.value = 2;
     } else if (
       context.cart?.totalPrice > 150 &&
       context?.cart?.totalPrice < 200
     ) {
-      shippingText.value = `Spend $${(200 - context?.cart?.totalPrice).toFixed(2) ?? 0
-        } more to get free shipping`;
+      shippingText.value = `Spend $${
+        (200 - context?.cart?.totalPrice).toFixed(2) ?? 0
+      } more to get free shipping`;
       shippingStep.value = 3;
     } else if (context.cart?.totalPrice > 200) {
       shippingText.value = `You get free shipping`;
@@ -153,68 +157,71 @@ export const ToolBar = component$((props: ToolBarProps) => {
             >
               <SearchIcon />
             </label>
-            {
-              isSearchOpen.value && (
-                <div class="md:flex flex-col ml-auto hidden">
-                  <form
-                    itemProp="potentialAction"
-                    itemScope
-                    itemType="https://schema.org/SearchAction"
-                  >
-                    <meta
-                      itemProp="target"
-                      content="https://xpressbeauty.ca/search/{search_term_string}/"
-                    />
-                    <input
-                      class="input input-md w-full md:w-96 border-black border-5"
-                      type="search"
-                      name="search"
-                      placeholder="Search"
-                      itemProp="query-input"
-                      onInput$={handleSearchInput}
-                      onKeyUp$={handleSearchInput}
-                    />
-                  </form>
+            {isSearchOpen.value && (
+              <div class="md:flex flex-col ml-auto hidden">
+                <form
+                  itemProp="potentialAction"
+                  itemScope
+                  itemType="https://schema.org/SearchAction"
+                >
+                  <meta
+                    itemProp="target"
+                    content="https://xpressbeauty.ca/search/{search_term_string}/"
+                  />
+                  <input
+                    class="input input-md w-full md:w-96 border-black border-5"
+                    type="search"
+                    name="search"
+                    placeholder="Search"
+                    itemProp="query-input"
+                    onInput$={handleSearchInput}
+                    onKeyUp$={handleSearchInput}
+                  />
+                </form>
 
-                  <>
-                    {searchResults.value.length > 0 && (
-                      <ul
-                        tabIndex={0}
-                        class="z-[50] mt-12 left-4 card card-compact dropdown-content h-96 overflow-y-auto w-fit bg-base-100 shadow"
-                      >
-                        <div class="card-body w-96">
-                          {searchResults.value.map(
-                            (item: ProductModel, index: number) => (
-                              <Fragment key={uuid()}>
-                                <li key={index} class="text-black h-fit w-full ">
-                                  <a
-                                    class="w-full flex flex-row md:w-full md:grid grid-cols-3 gap-3 items-center md:h-full"
-                                    href={`/products/${item.perfix ?? ""}`}
-                                  >
-                                    <span class="w-full break-all text-sm md:col-span-2">
-                                      {item.product_name}
-                                    </span>
+                <>
+                  {searchResults.value.length > 0 && (
+                    <ul
+                      tabIndex={0}
+                      class="z-[50] mt-12 left-4 card card-compact dropdown-content h-96 overflow-y-auto w-fit bg-base-100 shadow"
+                    >
+                      <div class="card-body w-96">
+                        {searchResults.value.map(
+                          (item: ProductModel, index: number) => (
+                            <Fragment key={uuid()}>
+                              <li key={index} class="text-black h-fit w-full ">
+                                <a
+                                  class="w-full flex flex-row md:w-full md:grid grid-cols-3 gap-3 items-center md:h-full"
+                                  href={`/products/${item.perfix ?? ""}`}
+                                >
+                                  <span class="w-full break-all text-sm md:col-span-2">
+                                    {item.product_name}
+                                  </span>
 
-                                    <Image
-                                      src={
-                                        (item as any).imgs[0].includes("http") ? (item as any).imgs[0] : `${(item as any).imgs[0].replace(".", "")}`
-                                      }
-                                      alt={item.product_name}
-                                      class="w-20 h-20 md:w-52 md:h-52 object-contain"
-                                    />
-                                  </a>{" "}
-                                </li>
-                                <div class="divider"></div>
-                              </Fragment>
-                            )
-                          )}
-                        </div>
-                      </ul>
-                    )}
-                  </>
-                </div>
-              )
-            }
+                                  <Image
+                                    src={
+                                      (item as any).imgs[0].includes("http")
+                                        ? (item as any).imgs[0]
+                                        : `${(item as any).imgs[0].replace(
+                                            ".",
+                                            ""
+                                          )}`
+                                    }
+                                    alt={item.product_name}
+                                    class="w-20 h-20 md:w-52 md:h-52 object-contain"
+                                  />
+                                </a>{" "}
+                              </li>
+                              <div class="divider"></div>
+                            </Fragment>
+                          )
+                        )}
+                      </div>
+                    </ul>
+                  )}
+                </>
+              </div>
+            )}
           </div>
 
           <div class="dropdown dropdown-end dropdown-hover ">
@@ -261,24 +268,30 @@ export const ToolBar = component$((props: ToolBarProps) => {
                   </p>
                   <ul class="steps steps-horizontal">
                     <li
-                      class={`step ${shippingStep.value !== 0 ? "step-info" : ""
-                        }`}
+                      class={`step ${
+                        shippingStep.value !== 0 ? "step-info" : ""
+                      }`}
                     >
                       30%
                     </li>
                     <li
-                      class={`step ${shippingStep.value >= 2 ? "step-info" : ""}`}
+                      class={`step ${
+                        shippingStep.value >= 2 ? "step-info" : ""
+                      }`}
                     >
                       50%
                     </li>
                     <li
-                      class={`step ${shippingStep.value >= 3 ? "step-info" : ""}`}
+                      class={`step ${
+                        shippingStep.value >= 3 ? "step-info" : ""
+                      }`}
                     >
                       70%
                     </li>
                     <li
-                      class={`step ${shippingStep.value === 4 ? "step-info" : ""
-                        }`}
+                      class={`step ${
+                        shippingStep.value === 4 ? "step-info" : ""
+                      }`}
                     >
                       Free
                     </li>
@@ -455,73 +468,70 @@ export const ToolBar = component$((props: ToolBarProps) => {
             </ul>
           </div>
         </div>
-
       </div>
-      { /* Mobile search display as animated dropdown */}
-      {
+      {/* Mobile search display as animated dropdown */}
+      {isSearchOpen.value && (
+        <div class="md:hidden block">
+          <form
+            itemProp="potentialAction"
+            itemScope
+            itemType="https://schema.org/SearchAction"
+          >
+            <meta
+              itemProp="target"
+              content="https://xpressbeauty.ca/search/{search_term_string}/"
+            />
+            <input
+              class="input input-md w-96 md:w-full border-black border-5"
+              type="search"
+              name="search"
+              placeholder="Search"
+              itemProp="query-input"
+              onInput$={handleSearchInput}
+              onKeyUp$={handleSearchInput}
+            />
+          </form>
+          <div class="divider"></div>
+          <>
+            {searchResults.value.length > 0 && (
+              <ul
+                tabIndex={0}
+                class="z-[50] mt-12 left-4 card card-compact dropdown-content h-96 overflow-y-auto w-fit bg-base-100 shadow"
+              >
+                <div class="card-body w-96">
+                  {searchResults.value.map(
+                    (item: ProductModel, index: number) => (
+                      <Fragment key={uuid()}>
+                        <li key={index} class="text-black h-fit w-full ">
+                          <a
+                            class="w-full flex flex-row md:w-full md:grid grid-cols-3 gap-3 items-center md:h-full"
+                            href={`/products/${item.perfix ?? ""}`}
+                          >
+                            <span class="w-full break-all text-sm md:col-span-2">
+                              {item.product_name}
+                            </span>
 
-        isSearchOpen.value && (
-
-          <div class="" >
-            <form
-              itemProp="potentialAction"
-              itemScope
-              itemType="https://schema.org/SearchAction"
-            >
-              <meta
-                itemProp="target"
-                content="https://xpressbeauty.ca/search/{search_term_string}/"
-              />
-              <input
-                class="input input-md w-96 md:w-full border-black border-5"
-                type="search"
-                name="search"
-                placeholder="Search"
-                itemProp="query-input"
-                onInput$={handleSearchInput}
-                onKeyUp$={handleSearchInput}
-              />
-            </form>
-            <div class="divider"></div>
-            <>
-              {searchResults.value.length > 0 && (
-                <ul
-                  tabIndex={0}
-                  class="z-[50] mt-12 left-4 card card-compact dropdown-content h-96 overflow-y-auto w-fit bg-base-100 shadow"
-                >
-                  <div class="card-body w-96">
-                    {searchResults.value.map(
-                      (item: ProductModel, index: number) => (
-                        <Fragment key={uuid()}>
-                          <li key={index} class="text-black h-fit w-full ">
-                            <a
-                              class="w-full flex flex-row md:w-full md:grid grid-cols-3 gap-3 items-center md:h-full"
-                              href={`/products/${item.perfix ?? ""}`}
-                            >
-                              <span class="w-full break-all text-sm md:col-span-2">
-                                {item.product_name}
-                              </span>
-
-                              <Image
-                                src={
-                                  (item as any).imgs[0].includes("http") ? (item as any).imgs[0] : `${(item as any).imgs[0].replace(".", "")}`
-                                }
-                                alt={item.product_name}
-                                class="w-20 h-20 md:w-52 md:h-52 object-contain"
-                              />
-                            </a>{" "}
-                          </li>
-                          <div class="divider"></div>
-                        </Fragment>
-                      )
-                    )}
-                  </div>
-                </ul>
-              )}
-            </>
-          </div>
-        )
-      }
+                            <Image
+                              src={
+                                (item as any).imgs[0].includes("http")
+                                  ? (item as any).imgs[0]
+                                  : `${(item as any).imgs[0].replace(".", "")}`
+                              }
+                              alt={item.product_name}
+                              class="w-20 h-20 md:w-52 md:h-52 object-contain"
+                            />
+                          </a>{" "}
+                        </li>
+                        <div class="divider"></div>
+                      </Fragment>
+                    )
+                  )}
+                </div>
+              </ul>
+            )}
+          </>
+        </div>
+      )}
     </div>
   );
 });
