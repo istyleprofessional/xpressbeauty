@@ -1,12 +1,6 @@
 import type { PropFunction } from "@builder.io/qwik";
-import {
-  component$,
-  useSignal,
-  //  $,
-  useVisibleTask$,
-} from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { Pagination } from "~/components/shared/pagination/pagination";
-// import { GridIcon, ListIcon } from "~/components/shared/icons/icons";
 import { ProductCard } from "~/components/shared/product-card/product-card";
 import { ListCardView } from "../list-view/list-card-view";
 
@@ -34,36 +28,9 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
     total.value = products.value.total;
   });
 
-  // const handleListViewClicked = $(() => {
-  //   viewToggle.value = "list";
-  //   localStorage.setItem("view", "list");
-  // });
-
-  // const handleGridViewClicked = $(() => {
-  //   viewToggle.value = "grid";
-  //   localStorage.setItem("view", "grid");
-  // });
-
   return (
     <div class="flex flex-col gap-7 w-full">
       <div class="h-24 w-[100%] lg:flex lg:flex-row items-center hidden md:hidden">
-        {/* <div class="lg:flex lg:flex-row lg:gap-10 hidden md:hidden">
-          <h3 class="text-black font-bold text-base pl-4">View as:</h3>
-          <button
-            class="btn btn-ghost btn-sm flex flex-row gap-1 justify-center items-center"
-            onClick$={handleGridViewClicked}
-          >
-            <GridIcon />
-            <p class="text-base text-[#52525B] font-bold">Grid View</p>
-          </button>
-          <button
-            class="btn btn-ghost btn-sm flex flex-row gap-1 justify-center items-center"
-            onClick$={handleListViewClicked}
-          >
-            <ListIcon />
-            <p class="text-base text-[#52525B] font-bold">List View</p>
-          </button>
-        </div> */}
         <select
           class="select w-52 max-w-xs bg-transparent text-[#52525B] ml-auto select-bordered mr-8 hidden md:block"
           onChange$={handleSorting}
@@ -106,7 +73,7 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
           </p>
         </div>
       ) : (
-        <div class="flex flex-col items-center justify-center">
+        <div class="flex flex-col items-center justify-center p-2">
           <Pagination
             page={currentPage}
             totalProductsNo={total.value}

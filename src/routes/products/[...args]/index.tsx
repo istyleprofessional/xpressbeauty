@@ -9,7 +9,12 @@ import {
   useContext,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { routeLoader$, server$, useLocation, useNavigate } from "@builder.io/qwik-city";
+import {
+  routeLoader$,
+  server$,
+  useLocation,
+  useNavigate,
+} from "@builder.io/qwik-city";
 import { BrandFilter } from "~/components/products-page/brand-filter/brand-filter";
 import { CategoryFilter } from "~/components/products-page/category-filter/category-filter";
 import { PriceFilter } from "~/components/products-page/price-filter/price-filter";
@@ -18,7 +23,10 @@ import { CurContext } from "~/context/cur.context";
 import { connect } from "~/express/db.connection";
 import { get_all_brands } from "~/express/services/brand.service";
 import { get_all_categories } from "~/express/services/category.service";
-import { get_products_data, get_random_products } from "~/express/services/product.service";
+import {
+  get_products_data,
+  get_random_products,
+} from "~/express/services/product.service";
 import { postRequest } from "~/utils/fetch.utils";
 
 export const get_random_products_Ser = server$(async () => {
@@ -112,17 +120,21 @@ export const useDomContentLoaded = routeLoader$(
       }
     );
 
-    const finalUrl = `${filterBrandsArray.length > 0
-      ? `filterBrands/${filterBrandsArray.join("+")}/`
-      : ""
-      }${filterCategoriesArray.length > 0
+    const finalUrl = `${
+      filterBrandsArray.length > 0
+        ? `filterBrands/${filterBrandsArray.join("+")}/`
+        : ""
+    }${
+      filterCategoriesArray.length > 0
         ? `filterCategories/${filterCategoriesArray.join("+")}/`
         : ""
-      }${filterPricesArray.length > 0
+    }${
+      filterPricesArray.length > 0
         ? `filterPrices/${filterPricesArray.join("+")}/`
         : ""
-      }/${search() !== "" ? `search/${search()}/` : ""}/${filter() !== "" ? `filter/${filter()}/` : ""
-      }`;
+    }/${search() !== "" ? `search/${search()}/` : ""}/${
+      filter() !== "" ? `filter/${filter()}/` : ""
+    }`;
     const finalLength =
       finalUrl?.split("/")?.filter((item: string) => {
         return item !== "";
@@ -280,16 +292,19 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${newFilterBrands.length > 0
-      ? `filterBrands/${newFilterBrands.join("+")}/`
-      : ""
-      }${filterCategoriessArray.value.length
+    url.pathname = `/products/${
+      newFilterBrands.length > 0
+        ? `filterBrands/${newFilterBrands.join("+")}/`
+        : ""
+    }${
+      filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-      }${filterPrices.value.length > 0
+    }${
+      filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-      }`;
+    }`;
     const checkPage = url.searchParams.get("page") ?? "1";
     const result = await postRequest("/api/products/get", {
       filterBrands: filterBrandsArray.value,
@@ -390,16 +405,19 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${newFilterBrands.length > 0
-      ? `filterBrands/${newFilterBrands.join("+")}/`
-      : ""
-      }${filterCategoriessArray.value.length
+    url.pathname = `/products/${
+      newFilterBrands.length > 0
+        ? `filterBrands/${newFilterBrands.join("+")}/`
+        : ""
+    }${
+      filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-      }${filterPrices.value.length > 0
+    }${
+      filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-      }`;
+    }`;
     url.searchParams.set("sort", e.target.value);
     url.searchParams.set("page", "1");
     const checkPage = url.searchParams.get("page") ?? "1";
@@ -447,16 +465,19 @@ export default component$(() => {
           }
         );
       }
-      url.pathname = `/products/${newFilterBrands.length > 0
-        ? `filterBrands/${newFilterBrands.join("+")}/`
-        : ""
-        }${filterCategoriessArray.value.length
+      url.pathname = `/products/${
+        newFilterBrands.length > 0
+          ? `filterBrands/${newFilterBrands.join("+")}/`
+          : ""
+      }${
+        filterCategoriessArray.value.length
           ? `filterCategories/${newFilterCategories.join("+")}/`
           : ""
-        }${filterPrices.value.length
+      }${
+        filterPrices.value.length
           ? `filterPrices/${filterPrices.value.join("+")}/`
           : ""
-        }`;
+      }`;
 
       url.searchParams.set("page", "1");
       page.value = "1";
@@ -506,16 +527,19 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${newFilterBrands.length > 0
-      ? `filterBrands/${newFilterBrands.join("+")}/`
-      : ""
-      }${filterCategoriessArray.value.length
+    url.pathname = `/products/${
+      newFilterBrands.length > 0
+        ? `filterBrands/${newFilterBrands.join("+")}/`
+        : ""
+    }${
+      filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-      }${filterPrices.value.length
+    }${
+      filterPrices.value.length
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
+    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
     }`;
 
     url.searchParams.set("page", "1");
@@ -555,190 +579,197 @@ export default component$(() => {
   return (
     <>
       <h1 class="text-xl md:text-3xl p-5 font-bold">Product Filters</h1>
-      <div class="flex flex-col gap-4 lg:grid  lg:grid-cols-4 p-6">
-        <div class="drawer lg:drawer-open flex flex-col gap-5">
-          <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-          <div class="drawer-content">
-            <label for="my-drawer" class="btn btn-info drawer-button lg:hidden">
-              Filter By
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                class="w-6 h-6"
+      <div class="flex flex-col lg:flex-row gap-4 ">
+        <div class="lg:sticky lg:top-0">
+          <div class="drawer lg:drawer-open lg:sticky lg:top-0 flex flex-col gap-5">
+            <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+            <div class="drawer-content">
+              <label
+                for="my-drawer"
+                class="btn btn-info drawer-button lg:hidden"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-                />
-              </svg>
-            </label>
-          </div>
-          <div class="flex flex-row gap-4 items-center lg:hidden">
-            <p class="text-black text-base font-bold">
-              Filters Applied :{" "}
-              <span class="text-black text-base font-normal">
-                {filtersNo.value}
-              </span>
-            </p>
-            <button
-              class="btn btn-ghost w-fit btn-sm"
-              onClick$={handleClearFilter}
-            >
-              {" "}
-              Clear All
-            </button>
-          </div>
-          <div class=" w-full drawer-side z-50 h-full overflow-y-auto">
-            <label for="my-drawer" class="drawer-overlay"></label>
-            <ul class="h-full mt-12 lg:mt-0 bg-base-200 lg:bg-transparent flex flex-col lg:gap-10">
-              <li class="lg:flex flex-row gap-4 items-center hidden ">
-                <p class="text-black lg:text-base md:text-xs font-bold">
-                  Filters Applied :{" "}
-                  <span class="text-black text-xs font-normal">
-                    {filtersNo.value}
-                  </span>
-                </p>
-                <button
-                  class="btn btn-ghost w-fit btn-sm text-xs normal-case"
-                  onClick$={handleClearFilter}
+                Filter By
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  class="w-6 h-6"
                 >
-                  {" "}
-                  Clear All
-                </button>
-              </li>
-              <li class="flex flex-col gap-1 w-full">
-                <div class="relative m-2">
-                  <svg
-                    class="w-4 h-4 text-gray-500 dark:text-gray-400 
-                      absolute left-3 top-1/2 transform -translate-y-1/2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                    />
-                  </svg>
-                  <input
-                    id="default-search"
-                    class="input input-bordered w-full pl-10"
-                    placeholder="Search Products"
-                    aria-label="Search Products"
-                    onInput$={handleSearchInput}
-                    value={query.value}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
                   />
-                </div>
-              </li>
-              <li class="collapse collapse-arrow w-fit">
-                <input
-                  type="radio"
-                  name="my-accordion-1"
-                  class=" cursor-pointer"
-                  onClick$={() => {
-                    if (isChecked.Brands) {
-                      isChecked.Brands = false;
-                    } else {
-                      isChecked.Brands = true;
-                    }
-                  }}
-                  checked={isChecked.Brands}
-                />
-                <div class="collapse-title text-sm md:text-base font-medium h-full">
-                  <h3 class="text-base font-bold text-black">Brands</h3>
-                </div>
-                <div class="collapse-content">
-                  <div class="flex flex-col gap-2">
+                </svg>
+              </label>
+            </div>
+            <div class="flex flex-row gap-4 items-center lg:hidden">
+              <p class="text-black text-base font-bold p-2">
+                Filters Applied :{" "}
+                <span class="text-black text-base font-normal">
+                  {filtersNo.value}
+                </span>
+              </p>
+              <button
+                class="btn btn-ghost w-fit btn-sm"
+                onClick$={handleClearFilter}
+              >
+                {" "}
+                Clear All
+              </button>
+            </div>
+            <div class=" w-full drawer-side z-50 h-full overflow-y-auto">
+              <label for="my-drawer" class="drawer-overlay"></label>
+              <ul class="h-full mt-12 lg:mt-0 bg-base-200 lg:bg-transparent flex flex-col lg:gap-10">
+                <li class="lg:flex flex-row gap-4 items-center hidden ">
+                  <p class="text-black lg:text-base md:text-xs font-bold p-2">
+                    Filters Applied :{" "}
+                    <span class="text-black text-xs font-normal">
+                      {filtersNo.value}
+                    </span>
+                  </p>
+                  <button
+                    class="btn btn-ghost w-fit btn-sm text-xs normal-case"
+                    onClick$={handleClearFilter}
+                  >
+                    {" "}
+                    Clear All
+                  </button>
+                </li>
+                <li class="flex flex-col gap-1 w-full">
+                  <div class="relative m-2">
+                    <svg
+                      class="w-4 h-4 text-gray-500 dark:text-gray-400 
+                      absolute left-3 top-1/2 transform -translate-y-1/2"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                      />
+                    </svg>
                     <input
-                      type="text"
-                      class="input input-sm border-2 border-gray-200 rounded-lg p-2 w-full"
-                      placeholder="Search For Brands"
-                      aria-label="Search For Brands"
-                      onInput$={(e: any, el: any) => handleSearchBrandz(e, el)}
-                    />
-                    <BrandFilter
-                      filterBrands={allBrandz}
-                      filterBrandsArray={filterBrandsArray}
-                      handleBrandCheckBoxChange={handleBrandCheckBoxChange}
+                      id="default-search"
+                      class="input input-bordered w-full pl-10"
+                      placeholder="Search Products"
+                      aria-label="Search Products"
+                      onInput$={handleSearchInput}
+                      value={query.value}
                     />
                   </div>
-                </div>
-              </li>
-              <li class="collapse collapse-arrow w-full">
-                <input
-                  type="radio"
-                  name="my-accordion-2"
-                  class=" cursor-pointer"
-                  onClick$={() => {
-                    if (isChecked.Tools || isChecked.Hair) {
-                      isChecked.Tools = false;
-                      isChecked.Hair = false;
-                    } else {
-                      isChecked.Tools = true;
-                      isChecked.Hair = true;
-                    }
-                  }}
-                  checked={isChecked.Tools || isChecked.Hair}
-                />
-                <div class="collapse-title text-sm md:text-base font-medium h-fit">
-                  <h3 class="text-base font-bold text-black">Categories</h3>
-                </div>
-                <div class="collapse-content">
-                  {/* <div class="flex flex-col gap-2"> */}
-                  <CategoryFilter
-                    filterCategoriessArray={filterCategoriessArray}
-                    categoriesSetObject={categoriesSetObject}
-                    handleCategoryCheckBoxChange={
-                      handleCategoryCheckBoxChange
-                    }
+                </li>
+                <li class="collapse collapse-arrow w-full">
+                  <input
+                    type="radio"
+                    name="my-accordion-1"
+                    class=" cursor-pointer"
+                    onClick$={() => {
+                      if (isChecked.Brands) {
+                        isChecked.Brands = false;
+                      } else {
+                        isChecked.Brands = true;
+                      }
+                    }}
+                    checked={isChecked.Brands}
                   />
-                  {/* </div> */}
-                </div>
-              </li>
-              <li class="collapse collapse-arrow w-full overflow-y-auto">
-                <input
-                  type="radio"
-                  name="my-accordion-2"
-                  class=" cursor-pointer"
-                  onClick$={() => {
-                    isChecked.Price = !isChecked.Price;
-                  }}
-                  checked={isChecked.Price}
-                />
-                <div class="collapse-title text-sm md:text-base font-medium">
-                  <h3 class="text-base font-bold text-black">Prices</h3>
-                </div>
-                <div class="collapse-content flex flex-col">
-                  <PriceFilter
-                    filterPrices={filterPrices}
-                    handlePricesCheckBoxChange={handlePricesCheckBoxChange}
+                  <div class="collapse-title text-sm md:text-base font-medium h-full">
+                    <h3 class="text-base font-bold text-black">Brands</h3>
+                  </div>
+                  <div class="collapse-content">
+                    <div class="flex flex-col gap-2">
+                      <input
+                        type="text"
+                        class="input input-sm border-2 border-gray-200 rounded-lg p-2 w-full"
+                        placeholder="Search For Brands"
+                        aria-label="Search For Brands"
+                        onInput$={(e: any, el: any) =>
+                          handleSearchBrandz(e, el)
+                        }
+                      />
+                      <BrandFilter
+                        filterBrands={allBrandz}
+                        filterBrandsArray={filterBrandsArray}
+                        handleBrandCheckBoxChange={handleBrandCheckBoxChange}
+                      />
+                    </div>
+                  </div>
+                </li>
+                <li class="collapse collapse-arrow w-full">
+                  <input
+                    type="radio"
+                    name="my-accordion-2"
+                    class=" cursor-pointer"
+                    onClick$={() => {
+                      if (isChecked.Tools || isChecked.Hair) {
+                        isChecked.Tools = false;
+                        isChecked.Hair = false;
+                      } else {
+                        isChecked.Tools = true;
+                        isChecked.Hair = true;
+                      }
+                    }}
+                    checked={isChecked.Tools || isChecked.Hair}
                   />
-                </div>
-              </li>
-              <li class="collapse collapse-arrow w-80">
-                <input
-                  type="radio"
-                  name="my-accordion-3"
-                  class="cursor-pointer"
-                  onClick$={() => {
-                    if (isChecked.Price) {
-                      isChecked.Price = false;
-                    } else {
-                      isChecked.Price = true;
-                    }
-                  }}
-                  checked={isChecked.Price}
-                />
-              </li>
-            </ul>
+                  <div class="collapse-title text-sm md:text-base font-medium h-fit">
+                    <h3 class="text-base font-bold text-black">Categories</h3>
+                  </div>
+                  <div class="collapse-content overflow-y-auto h-full">
+                    {/* <div class="flex flex-col gap-2"> */}
+                    <CategoryFilter
+                      filterCategoriessArray={filterCategoriessArray}
+                      categoriesSetObject={categoriesSetObject}
+                      handleCategoryCheckBoxChange={
+                        handleCategoryCheckBoxChange
+                      }
+                    />
+                    {/* </div> */}
+                  </div>
+                </li>
+                <li class="collapse collapse-arrow w-full overflow-y-auto">
+                  <input
+                    type="radio"
+                    name="my-accordion-2"
+                    class=" cursor-pointer"
+                    onClick$={() => {
+                      isChecked.Price = !isChecked.Price;
+                    }}
+                    checked={isChecked.Price}
+                  />
+                  <div class="collapse-title text-sm md:text-base font-medium">
+                    <h3 class="text-base font-bold text-black">Prices</h3>
+                  </div>
+                  <div class="collapse-content flex flex-col">
+                    <PriceFilter
+                      filterPrices={filterPrices}
+                      handlePricesCheckBoxChange={handlePricesCheckBoxChange}
+                    />
+                  </div>
+                </li>
+                <li class="collapse collapse-arrow w-80">
+                  <input
+                    type="radio"
+                    name="my-accordion-3"
+                    class="cursor-pointer"
+                    onClick$={() => {
+                      if (isChecked.Price) {
+                        isChecked.Price = false;
+                      } else {
+                        isChecked.Price = true;
+                      }
+                    }}
+                    checked={isChecked.Price}
+                  />
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="md:col-span-3">
@@ -746,6 +777,7 @@ export default component$(() => {
             {isLoading.value && (
               <div class="flex flex-col items-center justify-center gap-3 p-3 bg-white rounded-lg shadow-lg">
                 <h2 class="text-lg font-bold">Loading...</h2>
+                <progress class="progress w-56"></progress>
               </div>
             )}
             {!isLoading.value && (
@@ -791,14 +823,15 @@ export const head: DocumentHead = ({ resolveValue }) => {
     metaDescription += ` in all beauty categories and more at XpressBeauty`;
   }
   return {
-    title: `${mainFilter
-      ? `${mainFilter} products`
-      : categories
+    title: `${
+      mainFilter
+        ? `${mainFilter} products`
+        : categories
         ? `${categories} products`
         : brands
-          ? `${brands} products`
-          : "beauty products"
-      } | XpressBeauty`,
+        ? `${brands} products`
+        : "beauty products"
+    } | XpressBeauty`,
     meta: [
       {
         name: "description",
@@ -818,14 +851,15 @@ export const head: DocumentHead = ({ resolveValue }) => {
       },
       {
         property: "og:title",
-        content: `${mainFilter
-          ? `${mainFilter} products`
-          : categories
+        content: `${
+          mainFilter
+            ? `${mainFilter} products`
+            : categories
             ? `${categories} products`
             : brands
-              ? `${brands} products`
-              : "beauty products"
-          } | XpressBeauty`,
+            ? `${brands} products`
+            : "beauty products"
+        } | XpressBeauty`,
       },
       {
         property: "og:description",

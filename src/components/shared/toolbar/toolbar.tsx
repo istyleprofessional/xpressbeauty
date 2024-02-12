@@ -396,7 +396,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
                       Home
                     </a>
                   </li>
-                  {categories.result.map((category: any, i: number) => (
+                  {categories.map((category: any, i: number) => (
                     <li key={i}>
                       <a
                         class="lg:text-lg"
@@ -433,7 +433,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
                       Home
                     </a>
                   </li>
-                  {categories.result.map((category: any, i: number) => (
+                  {categories.map((category: any, i: number) => (
                     <li key={i}>
                       <a
                         class="lg:text-lg"

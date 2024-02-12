@@ -25,7 +25,10 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
         unit_amount: Math.round(product.price * 100),
         currency: data.currencyObject === "1" ? "usd" : "cad",
         product_data: {
-          name: product.product_name,
+          name:
+            "variation_name" in product
+              ? `${product.product_name} - ${product.variation_name}`
+              : product?.product_name ?? "",
           // images: [product.product_img],
         },
       },
@@ -63,7 +66,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
         message: "Thank you for your order! you will receive an email shortly.",
       },
     },
-    redirect_on_completion: 'if_required',
+    redirect_on_completion: "if_required",
     phone_number_collection: {
       enabled: true,
     },
@@ -107,9 +110,11 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     mode: "payment",
     return_url: `${env.get(
       "VITE_APPURL"
-    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${data.userId
-      }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${data.user.isDummy
-      }`,
+    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${
+      data.userId
+    }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${
+      data.user.isDummy
+    }`,
   });
   json(200, { clientSecret: session.client_secret, sessionId: session.id });
   return;
@@ -126,7 +131,7 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
       }
     );
     console.log("session", session);
-    if (session.payment_status === 'unpaid') {
+    if (session.payment_status === "unpaid") {
       throw redirect(302, `/payment/?error=payment-failed`);
     }
     const productsFromCart: any = await getCartByUserId(

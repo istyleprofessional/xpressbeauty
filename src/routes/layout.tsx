@@ -252,7 +252,12 @@ export const clearUser = server$(async function () {
 export const useGetMainCategories = routeLoader$(async () => {
   await connect();
   const categories = await getUniqueMainCategories();
-  return JSON.stringify(categories);
+  if (categories.result) {
+    categories.result.length = 4;
+  }
+  return JSON.stringify(
+    categories.result?.filter((x: any) => x !== null) ?? []
+  );
 });
 
 export default component$(() => {
