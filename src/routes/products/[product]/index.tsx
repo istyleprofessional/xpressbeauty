@@ -346,7 +346,6 @@ export default component$(() => {
             imgs={product.imgs ?? []}
           />
           <div class=" col-span-2 flex flex-col gap-5">
-            <meta itemProp="name" content={product.product_name ?? ""} />
             <ProductMainInfo
               ratings={ratings}
               currencyObject={currencyObject}

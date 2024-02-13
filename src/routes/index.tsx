@@ -9,6 +9,7 @@ import type { ProductModel } from "~/models/product.model";
 import { Hero } from "~/components/home/hero/hero";
 import { UserContext } from "~/context/user.context";
 import { CurContext } from "~/context/cur.context";
+// import { Categories } from "~/components/home/categories/categories";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();
@@ -65,6 +66,7 @@ export default component$(() => {
       {status === "1" && (
         <div class="flex flex-col gap-10">
           <Hero />
+          {/* <Categories /> */}
           <FeatureProducts
             bestSellerProducts={bestSellerProducts2}
             type="Top Selling Products"

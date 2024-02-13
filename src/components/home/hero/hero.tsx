@@ -4,12 +4,16 @@ import {
   PerviousArrowIconNoStick,
 } from "../../shared/icons/icons";
 import styles from "./hero.css?inline";
-import OfferOneImage from "~/media/offer1.jpg?jsx";
-import OfferTwoImage from "~/media/offer2.jpg?jsx";
-import OfferThreeImage from "~/media/offer3.jpg?jsx";
-import OfferFourImage from "~/media/offer4.jpg?jsx";
-import OfferFiveImage from "~/media/offer5.jpg?jsx";
-import OfferSixImage from "~/media/offer6.jpg?jsx";
+import OfferOneImage from "~/media/hero-images/1.jpg?jsx";
+import OfferTwoImage from "~/media/hero-images/2.jpg?jsx";
+import OfferThreeImage from "~/media/hero-images/3.jpg?jsx";
+import OfferFourImage from "~/media/hero-images/4.jpg?jsx";
+import OfferFiveImage from "~/media/hero-images/5.jpg?jsx";
+import OfferSixImage from "~/media/hero-images/6.jpg?jsx";
+import OfferSevenImage from "~/media/hero-images/7.jpg?jsx";
+import OfferEightImage from "~/media/hero-images/8.jpg?jsx";
+import OfferNineImage from "~/media/hero-images/9.jpg?jsx";
+import OfferTenImage from "~/media/hero-images/10.jpg?jsx";
 
 export const Hero = component$(() => {
   useStylesScoped$(styles);
@@ -59,7 +63,7 @@ export const Hero = component$(() => {
           <div class="carousel carousel-center w-full p-4 space-x-4 bg-white rounded-box">
             <div class="carousel-item gap-4">
               <a
-                href="/products/filterBrands/Olaplex/"
+                href="/products/filterBrands/Matrix/"
                 class="carousel-item w-fit"
               >
                 <div class="flex flex-col gap-2">
@@ -98,10 +102,7 @@ export const Hero = component$(() => {
                   </p>
                 </div>
               </a>
-              <a
-                href="/products/filterBrands/Schwarzkopf-Professional/"
-                class="carousel-item"
-              >
+              <a href="/products/filterBrands/Olaplex/" class="carousel-item">
                 <div class="flex flex-col gap-2">
                   <OfferThreeImage
                     alt="hair color products"
@@ -152,12 +153,80 @@ export const Hero = component$(() => {
                   </p>
                 </div>
               </a>
+              <a href="/products/filterBrands/Deva Curl/" class="carousel-item">
+                <div class="flex flex-col gap-2">
+                  <OfferSixImage
+                    alt="Textured Hair Products"
+                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
+                  />
+                  <p
+                    aria-label="barbering link"
+                    class="pl-3 flex flex-row items-center font-bold text-black underline"
+                  >
+                    <span>SHOP NOW </span>{" "}
+                    <span>
+                      <NextArrowIconNoStick color="black" width="8%" />
+                    </span>
+                  </p>
+                </div>
+              </a>
+              <a href="/products/filterBrands/Biolage/" class="carousel-item">
+                <div class="flex flex-col gap-2">
+                  <OfferSevenImage
+                    alt="Textured Hair Products"
+                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
+                  />
+                  <p
+                    aria-label="barbering link"
+                    class="pl-3 flex flex-row items-center font-bold text-black underline"
+                  >
+                    <span>SHOP NOW </span>{" "}
+                    <span>
+                      <NextArrowIconNoStick color="black" width="8%" />
+                    </span>
+                  </p>
+                </div>
+              </a>
+              <a href="/products/filterBrands/amika/" class="carousel-item">
+                <div class="flex flex-col gap-2">
+                  <OfferEightImage
+                    alt="Textured Hair Products"
+                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
+                  />
+                  <p
+                    aria-label="barbering link"
+                    class="pl-3 flex flex-row items-center font-bold text-black underline"
+                  >
+                    <span>SHOP NOW </span>{" "}
+                    <span>
+                      <NextArrowIconNoStick color="black" width="8%" />
+                    </span>
+                  </p>
+                </div>
+              </a>
               <a
                 href="/products/filterBrands/American-Crew/"
                 class="carousel-item"
               >
                 <div class="flex flex-col gap-2">
-                  <OfferSixImage
+                  <OfferNineImage
+                    alt="Textured Hair Products"
+                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
+                  />
+                  <p
+                    aria-label="barbering link"
+                    class="pl-3 flex flex-row items-center font-bold text-black underline"
+                  >
+                    <span>SHOP NOW </span>{" "}
+                    <span>
+                      <NextArrowIconNoStick color="black" width="8%" />
+                    </span>
+                  </p>
+                </div>
+              </a>
+              <a href="/products/filterBrands/Rusk/" class="carousel-item">
+                <div class="flex flex-col gap-2">
+                  <OfferTenImage
                     alt="Textured Hair Products"
                     class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
                   />

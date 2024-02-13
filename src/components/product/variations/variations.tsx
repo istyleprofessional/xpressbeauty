@@ -1,4 +1,5 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useContext } from "@builder.io/qwik";
+import { CurContext } from "~/context/cur.context";
 
 export interface VariationsProps {
   variationType: string;
@@ -23,6 +24,7 @@ export const Variations = component$((props: VariationsProps) => {
     finalVariationToAdd,
     variationType,
   } = props;
+  const currency: any = useContext(CurContext);
 
   return (
     <div class="flex flex-row w-full justify-center items-center">
@@ -93,6 +95,17 @@ export const Variations = component$((props: VariationsProps) => {
         )}
         <p class="text-black w-full justify-self-end text-xs md:text-lg">
           {variation.variation_name}
+        </p>
+        <p class=" text-orange-900">
+          {currency.cur === "1"
+            ? (variation.price * 0.9).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              })
+            : variation.price.toLocaleString("en-US", {
+                style: "currency",
+                currency: "CAD",
+              })}
         </p>
       </div>
     </div>

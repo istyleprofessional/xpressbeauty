@@ -198,8 +198,11 @@ def updateQuantity():
 
 
 # updateQuantity()
+
     
 def return_product_if_range(parsed_json, d, url, driver):
+
+        
     if 'range' in parsed_json['product']['price']['type']:
         d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 5
         d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 5
@@ -240,6 +243,15 @@ def return_product_if_range(parsed_json, d, url, driver):
                 variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
             else:
                 variation['quantity_on_hand'] = 0
+            if d['variation_type'] == 'Size':
+                # download the image from the url and upload it to aws s3 bucket
+                images = []
+                if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
+                    images.append(parsed_json['product']['images']['pdpLarge'][0])
+                    for i, image in enumerate(images):
+                        imageName = d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '') + '-' + variation['variation_id']
+                        imgUrl = upload_image(image['url'], f'''{imageName}-{i}''')
+                        variation['variation_image'] = imgUrl
         except:
             time.sleep(40)
             driver.get(url)
@@ -263,6 +275,16 @@ def return_product_if_range(parsed_json, d, url, driver):
                 variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
             else:
                 variation['quantity_on_hand'] = 0
+            if d['variation_type'] == 'Size':
+                # download the image from the url and upload it to aws s3 bucket
+                images = []
+                if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
+                    images.append(parsed_json['product']['images']['pdpLarge'][0])
+                # upload images to aws s3 bucket
+                    for i, image in enumerate(images):
+                        imageName = d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '') + '-' + variation['variation_id']
+                        imgUrl = upload_image(image['url'], f'''{imageName}-{i}''')
+                        variation['variation_image'] = imgUrl
     return d
 
 def return_product_if_single(parsed_json, d):
@@ -286,8 +308,8 @@ def return_product_if_single(parsed_json, d):
     return d
 
 def upload_image(url, name):
-    AWS_ACCESS_KEY_ID = 'AKIAVLKY35Q55R5AN2MF'
-    AWS_SECRET_ACCESS_KEY = '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'
+    AWS_ACCESS_KEY_ID = 'AKIAVLKY35Q5XHRGB5IN'
+    AWS_SECRET_ACCESS_KEY = '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'
     AWS_BUCKET_NAME = 'xpressbeauty'
 
     s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
@@ -308,7 +330,7 @@ def upload_image(url, name):
     os.remove(image_path)
     # 'https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/'
     # return f'''https://xpressbeauty.s3.amazonaws.com/{name}.jpg'''
-    urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/newProductsImages/{name}.webp'''
+    urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/{name}.webp'''
     print(urlToBeReturned)
     return urlToBeReturned
 
@@ -316,8 +338,8 @@ def upload_image(url, name):
 
 def get_last_prices_and_upc():
     with open('./backups/file-7.json', encoding='utf-8') as f:
-        data = json.load(f)
-        print(len(data))
+        datas = json.load(f)
+        print(len(datas))
         driver = uc.Chrome()
         driver.get('https://www.cosmoprofbeauty.ca/')
         time.sleep(40)
@@ -327,7 +349,7 @@ def get_last_prices_and_upc():
         #     cookies = json.load(cookie_file)
         # for cookie in cookies:
         #     driver.add_cookie(cookie)
-        for d in data:
+        for i, d in enumerate(datas):
             if "Hair" in ','.join(d['categories']):
                 try:
                     if('variations' in d and len(d['variations']) > 0):
@@ -346,9 +368,9 @@ def get_last_prices_and_upc():
                             headers = {
                                     "Content-Type": "application/json",
                             }
-                            update = requests.put(
+                            requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            print(update.json())
+                            print(f'''{i}/{len(datas)}''')
                         except Exception as e:
                             print(e)
                             time.sleep(40)
@@ -365,9 +387,9 @@ def get_last_prices_and_upc():
                             headers = {
                                     "Content-Type": "application/json",
                             }
-                            update = requests.put(
+                            requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            print(update.json())
+                            print(f'''{i}/{len(datas)}''')
                             continue
                     else:
                         url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
@@ -385,9 +407,9 @@ def get_last_prices_and_upc():
                             headers = {
                                     "Content-Type": "application/json",
                             }
-                            update = requests.put(
+                            requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            print(update.json())
+                            print(f'''{i}/{len(datas)}''')
                         except:
                             time.sleep(40)
                             driver.get(url)
@@ -403,9 +425,9 @@ def get_last_prices_and_upc():
                             headers = {
                                     "Content-Type": "application/json",
                             }
-                            update = requests.put(
+                            requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            print(update.json())
+                            print(f'''{i}/{len(datas)}''')
                             continue
                 except Exception as e:
                     print(e)
@@ -426,9 +448,9 @@ def get_last_prices_and_upc():
                             headers = {
                                     "Content-Type": "application/json",
                             }
-                            update = requests.put(
+                            requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            print(update.json())
+                            print(f'''{i}/{len(datas)}''')
                         except:
                             time.sleep(40)
                             driver.get(url)
@@ -444,9 +466,9 @@ def get_last_prices_and_upc():
                             headers = {
                                     "Content-Type": "application/json",
                             }
-                            update = requests.put(
+                            requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            print(update.json())
+                            print(f'''{i}/{len(datas)}''')
                             continue
                     else:
                         url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
@@ -464,9 +486,9 @@ def get_last_prices_and_upc():
                             headers = {
                                     "Content-Type": "application/json",
                             }
-                            update = requests.put(
+                            requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            print(update.json())
+                            print(f'''{i}/{len(datas)}''')
                         except:
                             time.sleep(40)
                             driver.get(url)
@@ -482,9 +504,9 @@ def get_last_prices_and_upc():
                             headers = {
                                     "Content-Type": "application/json",
                             }
-                            update = requests.put(
+                            requests.put(
                                 'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            print(update.json())
+                            print(f'''{i}/{len(datas)}''')
                             continue
                     continue
                 # print remaining products length
