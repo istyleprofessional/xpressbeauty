@@ -141,23 +141,30 @@ export const hide_product_service = async (product: any, token: string) => {
 export const get_new_arrivals_products = async (filter?: string) => {
   try {
     if (filter && filter !== "") {
-      const result = await Product.find({
-        isHidden: { $ne: true },
-        isDeleted: { $ne: true },
-        categories: { $elemMatch: { main: { $regex: filter, $options: "i" } } },
-        $and: [
-          {
-            $or: [
+      const result = await Product.aggregate([
+        {
+          $match: {
+            isHidden: { $ne: true },
+            isDeleted: { $ne: true },
+            categories: {
+              $elemMatch: { main: { $regex: filter, $options: "i" } },
+            },
+            $and: [
               {
-                quantity_on_hand: { $gt: 0 },
-              },
-              {
-                "variations.quantity_on_hand": { $gt: 0 },
+                $or: [
+                  {
+                    quantity_on_hand: { $gt: 0 },
+                  },
+                  {
+                    "variations.quantity_on_hand": { $gt: 0 },
+                  },
+                ],
               },
             ],
           },
-        ],
-      }).limit(5);
+        },
+        { $sample: { size: 5 } },
+      ]);
       return result as ProductModel;
     } else {
       const query = {
