@@ -1,4 +1,10 @@
-import { component$, useSignal, useTask$ } from "@builder.io/qwik";
+import {
+  component$,
+  useOnDocument,
+  useSignal,
+  useTask$,
+  $,
+} from "@builder.io/qwik";
 import type { ProductModel } from "~/models/product.model";
 import { Image } from "@unpic/qwik";
 
@@ -100,6 +106,45 @@ export const ProductCard = component$((props: ProductCardProps) => {
       }
     }
   });
+
+  useOnDocument(
+    "DOMContentLoaded",
+    $(() => {
+      // add products schema
+      const jsonProduct = document.createElement("script");
+      jsonProduct.type = "application/ld+json";
+      const object: any = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        name: product.product_name,
+        image: (product.imgs ?? [])[0] ?? "",
+        description: product.description
+          ?.replace(/<img .*?>/g, "")
+          ?.replace(/Cosmo Prof/g, "Xpress Beauty"),
+        sku: product._id,
+        brand: {
+          "@type": "Brand",
+          name: product.companyName?.name ?? "",
+        },
+        offers: {
+          "@type": "Offer",
+          priceCurrency: "CAD",
+          price:
+            product.priceType === "range"
+              ? product.price.min
+              : product.price.regular,
+          priceValidUntil: "2022-11-05",
+          itemCondition: "https://schema.org/NewCondition",
+          availability:
+            (product?.quantity_on_hand ?? 0) > 0
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+        },
+      };
+      jsonProduct.text = JSON.stringify(object);
+      document.head.appendChild(jsonProduct);
+    })
+  );
 
   return (
     <a

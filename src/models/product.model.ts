@@ -9,7 +9,7 @@ export interface ProductModel {
   sale_price?: any;
   categories?: string[];
   imgs?: string[];
-  quantity_on_hand?: string;
+  quantity_on_hand?: number;
   sku?: string;
   manufacturer_part_number?: string;
   bar_code_value?: string;
@@ -20,7 +20,7 @@ export interface ProductModel {
   variations?: any[];
   cleanproductname?: string;
   // productsVariation?: any[];
-  companyName?: string;
+  companyName?: any;
   lineName?: string;
   perfix?: string;
   priceType?: string;

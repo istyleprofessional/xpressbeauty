@@ -8,6 +8,7 @@ import {
   Fragment,
   useTask$,
   useOnWindow,
+  useOnDocument,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
@@ -195,6 +196,52 @@ export default component$(() => {
     isToastCardOpen.value = false;
   });
 
+  useOnDocument(
+    "DOMContentLoaded",
+    $(() => {
+      // generate json product schema
+      const jsonProduct = document.createElement("script");
+      jsonProduct.type = "application/ld+json";
+      const object: any = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        name: product.product_name,
+        image: (product.imgs ?? [])[0] ?? "",
+        description: product.description
+          ?.replace(/<img .*?>/g, "")
+          ?.replace(/Cosmo Prof/g, "Xpress Beauty"),
+        sku: product._id,
+        brand: {
+          "@type": "Brand",
+          name: product.companyName?.name ?? "",
+        },
+        offers: {
+          "@type": "Offer",
+          priceCurrency: "CAD",
+          price:
+            product.priceType === "range"
+              ? product.price.min
+              : product.price.regular,
+          priceValidUntil: "2022-11-05",
+          itemCondition: "https://schema.org/NewCondition",
+          availability:
+            (product?.quantity_on_hand ?? 0) > 0
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+        },
+      };
+      if (ratings?.averageRating) {
+        object["aggregateRating"] = {
+          "@type": "AggregateRating",
+          ratingValue: ratings?.averageRating,
+          reviewCount: ratings?.totalRatings,
+        };
+      }
+      jsonProduct.text = JSON.stringify(object);
+      document.head.appendChild(jsonProduct);
+    })
+  );
+
   useOnWindow(
     "load",
     $(async () => {
@@ -291,137 +338,90 @@ export default component$(() => {
           </div>
         </div>
       )}
-      <div itemType="https://schema.org/Product" itemScope>
-        <div
-          itemProp="offers"
-          itemType="https://schema.org/AggregateOffer"
-          itemScope
-        >
-          <meta
-            itemProp="lowPrice"
-            content={
-              product.priceType === "range"
-                ? product?.price?.min
-                    ?.toString()
-                    ?.replace("$", "")
-                    ?.toLocaleString("en-US")
-                : product?.price?.regular
-                    ?.toString()
-                    ?.replace("$", "")
-                    ?.toLocaleString("en-US")
-            }
-          />
-          <meta
-            itemProp="highPrice"
-            content={
-              product.priceType === "range"
-                ? product?.price?.max
-                    ?.toString()
-                    ?.replace("$", "")
-                    ?.toLocaleString("en-US")
-                : product?.price?.regular
-                    ?.toString()
-                    ?.replace("$", "")
-                    ?.toLocaleString("en-US")
-            }
-          />
-          <meta itemProp="priceCurrency" content="CAD" />
-          <meta
-            itemProp="availability"
-            content={
-              parseInt(product?.quantity_on_hand ?? "0") > 0
-                ? "https://schema.org/InStock"
-                : "https://schema.org/OutOfStock"
-            }
-          />
-        </div>
 
-        <div class="flex flex-col gap-5 lg:gap-20">
-          <div class="flex flex-col justify-start items-start w-full gap-5 lg:grid lg:grid-cols-3 lg:gap-10 p-3 lg:p-10">
-            <Gallery
-              product_name={product.product_name ?? ""}
-              imgs={product.imgs ?? []}
-            />
-            <div class=" col-span-2 flex flex-col gap-5">
-              <meta itemProp="name" content={product.product_name ?? ""} />
-              <ProductMainInfo
-                ratings={ratings}
-                currencyObject={currencyObject}
-                product_name={product.product_name ?? ""}
-                price={product?.price ?? ""}
-                sale_price={product?.sale_price ?? ""}
-                priceType={product?.priceType ?? ""}
-                isVariant={true}
-                isVerified={user.isEmailVerified && user.isPhoneVerified}
-                companyName={product?.companyName ?? ""}
-                categories={product?.categories ?? []}
-              />
-              <ProductActions
-                handleAddToCart={handleAddToCart}
-                handleAddToFav={handleAddToFav}
-                qunatity={
-                  product.variations && product.variations?.length > 0
-                    ? 300
-                    : parseInt(product?.quantity_on_hand?.toString() ?? "0")
-                }
-                isVariation={
-                  (product.variations && product.variations?.length > 0) ??
-                  false
-                }
-                variationValue={variationValue}
-              />
-              {(product?.variations?.length ?? 0) > 0 && (
-                <div
-                  class="menu menu-horizontal bg-base-100 shadow-xl h-fit max-h-96 overflow-scroll gap-10 justify-center
-                  items-center md:p-4 w-full lg:w-[30vw]"
-                >
-                  {product?.variations?.map((variation: any, index: number) => {
-                    const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;
-                    useVisibleTask$(() => {
-                      variationValue[index] = 0;
-                    });
-                    if (variation?.price === "$null") {
-                      return <Fragment key={index}></Fragment>;
-                    }
-                    return (
-                      <div
-                        key={index}
-                        class="flex flex-row w-full justify-center"
-                      >
-                        <Variations
-                          variationType={product?.variation_type ?? ""}
-                          variation={variation}
-                          value={variationValue}
-                          productId={product.id ?? ""}
-                          folder={folder}
-                          index={index}
-                          variationQuantity={variation?.quantity_on_hand ?? 0}
-                          finalVariationToAdd={finalVariationToAdd}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-                // </div>
-              )}
-            </div>
-          </div>
-          <div class="flex flex-row gap-5 lg:gap-10 p-3 lg:p-10">
-            <RatingAndDescription
-              ingredients={product.ingredients ?? ""}
-              directions={product.directions ?? ""}
-              product_description={product.description ?? ""}
-              user={user.email ? user : null}
-              productId={product._id ?? ""}
-            />
-          </div>
-          {relatedProducts.value?.length > 0 && (
-            <RelatedProducts
-              relatedProducts={relatedProducts.value || null}
+      <div class="flex flex-col gap-5 lg:gap-20">
+        <div class="flex flex-col justify-start items-start w-full gap-5 lg:grid lg:grid-cols-3 lg:gap-10 p-3 lg:p-10">
+          <Gallery
+            product_name={product.product_name ?? ""}
+            imgs={product.imgs ?? []}
+          />
+          <div class=" col-span-2 flex flex-col gap-5">
+            <meta itemProp="name" content={product.product_name ?? ""} />
+            <ProductMainInfo
+              ratings={ratings}
               currencyObject={currencyObject}
+              product_name={product.product_name ?? ""}
+              price={product?.price ?? ""}
+              sale_price={product?.sale_price ?? ""}
+              priceType={product?.priceType ?? ""}
+              isVariant={true}
+              isVerified={user.isEmailVerified && user.isPhoneVerified}
+              companyName={product?.companyName ?? ""}
+              categories={product?.categories ?? []}
             />
-          )}
+            <ProductActions
+              handleAddToCart={handleAddToCart}
+              handleAddToFav={handleAddToFav}
+              qunatity={
+                product.variations && product.variations?.length > 0
+                  ? 300
+                  : parseInt(product?.quantity_on_hand?.toString() ?? "0")
+              }
+              isVariation={
+                (product.variations && product.variations?.length > 0) ?? false
+              }
+              variationValue={variationValue}
+            />
+            {(product?.variations?.length ?? 0) > 0 && (
+              <div
+                class="menu menu-horizontal bg-base-100 shadow-xl h-fit max-h-96 overflow-scroll gap-10 justify-center
+                  items-center md:p-4 w-full lg:w-[30vw]"
+              >
+                {product?.variations?.map((variation: any, index: number) => {
+                  const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;
+                  useVisibleTask$(() => {
+                    variationValue[index] = 0;
+                  });
+                  if (variation?.price === "$null") {
+                    return <Fragment key={index}></Fragment>;
+                  }
+                  return (
+                    <div
+                      key={index}
+                      class="flex flex-row w-full justify-center"
+                    >
+                      <Variations
+                        variationType={product?.variation_type ?? ""}
+                        variation={variation}
+                        value={variationValue}
+                        productId={product.id ?? ""}
+                        folder={folder}
+                        index={index}
+                        variationQuantity={variation?.quantity_on_hand ?? 0}
+                        finalVariationToAdd={finalVariationToAdd}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
+        <div class="flex flex-row gap-5 lg:gap-10 p-3 lg:p-10">
+          <RatingAndDescription
+            ingredients={product.ingredients ?? ""}
+            directions={product.directions ?? ""}
+            product_description={product.description ?? ""}
+            user={user.email ? user : null}
+            productId={product._id ?? ""}
+          />
+        </div>
+        {relatedProducts.value?.length > 0 && (
+          <RelatedProducts
+            relatedProducts={relatedProducts.value || null}
+            currencyObject={currencyObject}
+          />
+        )}
       </div>
     </>
   );
