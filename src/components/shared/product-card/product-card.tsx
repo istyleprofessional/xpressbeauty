@@ -27,11 +27,10 @@ export const ProductCard = component$((props: ProductCardProps) => {
       } else {
         product.price.regular =
           parseFloat(product.price?.regular?.toString()) * 0.9;
-        product.sale_price.sale = isNaN(
-          parseFloat(product?.sale_price?.sale?.toString()) * 0.9
-        )
-          ? ""
-          : parseFloat(product?.sale_price?.sale?.toString()) * 0.9;
+        if (product.sale_price?.sale !== "") {
+          product.sale_price.sale =
+            parseFloat(product?.sale_price?.sale?.toString()) * 0.9;
+        }
       }
     }
   });

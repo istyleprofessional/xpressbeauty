@@ -1,8 +1,4 @@
-import {
-  component$,
-  useSignal,
-  useTask$,
-} from "@builder.io/qwik";
+import { component$, useSignal, useTask$ } from "@builder.io/qwik";
 import { Rating } from "~/components/shared/rating/rating";
 
 interface ProductMainInfoProps {
@@ -101,14 +97,14 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
 
       <div class="flex flex-col gap-3 ">
         <h2 class="flex flex-row gap-2 text-xl lg:text-3xl text-black">
-          {priceType === "single" && sale_price.sale !== "" && (
+          {priceType === "single" && sale_price?.sale !== "" && (
             <>
               <span class="text-black" itemProp="price">
                 {finalRegularPrice.value}
               </span>
             </>
           )}
-          {priceType === "single" && sale_price.sale === "" && (
+          {priceType === "single" && sale_price?.sale === "" && (
             <span class="text-black" itemProp="price">
               {finalRegularPrice.value}
             </span>

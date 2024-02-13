@@ -53,7 +53,7 @@ export const ListCardView = component$((props: ListViewCardProps) => {
       </p>
 
       <p class={`${"lg:text-lg"} text-sm text-black`}>
-        {product.priceType === "single" && product.sale_price.sale !== "" && (
+        {product.priceType === "single" && product?.sale_price?.sale !== "" && (
           <>
             <span class="text-xs text-gray-400 line-through">
               {product.price.regular.toLocaleString("en-US", {
@@ -62,14 +62,14 @@ export const ListCardView = component$((props: ListViewCardProps) => {
               })}
             </span>
             <span class="text-sm text-error ml-2">
-              {product.sale_price.sale.toLocaleString("en-US", {
+              {product.sale_price?.sale?.toLocaleString("en-US", {
                 style: "currency",
                 currency: "CAD",
               })}
             </span>
           </>
         )}
-        {product.priceType === "single" && product.sale_price.sale === "" && (
+        {product.priceType === "single" && product.sale_price?.sale === "" && (
           <span class="text-sm text-black">
             {product.price.regular.toLocaleString("en-US", {
               style: "currency",

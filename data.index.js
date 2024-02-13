@@ -97,7 +97,7 @@ async function updateBabylissPrices() {
     if (!product.companyName.name) continue;
     if (product.companyName.name.toLowerCase().includes("babyliss")) {
       for (const category of product.categories) {
-        if (category.main === "Trimmers" || category.main === "Clippers") {
+        if (category.name === "Trimmers" || category.name === "Clippers") {
           product.price.regular =
             product.price.regular * 0.3 + product.price.regular;
           product.sale_price.sale =
