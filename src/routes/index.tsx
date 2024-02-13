@@ -9,7 +9,7 @@ import type { ProductModel } from "~/models/product.model";
 import { Hero } from "~/components/home/hero/hero";
 import { UserContext } from "~/context/user.context";
 import { CurContext } from "~/context/cur.context";
-import { Categories } from "~/components/home/categories/categories";
+// import { Categories } from "~/components/home/categories/categories";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();
