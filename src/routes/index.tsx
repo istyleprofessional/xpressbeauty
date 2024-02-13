@@ -66,7 +66,7 @@ export default component$(() => {
       {status === "1" && (
         <div class="flex flex-col gap-10">
           <Hero />
-          <Categories />
+          {/* <Categories /> */}
           <FeatureProducts
             bestSellerProducts={bestSellerProducts2}
             type="Top Selling Products"
