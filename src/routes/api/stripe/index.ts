@@ -73,12 +73,11 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     consent_collection: {
       terms_of_service: "required",
     },
-    // payment_intent_data: {
-    //   capture_method: "manual",
-    //   description: "Xpress Beauty Order",
-    //   statement_descriptor: "Xpress Beauty",
-    // },
-    // listen when the session is completed
+    payment_intent_data: {
+      capture_method: "manual",
+      description: "Xpress Beauty Order",
+      statement_descriptor: "Xpress Beauty",
+    },
 
     custom_fields: [
       {
@@ -117,9 +116,11 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     mode: "payment",
     return_url: `${env.get(
       "VITE_APPURL"
-    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${data.userId
-      }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${data.user.isDummy
-      }`,
+    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${
+      data.userId
+    }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${
+      data.user.isDummy
+    }`,
   });
   json(200, { clientSecret: session.client_secret, sessionId: session.id });
   return;
@@ -128,14 +129,13 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
 export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
   if (url.searchParams.get("session_id")) {
     const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
-    console.log("session_id", query.get("session_id"));
     const session = await stripe.checkout.sessions.retrieve(
       query.get("session_id") + "",
       {
         expand: ["line_items"],
       }
     );
-
+    console.log(session);
     const productsFromCart: any = await getCartByUserId(
       query.get("userId") ?? ""
     );
@@ -161,6 +161,7 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
       orderStatus: "Pending",
       paymentStatus: "Paid",
       paymentId: session.id,
+      payment_intent: session.payment_intent ?? "",
       shippingAddress: {
         addressLine1: session.shipping_details?.address?.line1 ?? "",
         addressLine2: session.shipping_details?.address?.line2 ?? "",
@@ -177,6 +178,7 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
         finalTotal: Number(session.amount_total ?? 0) / 100,
         currency: session.currency ?? "cad",
       },
+      paid: false,
     };
     // console.log("session", session);
     await createOrder(orderData);

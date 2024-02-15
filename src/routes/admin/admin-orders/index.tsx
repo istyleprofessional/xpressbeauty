@@ -1,6 +1,7 @@
 import { component$, $, useSignal } from "@builder.io/qwik";
 import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import { Image } from "@unpic/qwik";
+import Stripe from "stripe";
 import {
   CheckOrderIcon,
   MoreAdminIcon,
@@ -10,6 +11,7 @@ import {
   getOrderByOrderIdService,
   getOrdersService,
   updateOrderStatus,
+  updatePaymentOrderStatus,
 } from "~/express/services/order.service";
 import { sendShippedEmail } from "~/utils/sendShippedEmail";
 
@@ -61,13 +63,50 @@ export const updateOrderStatusServer = server$(async function (
   };
 });
 
+export const capturePaymentServer = server$(async function (
+  paymentIntent: string,
+  orderId: string
+) {
+  const stripe = new Stripe(this.env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
+  const payment = await stripe.paymentIntents.capture(paymentIntent);
+  if (payment.status === "succeeded") {
+    const updateOrderStatusreq = await updatePaymentOrderStatus(orderId, true);
+    if (updateOrderStatusreq.status === "error")
+      return { status: "error", message: "Order status not updated" };
+    return {
+      status: "success",
+      message: JSON.stringify(updateOrderStatusreq.request),
+    };
+  } else {
+    return { status: "error", message: "Payment not captured" };
+  }
+});
+
+export const cancelPaymentServer = server$(async function (
+  paymentIntent: string,
+  orderId: string
+) {
+  const stripe = new Stripe(this.env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
+  const payment = await stripe.paymentIntents.cancel(paymentIntent);
+  if (payment.status === "canceled") {
+    const updateOrderStatusreq = await updatePaymentOrderStatus(orderId, false);
+    if (updateOrderStatusreq.status === "error")
+      return { status: "error", message: "Order status not updated" };
+    return {
+      status: "success",
+      message: JSON.stringify(updateOrderStatusreq.request),
+    };
+  } else {
+    return { status: "error", message: "Payment not canceled" };
+  }
+});
+
 export default component$(() => {
   const loc = useLocation();
   const orders = useOrderTableData();
   const ordersData = JSON.parse(orders.value?.res ?? "[]");
   const currentPageNo = loc.url.searchParams.get("page") ?? "1";
   const total = ordersData?.total ?? 0;
-  console.log(total);
   const totalPages = Math.ceil(total / 20);
   const orderStatus = useSignal<string>("");
   const userEmail = useSignal<string>("");
@@ -140,8 +179,9 @@ export default component$(() => {
       trackingLink: trackingLink.value,
       selectedProducts: selectedProducts.value,
       shippingAddress: orderDetail.value?.shippingAddress,
-      fullName: `${orderDetail.value?.user?.firstName ?? ""} ${orderDetail.value?.user?.lastName ?? ""
-        }`,
+      fullName: `${orderDetail.value?.user?.firstName ?? ""} ${
+        orderDetail.value?.user?.lastName ?? ""
+      }`,
     });
     // console.log(sendShippedEmailreq);
     if (sendShippedEmailreq.status === "error") {
@@ -151,7 +191,51 @@ export default component$(() => {
       alert("Order status updated successfully");
     }
   });
-  console.log(totalPages);
+
+  const handleCapturePayments = $(async (order: any) => {
+    if (order.payment_intent) {
+      const callStripe = await capturePaymentServer(
+        order.payment_intent,
+        order._id
+      );
+      if (callStripe.status === "error") {
+        alert(callStripe.message);
+      } else {
+        const result = JSON.parse(callStripe.message);
+        ordersData.request = ordersData.request.map((order: any) => {
+          if (order._id === result._id) {
+            order.paid = result.paid;
+          }
+          return order;
+        });
+        alert("Payment captured successfully");
+        location.reload();
+      }
+    }
+  });
+
+  const handleCancelPayment = $(async (order: any) => {
+    if (order.payment_intent) {
+      const callStripe = await cancelPaymentServer(
+        order.payment_intent,
+        order._id
+      );
+      if (callStripe.status === "error") {
+        alert(callStripe.message);
+      } else {
+        const result = JSON.parse(callStripe.message);
+        ordersData.request = ordersData.request.map((order: any) => {
+          if (order._id === result._id) {
+            order.paid = result.paid;
+          }
+          return order;
+        });
+        alert("Payment captured successfully");
+        location.reload();
+      }
+    }
+  });
+
   return (
     <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
       <div class="flex flex-row gap-5 items-center">
@@ -184,11 +268,12 @@ export default component$(() => {
               <th></th>
               <th>User</th>
               <th>Order No.</th>
-
               <th>Address</th>
               <th>Total</th>
               <th>Date</th>
               <th>Status</th>
+              <th>Payment Status</th>
+              <th>Capture Payment</th>
               <th></th>
             </tr>
           </thead>
@@ -239,19 +324,45 @@ export default component$(() => {
                     </td>
                     <td>
                       <p
-                        class={`badge ${order.orderStatus === "Pending"
-                          ? "bg-[#FEF9C3] text-[#CA8A04]"
-                          : order.orderStatus === "Shipped"
+                        class={`badge ${
+                          order.orderStatus === "Pending"
+                            ? "bg-[#FEF9C3] text-[#CA8A04]"
+                            : order.orderStatus === "Shipped"
                             ? "bg-[#E0F2FE] text-[#0EA5E9]"
                             : order.orderStatus === "Return"
-                              ? "bg-[#FED7D7] text-[#B91C1C]"
-                              : order.orderStatus === "Refund"
-                                ? "bg-[#FED7D7] text-[#B91C1C]"
-                                : "bg-[#D1FAE5] text-[#047857]"
-                          } text-xs`}
+                            ? "bg-[#FED7D7] text-[#B91C1C]"
+                            : order.orderStatus === "Refund"
+                            ? "bg-[#FED7D7] text-[#B91C1C]"
+                            : "bg-[#D1FAE5] text-[#047857]"
+                        } text-xs`}
                       >
                         {order.orderStatus}
                       </p>
+                    </td>
+                    <td>{order.paid === false ? "unpaid" : "paid"}</td>
+                    <td class="flex flex-col md:flex-row gap-3 justify-center items-center w-full h-full">
+                      <button
+                        class="btn btn-sm btn-primary"
+                        onClick$={() => handleCapturePayments(order)}
+                        disabled={
+                          order.paid ||
+                          !order.payment_intent ||
+                          order.payment_intent === ""
+                        }
+                      >
+                        Capture
+                      </button>
+                      <button
+                        class="btn btn-sm btn-ghost"
+                        disabled={
+                          order.paid ||
+                          !order.payment_intent ||
+                          order.payment_intent === ""
+                        }
+                        onClick$={() => handleCancelPayment(order)}
+                      >
+                        Refund
+                      </button>
                     </td>
                     <td>
                       <div class="dropdown dropdown-end">
@@ -269,8 +380,8 @@ export default component$(() => {
                                 handleStatusChanged(
                                   "Shipped",
                                   order?.user?.email ??
-                                  order?.dummyUser?.email ??
-                                  "Not Found",
+                                    order?.dummyUser?.email ??
+                                    "Not Found",
                                   order?._id,
                                   order?.products,
                                   order?.shippingAddress,
@@ -348,8 +459,9 @@ export default component$(() => {
       <div class="bg-[#fff]">
         <div class="flex flex-row justify-between gap-2 p-2">
           <button
-            class={`btn btn-ghost btn-sm ${currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
-              } text-xs`}
+            class={`btn btn-ghost btn-sm ${
+              currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
+            } text-xs`}
             disabled={currentPageNo === "1"}
             onClick$={() => {
               const url = new URL(window.location.href);
@@ -366,10 +478,11 @@ export default component$(() => {
             {currentPageNo} of {totalPages}
           </p>
           <button
-            class={`btn btn-ghost btn-sm text-xs ${currentPageNo === totalPages.toString()
-              ? "text-[#D1D5DB]"
-              : "text-[#7C3AED]"
-              }`}
+            class={`btn btn-ghost btn-sm text-xs ${
+              currentPageNo === totalPages.toString()
+                ? "text-[#D1D5DB]"
+                : "text-[#7C3AED]"
+            }`}
             disabled={currentPageNo === totalPages.toString()}
             onClick$={() => {
               const url = new URL(window.location.href);
@@ -603,7 +716,11 @@ export default component$(() => {
                             <tr key={index}>
                               <td>
                                 <Image
-                                  src={product?.product_img.includes("http") ? product?.product_img : product?.product_img.replace(".", "")}
+                                  src={
+                                    product?.product_img.includes("http")
+                                      ? product?.product_img
+                                      : product?.product_img.replace(".", "")
+                                  }
                                   alt=""
                                   class="w-24 h-24"
                                 />

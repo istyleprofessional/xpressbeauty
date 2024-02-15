@@ -18,6 +18,8 @@ export const createOrder = async (data: any) => {
       paypalObj: data.paypalObj,
       currency: data.currency,
       totalInfo: data.totalInfo,
+      payment_intent: data.payment_intent,
+      paid: data.paid,
     });
     console.log("order created", request);
     return { status: "success", request: request };
@@ -98,12 +100,14 @@ export const getOrdersService = async (page: number) => {
           "dummyUser.phoneNumber": 1,
           shippingAddress: 1,
           currency: 1,
+          payment_intent: 1,
           totalInfo: 1,
           totalPrice: 1,
           createdAt: 1,
           orderStatus: 1,
           order_number: 1,
           products: 1,
+          paid: 1,
         },
       },
     ])
@@ -122,6 +126,22 @@ export const updateOrderStatus = async (orderId: string, status: string) => {
     const request = await Order.findOneAndUpdate(
       { _id: orderId },
       { orderStatus: status },
+      { new: true }
+    );
+    return { status: "success", request: request };
+  } catch (error: any) {
+    return { status: "failed", err: error.message };
+  }
+};
+
+export const updatePaymentOrderStatus = async (
+  orderId: string,
+  status: boolean
+) => {
+  try {
+    const request = await Order.findOneAndUpdate(
+      { _id: orderId },
+      { paid: status },
       { new: true }
     );
     return { status: "success", request: request };

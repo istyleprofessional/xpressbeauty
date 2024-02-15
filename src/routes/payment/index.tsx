@@ -52,11 +52,7 @@ export default component$(() => {
         clientSecret,
         onComplete: async () => {
           gtag_report_conversion(sessionId);
-
-          window.location.href = `/api/stripe?session_id=${sessionId}&userId=${cartData.cart.userId
-            }&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${userObject.isDummy
-            }`
-
+          window.location.href = `/api/stripe?session_id=${sessionId}&userId=${cartData.cart.userId}&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${userObject.isDummy}`;
         },
       });
 
@@ -70,25 +66,27 @@ export default component$(() => {
   });
 
   useVisibleTask$(({ track, cleanup }) => {
-    track(() => errorSignal.value)
+    track(() => errorSignal.value);
     if (errorSignal.value !== "") {
       const timer = setTimeout(() => {
         errorSignal.value = "";
-      }
-        , 3000);
+      }, 3000);
       cleanup(() => clearTimeout(timer));
     }
   });
 
-
   return (
     <>
       {errorSignal.value && (
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div
+          class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
           <strong class="font-bold">Error! </strong>
           <span class="block sm:inline">
-            {error === "payment-failed" ? "Payment failed. Please try again." : "An error occurred. Please try again."}
-
+            {error === "payment-failed"
+              ? "Payment failed. Please try again."
+              : "An error occurred. Please try again."}
           </span>
         </div>
       )}
