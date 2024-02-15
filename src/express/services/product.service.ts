@@ -383,7 +383,7 @@ export const get_products_data = async (
 
     if (query && query !== "") {
       buildQuery["$text"] = { $search: query };
-
+      sortObj["score"] = { $meta: "textScore" };
       // console.log(buildQuery);
     }
     if (query && query !== "") {
@@ -412,8 +412,8 @@ export const get_products_data = async (
       buildQuery,
       query && query !== ""
         ? {
-            score: { $meta: "textScore" },
-          }
+          score: { $meta: "textScore" },
+        }
         : {}
     )
       .sort(sortObj)

@@ -121,21 +121,17 @@ export const useDomContentLoaded = routeLoader$(
       }
     );
 
-    const finalUrl = `${
-      filterBrandsArray.length > 0
-        ? `filterBrands/${filterBrandsArray.join("+")}/`
-        : ""
-    }${
-      filterCategoriesArray.length > 0
+    const finalUrl = `${filterBrandsArray.length > 0
+      ? `filterBrands/${filterBrandsArray.join("+")}/`
+      : ""
+      }${filterCategoriesArray.length > 0
         ? `filterCategories/${filterCategoriesArray.join("+")}/`
         : ""
-    }${
-      filterPricesArray.length > 0
+      }${filterPricesArray.length > 0
         ? `filterPrices/${filterPricesArray.join("+")}/`
         : ""
-    }/${search() !== "" ? `search/${search()}/` : ""}/${
-      filter() !== "" ? `filter/${filter()}/` : ""
-    }`;
+      }/${search() !== "" ? `search/${search()}/` : ""}/${filter() !== "" ? `filter/${filter()}/` : ""
+      }`;
     const finalLength =
       finalUrl?.split("/")?.filter((item: string) => {
         return item !== "";
@@ -298,19 +294,16 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${
-      newFilterBrands.length > 0
-        ? `filterBrands/${newFilterBrands.join("+")}/`
-        : ""
-    }${
-      filterCategoriessArray.value.length
+    url.pathname = `/products/${newFilterBrands.length > 0
+      ? `filterBrands/${newFilterBrands.join("+")}/`
+      : ""
+      }${filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-    }${
-      filterPrices.value.length > 0
+      }${filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }`;
+      }`;
     const checkPage = url.searchParams.get("page") ?? "1";
     const result = await postRequest("/api/products/get", {
       filterBrands: filterBrandsArray.value,
@@ -413,19 +406,16 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${
-      newFilterBrands.length > 0
-        ? `filterBrands/${newFilterBrands.join("+")}/`
-        : ""
-    }${
-      filterCategoriessArray.value.length
+    url.pathname = `/products/${newFilterBrands.length > 0
+      ? `filterBrands/${newFilterBrands.join("+")}/`
+      : ""
+      }${filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-    }${
-      filterPrices.value.length > 0
+      }${filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }`;
+      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
     url.searchParams.set("sort", e.target.value);
     url.searchParams.set("page", "1");
     const checkPage = url.searchParams.get("page") ?? "1";
@@ -474,19 +464,16 @@ export default component$(() => {
           }
         );
       }
-      url.pathname = `/products/${
-        newFilterBrands.length > 0
+      url.pathname = `/ products / ${newFilterBrands.length > 0
           ? `filterBrands/${newFilterBrands.join("+")}/`
           : ""
-      }${
-        filterCategoriessArray.value.length
+        }${filterCategoriessArray.value.length
           ? `filterCategories/${newFilterCategories.join("+")}/`
           : ""
-      }${
-        filterPrices.value.length
+        }${filterPrices.value.length
           ? `filterPrices/${filterPrices.value.join("+")}/`
           : ""
-      }`;
+        } `;
 
       url.searchParams.set("page", "1");
       page.value = "1";
@@ -537,20 +524,17 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${
-      newFilterBrands.length > 0
+    url.pathname = `/ products / ${newFilterBrands.length > 0
         ? `filterBrands/${newFilterBrands.join("+")}/`
         : ""
-    }${
-      filterCategoriessArray.value.length
+      }${filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-    }${
-      filterPrices.value.length
+      }${filterPrices.value.length
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
-    }`;
+      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
+  }`;
 
     url.searchParams.set("page", "1");
     page.value = "1";
@@ -861,20 +845,20 @@ export const head: DocumentHead = ({ resolveValue }) => {
     categories = json.finalFilterCategoriesArray.join(", ");
     metaDescription += ` in ${json.finalFilterCategoriesArray.join(
       ", "
-    )} categories and more at XpressBeauty`;
+    )
+      } categories and more at XpressBeauty`;
   } else {
     metaDescription += ` in all beauty categories and more at XpressBeauty`;
   }
   return {
-    title: `${
-      mainFilter
+    title: `${mainFilter
         ? `${mainFilter} products`
         : categories
-        ? `${categories} products`
-        : brands
-        ? `${brands} products`
-        : "beauty products"
-    } | XpressBeauty`,
+          ? `${categories} products`
+          : brands
+            ? `${brands} products`
+            : "beauty products"
+      } | XpressBeauty`,
     meta: [
       {
         name: "description",
@@ -894,15 +878,14 @@ export const head: DocumentHead = ({ resolveValue }) => {
       },
       {
         property: "og:title",
-        content: `${
-          mainFilter
+        content: `${mainFilter
             ? `${mainFilter} products`
             : categories
-            ? `${categories} products`
-            : brands
-            ? `${brands} products`
-            : "beauty products"
-        } | XpressBeauty`,
+              ? `${categories} products`
+              : brands
+                ? `${brands} products`
+                : "beauty products"
+          } | XpressBeauty`,
       },
       {
         property: "og:description",
