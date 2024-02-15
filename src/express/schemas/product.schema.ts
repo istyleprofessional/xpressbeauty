@@ -45,7 +45,7 @@ productsSchema.index(
     name: "textScore",
     weights: {
       product_name: 10,
-      "variations.variation_name": 7,
+      "variations.variation_name": 10,
       "companyName.name": 5,
       "categories.main": 5,
       "categories.name": 5,
