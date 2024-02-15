@@ -32,9 +32,8 @@ export const Variations = component$((props: VariationsProps) => {
         <>
           <label class="input-group md:w-96 w-full">
             <span
-              class={`btn text-sm md:text-xl text-black bg-[#F4F4F5] ${
-                value[index] === 0 ? "btn-disabled" : ""
-              }`}
+              class={`btn text-sm md:text-xl text-black bg-[#F4F4F5] ${value[index] === 0 ? "btn-disabled" : ""
+                }`}
               onClick$={() => {
                 value[index]--;
                 if (value[index] === 0) {
@@ -60,9 +59,8 @@ export const Variations = component$((props: VariationsProps) => {
               class="input input-bordered w-16 md:w-20 text-black text-xs lg:text-lg"
             />
             <span
-              class={`btn text-sm md:text-xl text-black bg-[#F4F4F5] ${
-                variationQuantity === 0 ? "btn-disabled" : ""
-              }`}
+              class={`btn text-sm md:text-xl text-black bg-[#F4F4F5] ${variationQuantity === 0 ? "btn-disabled" : ""
+                }`}
               onClick$={async () => {
                 if (value[index] === variationQuantity) return;
                 value[index]++;
@@ -93,19 +91,19 @@ export const Variations = component$((props: VariationsProps) => {
             height="60"
           />
         )}
-        <p class="text-black w-full justify-self-end text-xs md:text-lg">
+        <p class="text-black w-full justify-self-end text-sm">
           {variation.variation_name}
         </p>
         <p class=" text-orange-900">
           {currency.cur === "1"
             ? (variation.price * 0.9).toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })
+              style: "currency",
+              currency: "USD",
+            })
             : variation.price.toLocaleString("en-US", {
-                style: "currency",
-                currency: "CAD",
-              })}
+              style: "currency",
+              currency: "CAD",
+            })}
         </p>
       </div>
     </div>
