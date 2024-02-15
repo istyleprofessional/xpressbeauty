@@ -36,8 +36,7 @@ const productsSchema = new Schema(
 productsSchema.index(
   {
     product_name: "text",
-    description: "text",
-    lineName: "text",
+    "variations.variation_name": "text",
     "companyName.name": "text",
     "categories.main": "text",
     "categories.name": "text",
@@ -46,8 +45,7 @@ productsSchema.index(
     name: "textScore",
     weights: {
       product_name: 10,
-      description: 1,
-      lineName: 5,
+      "variations.variation_name": 7,
       "companyName.name": 5,
       "categories.main": 5,
       "categories.name": 5,
