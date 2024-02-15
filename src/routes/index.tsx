@@ -64,8 +64,9 @@ export default component$(() => {
   return (
     <>
       {status === "1" && (
-        <div class="flex flex-col gap-10">
+        <div class="flex flex-col gap-3 md:gap-6 lg:gap-10">
           <Hero />
+
           <Categories />
           <FeatureProducts
             bestSellerProducts={bestSellerProducts2}

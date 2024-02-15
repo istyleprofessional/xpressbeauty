@@ -14,7 +14,7 @@ export const FeatureProducts = component$((props: BestSellerProps) => {
 
   return (
     <div
-      class="flex flex-col justify-center items-center gap-7 pt-20"
+      class="flex flex-col justify-center items-center gap-7 pt-5 lg:pt-20"
       style="background-image: url(Dash-lines.webp)"
     >
       <h2 class="font-inter font-bold text-4xl text-black">{type}</h2>
