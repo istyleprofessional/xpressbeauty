@@ -96,11 +96,11 @@ export const Variations = component$((props: VariationsProps) => {
         </p>
         <p class=" text-orange-900">
           {currency.cur === "1"
-            ? (variation.price * 0.9).toLocaleString("en-US", {
+            ? (variation?.price * 0.9)?.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
             })
-            : variation.price.toLocaleString("en-US", {
+            : variation?.price?.toLocaleString("en-US", {
               style: "currency",
               currency: "CAD",
             })}

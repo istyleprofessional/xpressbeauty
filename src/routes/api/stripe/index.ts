@@ -73,6 +73,13 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     consent_collection: {
       terms_of_service: "required",
     },
+    // payment_intent_data: {
+    //   capture_method: "manual",
+    //   description: "Xpress Beauty Order",
+    //   statement_descriptor: "Xpress Beauty",
+    // },
+    // listen when the session is completed
+
     custom_fields: [
       {
         key: "notes",
@@ -110,11 +117,9 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     mode: "payment",
     return_url: `${env.get(
       "VITE_APPURL"
-    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${
-      data.userId
-    }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${
-      data.user.isDummy
-    }`,
+    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${data.userId
+      }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${data.user.isDummy
+      }`,
   });
   json(200, { clientSecret: session.client_secret, sessionId: session.id });
   return;
@@ -130,10 +135,7 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
         expand: ["line_items"],
       }
     );
-    console.log("session", session);
-    if (session.payment_status === "unpaid") {
-      throw redirect(302, `/payment/?error=payment-failed`);
-    }
+
     const productsFromCart: any = await getCartByUserId(
       query.get("userId") ?? ""
     );
@@ -231,6 +233,6 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
     }
 
     await deleteCart(query.get("userId") ?? "");
-    throw redirect(302, `/payment/success/${orderData.order_number}`);
+    throw redirect(301, `/payment/success/${orderData.order_number}/`);
   }
 };

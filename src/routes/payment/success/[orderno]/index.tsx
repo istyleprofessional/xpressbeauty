@@ -13,7 +13,7 @@ export interface SuccessProps {
 }
 
 export const useLoaderSuccess = routeLoader$(async ({ params, cookie }) => {
-  const orderId = params.args.split("/")[0];
+  const orderId = params.orderno;
   const token = cookie.get("token")?.value;
   if (!token) {
     return null;
@@ -31,9 +31,8 @@ export const useLoaderSuccess = routeLoader$(async ({ params, cookie }) => {
   verifiedToken = verifyToken.data;
   const deliveryDate = new Date();
   deliveryDate.setDate(deliveryDate.getDate() + 5);
-  const deliveryDateInFormat = `${deliveryDate.getFullYear()}-${
-    deliveryDate.getMonth() + 1
-  }-${deliveryDate.getDate()}`;
+  const deliveryDateInFormat = `${deliveryDate.getFullYear()}-${deliveryDate.getMonth() + 1
+    }-${deliveryDate.getDate()}`;
 
   const getOrderById = await getOrderByOrderNumberService(orderId ?? "");
   if (!getOrderById.request) {
@@ -96,26 +95,26 @@ export default component$(() => {
   }`;
 
   useVisibleTask$(() =>
-    // { track }
-    {
-      // track(() => data?.dataForSurvey?.order_id);
-      // if (!data?.dataForSurvey?.order_id) {
-      //   location.href = "/";
-      // }
-      const successScript = `
+  // { track }
+  {
+    // track(() => data?.dataForSurvey?.order_id);
+    // if (!data?.dataForSurvey?.order_id) {
+    //   location.href = "/";
+    // }
+    const successScript = `
       gtag('event', 'conversion', {
           'send_to': 'AW-11167601664/ApSoCLPu2IwZEICokM0p',
           'transaction_id': '${data?.dataForSurvey?.order_id}',
     `;
-      const script = document.createElement("script");
-      script.innerHTML = successScript;
-      document.head.appendChild(script);
+    const script = document.createElement("script");
+    script.innerHTML = successScript;
+    document.head.appendChild(script);
 
-      const checkCopon = localStorage.getItem("copon");
-      if (checkCopon === "true") {
-        localStorage.removeItem("copon");
-      }
+    const checkCopon = localStorage.getItem("copon");
+    if (checkCopon === "true") {
+      localStorage.removeItem("copon");
     }
+  }
   );
 
   return (
