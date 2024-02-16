@@ -39,7 +39,7 @@ export const onGet: RequestHandler = async ({ json }) => {
             link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0].includes("http")
               ? product?.imgs[0]
-              : `https://xpressbeauty.ca${product?.imgs[0]}`,
+              : `https://xpressbeauty.ca${product?.imgs[0].replace(".", "")}`,
             availability:
               parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
                 ? "in_stock"
@@ -78,7 +78,7 @@ export const onGet: RequestHandler = async ({ json }) => {
             link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0].includes("http")
               ? product?.imgs[0]
-              : `https://xpressbeauty.ca${product?.imgs[0]}`,
+              : `https://xpressbeauty.ca${product?.imgs[0].replace(".", "")}`,
             availability:
               parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
                 ? "in_stock"
