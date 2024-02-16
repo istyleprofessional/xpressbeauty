@@ -83,12 +83,12 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         <h2 class="flex flex-row gap-2 text-xl lg:text-3xl text-black">
           {priceType === "single" && sale_price?.sale !== "" && (
             <>
-              <span class="text-black line-through" itemProp="price">
+              <span class="text-black" itemProp="price">
                 {finalRegularPrice.value}
               </span>
-              <span class=" text-red-600" itemProp="price">
+              {/* <span class=" text-red-600" itemProp="price">
                 {salePrice.value}
-              </span>
+              </span> */}
             </>
           )}
           {priceType === "single" && sale_price?.sale === "" && (
