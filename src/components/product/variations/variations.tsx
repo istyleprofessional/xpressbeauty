@@ -10,6 +10,7 @@ export interface VariationsProps {
   variationCheckerLoading?: boolean;
   finalVariationToAdd?: any;
   productId?: string;
+  variation_type?: string;
 }
 
 export const Variations = component$((props: VariationsProps) => {
@@ -21,6 +22,7 @@ export const Variations = component$((props: VariationsProps) => {
     productId,
     variationQuantity,
     finalVariationToAdd,
+    variation_type,
   } = props;
   const currency: any = useContext(CurContext);
 
@@ -81,14 +83,17 @@ export const Variations = component$((props: VariationsProps) => {
             Out of Stock
           </p>
         )}
+
         <div class="flex flex-row gap-5 w-full items-center">
-          <img
-            src={folder}
-            class="rounded-full"
-            alt={variation.variation_name}
-            width="60"
-            height="60"
-          />
+          {variation_type === "Color" && (
+            <img
+              src={folder}
+              class="rounded-full"
+              alt={variation.variation_name}
+              width="60"
+              height="60"
+            />
+          )}
 
           <p class="text-black w-full justify-self-end text-sm">
             {variation.variation_name}

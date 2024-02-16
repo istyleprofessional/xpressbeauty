@@ -358,7 +358,7 @@ export default component$(() => {
               companyName={product?.companyName ?? ""}
               categories={product?.categories ?? []}
             />
-            {(product?.variations?.length ?? 0) > 0 &&
+            {/* {(product?.variations?.length ?? 0) > 0 &&
               product?.variation_type === "Size" && (
                 <div class="flex flex-row gap-3">
                   {product?.variations?.map((variation: any, index: number) => {
@@ -367,14 +367,14 @@ export default component$(() => {
                         key={index}
                         class="flex flex-row w-full justify-center"
                       >
-                        <button class="btn btn-ghost">
+                        <input type="checkbox" >
                           {variation.variation_name}
-                        </button>
+                        </input>
                       </div>
                     );
                   })}
                 </div>
-              )}
+              )} */}
             <ProductActions
               handleAddToCart={handleAddToCart}
               handleAddToFav={handleAddToFav}
@@ -389,39 +389,40 @@ export default component$(() => {
               variationValue={variationValue}
             />
 
-            {(product?.variations?.length ?? 0) > 0 &&
-              product?.variation_type === "Color" && (
-                <div
-                  class={`menu menu-horizontal lg:menu-vertical bg-base-100 shadow-xl h-fit max-h-96 overflow-scroll gap-10 justify-center
+            {(product?.variations?.length ?? 0) > 0 && (
+              // product?.variation_type === "Color" &&
+              <div
+                class={`menu menu-horizontal lg:menu-vertical bg-base-100 shadow-xl h-fit max-h-96 overflow-scroll gap-10 justify-center
                   items-center md:p-4 w-full lg:w-[30vw]`}
-                >
-                  {product?.variations?.map((variation: any, index: number) => {
-                    const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;
-                    useVisibleTask$(() => {
-                      variationValue[index] = 0;
-                    });
-                    if (variation?.price === "$null") {
-                      return <Fragment key={index}></Fragment>;
-                    }
-                    return (
-                      <div
-                        key={index}
-                        class="flex flex-row w-full justify-center"
-                      >
-                        <Variations
-                          variation={variation}
-                          value={variationValue}
-                          productId={product.id ?? ""}
-                          folder={folder}
-                          index={index}
-                          variationQuantity={variation?.quantity_on_hand ?? 0}
-                          finalVariationToAdd={finalVariationToAdd}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              >
+                {product?.variations?.map((variation: any, index: number) => {
+                  const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;
+                  useVisibleTask$(() => {
+                    variationValue[index] = 0;
+                  });
+                  if (variation?.price === "$null") {
+                    return <Fragment key={index}></Fragment>;
+                  }
+                  return (
+                    <div
+                      key={index}
+                      class="flex flex-row w-full justify-center"
+                    >
+                      <Variations
+                        variation={variation}
+                        variation_type={product.variation_type}
+                        value={variationValue}
+                        productId={product.id ?? ""}
+                        folder={folder}
+                        index={index}
+                        variationQuantity={variation?.quantity_on_hand ?? 0}
+                        finalVariationToAdd={finalVariationToAdd}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
         <div class="flex flex-row gap-5 lg:gap-10 p-3 lg:p-10">
