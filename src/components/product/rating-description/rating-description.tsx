@@ -145,7 +145,7 @@ export const RatingAndDescription = component$(
             </button>
           </div>
         </div>
-        <div class="w-full lg:w-">
+        <div class="w-full md:w-2/3 lg:w-2/5">
           {isDescriptionActive.value ? (
             <div class="flex flex-col gap-2">
               <div role="tablist" class="tabs tabs-bordered">

@@ -9,7 +9,7 @@ import Cat6 from "~/media/cat-4.jpg?jsx";
 export const Categories = component$(() => {
   return (
     <div class="flex flex-col gap-3 md:gap-6 lg:gap-10 justify-center items-center w-full">
-      <h3 class="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
+      <h3 class="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-black">
         Shop by Category
       </h3>
       <div class="bg-base-100 w-full h-full rounded-lg p-4 flex flex-col md:flex-row lg:flex-row gap-3 md:gap-6 lg:gap-10 justify-center items-center">

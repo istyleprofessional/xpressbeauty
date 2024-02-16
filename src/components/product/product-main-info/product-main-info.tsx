@@ -25,7 +25,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     companyName,
   } = props;
   const finalRegularPrice = useSignal<string>("");
-  const verifiedPrice = useSignal<string>("");
+  const salePrice = useSignal<string>("");
 
   useTask$(() => {
     if (priceType === "range") {
@@ -40,19 +40,6 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           style: "currency",
           currency: currencyObject === "1" ? "USD" : "CAD",
         })}`;
-        verifiedPrice.value = `${(
-          parseFloat(price.min) -
-          parseFloat(price.min) * 0.2
-        ).toLocaleString("en-US", {
-          style: "currency",
-          currency: currencyObject === "1" ? "USD" : "CAD",
-        })} - ${(
-          parseFloat(price.max) -
-          parseFloat(price.max) * 0.2
-        ).toLocaleString("en-US", {
-          style: "currency",
-          currency: currencyObject === "1" ? "USD" : "CAD",
-        })}`;
       }
     } else {
       finalRegularPrice.value = parseFloat(price?.regular)?.toLocaleString(
@@ -62,10 +49,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           currency: currencyObject === "1" ? "USD" : "CAD",
         }
       );
-      verifiedPrice.value = (
-        parseFloat(price?.regular) -
-        parseFloat(price?.regular) * 0.2
-      ).toLocaleString("en-US", {
+      salePrice.value = parseFloat(sale_price?.sale)?.toLocaleString("en-US", {
         style: "currency",
         currency: currencyObject === "1" ? "USD" : "CAD",
       });
@@ -99,8 +83,11 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         <h2 class="flex flex-row gap-2 text-xl lg:text-3xl text-black">
           {priceType === "single" && sale_price?.sale !== "" && (
             <>
-              <span class="text-black" itemProp="price">
+              <span class="text-black line-through" itemProp="price">
                 {finalRegularPrice.value}
+              </span>
+              <span class=" text-red-600" itemProp="price">
+                {salePrice.value}
               </span>
             </>
           )}
