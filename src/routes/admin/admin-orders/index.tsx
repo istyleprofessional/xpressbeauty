@@ -230,7 +230,7 @@ export default component$(() => {
           }
           return order;
         });
-        alert("Payment captured successfully");
+        alert("Payment cancelled successfully");
         location.reload();
       }
     }
@@ -347,7 +347,8 @@ export default component$(() => {
                         disabled={
                           order.paid ||
                           !order.payment_intent ||
-                          order.payment_intent === ""
+                          order.payment_intent === "" ||
+                          order.orderStatus === "Cancelled"
                         }
                       >
                         Capture
@@ -357,11 +358,12 @@ export default component$(() => {
                         disabled={
                           order.paid ||
                           !order.payment_intent ||
-                          order.payment_intent === ""
+                          order.payment_intent === "" ||
+                          order.orderStatus === "Cancelled"
                         }
                         onClick$={() => handleCancelPayment(order)}
                       >
-                        Refund
+                        Cancel
                       </button>
                     </td>
                     <td>

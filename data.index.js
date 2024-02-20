@@ -4,6 +4,7 @@ const models = require("./model");
 const Product = models.Product;
 require("dotenv").config();
 const NEXT_APP_MONGO_URL = process.env.VITE_QWIK_APP_MONGO_CONNECTION;
+const stripe = require("stripe")(process.env.VITE_STRIPE_SECRET_KEY);
 
 set("strictQuery", false);
 const mongoUrl = NEXT_APP_MONGO_URL || "";
@@ -112,4 +113,13 @@ async function updateBabylissPrices() {
   await connection.close();
 }
 
-updateBabylissPrices();
+// updateBabylissPrices();
+
+async function getPaymentDetails() {
+  const payment = await stripe.paymentIntents.retrieve(
+    "pi_3OlcPoENS3vWhi4P0lgMLuI6"
+  );
+  console.log(payment);
+}
+
+getPaymentDetails();

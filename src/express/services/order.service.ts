@@ -141,7 +141,7 @@ export const updatePaymentOrderStatus = async (
   try {
     const request = await Order.findOneAndUpdate(
       { _id: orderId },
-      { paid: status },
+      { paid: status, orderStatus: "Cancelled" },
       { new: true }
     );
     return { status: "success", request: request };

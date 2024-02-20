@@ -392,7 +392,7 @@ export default component$(() => {
             {(product?.variations?.length ?? 0) > 0 && (
               // product?.variation_type === "Color" &&
               <div
-                class={`menu menu-horizontal lg:menu-vertical bg-base-100 shadow-xl h-fit max-h-96 overflow-scroll gap-10 justify-center
+                class={`menu menu-horizontal bg-base-100 shadow-xl h-fit max-h-96 overflow-scroll gap-10 justify-center
                   items-center md:p-4 w-full lg:w-[30vw]`}
               >
                 {product?.variations?.map((variation: any, index: number) => {
@@ -406,7 +406,7 @@ export default component$(() => {
                   return (
                     <div
                       key={index}
-                      class="flex flex-row w-full justify-center"
+                      class="flex flex-col w-full justify-center"
                     >
                       <Variations
                         variation={variation}
