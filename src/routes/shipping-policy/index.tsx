@@ -49,6 +49,14 @@ export default component$(() => {
 
             <p>
               <span>
+                <b> Processing Time Estimates: </b>
+              </span>
+              Processing time may be up to 14 days.
+            </p>
+            <br></br>
+
+            <p>
+              <span>
                 <b> Delivery Time Estimates: </b>
               </span>
               While shipping times may vary, we do our best to provide accurate

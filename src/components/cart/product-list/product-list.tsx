@@ -54,7 +54,11 @@ export const ProductList = component$((props: any) => {
                 <figure>
                   <Image
                     layout="fill"
-                    src={product?.product_img.includes("http") ? product?.product_img : product?.product_img.replace(".", "")}
+                    src={
+                      product?.product_img?.includes("http")
+                        ? product?.product_img
+                        : product?.product_img?.replace(".", "")
+                    }
                     onError$={(e: any) => {
                       e.target.src = "/placeholder.webp";
                     }}

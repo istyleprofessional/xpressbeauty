@@ -7,6 +7,8 @@ interface ProductActionsProps {
   isVariation: boolean;
   variationValue?: any;
   handleAddToFav: PropFunction<() => void>;
+  variationType?: string;
+  finalVariationToAdd?: any;
 }
 
 export const ProductActions = component$((props: ProductActionsProps) => {
@@ -16,6 +18,8 @@ export const ProductActions = component$((props: ProductActionsProps) => {
     isVariation,
     variationValue,
     handleAddToFav,
+    variationType,
+    finalVariationToAdd,
   } = props;
   const isButtonDisabled = useSignal<boolean>(true);
 
@@ -68,14 +72,32 @@ export const ProductActions = component$((props: ProductActionsProps) => {
                     max={qunatity}
                     class="input input-bordered w-20 text-black"
                   />
-                  <span
-                    class={`btn text-xl text-black bg-[#F4F4F5] ${
-                      value.value === qunatity ? "btn-disabled" : ""
-                    }`}
-                    onClick$={() => value.value++}
-                  >
-                    +
-                  </span>
+                  {variationType === "Size" ? (
+                    <span
+                      class={`btn text-xl text-black bg-[#F4F4F5] ${
+                        value.value === qunatity ? "btn-disabled" : ""
+                      }`}
+                      onClick$={() => {
+                        value.value++;
+                        Object.keys(finalVariationToAdd).forEach((key) => {
+                          if (finalVariationToAdd[key]) {
+                            finalVariationToAdd[key].quantity = value.value;
+                          }
+                        });
+                      }}
+                    >
+                      +
+                    </span>
+                  ) : (
+                    <span
+                      class={`btn text-xl text-black bg-[#F4F4F5] ${
+                        value.value === qunatity ? "btn-disabled" : ""
+                      }`}
+                      onClick$={() => value.value++}
+                    >
+                      +
+                    </span>
+                  )}
                 </label>
               </>
             ) : (

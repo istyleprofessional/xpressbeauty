@@ -104,14 +104,21 @@ export default component$(() => {
     const productsToAdd: any[] = [];
     let totalQuantity = 0;
     if (Object.values(finalVariationToAdd.value).length > 0) {
+      // debugger;
       Object.values(finalVariationToAdd.value).forEach((element: any) => {
+        // debugger;
         element.price =
           currencyObject === "2" ? element.price : element.price * 0.9;
         const productToAdd = {
           id: `${product._id}.${element.variation_id}`,
           product_name: product.product_name,
           variation_name: element.variation_name,
-          product_img: (product?.imgs ?? [])[0] ?? "",
+          product_img:
+            product.variation_type && product.variation_type === "Size"
+              ? element.variation_image
+              : (product.imgs ?? [])[0].includes("http")
+              ? (product.imgs ?? [])[0]
+              : (product.imgs ?? [])[0].replace(".", "") ?? "/placeholder.webp",
           price: parseFloat(element?.price),
           quantity: element.quantity,
           currency: currencyObject === "1" ? "USD" : "CAD",
@@ -299,6 +306,47 @@ export default component$(() => {
     })
   );
 
+  useTask$(() => {
+    if (product.variation_type && product.variation_type === "Size") {
+      const variation = (product?.variations ?? [])[0];
+      finalVariationToAdd.value[0] = {
+        variation_id: variation._id,
+        variation_name: variation.variation_name,
+        price: variation.price,
+        quantity: 1,
+      };
+    }
+  });
+
+  useOnDocument(
+    "DOMContentLoaded",
+    $(() => {
+      if (
+        product.variation_type === "Size" &&
+        (product?.variations ?? []).length > 0
+      ) {
+        const img = document?.getElementById("product-image");
+        img?.setAttribute(
+          "src",
+          `${
+            (product?.variations ?? [])[0].variation_image ??
+            (product?.imgs ?? [])[0]
+          }`
+        );
+      } else {
+        const img = document?.getElementById("product-image");
+        img?.setAttribute(
+          "src",
+          `${
+            (product?.imgs ?? [])[0].includes("http")
+              ? (product?.imgs ?? [])[0]
+              : (product?.imgs ?? [])[0].replace(".", "")
+          }`
+        );
+      }
+    })
+  );
+
   return (
     <>
       {isLoading.value && (
@@ -358,71 +406,124 @@ export default component$(() => {
               companyName={product?.companyName ?? ""}
               categories={product?.categories ?? []}
             />
-            {/* {(product?.variations?.length ?? 0) > 0 &&
+            {(product?.variations?.length ?? 0) > 0 &&
               product?.variation_type === "Size" && (
-                <div class="flex flex-row gap-3">
-                  {product?.variations?.map((variation: any, index: number) => {
-                    return (
-                      <div
-                        key={index}
-                        class="flex flex-row w-full justify-center"
-                      >
-                        <input type="checkbox" >
-                          {variation.variation_name}
-                        </input>
-                      </div>
-                    );
-                  })}
+                <div class="flex flex-row gap-3 w-96">
+                  {product?.variations
+                    ?.sort(
+                      (a: any, b: any) => a.variation_name - b.variation_name
+                    )
+                    .map((variation: any, index: number) => {
+                      return (
+                        <div
+                          key={index}
+                          class="flex flex-col justify-center items-center w-full gap-2"
+                        >
+                          <button
+                            class={`btn w-full ${
+                              finalVariationToAdd.value[index]
+                                ? " btn-success"
+                                : "btn-outline"
+                            }`}
+                            onClick$={() => {
+                              finalVariationToAdd.value = {};
+                              finalVariationToAdd.value[index] = {
+                                variation_id: variation._id,
+                                variation_name: variation.variation_name,
+                                variation_image: variation.variation_image,
+                                price: variation.price,
+                                quantity: 1,
+                              };
+                              const img =
+                                document?.getElementById("product-image");
+                              img?.setAttribute(
+                                "src",
+                                `${
+                                  variation?.variation_image ??
+                                  (product?.imgs ?? [])[0]
+                                }`
+                              );
+                            }}
+                          >
+                            {variation.variation_name}
+                          </button>
+                          {/* variation price */}
+                          <p class="text-black text-sm font-bold">
+                            {currencyObject === "1"
+                              ? parseFloat(variation.price).toLocaleString(
+                                  "en-us",
+                                  {
+                                    style: "currency",
+                                    currency: "USD",
+                                  }
+                                )
+                              : parseFloat(variation.price).toLocaleString(
+                                  "en-us",
+                                  {
+                                    style: "currency",
+                                    currency: "CAD",
+                                  }
+                                )}
+                          </p>
+                        </div>
+                      );
+                    })}
                 </div>
-              )} */}
+              )}
             <ProductActions
               handleAddToCart={handleAddToCart}
               handleAddToFav={handleAddToFav}
+              finalVariationToAdd={finalVariationToAdd.value}
               qunatity={
                 product.variations && product.variations?.length > 0
                   ? 300
                   : parseInt(product?.quantity_on_hand?.toString() ?? "0")
               }
               isVariation={
-                (product.variations && product.variations?.length > 0) ?? false
+                (product.variations &&
+                  product.variations?.length > 0 &&
+                  product.variation_type === "Color") ??
+                false
               }
+              variationType={product.variation_type}
               variationValue={variationValue}
             />
 
-            {(product?.variations?.length ?? 0) > 0 && (
-              // product?.variation_type === "Color" &&
-              <div
-                class={`menu menu-horizontal bg-base-100 shadow-xl h-fit max-h-96 overflow-scroll gap-10 justify-center
+            {product.variation_type !== "Size" &&
+              (product?.variations?.length ?? 0) > 0 && (
+                // product?.variation_type === "Color" &&
+                <div
+                  class={`menu menu-horizontal bg-base-100 shadow-xl h-fit max-h-96 overflow-scroll gap-10 justify-center
                   items-center md:p-4 w-full lg:w-[30vw]`}
-              >
-                {product?.variations?.map((variation: any, index: number) => {
-                  const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;
-                  useVisibleTask$(() => {
-                    variationValue[index] = 0;
-                  });
-                  if (variation?.price === "$null") {
-                    return <Fragment key={index}></Fragment>;
-                  }
-                  return (
-                    <div
-                      key={index}
-                      class="flex flex-col w-full justify-center"
-                    >
-                      <Variations
-                        variation={variation}
-                        variation_type={product.variation_type}
-                        value={variationValue}
-                        productId={product.id ?? ""}
-                        folder={folder}
-                        index={index}
-                        variationQuantity={variation?.quantity_on_hand ?? 0}
-                        finalVariationToAdd={finalVariationToAdd}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                >
+                  {product?.variations?.map((variation: any, index: number) => {
+                    const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;
+                    useVisibleTask$(() => {
+                      variationValue[index] = 0;
+                    });
+                    if (variation?.price === "$null") {
+                      return <Fragment key={index}></Fragment>;
+                    }
+                    return (
+                      <div
+                        key={index}
+                        class="flex flex-col w-full justify-center"
+                      >
+                        <Variations
+                          variation={variation}
+                          // variation_type={product.variation_type}
+                          value={variationValue}
+                          productId={product.id ?? ""}
+                          folder={folder}
+                          index={index}
+                          variationQuantity={variation?.quantity_on_hand ?? 0}
+                          finalVariationToAdd={finalVariationToAdd}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
           </div>
         </div>
         <div class="flex flex-row gap-5 lg:gap-10 p-3 lg:p-10">

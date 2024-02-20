@@ -145,10 +145,10 @@ export const RatingAndDescription = component$(
             </button>
           </div>
         </div>
-        <div class="w-full md:w-2/3 lg:w-2/5">
+        <div class="w-full md:w-96 lg:w-[36rem]">
           {isDescriptionActive.value ? (
-            <div class="flex flex-col gap-2">
-              <div role="tablist" class="tabs tabs-bordered">
+            <div class="flex flex-col gap-2 w-full">
+              <div role="tablist" class="tabs tabs-bordered w-full">
                 {product_description && (
                   <button
                     role="tab"
@@ -210,7 +210,7 @@ export const RatingAndDescription = component$(
                 )}
               </div>
               <div
-                class="text-black font-normal text-base"
+                class="text-black font-normal text-base w-full p-2"
                 id="mainDiv"
                 itemProp="description"
                 dangerouslySetInnerHTML={product_description
