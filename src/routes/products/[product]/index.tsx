@@ -408,7 +408,7 @@ export default component$(() => {
             />
             {(product?.variations?.length ?? 0) > 0 &&
               product?.variation_type === "Size" && (
-                <div class="flex flex-row gap-3 w-96">
+                <div class="flex flex-row gap-3 w-full md:w-96 flex-wrap">
                   {product?.variations
                     ?.sort(
                       (a: any, b: any) => a.variation_name - b.variation_name
