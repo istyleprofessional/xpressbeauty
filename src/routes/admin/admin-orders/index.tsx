@@ -89,7 +89,11 @@ export const cancelPaymentServer = server$(async function (
   const stripe = new Stripe(this.env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
   const payment = await stripe.paymentIntents.cancel(paymentIntent);
   if (payment.status === "canceled") {
-    const updateOrderStatusreq = await updatePaymentOrderStatus(orderId, false);
+    const updateOrderStatusreq = await updatePaymentOrderStatus(
+      orderId,
+      false,
+      "Cancelled"
+    );
     if (updateOrderStatusreq.status === "error")
       return { status: "error", message: "Order status not updated" };
     return {

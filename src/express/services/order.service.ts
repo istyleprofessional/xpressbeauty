@@ -136,14 +136,18 @@ export const updateOrderStatus = async (orderId: string, status: string) => {
 
 export const updatePaymentOrderStatus = async (
   orderId: string,
-  status: boolean
+  status: boolean,
+  orderStatus?: string
 ) => {
   try {
-    const request = await Order.findOneAndUpdate(
-      { _id: orderId },
-      { paid: status, orderStatus: "Cancelled" },
-      { new: true }
-    );
+    const query: any = {};
+    if (orderStatus) {
+      query.orderStatus = orderStatus;
+    }
+    query.paid = status;
+    const request = await Order.findOneAndUpdate({ _id: orderId }, query, {
+      new: true,
+    });
     return { status: "success", request: request };
   } catch (error: any) {
     return { status: "failed", err: error.message };
