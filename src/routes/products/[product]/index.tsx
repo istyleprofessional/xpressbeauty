@@ -450,13 +450,12 @@ export default component$(() => {
                           {/* variation price */}
                           <p class="text-black text-sm font-bold">
                             {currencyObject === "1"
-                              ? parseFloat(variation.price).toLocaleString(
-                                  "en-us",
-                                  {
-                                    style: "currency",
-                                    currency: "USD",
-                                  }
-                                )
+                              ? parseFloat(
+                                  variation.price * 0.9
+                                ).toLocaleString("en-us", {
+                                  style: "currency",
+                                  currency: "USD",
+                                })
                               : parseFloat(variation.price).toLocaleString(
                                   "en-us",
                                   {
