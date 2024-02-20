@@ -408,7 +408,7 @@ export default component$(() => {
             />
             {(product?.variations?.length ?? 0) > 0 &&
               product?.variation_type === "Size" && (
-                <div class="flex flex-row gap-3 w-full md:w-96 flex-wrap">
+                <div class="flex flex-row gap-3 w-full md:w-96 flex-wrap md:flex-nowrap">
                   {product?.variations
                     ?.sort(
                       (a: any, b: any) => a.variation_name - b.variation_name
@@ -417,7 +417,7 @@ export default component$(() => {
                       return (
                         <div
                           key={index}
-                          class="flex flex-col justify-center items-center w-full gap-2"
+                          class="flex flex-row md:flex-col justify-center items-center w-full gap-2"
                         >
                           <button
                             class={`btn w-full ${
