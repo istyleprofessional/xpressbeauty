@@ -1,12 +1,7 @@
 import json
 import time
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 import requests
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
 import boto3
 import os
@@ -91,6 +86,7 @@ def return_product_if_range(parsed_json, d, url, driver):
                 variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
             else:
                 variation['quantity_on_hand'] = 0
+            
             if d['variation_type'] == 'Size':
                 # download the image from the url and upload it to aws s3 bucket
                 images = []

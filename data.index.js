@@ -122,4 +122,35 @@ async function getPaymentDetails() {
   console.log(payment);
 }
 
-getPaymentDetails();
+// getPaymentDetails();
+
+async function updateLastProductsQuantity() {
+  const json = require("./updated_cosmo_products.json");
+  await connect(mongoUrl);
+  for (const product of json) {
+    const productFound = await Product.findOne({
+      product_name: product.product_name,
+    });
+    if (productFound) {
+      productFound.quantity_on_hand = product.quantity_on_hand;
+      if (productFound.variations) {
+        for (const variation of productFound.variations) {
+          const variationFound = product.variations.find(
+            (variant) => variant.variation_name === variation.variation_name
+          );
+          if (variationFound) {
+            variation.quantity_on_hand = variationFound.quantity_on_hand;
+          }
+        }
+      } else {
+        productFound.quantity_on_hand = product.quantity_on_hand;
+      }
+      await Product.findByIdAndUpdate({ _id: productFound._id }, productFound, {
+        new: true,
+      });
+    }
+  }
+  console.log("done");
+}
+
+updateLastProductsQuantity();

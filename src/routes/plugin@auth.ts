@@ -1,13 +1,17 @@
 import { serverAuth$ } from "@builder.io/qwik-auth";
 import type { Provider } from "@auth/core/providers";
-import Google from '@auth/core/providers/google';
-import { userGoogleLogin, userRegistration } from "~/express/services/user.service";
+import Google from "@auth/core/providers/google";
+import {
+  userGoogleLogin,
+  userRegistration,
+} from "~/express/services/user.service";
 import jwt from "jsonwebtoken";
 
 export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
   serverAuth$(({ env, cookie }) => ({
     secret: env.get("PRIVATE_GOOGLE_CLIENT_SECRET") ?? "",
     trustHost: true,
+
     callbacks: {
       async signIn({ profile }) {
         if (profile?.name && profile?.email) {
@@ -55,9 +59,9 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
         clientSecret: env.get("PRIVATE_GOOGLE_CLIENT_SECRET") ?? "",
         authorization: {
           params: {
-            prompt: 'consent',
-            access_type: 'offline',
-            response_type: 'code',
+            prompt: "consent",
+            access_type: "offline",
+            response_type: "code",
           },
         },
       }),
