@@ -117,8 +117,8 @@ export default component$(() => {
             product.variation_type && product.variation_type === "Size"
               ? element.variation_image
               : (product.imgs ?? [])[0].includes("http")
-              ? (product.imgs ?? [])[0]
-              : (product.imgs ?? [])[0].replace(".", "") ?? "/placeholder.webp",
+                ? (product.imgs ?? [])[0]
+                : (product.imgs ?? [])[0].replace(".", "") ?? "/placeholder.webp",
           price: parseFloat(element?.price),
           quantity: element.quantity,
           currency: currencyObject === "1" ? "USD" : "CAD",
@@ -328,19 +328,17 @@ export default component$(() => {
         const img = document?.getElementById("product-image");
         img?.setAttribute(
           "src",
-          `${
-            (product?.variations ?? [])[0].variation_image ??
-            (product?.imgs ?? [])[0]
+          `${(product?.variations ?? [])[0].variation_image ??
+          (product?.imgs ?? [])[0]
           }`
         );
       } else {
         const img = document?.getElementById("product-image");
         img?.setAttribute(
           "src",
-          `${
-            (product?.imgs ?? [])[0].includes("http")
-              ? (product?.imgs ?? [])[0]
-              : (product?.imgs ?? [])[0].replace(".", "")
+          `${(product?.imgs ?? [])[0].includes("http")
+            ? (product?.imgs ?? [])[0]
+            : (product?.imgs ?? [])[0].replace(".", "")
           }`
         );
       }
@@ -417,14 +415,13 @@ export default component$(() => {
                       return (
                         <div
                           key={index}
-                          class="flex flex-row md:flex-col justify-center items-center w-full gap-2"
+                          class="flex flex-row md:flex-col justify-start items-center w-full gap-2"
                         >
                           <button
-                            class={`btn w-full ${
-                              finalVariationToAdd.value[index]
-                                ? " btn-success"
-                                : "btn-outline"
-                            }`}
+                            class={`btn w-40 ${finalVariationToAdd.value[index]
+                              ? " btn-success"
+                              : "btn-outline"
+                              }`}
                             onClick$={() => {
                               finalVariationToAdd.value = {};
                               finalVariationToAdd.value[index] = {
@@ -438,9 +435,8 @@ export default component$(() => {
                                 document?.getElementById("product-image");
                               img?.setAttribute(
                                 "src",
-                                `${
-                                  variation?.variation_image ??
-                                  (product?.imgs ?? [])[0]
+                                `${variation?.variation_image ??
+                                (product?.imgs ?? [])[0]
                                 }`
                               );
                             }}
@@ -451,18 +447,18 @@ export default component$(() => {
                           <p class="text-black text-sm font-bold">
                             {currencyObject === "1"
                               ? (
-                                  parseFloat(variation.price) * 0.9
-                                ).toLocaleString("en-us", {
-                                  style: "currency",
-                                  currency: "USD",
-                                })
+                                parseFloat(variation.price) * 0.9
+                              ).toLocaleString("en-us", {
+                                style: "currency",
+                                currency: "USD",
+                              })
                               : parseFloat(variation.price).toLocaleString(
-                                  "en-us",
-                                  {
-                                    style: "currency",
-                                    currency: "CAD",
-                                  }
-                                )}
+                                "en-us",
+                                {
+                                  style: "currency",
+                                  currency: "CAD",
+                                }
+                              )}
                           </p>
                         </div>
                       );
@@ -551,39 +547,33 @@ export const head: DocumentHead = ({ resolveValue }) => {
   const jsonData = JSON.parse(doc)._doc;
 
   return {
-    title: `${jsonData?.product_name ?? ""} | ${
-      jsonData.companyName.name && jsonData.companyName.name !== ""
-        ? `${jsonData.companyName.name} |`
-        : ""
-    } ${`${jsonData.categories[0].main ?? ""}`}`,
+    title: `${jsonData?.product_name ?? ""} | ${jsonData.companyName.name && jsonData.companyName.name !== ""
+      ? `${jsonData.companyName.name} |`
+      : ""
+      } ${`${jsonData.categories[0].main ?? ""}`}`,
     meta: [
       {
         name: "description",
-        content: `Discover ${jsonData?.product_name ?? ""}${
-          jsonData.companyName.name && jsonData.companyName.name !== ""
-            ? ` by ${jsonData.companyName.name}`
-            : " "
-        }${
-          jsonData.lineName && jsonData.lineName !== ""
+        content: `Discover ${jsonData?.product_name ?? ""}${jsonData.companyName.name && jsonData.companyName.name !== ""
+          ? ` by ${jsonData.companyName.name}`
+          : " "
+          }${jsonData.lineName && jsonData.lineName !== ""
             ? ` from the ${jsonData.lineName} collection `
             : " "
-        }at Xpress Beauty. Get it for just ${
-          jsonData.priceType === "range"
+          }at Xpress Beauty. Get it for just ${jsonData.priceType === "range"
             ? `$${jsonData.price.min}-$${jsonData.price.max}`
             : `$${jsonData.price.regular}`
-        } in our ${
-          jsonData.categories
+          } in our ${jsonData.categories
             .map((cat: any) => `${cat.main}, ${cat.name}`)
             .join(", ") ?? ""
-        } category.`,
+          } category.`,
       },
       {
         name: "keywords",
-        content: `${jsonData?.product_name ?? ""}, ${
-          jsonData.companyName && jsonData.companyName !== ""
-            ? `${jsonData.companyName},`
-            : ""
-        } ${jsonData.categories.join(", ") ?? ""}`,
+        content: `${jsonData?.product_name ?? ""}, ${jsonData.companyName && jsonData.companyName !== ""
+          ? `${jsonData.companyName},`
+          : ""
+          } ${jsonData.categories.join(", ") ?? ""}`,
       },
     ],
   };
