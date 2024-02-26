@@ -98,6 +98,7 @@ export const getOrdersService = async (page: number) => {
           "dummyUser.firstName": 1,
           "dummyUser.lastName": 1,
           "dummyUser.phoneNumber": 1,
+          notes: 1,
           shippingAddress: 1,
           currency: 1,
           payment_intent: 1,
