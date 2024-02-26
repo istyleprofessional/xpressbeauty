@@ -702,6 +702,10 @@ export default component$(() => {
                     Order Date: {orderDetail.value?.createdAt}
                   </p>
                 </div>
+                <div class="flex flex-row justify-between items-center p-2">
+                  <p class="text-xs">Order Note</p>
+                  <p class="text-xs">{orderDetail.value?.order_note}</p>
+                </div>
                 <div class="overflow-x-auto h-[80%]">
                   <table class="table table-pin-rows table-sm h-full">
                     <thead>
@@ -712,7 +716,6 @@ export default component$(() => {
                         <th>Price</th>
                         <th>Quantity</th>
                         <th>Sub Total</th>
-                        <th>Order Note</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -748,7 +751,6 @@ export default component$(() => {
                               <td>{product?.price}</td>
                               <td>{product?.quantity}</td>
                               <td>{subTotal}</td>
-                              <td>{product?.order_note}</td>
                             </tr>
                           );
                         }
