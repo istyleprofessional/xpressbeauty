@@ -150,7 +150,9 @@ async function updateLastProductsQuantity() {
       });
     }
   }
+  // log done and close connection
   console.log("done");
+  await connection.close();
 }
 
 updateLastProductsQuantity();
