@@ -9,12 +9,14 @@ export const SideNavDashboard = component$(() => {
   const loc = useLocation();
 
   return (
-    <div role="tablist" class="tabs tabs-boxed">
+    <div role="tablist" class="tabs tabs-md">
       <a
         href="/profile/"
         role="tab"
-        class={`tab [--tab-bg:yellow] [--tab-border-color:orange] text-primary ${
-          !loc.url.toString().includes("my-order") ? "tab-active " : ""
+        class={`tab  text-black ${
+          !loc.url.toString().includes("my-order")
+            ? "bg-black text-white "
+            : "bg-white text-black "
         }`}
       >
         <EditProfileIcon
@@ -25,8 +27,10 @@ export const SideNavDashboard = component$(() => {
       <a
         href="/profile/my-order"
         role="tab"
-        class={`tab [--tab-bg:black] ${
-          loc.url.toString().includes("my-order") ? "tab-active " : ""
+        class={`tab ${
+          loc.url.toString().includes("my-order")
+            ? "bg-black text-white "
+            : "bg-white text-black "
         }`}
       >
         <OrderProfileIcon
