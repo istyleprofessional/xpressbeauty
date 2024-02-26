@@ -49,20 +49,23 @@ def return_product_if_range(parsed_json, d, url, driver):
                 variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
             else:
                 variation['quantity_on_hand'] = 0
-            if d['variation_type'] == 'Size':
-                # download the image from the url and upload it to aws s3 bucket
-                images = []
-                if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
-                    images.append(parsed_json['product']['images']['pdpLarge'][0])
-                    for i, image in enumerate(images):
-                        imageName = d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '') + '-' + variation['variation_id']
-                        imgUrl = upload_image(image['url'], f'''{imageName}-{i}''')
-                        variation['variation_image'] = imgUrl
-            if 'promotions' in parsed_json['product'] and parsed_json['product']['promotions'] != None and len(parsed_json['product']['promotions']) > 1:
-                # add 30% off to the variation price
-                for promotion in parsed_json['product']['promotions']:
-                    if 'id' in promotion and promotion['id'] == 'BigBottle':
-                        variation['sale_price'] = variation['price'] - (variation['price'] * 0.3)
+
+
+            # if d['variation_type'] == 'Size':
+            #     # download the image from the url and upload it to aws s3 bucket
+            #     images = []
+            #     if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
+            #         images.append(parsed_json['product']['images']['pdpLarge'][0])
+            #         for i, image in enumerate(images):
+            #             imageName = d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '') + '-' + variation['variation_id']
+            #             imgUrl = upload_image(image['url'], f'''{imageName}-{i}''')
+            #             variation['variation_image'] = imgUrl
+            # if 'promotions' in parsed_json['product'] and parsed_json['product']['promotions'] != None and len(parsed_json['product']['promotions']) > 1:
+            #     # add 30% off to the variation price
+            #     for promotion in parsed_json['product']['promotions']:
+            #         if 'id' in promotion and promotion['id'] == 'BigBottle':
+            #             variation['sale_price'] = variation['price'] - (variation['price'] * 0.3)
+            
         except:
             time.sleep(40)
             driver.get(url)
@@ -87,23 +90,22 @@ def return_product_if_range(parsed_json, d, url, driver):
             else:
                 variation['quantity_on_hand'] = 0
             
-            if d['variation_type'] == 'Size':
-                # download the image from the url and upload it to aws s3 bucket
-                images = []
-                if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
-                    images.append(parsed_json['product']['images']['pdpLarge'][0])
-                # upload images to aws s3 bucket
-                    for i, image in enumerate(images):
-                        imageName = d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '') + '-' + variation['variation_id']
-                        imgUrl = upload_image(image['url'], f'''{imageName}-{i}''')
-                        variation['variation_image'] = imgUrl
-            if 'promotions' in parsed_json['product'] and parsed_json['product']['promotions'] != None and len(parsed_json['product']['promotions']) > 1:
-                # add 30% off to the variation price
-                # variation['sale_price'] = variation['price'] - (variation['price'] * 0.3)
-                for promotion in parsed_json['product']['promotions']:
-                    if 'id' in promotion and promotion['id'] == 'BigBottle':
-                        variation['sale_price'] = variation['price'] - (variation['price'] * 0.3)
-    return d
+            # if d['variation_type'] == 'Size':
+            #     # download the image from the url and upload it to aws s3 bucket
+            #     images = []
+            #     if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
+            #         images.append(parsed_json['product']['images']['pdpLarge'][0])
+            #     # upload images to aws s3 bucket
+            #         for i, image in enumerate(images):
+            #             imageName = d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '') + '-' + variation['variation_id']
+            #             imgUrl = upload_image(image['url'], f'''{imageName}-{i}''')
+            #             variation['variation_image'] = imgUrl
+            # if 'promotions' in parsed_json['product'] and parsed_json['product']['promotions'] != None and len(parsed_json['product']['promotions']) > 1:
+            #     # add 30% off to the variation price
+            #     # variation['sale_price'] = variation['price'] - (variation['price'] * 0.3)
+            #     for promotion in parsed_json['product']['promotions']:
+            #         if 'id' in promotion and promotion['id'] == 'BigBottle':
+            #             variation['sale_price'] = variation['price'] - (variation['price'] * 0.3)
 
 def return_product_if_single(parsed_json, d):
     if 'upc' in parsed_json['product']:
@@ -123,11 +125,12 @@ def return_product_if_single(parsed_json, d):
         d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
     else:
         d['quantity_on_hand'] = 0
-    if 'promotions' in parsed_json['product'] and parsed_json['product']['promotions'] != None and len(parsed_json['product']['promotions']) > 1:
-        for promotion in parsed_json['product']['promotions']:
-            if 'id' in promotion and promotion['id'] == 'BigBottle':
-                d['sale_price'] = d['price'] - (d['price'] * 0.3)
-    return d
+
+    # if 'promotions' in parsed_json['product'] and parsed_json['product']['promotions'] != None and len(parsed_json['product']['promotions']) > 1:
+    #     for promotion in parsed_json['product']['promotions']:
+    #         if 'id' in promotion and promotion['id'] == 'BigBottle':
+    #             d['sale_price'] = d['price'] - (d['price'] * 0.3)
+    # return d
 
 def upload_image(url, name):
     AWS_ACCESS_KEY_ID = os.environ.get('VITE_AWS_ACCESS_KEY_ID')
@@ -171,37 +174,18 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            finalProduct = return_product_if_range(parsed_json, d, url, driver)
-                            # data = {
-                            #         "secret": "myTotallySecretKey",
-                            #         "product": finalProduct,
-                            #     }
-                            # headers = {
-                            #         "Content-Type": "application/json",
-                            # }
-                            # requests.put(
-                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            updated_datas.append(finalProduct)
+                            return_product_if_range(parsed_json, d, url, driver)
+                            updated_datas.append(d)
                             print(f'''{i}/{len(datas)}''')
                         except Exception as e:
-                            print(e)
                             time.sleep(40)
                             driver.get(url)
                             soup = BeautifulSoup(driver.page_source, 'html.parser')
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            finalProduct = return_product_if_range(parsed_json, d, url, driver)
-                            # data = {
-                            #         "secret": "myTotallySecretKey",
-                            #         "product": finalProduct,
-                            #     }
-                            # headers = {
-                            #         "Content-Type": "application/json",
-                            # }
-                            # requests.put(
-                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            updated_datas.append(finalProduct)
+                            return_product_if_range(parsed_json, d, url, driver)
+                            updated_datas.append(d)
                             print(f'''{i}/{len(datas)}''')
                             continue
                     else:
@@ -212,17 +196,8 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            finalProduct = return_product_if_single(parsed_json, d)
-                            # data = {
-                            #         "secret": "myTotallySecretKey",
-                            #         "product": finalProduct,
-                            #     }
-                            # headers = {
-                            #         "Content-Type": "application/json",
-                            # }
-                            # requests.put(
-                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            updated_datas.append(finalProduct)
+                            return_product_if_single(parsed_json, d)
+                            updated_datas.append(d)
                             print(f'''{i}/{len(datas)}''')
                         except:
                             time.sleep(40)
@@ -231,17 +206,8 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            finalProduct = return_product_if_single(parsed_json, d)
-                            # data = {
-                            #         "secret": "myTotallySecretKey",
-                            #         "product": finalProduct,
-                            #     }
-                            # headers = {
-                            #         "Content-Type": "application/json",
-                            # }
-                            # requests.put(
-                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            updated_datas.append(finalProduct)
+                            return_product_if_single(parsed_json, d)
+                            updated_datas.append(d)
                             print(f'''{i}/{len(datas)}''')
                             continue
                 except Exception as e:
@@ -255,17 +221,8 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            finalProduct = return_product_if_range(parsed_json, d, url, driver)
-                            # data = {
-                            #         "secret": "myTotallySecretKey",
-                            #         "product": finalProduct,
-                            #     }
-                            # headers = {
-                            #         "Content-Type": "application/json",
-                            # }
-                            # requests.put(
-                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
-                            updated_datas.append(finalProduct)
+                            return_product_if_range(parsed_json, d, url, driver)
+                            updated_datas.append(d)
                             print(f'''{i}/{len(datas)}''')
                         except:
                             time.sleep(40)
@@ -274,18 +231,9 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            finalProduct = return_product_if_range(parsed_json, d, url, driver)
-                            # data = {
-                            #         "secret": "myTotallySecretKey",
-                            #         "product": finalProduct,
-                            #     }
-                            # headers = {
-                            #         "Content-Type": "application/json",
-                            # }
-                            # requests.put(
-                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            return_product_if_range(parsed_json, d, url, driver)
                             print(f'''{i}/{len(datas)}''')
-                            updated_datas.append(finalProduct)    
+                            updated_datas.append(d)    
                             continue
                     else:
                         url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
@@ -295,18 +243,9 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            finalProduct = return_product_if_single(parsed_json, d)
-                            # data = {
-                            #         "secret": "myTotallySecretKey",
-                            #         "product": finalProduct,
-                            #     }
-                            # headers = {
-                            #         "Content-Type": "application/json",
-                            # }
-                            # requests.put(
-                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            return_product_if_single(parsed_json, d)
                             print(f'''{i}/{len(datas)}''')
-                            updated_datas.append(finalProduct)
+                            updated_datas.append(d)
                         except:
                             time.sleep(40)
                             driver.get(url)
@@ -314,18 +253,9 @@ def get_last_prices_and_upc():
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
-                            finalProduct = return_product_if_single(parsed_json, d)
-                            # data = {
-                            #         "secret": "myTotallySecretKey",
-                            #         "product": finalProduct,
-                            #     }
-                            # headers = {
-                            #         "Content-Type": "application/json",
-                            # }
-                            # requests.put(
-                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            return_product_if_single(parsed_json, d)
                             print(f'''{i}/{len(datas)}''')
-                            updated_datas.append(finalProduct)
+                            updated_datas.append(d)
                             continue
                     continue
         with open('updated_cosmo_products.json', 'w') as f:

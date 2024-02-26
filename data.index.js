@@ -5,6 +5,9 @@ const Product = models.Product;
 require("dotenv").config();
 const NEXT_APP_MONGO_URL = process.env.VITE_QWIK_APP_MONGO_CONNECTION;
 const stripe = require("stripe")(process.env.VITE_STRIPE_SECRET_KEY);
+const axios = require("axios");
+const { GoogleSpreadsheet } = require("google-spreadsheet");
+const { JWT } = require("google-auth-library");
 
 set("strictQuery", false);
 const mongoUrl = NEXT_APP_MONGO_URL || "";
@@ -140,10 +143,12 @@ async function updateLastProductsQuantity() {
           );
           if (variationFound) {
             variation.quantity_on_hand = variationFound.quantity_on_hand;
+            variation.price = variationFound.price;
           }
         }
       } else {
         productFound.quantity_on_hand = product.quantity_on_hand;
+        productFound.price.regular = product.price;
       }
       await Product.findByIdAndUpdate({ _id: productFound._id }, productFound, {
         new: true,
@@ -158,30 +163,11 @@ async function updateLastProductsQuantity() {
 updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
-  const axios = require("axios");
-  const url = "https://canrad.com/categories/1176441/ccrd/products";
-  const response = await axios.get(url);
-  const canradProducts = response.data.Products;
-  const productsToSave = [];
-  for (const canradProduct of canradProducts) {
-    const product = {
-      "Product Name": canradProduct.ItemName,
-      "Product Description": canradProduct.Description.replace(
-        /<[^>]*>?/gm,
-        ""
-      ),
-      "Product Price": canradProduct.Price,
-      "Product Sale Price": canradProduct.SpecialPriceDiscount,
-      "Product Quantity": canradProduct.OnHandQuantity,
-      UPC: canradProduct.UPC,
-      "Item ID": canradProduct.ItemID,
-      "Product Price": canradProduct.Price,
-    };
-    productsToSave.push(product);
-  }
-  const { GoogleSpreadsheet } = require("google-spreadsheet");
-  const { JWT } = require("google-auth-library");
-  const sheetName = "Sheet1";
+  const mainCatUrl = "https://canrad.com/categories";
+  const response = await axios.get(mainCatUrl);
+  const categories = response.data.Categories;
+  const categoriesToCheck = ["DESIGN.ME", "SCHWARZKOPF"];
+
   const auth = new JWT({
     email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
     key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
@@ -193,11 +179,70 @@ async function getProductsFromCanradWebPage() {
     auth
   );
   await doc.loadInfo();
-  const sheet = doc.sheetsByIndex[0];
-  const sheetToSave = sheet.sheetsByTitle[sheetName];
-  await sheetToSave.addRows(productsToSave);
+  const productsToSave = [];
+  for (const category of categories) {
+    if (categoriesToCheck.includes(category.Name)) {
+      const url = `https://canrad.com/categories/${category.CategoryID}/ccrd/products`;
+      const response = await axios.get(url);
+      if (
+        "Categories" in response.data &&
+        response.data.Categories.length > 0
+      ) {
+        const subCategories = response.data.Categories;
+        for (const subCategorie of subCategories) {
+          const subUrl = `https://canrad.com/categories/${subCategorie.CategoryID}/ccrd/products`;
+          const response = await axios.get(subUrl);
+          const canradProducts = response.data.Products;
+          if (!canradProducts || canradProducts.length === 0) continue;
+          for (const canradProduct of canradProducts) {
+            const product = {
+              "Product Name": canradProduct.ItemName,
+              "Product Description": canradProduct.Description.replace(
+                /<[^>]*>?/gm,
+                ""
+              ),
+              "Product Price": canradProduct.Price,
+              "Product Sale Price": canradProduct.SpecialPriceDiscount,
+              "Product Quantity": canradProduct.OnHandQuantity,
+              UPC: canradProduct.UPC,
+              "Item ID": canradProduct.ItemID,
+              "Product Price": canradProduct.Price,
+            };
+            productsToSave.push(product);
+          }
+        }
+        continue;
+      } else {
+        const canradProducts = response.data.Products;
+        if (canradProducts && canradProducts.length > 0) {
+          for (const canradProduct of canradProducts) {
+            const product = {
+              "Product Name": canradProduct.ItemName,
+              "Product Description": canradProduct.Description.replace(
+                /<[^>]*>?/gm,
+                ""
+              ),
+              "Product Price": canradProduct.Price,
+              "Product Sale Price": canradProduct.SpecialPriceDiscount,
+              "Product Quantity": canradProduct.OnHandQuantity,
+              UPC: canradProduct.UPC,
+              "Item ID": canradProduct.ItemID,
+              "Product Price": canradProduct.Price,
+            };
+            productsToSave.push(product);
+          }
+        }
+      }
 
-  // console.log(productsToSave);
+      const sheet = doc.sheetsByIndex[0];
+      // add Headers to the sheet
+      const headers = Object.keys(productsToSave[0]);
+      await sheet.setHeaderRow(headers);
+      // add products to the sheet
+      await sheet.addRows(productsToSave);
+      console.log("done");
+    }
+  }
 }
 
 // getProductsFromCanradWebPage();
