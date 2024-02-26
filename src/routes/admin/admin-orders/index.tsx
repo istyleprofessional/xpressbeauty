@@ -704,7 +704,7 @@ export default component$(() => {
                 </div>
                 <div class="flex flex-row justify-between items-center p-2">
                   <p class="text-xs">Order Note</p>
-                  <p class="text-xs">{orderDetail.value?.order_note}</p>
+                  <p class="text-xs">{orderDetail.value?.notes}</p>
                 </div>
                 <div class="overflow-x-auto h-[80%]">
                   <table class="table table-pin-rows table-sm h-full">
