@@ -172,15 +172,15 @@ def get_last_prices_and_upc():
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
                             finalProduct = return_product_if_range(parsed_json, d, url, driver)
-                            data = {
-                                    "secret": "myTotallySecretKey",
-                                    "product": finalProduct,
-                                }
-                            headers = {
-                                    "Content-Type": "application/json",
-                            }
-                            requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            # data = {
+                            #         "secret": "myTotallySecretKey",
+                            #         "product": finalProduct,
+                            #     }
+                            # headers = {
+                            #         "Content-Type": "application/json",
+                            # }
+                            # requests.put(
+                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             updated_datas.append(finalProduct)
                             print(f'''{i}/{len(datas)}''')
                         except Exception as e:
@@ -192,15 +192,15 @@ def get_last_prices_and_upc():
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
                             finalProduct = return_product_if_range(parsed_json, d, url, driver)
-                            data = {
-                                    "secret": "myTotallySecretKey",
-                                    "product": finalProduct,
-                                }
-                            headers = {
-                                    "Content-Type": "application/json",
-                            }
-                            requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            # data = {
+                            #         "secret": "myTotallySecretKey",
+                            #         "product": finalProduct,
+                            #     }
+                            # headers = {
+                            #         "Content-Type": "application/json",
+                            # }
+                            # requests.put(
+                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             updated_datas.append(finalProduct)
                             print(f'''{i}/{len(datas)}''')
                             continue
@@ -213,15 +213,15 @@ def get_last_prices_and_upc():
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
                             finalProduct = return_product_if_single(parsed_json, d)
-                            data = {
-                                    "secret": "myTotallySecretKey",
-                                    "product": finalProduct,
-                                }
-                            headers = {
-                                    "Content-Type": "application/json",
-                            }
-                            requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            # data = {
+                            #         "secret": "myTotallySecretKey",
+                            #         "product": finalProduct,
+                            #     }
+                            # headers = {
+                            #         "Content-Type": "application/json",
+                            # }
+                            # requests.put(
+                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             updated_datas.append(finalProduct)
                             print(f'''{i}/{len(datas)}''')
                         except:
@@ -232,15 +232,15 @@ def get_last_prices_and_upc():
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
                             finalProduct = return_product_if_single(parsed_json, d)
-                            data = {
-                                    "secret": "myTotallySecretKey",
-                                    "product": finalProduct,
-                                }
-                            headers = {
-                                    "Content-Type": "application/json",
-                            }
-                            requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            # data = {
+                            #         "secret": "myTotallySecretKey",
+                            #         "product": finalProduct,
+                            #     }
+                            # headers = {
+                            #         "Content-Type": "application/json",
+                            # }
+                            # requests.put(
+                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             updated_datas.append(finalProduct)
                             print(f'''{i}/{len(datas)}''')
                             continue
@@ -256,15 +256,15 @@ def get_last_prices_and_upc():
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
                             finalProduct = return_product_if_range(parsed_json, d, url, driver)
-                            data = {
-                                    "secret": "myTotallySecretKey",
-                                    "product": finalProduct,
-                                }
-                            headers = {
-                                    "Content-Type": "application/json",
-                            }
-                            requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            # data = {
+                            #         "secret": "myTotallySecretKey",
+                            #         "product": finalProduct,
+                            #     }
+                            # headers = {
+                            #         "Content-Type": "application/json",
+                            # }
+                            # requests.put(
+                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             updated_datas.append(finalProduct)
                             print(f'''{i}/{len(datas)}''')
                         except:
@@ -275,15 +275,15 @@ def get_last_prices_and_upc():
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
                             finalProduct = return_product_if_range(parsed_json, d, url, driver)
-                            data = {
-                                    "secret": "myTotallySecretKey",
-                                    "product": finalProduct,
-                                }
-                            headers = {
-                                    "Content-Type": "application/json",
-                            }
-                            requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            # data = {
+                            #         "secret": "myTotallySecretKey",
+                            #         "product": finalProduct,
+                            #     }
+                            # headers = {
+                            #         "Content-Type": "application/json",
+                            # }
+                            # requests.put(
+                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(f'''{i}/{len(datas)}''')
                             updated_datas.append(finalProduct)    
                             continue
@@ -296,15 +296,15 @@ def get_last_prices_and_upc():
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
                             finalProduct = return_product_if_single(parsed_json, d)
-                            data = {
-                                    "secret": "myTotallySecretKey",
-                                    "product": finalProduct,
-                                }
-                            headers = {
-                                    "Content-Type": "application/json",
-                            }
-                            requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            # data = {
+                            #         "secret": "myTotallySecretKey",
+                            #         "product": finalProduct,
+                            #     }
+                            # headers = {
+                            #         "Content-Type": "application/json",
+                            # }
+                            # requests.put(
+                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(f'''{i}/{len(datas)}''')
                             updated_datas.append(finalProduct)
                         except:
@@ -315,15 +315,15 @@ def get_last_prices_and_upc():
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
                             finalProduct = return_product_if_single(parsed_json, d)
-                            data = {
-                                    "secret": "myTotallySecretKey",
-                                    "product": finalProduct,
-                                }
-                            headers = {
-                                    "Content-Type": "application/json",
-                            }
-                            requests.put(
-                                'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
+                            # data = {
+                            #         "secret": "myTotallySecretKey",
+                            #         "product": finalProduct,
+                            #     }
+                            # headers = {
+                            #         "Content-Type": "application/json",
+                            # }
+                            # requests.put(
+                            #     'https://xpressbeauty.ca/api/products/update/', data=json.dumps(data), headers=headers)
                             print(f'''{i}/{len(datas)}''')
                             updated_datas.append(finalProduct)
                             continue

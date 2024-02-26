@@ -154,3 +154,48 @@ async function updateLastProductsQuantity() {
 }
 
 updateLastProductsQuantity();
+
+async function getProductsFromCanradWebPage() {
+  const axios = require("axios");
+  const url = "https://canrad.com/categories/1176441/ccrd/products";
+  const response = await axios.get(url);
+  const canradProducts = response.data.Products;
+  const productsToSave = [];
+  for (const canradProduct of canradProducts) {
+    const product = {
+      "Product Name": canradProduct.ItemName,
+      "Product Description": canradProduct.Description.replace(
+        /<[^>]*>?/gm,
+        ""
+      ),
+      "Product Price": canradProduct.Price,
+      "Product Sale Price": canradProduct.SpecialPriceDiscount,
+      "Product Quantity": canradProduct.OnHandQuantity,
+      UPC: canradProduct.UPC,
+      "Item ID": canradProduct.ItemID,
+      "Product Price": canradProduct.Price,
+    };
+    productsToSave.push(product);
+  }
+  const { GoogleSpreadsheet } = require("google-spreadsheet");
+  const { JWT } = require("google-auth-library");
+  const sheetName = "Sheet1";
+  const auth = new JWT({
+    email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+    key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  const doc = new GoogleSpreadsheet(
+    "1FLHOdsDGIH_gnXUjZ0SBYfc1dXYqpgxmfTnH4FEFMeg",
+    auth
+  );
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0];
+  const sheetToSave = sheet.sheetsByTitle[sheetName];
+  await sheetToSave.addRows(productsToSave);
+
+  // console.log(productsToSave);
+}
+
+// getProductsFromCanradWebPage();
