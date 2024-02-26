@@ -110,7 +110,7 @@ export default component$(() => {
         element.price =
           currencyObject === "2" ? element.price : element.price * 0.9;
         const productToAdd = {
-          id: `${product._id}.${element.variation_id}`,
+          id: `${product._id}.${element.variation_id ?? element.variation_name.replace(/[^A-Za-z0-9]+/g, "")}`,
           product_name: product.product_name,
           variation_name: element.variation_name,
           product_img:
@@ -139,7 +139,7 @@ export default component$(() => {
       totalQuantity += value;
       productsToAdd.push(productToAdd);
     }
-    console.log(userObj);
+    // console.log(userObj);
     const data = {
       products: productsToAdd,
       totalQuantity: totalQuantity,
@@ -149,9 +149,10 @@ export default component$(() => {
         : false,
       user: userObj,
     };
-    console.log(data);
+    // console.log(data);
     const result = await postRequest("/api/cart", JSON.stringify(data));
     const response = await result.json();
+    // console.log(response);
     const totalPrice = response?.products?.reduce(
       (acc: number, curr: any) => acc + curr.price * curr.quantity,
       0
