@@ -183,8 +183,9 @@ export default component$(() => {
       trackingLink: trackingLink.value,
       selectedProducts: selectedProducts.value,
       shippingAddress: orderDetail.value?.shippingAddress,
-      fullName: `${orderDetail.value?.user?.firstName ?? ""} ${orderDetail.value?.user?.lastName ?? ""
-        }`,
+      fullName: `${orderDetail.value?.user?.firstName ?? ""} ${
+        orderDetail.value?.user?.lastName ?? ""
+      }`,
     });
     // console.log(sendShippedEmailreq);
     if (sendShippedEmailreq.status === "error") {
@@ -196,6 +197,8 @@ export default component$(() => {
   });
 
   const handleCapturePayments = $(async (order: any) => {
+    const confirm = window.confirm("Are you sure you want to capture payment?");
+    if (!confirm) return;
     if (order.payment_intent) {
       const callStripe = await capturePaymentServer(
         order.payment_intent,
@@ -218,6 +221,8 @@ export default component$(() => {
   });
 
   const handleCancelPayment = $(async (order: any) => {
+    const answer = confirm("Are you sure you want to cancel the payment?");
+    if (!answer) return;
     if (order.payment_intent) {
       const callStripe = await cancelPaymentServer(
         order.payment_intent,
@@ -227,6 +232,7 @@ export default component$(() => {
         alert(callStripe.message);
       } else {
         const result = JSON.parse(callStripe.message);
+
         ordersData.request = ordersData.request.map((order: any) => {
           if (order._id === result._id) {
             order.paid = result.paid;
@@ -327,16 +333,17 @@ export default component$(() => {
                     </td>
                     <td>
                       <p
-                        class={`badge ${order.orderStatus === "Pending"
-                          ? "bg-[#FEF9C3] text-[#CA8A04]"
-                          : order.orderStatus === "Shipped"
+                        class={`badge ${
+                          order.orderStatus === "Pending"
+                            ? "bg-[#FEF9C3] text-[#CA8A04]"
+                            : order.orderStatus === "Shipped"
                             ? "bg-[#E0F2FE] text-[#0EA5E9]"
                             : order.orderStatus === "Return"
-                              ? "bg-[#FED7D7] text-[#B91C1C]"
-                              : order.orderStatus === "Refund"
-                                ? "bg-[#FED7D7] text-[#B91C1C]"
-                                : "bg-[#D1FAE5] text-[#047857]"
-                          } text-xs`}
+                            ? "bg-[#FED7D7] text-[#B91C1C]"
+                            : order.orderStatus === "Refund"
+                            ? "bg-[#FED7D7] text-[#B91C1C]"
+                            : "bg-[#D1FAE5] text-[#047857]"
+                        } text-xs`}
                       >
                         {order.orderStatus}
                       </p>
@@ -384,8 +391,8 @@ export default component$(() => {
                                 handleStatusChanged(
                                   "Shipped",
                                   order?.user?.email ??
-                                  order?.dummyUser?.email ??
-                                  "Not Found",
+                                    order?.dummyUser?.email ??
+                                    "Not Found",
                                   order?._id,
                                   order?.products,
                                   order?.shippingAddress,
@@ -463,8 +470,9 @@ export default component$(() => {
       <div class="bg-[#fff]">
         <div class="flex flex-row justify-between gap-2 p-2">
           <button
-            class={`btn btn-ghost btn-sm ${currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
-              } text-xs`}
+            class={`btn btn-ghost btn-sm ${
+              currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
+            } text-xs`}
             disabled={currentPageNo === "1"}
             onClick$={() => {
               const url = new URL(window.location.href);
@@ -481,10 +489,11 @@ export default component$(() => {
             {currentPageNo} of {totalPages}
           </p>
           <button
-            class={`btn btn-ghost btn-sm text-xs ${currentPageNo === totalPages.toString()
-              ? "text-[#D1D5DB]"
-              : "text-[#7C3AED]"
-              }`}
+            class={`btn btn-ghost btn-sm text-xs ${
+              currentPageNo === totalPages.toString()
+                ? "text-[#D1D5DB]"
+                : "text-[#7C3AED]"
+            }`}
             disabled={currentPageNo === totalPages.toString()}
             onClick$={() => {
               const url = new URL(window.location.href);
@@ -703,6 +712,7 @@ export default component$(() => {
                         <th>Price</th>
                         <th>Quantity</th>
                         <th>Sub Total</th>
+                        <th>Order Note</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -730,12 +740,15 @@ export default component$(() => {
                               <td>{product?.product_name}</td>
                               <td>
                                 {product?.id?.includes(".")
-                                  ? `${product?.id?.split(".")[0]}.0${product?.variation_name ?? ""}`
+                                  ? `${product?.id?.split(".")[0]}.0${
+                                      product?.variation_name ?? ""
+                                    }`
                                   : product?.id}
                               </td>
                               <td>{product?.price}</td>
                               <td>{product?.quantity}</td>
                               <td>{subTotal}</td>
+                              <td>{product?.order_note}</td>
                             </tr>
                           );
                         }

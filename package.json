@@ -69,6 +69,7 @@
     "address-validator": "^0.2.3",
     "apexcharts": "^3.42.0",
     "axios": "^1.4.0",
+    "chatgpt": "^5.2.5",
     "cheerio": "^1.0.0-rc.12",
     "clover-ecomm-sdk": "^1.0.0",
     "cookie-parser": "^1.4.6",

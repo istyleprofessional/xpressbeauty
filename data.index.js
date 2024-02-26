@@ -2,6 +2,7 @@
 const { connect, set, connection } = require("mongoose");
 const models = require("./model");
 const Product = models.Product;
+const Category = models.Category;
 require("dotenv").config();
 const NEXT_APP_MONGO_URL = process.env.VITE_QWIK_APP_MONGO_CONNECTION;
 const stripe = require("stripe")(process.env.VITE_STRIPE_SECRET_KEY);
@@ -160,14 +161,16 @@ async function updateLastProductsQuantity() {
   await connection.close();
 }
 
-updateLastProductsQuantity();
+// updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
+  const { ChatGPTAPI } = await import("chatgpt");
   const mainCatUrl = "https://canrad.com/categories";
   const response = await axios.get(mainCatUrl);
   const categories = response.data.Categories;
   const categoriesToCheck = ["DESIGN.ME", "SCHWARZKOPF"];
-
+  await connect(mongoUrl);
+  const dbCategories = await Category.find({});
   const auth = new JWT({
     email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
     key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
@@ -182,19 +185,24 @@ async function getProductsFromCanradWebPage() {
   const productsToSave = [];
   for (const category of categories) {
     if (categoriesToCheck.includes(category.Name)) {
-      const url = `https://canrad.com/categories/${category.CategoryID}/ccrd/products`;
-      const response = await axios.get(url);
-      if (
-        "Categories" in response.data &&
-        response.data.Categories.length > 0
-      ) {
-        const subCategories = response.data.Categories;
+      if ("SubCategories" in category && category.SubCategories.length > 0) {
+        const subCategories = category.SubCategories;
         for (const subCategorie of subCategories) {
           const subUrl = `https://canrad.com/categories/${subCategorie.CategoryID}/ccrd/products`;
           const response = await axios.get(subUrl);
           const canradProducts = response.data.Products;
           if (!canradProducts || canradProducts.length === 0) continue;
+
           for (const canradProduct of canradProducts) {
+            const chatGptCategory = new ChatGPTAPI({
+              apiKey: process.env.CHAT_GPT_SECRET_KEY,
+            });
+            const msg = `I am looking for category name from that json ${JSON.stringify(
+              dbCategories
+            )} for ${canradProduct.ItemName}. 
+            please respond with the category name and the sub category name in JSON string format`;
+            const res = await chatGptCategory.sendMessage(msg);
+            console.log(res.text);
             const product = {
               "Product Name": canradProduct.ItemName,
               "Product Description": canradProduct.Description.replace(
@@ -211,7 +219,6 @@ async function getProductsFromCanradWebPage() {
             productsToSave.push(product);
           }
         }
-        continue;
       } else {
         const canradProducts = response.data.Products;
         if (canradProducts && canradProducts.length > 0) {
@@ -233,16 +240,15 @@ async function getProductsFromCanradWebPage() {
           }
         }
       }
-
-      const sheet = doc.sheetsByIndex[0];
-      // add Headers to the sheet
-      const headers = Object.keys(productsToSave[0]);
-      await sheet.setHeaderRow(headers);
-      // add products to the sheet
-      await sheet.addRows(productsToSave);
-      console.log("done");
     }
   }
+  const sheet = doc.sheetsByIndex[0];
+  // add Headers to the sheet
+  const headers = Object.keys(productsToSave[0]);
+  await sheet.setHeaderRow(headers);
+  // add products to the sheet
+  await sheet.addRows(productsToSave);
+  console.log("done");
 }
 
-// getProductsFromCanradWebPage();
+getProductsFromCanradWebPage();
