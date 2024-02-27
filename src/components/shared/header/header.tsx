@@ -1,5 +1,4 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import { TruckShippingIcon } from "../icons/icons";
 import CanadaImage from "~/media/canada_1.jpg?jsx";
 import USAImage from "~/media/USA.jpg?jsx";
 import { server$ } from "@builder.io/qwik-city";
