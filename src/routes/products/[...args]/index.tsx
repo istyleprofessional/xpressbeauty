@@ -537,7 +537,7 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/ products / ${
+    url.pathname = `/products/${
       newFilterBrands.length > 0
         ? `filterBrands/${newFilterBrands.join("+")}/`
         : ""
