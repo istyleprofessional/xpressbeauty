@@ -2,7 +2,6 @@ import type { PropFunction } from "@builder.io/qwik";
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { Pagination } from "~/components/shared/pagination/pagination";
 import { ProductCard } from "~/components/shared/product-card/product-card";
-import { ListCardView } from "../list-view/list-card-view";
 
 export interface ProductSectionProps {
   products: any;
@@ -16,14 +15,6 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
   const { products, currentPage, handleSorting, currencyObject, inStock } =
     props;
   const total = useSignal<number>(0);
-  const viewToggle = useSignal<string>("grid");
-
-  useVisibleTask$(
-    () => {
-      viewToggle.value = localStorage.getItem("view") || "grid";
-    },
-    { strategy: "document-idle" }
-  );
 
   useVisibleTask$(({ track }) => {
     track(() => products.value.total);
@@ -70,28 +61,19 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
         </select>
         {/** In stock checkbox */}
       </div>
-      {viewToggle.value === "grid" ? (
-        <div class="flex flex-row flex-wrap justify-center gap-4">
-          {products.value?.result?.map((product: any, index: number) => (
-            <div key={index}>
-              <ProductCard
-                currencyObject={currencyObject}
-                product={product}
-                i={index}
-                cardSize="sm"
-              />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div class="md:flex md:flex-col gap-5 hidden">
-          {products.value?.result?.map((product: any, index: number) => (
-            <div key={index}>
-              <ListCardView product={product} i={index} />
-            </div>
-          ))}
-        </div>
-      )}
+      <div class="flex flex-row flex-wrap justify-center gap-4">
+        {products.value?.result?.map((product: any, index: number) => (
+          <div key={index}>
+            <ProductCard
+              currencyObject={currencyObject}
+              product={product}
+              i={index}
+              cardSize="sm"
+            />
+          </div>
+        ))}
+      </div>
+
       {products.value?.result?.length === 0 ? (
         <div class="flex flex-col items-center justify-center">
           <h1 class="text-2xl font-bold text-black">No Products Found</h1>

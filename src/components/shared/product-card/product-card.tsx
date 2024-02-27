@@ -33,7 +33,10 @@ export const ProductCard = component$((props: ProductCardProps) => {
       } else {
         product.price.regular =
           parseFloat(product.price?.regular?.toString()) * 0.9;
-        if (product.sale_price?.sale !== "") {
+        if (
+          product.sale_price?.sale &&
+          parseFloat(product.sale_price?.sale.toString() ?? "0") > 0
+        ) {
           product.sale_price.sale =
             parseFloat(product?.sale_price?.sale?.toString()) * 0.9;
         }
