@@ -45,15 +45,6 @@ export const Header = component$((props: HeaderProps) => {
       </div>
 
       <div class="bg-black navbar flex flex-col lg:flex-row justify-center gap-3 items-center  h-fit lg:h-12">
-        <div class="flex flex-col lg:flex-row gap-3 lg:gap-40">
-          <p class="text-white text-xs lg:text-base flex flex-row gap-1 font-normal">
-            Fast Canada And USA Wide Shipping{" "}
-            <span>
-              {" "}
-              <TruckShippingIcon />
-            </span>
-          </p>
-        </div>
         <div class="flex w-full justify-center lg:justify-end flex-1 px-2">
           <div class="flex items-stretch">
             <button
