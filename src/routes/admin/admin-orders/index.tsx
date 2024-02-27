@@ -111,15 +111,6 @@ export const cancelPaymentServer = server$(async function (
   }
 });
 
-// const fetchSearchOrders = server$(async function (search: string) {
-//   const orders = await getOrdersService(1, search);
-//   if (orders.status === "success") {
-//     return { status: orders.status, res: JSON.stringify(orders) };
-//   } else {
-//     return { status: orders.status };
-//   }
-// });
-
 export default component$(() => {
   const loc = useLocation();
   const orders = useOrderTableData();
@@ -141,6 +132,7 @@ export default component$(() => {
 
   const handleSearchOrders = $(async (_: Event, elem: HTMLInputElement) => {
     const url = new URL(window.location.href);
+    url.searchParams.set("page", "1");
     url.searchParams.set("search", elem.value.trim());
     nav(url.toString());
   });
