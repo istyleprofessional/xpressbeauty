@@ -22,6 +22,14 @@ export const ProductActions = component$((props: ProductActionsProps) => {
     finalVariationToAdd,
   } = props;
   const isButtonDisabled = useSignal<boolean>(true);
+  const value = useSignal<number>(1);
+
+  useVisibleTask$(({ track }) => {
+    track(() => qunatity);
+    if (qunatity > 0) {
+      value.value = 1;
+    }
+  });
 
   useVisibleTask$(({ track }) => {
     track(() => {
@@ -43,7 +51,6 @@ export const ProductActions = component$((props: ProductActionsProps) => {
       }
     });
   });
-  const value = useSignal<number>(1);
 
   return (
     <div class="flex flex-col gap-10">
@@ -56,14 +63,32 @@ export const ProductActions = component$((props: ProductActionsProps) => {
                   <span class="label-text text-black">Quantity:</span>
                 </label>
                 <label class="input-group">
-                  <span
-                    class={`btn text-xl text-black bg-[#F4F4F5] ${
-                      value.value === 0 ? "btn-disabled" : ""
-                    }`}
-                    onClick$={() => value.value--}
-                  >
-                    -
-                  </span>
+                  {variationType === "Size" ? (
+                    <span
+                      class={`btn text-xl text-black bg-[#F4F4F5] ${
+                        value.value < 1 ? "btn-disabled" : ""
+                      }`}
+                      onClick$={() => {
+                        value.value--;
+                        Object.keys(finalVariationToAdd).forEach((key) => {
+                          if (finalVariationToAdd[key]) {
+                            finalVariationToAdd[key].quantity = value.value;
+                          }
+                        });
+                      }}
+                    >
+                      -
+                    </span>
+                  ) : (
+                    <span
+                      class={`btn text-xl text-black bg-[#F4F4F5] ${
+                        value.value < 1 ? "btn-disabled" : ""
+                      }`}
+                      onClick$={() => value.value--}
+                    >
+                      -
+                    </span>
+                  )}
                   <input
                     type="number"
                     value={value.value}

@@ -83,6 +83,7 @@ export default component$(() => {
   const message = useSignal("");
   const currObject: any = useContext(CurContext);
   const currencyObject = currObject?.cur;
+  const currentProduct = useSignal<any>({});
 
   useVisibleTask$(() => {
     localStorage.setItem("prev", `/products/${product.perfix}`);
@@ -110,15 +111,18 @@ export default component$(() => {
         element.price =
           currencyObject === "2" ? element.price : element.price * 0.9;
         const productToAdd = {
-          id: `${product._id}.${element.variation_id ?? element.variation_name.replace(/[^A-Za-z0-9]+/g, "")}`,
+          id: `${product._id}.${
+            element.variation_id ??
+            element.variation_name.replace(/[^A-Za-z0-9]+/g, "")
+          }`,
           product_name: product.product_name,
           variation_name: element.variation_name,
           product_img:
             product.variation_type && product.variation_type === "Size"
               ? element.variation_image
               : (product.imgs ?? [])[0].includes("http")
-                ? (product.imgs ?? [])[0]
-                : (product.imgs ?? [])[0].replace(".", "") ?? "/placeholder.webp",
+              ? (product.imgs ?? [])[0]
+              : (product.imgs ?? [])[0].replace(".", "") ?? "/placeholder.webp",
           price: parseFloat(element?.price),
           quantity: element.quantity,
           currency: currencyObject === "1" ? "USD" : "CAD",
@@ -168,6 +172,13 @@ export default component$(() => {
       isLoading.value = false;
     }, 1000);
   });
+
+  useOnWindow(
+    "load",
+    $(() => {
+      currentProduct.value = product;
+    })
+  );
 
   useVisibleTask$(async () => {
     const data = {
@@ -329,17 +340,19 @@ export default component$(() => {
         const img = document?.getElementById("product-image");
         img?.setAttribute(
           "src",
-          `${(product?.variations ?? [])[0].variation_image ??
-          (product?.imgs ?? [])[0]
+          `${
+            (product?.variations ?? [])[0].variation_image ??
+            (product?.imgs ?? [])[0]
           }`
         );
       } else {
         const img = document?.getElementById("product-image");
         img?.setAttribute(
           "src",
-          `${(product?.imgs ?? [])[0].includes("http")
-            ? (product?.imgs ?? [])[0]
-            : (product?.imgs ?? [])[0].replace(".", "")
+          `${
+            (product?.imgs ?? [])[0].includes("http")
+              ? (product?.imgs ?? [])[0]
+              : (product?.imgs ?? [])[0].replace(".", "")
           }`
         );
       }
@@ -419,10 +432,11 @@ export default component$(() => {
                           class="flex flex-row md:flex-col justify-start items-center w-full gap-2"
                         >
                           <button
-                            class={`btn w-40 ${finalVariationToAdd.value[index]
-                              ? " btn-success"
-                              : "btn-outline"
-                              }`}
+                            class={`btn w-40 ${
+                              finalVariationToAdd.value[index]
+                                ? " btn-success"
+                                : "btn-outline"
+                            }`}
                             onClick$={() => {
                               finalVariationToAdd.value = {};
                               finalVariationToAdd.value[index] = {
@@ -431,13 +445,20 @@ export default component$(() => {
                                 variation_image: variation.variation_image,
                                 price: variation.price,
                                 quantity: 1,
+                                totalQuantity: variation.quantity_on_hand,
                               };
+                              currentProduct.value = {
+                                ...product,
+                                quantity_on_hand: variation.quantity_on_hand,
+                              };
+                              console.log(currentProduct.value);
                               const img =
                                 document?.getElementById("product-image");
                               img?.setAttribute(
                                 "src",
-                                `${variation?.variation_image ??
-                                (product?.imgs ?? [])[0]
+                                `${
+                                  variation?.variation_image ??
+                                  (product?.imgs ?? [])[0]
                                 }`
                               );
                             }}
@@ -448,18 +469,18 @@ export default component$(() => {
                           <p class="text-black text-sm font-bold">
                             {currencyObject === "1"
                               ? (
-                                parseFloat(variation.price) * 0.9
-                              ).toLocaleString("en-us", {
-                                style: "currency",
-                                currency: "USD",
-                              })
-                              : parseFloat(variation.price).toLocaleString(
-                                "en-us",
-                                {
+                                  parseFloat(variation.price) * 0.9
+                                ).toLocaleString("en-us", {
                                   style: "currency",
-                                  currency: "CAD",
-                                }
-                              )}
+                                  currency: "USD",
+                                })
+                              : parseFloat(variation.price).toLocaleString(
+                                  "en-us",
+                                  {
+                                    style: "currency",
+                                    currency: "CAD",
+                                  }
+                                )}
                           </p>
                         </div>
                       );
@@ -471,9 +492,13 @@ export default component$(() => {
               handleAddToFav={handleAddToFav}
               finalVariationToAdd={finalVariationToAdd.value}
               qunatity={
-                product.variations && product.variations?.length > 0
+                currentProduct.value.variations &&
+                currentProduct.value.variations?.length > 0 &&
+                currentProduct.value.variation_type !== "Size"
                   ? 300
-                  : parseInt(product?.quantity_on_hand?.toString() ?? "0")
+                  : parseInt(
+                      currentProduct.value?.quantity_on_hand?.toString() ?? "0"
+                    )
               }
               isVariation={
                 (product.variations &&
@@ -548,33 +573,39 @@ export const head: DocumentHead = ({ resolveValue }) => {
   const jsonData = JSON.parse(doc)._doc;
 
   return {
-    title: `${jsonData?.product_name ?? ""} | ${jsonData.companyName.name && jsonData.companyName.name !== ""
-      ? `${jsonData.companyName.name} |`
-      : ""
-      } ${`${jsonData.categories[0].main ?? ""}`}`,
+    title: `${jsonData?.product_name ?? ""} | ${
+      jsonData.companyName.name && jsonData.companyName.name !== ""
+        ? `${jsonData.companyName.name} |`
+        : ""
+    } ${`${jsonData.categories[0].main ?? ""}`}`,
     meta: [
       {
         name: "description",
-        content: `Discover ${jsonData?.product_name ?? ""}${jsonData.companyName.name && jsonData.companyName.name !== ""
-          ? ` by ${jsonData.companyName.name}`
-          : " "
-          }${jsonData.lineName && jsonData.lineName !== ""
+        content: `Discover ${jsonData?.product_name ?? ""}${
+          jsonData.companyName.name && jsonData.companyName.name !== ""
+            ? ` by ${jsonData.companyName.name}`
+            : " "
+        }${
+          jsonData.lineName && jsonData.lineName !== ""
             ? ` from the ${jsonData.lineName} collection `
             : " "
-          }at Xpress Beauty. Get it for just ${jsonData.priceType === "range"
+        }at Xpress Beauty. Get it for just ${
+          jsonData.priceType === "range"
             ? `$${jsonData.price.min}-$${jsonData.price.max}`
             : `$${jsonData.price.regular}`
-          } in our ${jsonData.categories
+        } in our ${
+          jsonData.categories
             .map((cat: any) => `${cat.main}, ${cat.name}`)
             .join(", ") ?? ""
-          } category.`,
+        } category.`,
       },
       {
         name: "keywords",
-        content: `${jsonData?.product_name ?? ""}, ${jsonData.companyName && jsonData.companyName !== ""
-          ? `${jsonData.companyName},`
-          : ""
-          } ${jsonData.categories.join(", ") ?? ""}`,
+        content: `${jsonData?.product_name ?? ""}, ${
+          jsonData.companyName && jsonData.companyName !== ""
+            ? `${jsonData.companyName},`
+            : ""
+        } ${jsonData.categories.join(", ") ?? ""}`,
       },
     ],
   };
