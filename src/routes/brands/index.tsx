@@ -68,6 +68,9 @@ export default component$(() => {
             >
               <Image
                 src={`${brand.image}`}
+                onError$={(e: any) => {
+                  e.target.src = "/placeholder.webp";
+                }}
                 class="w-32 h-32 object-contain"
                 alt={brand.name}
               />
