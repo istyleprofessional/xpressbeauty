@@ -23,7 +23,7 @@ export const uploadImages = async (formData: any, isResize?: boolean) => {
     }
     const params = {
       Bucket: import.meta.env.VITE_AWS_BUCKET_NAME ?? "",
-      Key: `testimages/${formData.name}`,
+      Key: `products-images-2/${formData.name}`,
       Body: resizedImageBuffer ? resizedImageBuffer : fileBuffer,
       ContentType: "image/webp",
       ACL: "public-read",

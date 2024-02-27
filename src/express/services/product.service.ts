@@ -44,7 +44,19 @@ export const get_products_count_service = async (token: string) => {
 export const addProductServer = async (product: any) => {
   try {
     const result = await Product.create(product);
-    return result;
+    const newProduct = await Product.findOneAndUpdate(
+      { _id: result._id },
+      {
+        $set: {
+          perfix: `${result.perfix}-${result._id}`,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    return newProduct;
   } catch (err) {
     return { err: err };
   }
@@ -412,8 +424,8 @@ export const get_products_data = async (
       buildQuery,
       query && query !== ""
         ? {
-          score: { $meta: "textScore" },
-        }
+            score: { $meta: "textScore" },
+          }
         : {}
     )
       .sort(sortObj)

@@ -136,7 +136,7 @@ export default component$(() => {
       return;
     }
     if (track === "main") {
-      imageSignal.value = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/${productName.value.replace(
+      imageSignal.value = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${productName.value.replace(
         / /g,
         "-"
       )}/${file.name.split(".")[0]}${uuid}.webp`;
@@ -146,7 +146,7 @@ export default component$(() => {
         .querySelector(`#variantImage-${variantSignal.value}`)
         ?.setAttribute(
           "src",
-          `https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/${productName.value.replace(
+          `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${productName.value.replace(
             / /g,
             "-"
           )}/${file.name.split(".")[0]}${uuid}.webp`

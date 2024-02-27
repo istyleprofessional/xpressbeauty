@@ -56,13 +56,42 @@ export const getOrderByOrderNumberService = async (orderNumber: string) => {
   }
 };
 
-export const getOrdersService = async (page: number) => {
+export const getOrdersService = async (page: number, search?: string) => {
   try {
+    const query: any = {};
+
+    if (search) {
+      query["$or"] = [];
+      query["$or"].push({ "user.email": { $regex: search, $options: "i" } });
+      query["$or"].push({
+        "user.firstName": { $regex: search, $options: "i" },
+      });
+      query["$or"].push({ "user.lastName": { $regex: search, $options: "i" } });
+      query["$or"].push({
+        "user.phoneNumber": { $regex: search, $options: "i" },
+      });
+      query["$or"].push({
+        "dummyUser.email": { $regex: search, $options: "i" },
+      });
+      query["$or"].push({
+        "dummyUser.firstName": { $regex: search, $options: "i" },
+      });
+      query["$or"].push({
+        "dummyUser.lastName": { $regex: search, $options: "i" },
+      });
+      query["$or"].push({
+        "dummyUser.phoneNumber": { $regex: search, $options: "i" },
+      });
+      query["$or"].push({ order_number: { $regex: search, $options: "i" } });
+    }
     const request = await Order.aggregate([
       {
         $addFields: {
           userIdObj: { $toObjectId: "$userId" },
         },
+      },
+      {
+        $match: query,
       },
       {
         $lookup: {
@@ -83,6 +112,7 @@ export const getOrdersService = async (page: number) => {
           as: "dummyUser",
         },
       },
+
       {
         $unwind: { path: "$dummyUser", preserveNullAndEmptyArrays: true },
       },
@@ -115,7 +145,7 @@ export const getOrdersService = async (page: number) => {
       .sort({ createdAt: -1 })
       .skip((page - 1) * 20)
       .limit(20);
-    const count = await Order.countDocuments();
+    const count = await Order.countDocuments(query);
     return { status: "success", request: request, total: count };
   } catch (error: any) {
     return { status: "failed", err: error.message };

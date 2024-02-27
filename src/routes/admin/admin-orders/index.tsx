@@ -1,5 +1,10 @@
 import { component$, $, useSignal } from "@builder.io/qwik";
-import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
+import {
+  routeLoader$,
+  server$,
+  useLocation,
+  useNavigate,
+} from "@builder.io/qwik-city";
 import { Image } from "@unpic/qwik";
 import Stripe from "stripe";
 import {
@@ -16,8 +21,9 @@ import {
 import { sendShippedEmail } from "~/utils/sendShippedEmail";
 
 export const useOrderTableData = routeLoader$(async ({ url }) => {
+  const search = url.searchParams.get("search") ?? "";
   const page = url.searchParams.get("page") ?? "1";
-  const orders = await getOrdersService(parseInt(page));
+  const orders = await getOrdersService(parseInt(page), search.trim());
   if (orders.status === "success") {
     return { status: orders.status, res: JSON.stringify(orders) };
   } else {
@@ -105,6 +111,15 @@ export const cancelPaymentServer = server$(async function (
   }
 });
 
+// const fetchSearchOrders = server$(async function (search: string) {
+//   const orders = await getOrdersService(1, search);
+//   if (orders.status === "success") {
+//     return { status: orders.status, res: JSON.stringify(orders) };
+//   } else {
+//     return { status: orders.status };
+//   }
+// });
+
 export default component$(() => {
   const loc = useLocation();
   const orders = useOrderTableData();
@@ -122,6 +137,13 @@ export default component$(() => {
   const trackingCompanyName = useSignal<string>("");
   const trackingLink = useSignal<string>("");
   const selectedProducts = useSignal<any>([]);
+  const nav = useNavigate();
+
+  const handleSearchOrders = $(async (_: Event, elem: HTMLInputElement) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("search", elem.value.trim());
+    nav(url.toString());
+  });
 
   const handleStatusChanged = $(
     async (
@@ -253,6 +275,7 @@ export default component$(() => {
           type="text"
           class="input input-bordered w-[20rem] m-2"
           placeholder="Search For Orders"
+          onChange$={handleSearchOrders}
           value={searchValue}
         />
       </div>
