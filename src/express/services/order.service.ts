@@ -90,9 +90,7 @@ export const getOrdersService = async (page: number, search?: string) => {
           userIdObj: { $toObjectId: "$userId" },
         },
       },
-      {
-        $match: query,
-      },
+
       {
         $lookup: {
           from: "users",
@@ -101,9 +99,7 @@ export const getOrdersService = async (page: number, search?: string) => {
           as: "user",
         },
       },
-      {
-        $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
-      },
+
       {
         $lookup: {
           from: "dummyusers",
@@ -112,9 +108,14 @@ export const getOrdersService = async (page: number, search?: string) => {
           as: "dummyUser",
         },
       },
-
+      {
+        $match: query,
+      },
       {
         $unwind: { path: "$dummyUser", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $unwind: { path: "$user", preserveNullAndEmptyArrays: true },
       },
       {
         $project: {
