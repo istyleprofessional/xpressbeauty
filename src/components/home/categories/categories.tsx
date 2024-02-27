@@ -12,7 +12,7 @@ export const Categories = component$(() => {
       <h3 class="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-black">
         Shop by Category
       </h3>
-      <div class="bg-base-100 w-full h-full rounded-lg  flex flex-col md:flex-row lg:flex-row gap-3 md:gap-6 lg:gap-10 justify-center items-center">
+      <div class="bg-base-100 w-full h-full rounded-lg md:max-w-7xl flex flex-col md:flex-row lg:flex-row gap-3 md:gap-6 lg:gap-10 justify-center items-center">
         <div class="flex flex-col md:grid md:grid-cols-2 gap-1 justify-center items-center md:max-w-96 w-full">
           <a
             href="/products/filterCategories/Conditioner+Shampoo+Masks/"

@@ -9,6 +9,7 @@ const stripe = require("stripe")(process.env.VITE_STRIPE_SECRET_KEY);
 const axios = require("axios");
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const { JWT } = require("google-auth-library");
+const cheerio = require("cheerio");
 
 set("strictQuery", false);
 const mongoUrl = NEXT_APP_MONGO_URL || "";
@@ -251,4 +252,19 @@ async function getProductsFromCanradWebPage() {
   console.log("done");
 }
 
-getProductsFromCanradWebPage();
+// getProductsFromCanradWebPage();
+
+async function getProductsFromModernBeauty() {
+  const request = await axios.get("https://www.modernbeauty.com/hair.html");
+  const html = request.data;
+  const $ = cheerio.load(html);
+  // get all products from .product-layout
+  const products = $(".product-layout");
+  const productsToSave = [];
+  for (const product of products) {
+    // find the closest a tag
+    const aTag = $(product).find("a");
+    console.log(aTag.text());
+  }
+}
+getProductsFromModernBeauty();
