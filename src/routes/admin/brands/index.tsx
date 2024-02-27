@@ -260,7 +260,9 @@ export default component$(() => {
               <input
                 type="text"
                 class="input input-bordered w-full"
-                onChange$={(e) => (brandNameSignal.value = e.target.value)}
+                onChange$={(_: Event, elem: HTMLInputElement) =>
+                  (brandNameSignal.value = elem.value)
+                }
               />
               <div class="modal-action">
                 <form method="dialog" class="flex gap-2">

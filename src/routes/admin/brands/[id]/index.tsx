@@ -1,4 +1,4 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, $ } from "@builder.io/qwik";
 import {
   Form,
   routeAction$,
@@ -48,9 +48,9 @@ export default component$(() => {
   const id = loc.params.id;
   const action = useUpdateAction();
 
-  const handleAlertClose = () => {
+  const handleAlertClose = $(() => {
     document.querySelector(".alert")?.classList.add("hidden");
-  };
+  });
 
   return (
     <div>

@@ -1,11 +1,11 @@
-import type { PropFunction } from "@builder.io/qwik";
+import type { QRL } from "@builder.io/qwik";
 import { component$ } from "@builder.io/qwik";
 import { CloseIcon } from "../../shared/icons/icons";
 
 interface ToastProps {
   message: string;
   index: number;
-  handleClose: PropFunction<(i: number) => void>;
+  handleClose: QRL<(i: number) => void>;
   status?: string;
 }
 

@@ -239,7 +239,9 @@ export default component$(() => {
                 <select
                   class="select w-full max-w-xs"
                   name="priceType"
-                  onChange$={(e) => (typeOfPrice.value = e.target.value)}
+                  onChange$={(_: Event, elem: HTMLSelectElement) =>
+                    (typeOfPrice.value = elem.value)
+                  }
                 >
                   <option disabled>Pick product price type</option>
                   <option value="single">Single</option>
