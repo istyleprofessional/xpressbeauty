@@ -350,6 +350,7 @@ export default component$(() => {
               : (product?.imgs ?? [])[0].replace(".", "")
           }`
         );
+        currentProduct.value = product;
       }
     })
   );
