@@ -488,7 +488,6 @@ export default component$(() => {
           ? `filterPrices/${filterPrices.value.join("+")}/`
           : ""
       } `;
-      console.log(url.pathname);
       url.searchParams.set("page", "1");
       page.value = "1";
       nav(url.pathname, {
