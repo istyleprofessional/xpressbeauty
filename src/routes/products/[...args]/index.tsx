@@ -1,4 +1,3 @@
-import type { QwikChangeEvent } from "@builder.io/qwik";
 import {
   component$,
   useSignal,
@@ -121,17 +120,21 @@ export const useDomContentLoaded = routeLoader$(
       }
     );
 
-    const finalUrl = `${filterBrandsArray.length > 0
-      ? `filterBrands/${filterBrandsArray.join("+")}/`
-      : ""
-      }${filterCategoriesArray.length > 0
+    const finalUrl = `${
+      filterBrandsArray.length > 0
+        ? `filterBrands/${filterBrandsArray.join("+")}/`
+        : ""
+    }${
+      filterCategoriesArray.length > 0
         ? `filterCategories/${filterCategoriesArray.join("+")}/`
         : ""
-      }${filterPricesArray.length > 0
+    }${
+      filterPricesArray.length > 0
         ? `filterPrices/${filterPricesArray.join("+")}/`
         : ""
-      }/${search() !== "" ? `search/${search()}/` : ""}/${filter() !== "" ? `filter/${filter()}/` : ""
-      }`;
+    }/${search() !== "" ? `search/${search()}/` : ""}/${
+      filter() !== "" ? `filter/${filter()}/` : ""
+    }`;
     const finalLength =
       finalUrl?.split("/")?.filter((item: string) => {
         return item !== "";
@@ -269,63 +272,68 @@ export default component$(() => {
     { strategy: "document-idle" }
   );
 
-  const handleCategoryCheckBoxChange = $(async (event: any, name: string) => {
-    isLoading.value = true;
-    const value = event.target.checked;
-    if (value) {
-      filterCategoriessArray.value.push(`${name}`);
-    } else {
-      filterCategoriessArray.value = filterCategoriessArray.value.filter(
-        (category: any) => category !== `${name}`
-      );
-    }
-    const url = loc.url;
-    let newFilterBrands = [];
-    let newFilterCategories = [];
-    if (filterBrandsArray.value.length) {
-      newFilterBrands = filterBrandsArray.value.map((brand: string) => {
-        return brand.replace(/ /g, "-");
-      });
-    }
-    if (filterCategoriessArray.value.length > 0) {
-      newFilterCategories = filterCategoriessArray.value.map(
-        (category: string) => {
-          return category.replace(/ /g, "-");
-        }
-      );
-    }
-    url.pathname = `/products/${newFilterBrands.length > 0
-      ? `filterBrands/${newFilterBrands.join("+")}/`
-      : ""
-      }${filterCategoriessArray.value.length
-        ? `filterCategories/${newFilterCategories.join("+")}/`
-        : ""
-      }${filterPrices.value.length > 0
-        ? `filterPrices/${filterPrices.value.join("+")}/`
-        : ""
+  const handleCategoryCheckBoxChange = $(
+    async (elem: HTMLInputElement, name: string) => {
+      isLoading.value = true;
+      const value = elem.checked ?? false;
+      if (value) {
+        filterCategoriessArray.value.push(`${name}`);
+      } else {
+        filterCategoriessArray.value = filterCategoriessArray.value.filter(
+          (category: any) => category !== `${name}`
+        );
+      }
+      const url = loc.url;
+      let newFilterBrands = [];
+      let newFilterCategories = [];
+      if (filterBrandsArray.value.length) {
+        newFilterBrands = filterBrandsArray.value.map((brand: string) => {
+          return brand.replace(/ /g, "-");
+        });
+      }
+      if (filterCategoriessArray.value.length > 0) {
+        newFilterCategories = filterCategoriessArray.value.map(
+          (category: string) => {
+            return category.replace(/ /g, "-");
+          }
+        );
+      }
+      url.pathname = `/products/${
+        newFilterBrands.length > 0
+          ? `filterBrands/${newFilterBrands.join("+")}/`
+          : ""
+      }${
+        filterCategoriessArray.value.length
+          ? `filterCategories/${newFilterCategories.join("+")}/`
+          : ""
+      }${
+        filterPrices.value.length > 0
+          ? `filterPrices/${filterPrices.value.join("+")}/`
+          : ""
       }`;
-    const checkPage = url.searchParams.get("page") ?? "1";
-    const result = await postRequest("/api/products/get", {
-      filterBrands: filterBrandsArray.value,
-      filterCategories: filterCategoriessArray.value,
-      filterPrices: filterPrices.value,
-      filter: "",
-      query: "",
-      page: checkPage,
-      sort: sort.value,
-      inStock: inStock.value,
-    });
-    const data = await result.json();
-    productData.value = JSON.parse(data);
-    url.searchParams.set("page", "1");
-    page.value = "1";
-    nav(url.pathname, {
-      forceReload: false,
-      replaceState: false,
-      scroll: false,
-    });
-    isLoading.value = false;
-  });
+      const checkPage = url.searchParams.get("page") ?? "1";
+      const result = await postRequest("/api/products/get", {
+        filterBrands: filterBrandsArray.value,
+        filterCategories: filterCategoriessArray.value,
+        filterPrices: filterPrices.value,
+        filter: "",
+        query: "",
+        page: checkPage,
+        sort: sort.value,
+        inStock: inStock.value,
+      });
+      const data = await result.json();
+      productData.value = JSON.parse(data);
+      url.searchParams.set("page", "1");
+      page.value = "1";
+      nav(url.pathname, {
+        forceReload: false,
+        replaceState: false,
+        scroll: false,
+      });
+      isLoading.value = false;
+    }
+  );
 
   useTask$(() => {
     filterServerData?.cat?.result?.forEach((category: any) => {
@@ -406,16 +414,19 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/products/${newFilterBrands.length > 0
-      ? `filterBrands/${newFilterBrands.join("+")}/`
-      : ""
-      }${filterCategoriessArray.value.length
+    url.pathname = `/products/${
+      newFilterBrands.length > 0
+        ? `filterBrands/${newFilterBrands.join("+")}/`
+        : ""
+    }${
+      filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-      }${filterPrices.value.length > 0
+    }${
+      filterPrices.value.length > 0
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
+    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}`;
     url.searchParams.set("sort", e.target.value);
     url.searchParams.set("page", "1");
     const checkPage = url.searchParams.get("page") ?? "1";
@@ -442,9 +453,9 @@ export default component$(() => {
   });
 
   const handleBrandCheckBoxChange = $(
-    async (e: QwikChangeEvent<HTMLInputElement>, brandName: string) => {
+    async (elem: HTMLInputElement, brandName: string) => {
       isLoading.value = true;
-      const value = e.target.checked;
+      const value = elem.checked ?? false;
       const url = loc.url;
       if (value) {
         filterBrandsArray.value.push(brandName);
@@ -464,17 +475,20 @@ export default component$(() => {
           }
         );
       }
-      url.pathname = `/ products / ${newFilterBrands.length > 0
+      url.pathname = `/products/${
+        newFilterBrands.length > 0
           ? `filterBrands/${newFilterBrands.join("+")}/`
           : ""
-        }${filterCategoriessArray.value.length
+      }${
+        filterCategoriessArray.value.length
           ? `filterCategories/${newFilterCategories.join("+")}/`
           : ""
-        }${filterPrices.value.length
+      }${
+        filterPrices.value.length
           ? `filterPrices/${filterPrices.value.join("+")}/`
           : ""
-        } `;
-
+      } `;
+      console.log(url.pathname);
       url.searchParams.set("page", "1");
       page.value = "1";
       nav(url.pathname, {
@@ -524,16 +538,19 @@ export default component$(() => {
         }
       );
     }
-    url.pathname = `/ products / ${newFilterBrands.length > 0
+    url.pathname = `/ products / ${
+      newFilterBrands.length > 0
         ? `filterBrands/${newFilterBrands.join("+")}/`
         : ""
-      }${filterCategoriessArray.value.length
+    }${
+      filterCategoriessArray.value.length
         ? `filterCategories/${newFilterCategories.join("+")}/`
         : ""
-      }${filterPrices.value.length
+    }${
+      filterPrices.value.length
         ? `filterPrices/${filterPrices.value.join("+")}/`
         : ""
-      }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
+    }${searchQuery.value !== "" ? `search/${searchQuery.value}/` : ""}
   }`;
 
     url.searchParams.set("page", "1");
@@ -598,13 +615,13 @@ export default component$(() => {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  strokeWidth={1.5}
+                  stroke-width={1.5}
                   stroke="currentColor"
                   class="w-6 h-6"
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
                     d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
                   />
                 </svg>
@@ -845,20 +862,20 @@ export const head: DocumentHead = ({ resolveValue }) => {
     categories = json.finalFilterCategoriesArray.join(", ");
     metaDescription += ` in ${json.finalFilterCategoriesArray.join(
       ", "
-    )
-      } categories and more at XpressBeauty`;
+    )} categories and more at XpressBeauty`;
   } else {
     metaDescription += ` in all beauty categories and more at XpressBeauty`;
   }
   return {
-    title: `${mainFilter
+    title: `${
+      mainFilter
         ? `${mainFilter} products`
         : categories
-          ? `${categories} products`
-          : brands
-            ? `${brands} products`
-            : "beauty products"
-      } | XpressBeauty`,
+        ? `${categories} products`
+        : brands
+        ? `${brands} products`
+        : "beauty products"
+    } | XpressBeauty`,
     meta: [
       {
         name: "description",
@@ -878,14 +895,15 @@ export const head: DocumentHead = ({ resolveValue }) => {
       },
       {
         property: "og:title",
-        content: `${mainFilter
+        content: `${
+          mainFilter
             ? `${mainFilter} products`
             : categories
-              ? `${categories} products`
-              : brands
-                ? `${brands} products`
-                : "beauty products"
-          } | XpressBeauty`,
+            ? `${categories} products`
+            : brands
+            ? `${brands} products`
+            : "beauty products"
+        } | XpressBeauty`,
       },
       {
         property: "og:description",

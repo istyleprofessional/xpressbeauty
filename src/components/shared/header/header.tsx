@@ -1,4 +1,4 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { component$, useSignal, $, useOnDocument } from "@builder.io/qwik";
 import CanadaImage from "~/media/canada_1.jpg?jsx";
 import USAImage from "~/media/USA.jpg?jsx";
 import { server$ } from "@builder.io/qwik-city";
@@ -19,12 +19,12 @@ export const Header = component$((props: HeaderProps) => {
   const { countryProp } = props;
   const country = useSignal<string>("");
 
-  useVisibleTask$(
-    () => {
+  useOnDocument(
+    "DOMContentLoaded",
+    $(() => {
       if (countryProp === "1") country.value = "USD";
       if (countryProp === "2") country.value = "CAD";
-    },
-    { strategy: "document-idle" }
+    })
   );
 
   return (

@@ -7,7 +7,7 @@ export interface CategoryFilterProps {
   filterCategoriessArray: any;
   categoriesSetObject: any;
   handleCategoryCheckBoxChange: PropFunction<
-    (e: any, category: string) => void
+    (elem: HTMLInputElement, category: string) => void
   >;
 }
 
@@ -63,7 +63,9 @@ export const CategoryFilter = component$((props: CategoryFilterProps) => {
                   filterCategoriessArray.value.includes(category) ? true : false
                 }
                 class="checkbox checkbox-sm"
-                onChange$={(e) => handleCategoryCheckBoxChange(e, category)}
+                onChange$={(_: Event, elem: HTMLInputElement) =>
+                  handleCategoryCheckBoxChange(elem, category)
+                }
                 name={category}
                 id={category}
               />

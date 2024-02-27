@@ -1,4 +1,4 @@
-import type { QRL, QwikChangeEvent } from "@builder.io/qwik";
+import type { QRL } from "@builder.io/qwik";
 import { component$, useTask$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { uuid } from "~/utils/uuid";
@@ -7,7 +7,7 @@ export interface BrandFilterProps {
   filterBrandsArray: any;
   filterBrands: any;
   handleBrandCheckBoxChange: QRL<
-    (e: QwikChangeEvent<HTMLInputElement>, brandName: string) => void
+    (elem: HTMLInputElement, brandName: string) => void
   >;
 }
 
@@ -53,8 +53,8 @@ export const BrandFilter = component$((props: BrandFilterProps) => {
                 filterBrandsArray.value.includes(brand.name) ? true : false
               }
               class="checkbox checkbox-sm w-fit"
-              onChange$={(e: QwikChangeEvent<HTMLInputElement>) =>
-                handleBrandCheckBoxChange(e, brand.name)
+              onChange$={(_: Event, ele: HTMLInputElement) =>
+                handleBrandCheckBoxChange(ele, brand.name)
               }
               name={brand.name}
               id={brand.name}
