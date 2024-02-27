@@ -30,7 +30,7 @@ export const Header = component$((props: HeaderProps) => {
 
   return (
     <div class="flex flex-col">
-      <div class="  flex flex-col lg:flex-row justify-center gap-3 items-center h-12">
+      <div class="  flex flex-row gap-3 justify-center items-center h-12">
         <p class=" text-md lg:text-lg font-bold">Shop More & Save More On</p>{" "}
         <svg
           xmlns="http://www.w3.org/2000/svg"

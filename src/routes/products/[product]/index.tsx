@@ -49,7 +49,6 @@ export const useServerData = routeLoader$(async ({ params, redirect }) => {
   const result: any = await get_product_by_name(product);
   const ratings = await getRatingByProductId(result?._id ?? "");
   if (!result) {
-    console.log("here");
     throw redirect(301, "/products/");
   }
   return JSON.stringify({ ...result, ratings: ratings });
@@ -105,9 +104,7 @@ export default component$(() => {
     const productsToAdd: any[] = [];
     let totalQuantity = 0;
     if (Object.values(finalVariationToAdd.value).length > 0) {
-      // debugger;
       Object.values(finalVariationToAdd.value).forEach((element: any) => {
-        // debugger;
         element.price =
           currencyObject === "2" ? element.price : element.price * 0.9;
         const productToAdd = {
@@ -172,13 +169,6 @@ export default component$(() => {
       isLoading.value = false;
     }, 1000);
   });
-
-  useOnWindow(
-    "load",
-    $(() => {
-      currentProduct.value = product;
-    })
-  );
 
   useVisibleTask$(async () => {
     const data = {
@@ -326,6 +316,7 @@ export default component$(() => {
         variation_name: variation.variation_name,
         price: variation.price,
         quantity: 1,
+        variation_image: variation.variation_image,
       };
     }
   });
@@ -345,6 +336,10 @@ export default component$(() => {
             (product?.imgs ?? [])[0]
           }`
         );
+        currentProduct.value = {
+          ...product,
+          quantity_on_hand: (product?.variations ?? [])[0].quantity_on_hand,
+        };
       } else {
         const img = document?.getElementById("product-image");
         img?.setAttribute(
@@ -451,7 +446,6 @@ export default component$(() => {
                                 ...product,
                                 quantity_on_hand: variation.quantity_on_hand,
                               };
-                              console.log(currentProduct.value);
                               const img =
                                 document?.getElementById("product-image");
                               img?.setAttribute(
