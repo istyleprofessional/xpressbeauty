@@ -81,8 +81,10 @@ export const sendConfirmationEmail = async (
           <p>Country: ${shipping_address?.country ?? ""}</p>
         </div>
         <p style="text-align: center; margin-top: 20px;">Thank you for your order! Please find your order details above.</p>
-    </div>
-</body>`,
+        
+          <p style="text-align: center; margin-top: 20px; color: red;">Please note: There may be delays in the shipment of your order due to our carrier shipping partners. We appreciate your patience and understanding.</p>
+      </div>
+  </body>`,
     attachments: [
       {
         filename: "logoX2.jpg",
