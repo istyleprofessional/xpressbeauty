@@ -1,4 +1,4 @@
-import { component$, useContext } from "@builder.io/qwik";
+import { component$, useContext, useOnDocument, $ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { routeLoader$, server$ } from "@builder.io/qwik-city";
 import { FeatureProducts } from "~/components/home/tools-products/tools-products";
@@ -60,6 +60,66 @@ export default component$(() => {
   );
   const userObj: any = useContext(UserContext);
   const currencyObject: any = useContext(CurContext);
+
+  useOnDocument(
+    "DOMContentLoaded",
+    $(() => {
+      const products = [
+        ...newArrivalProducts,
+        ...bestSellerProducts,
+        ...bestSellerProducts2,
+      ];
+      // add products schema
+      const jsonProducts = document.createElement("script");
+      jsonProducts.type = "application/ld+json";
+      const object = {
+        "@context": "http://schema.org/",
+        "@type": "Service",
+        serviceType: "Weekly home cleaning",
+        provider: {
+          "@type": "LocalBusiness",
+          name: "ACME Home Cleaning",
+        },
+        areaServed: {
+          "@type": "State",
+          name: "Massachusetts",
+        },
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: "Beauty Products",
+          itemListElement: products?.map((product: any) => {
+            return {
+              "@type": "OfferCatalog",
+              itemOffered: {
+                "@type": "Product",
+                name: product.name,
+                sku: product.sku,
+                description: product.description,
+                image: (product?.imgs ?? [])[0] ?? "",
+                brand: {
+                  "@type": "Brand",
+                  name: product?.companyName?.name ?? "",
+                },
+                offers: {
+                  "@type": "Offer",
+                  priceCurrency: "USD",
+                  price:
+                    product?.variatons?.length > 0
+                      ? parseFloat(product.price.min).toFixed(2)
+                      : parseFloat(product.price.regular).toFixed(2),
+                  priceValidUntil: new Date().toISOString(),
+                  availability: "http://schema.org/InStock",
+                  url: `https://xpressbeauty.ca/products/${product.perfix}/`,
+                },
+              },
+            };
+          }),
+        },
+      };
+      jsonProducts.text = JSON.stringify(object);
+      document.head.appendChild(jsonProducts);
+    })
+  );
 
   return (
     <>

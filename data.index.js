@@ -10,6 +10,7 @@ const axios = require("axios");
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const { JWT } = require("google-auth-library");
 const cheerio = require("cheerio");
+const Brand = models.Brand;
 
 set("strictQuery", false);
 const mongoUrl = NEXT_APP_MONGO_URL || "";
@@ -267,4 +268,28 @@ async function getProductsFromModernBeauty() {
     console.log(aTag.text());
   }
 }
-getProductsFromModernBeauty();
+// getProductsFromModernBeauty();
+
+async function adjustData() {
+  await connect(mongoUrl);
+  const products = await Product.find({});
+  const regex = /[^a-zA-Z0-9\s]/g;
+  for (const product of products) {
+    if (regex.test(product.companyName.name)) {
+      product.companyName.name = product.companyName.name.replace(regex, "");
+      product.companyName.name = product.companyName.name.trim();
+      await Product.findByIdAndUpdate(product._id, product, { new: true });
+    }
+  }
+  const brands = await Brand.find({});
+  for (const brand of brands) {
+    if (regex.test(brand.name)) {
+      brand.name = brand.name.replace(regex, "");
+      brand.name = brand.name.trim();
+      await Brand.findByIdAndUpdate(brand._id, brand, { new: true });
+    }
+  }
+  console.log("done");
+  await connection.close();
+}
+adjustData();

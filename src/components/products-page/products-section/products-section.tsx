@@ -1,12 +1,18 @@
-import type { PropFunction } from "@builder.io/qwik";
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import type { QRL } from "@builder.io/qwik";
+import {
+  component$,
+  useOnDocument,
+  useSignal,
+  useVisibleTask$,
+  $,
+} from "@builder.io/qwik";
 import { Pagination } from "~/components/shared/pagination/pagination";
 import { ProductCard } from "~/components/shared/product-card/product-card";
 
 export interface ProductSectionProps {
   products: any;
   currentPage: any;
-  handleSorting: PropFunction<(e: any) => void>;
+  handleSorting: QRL<(e: any) => void>;
   currencyObject?: any;
   inStock: any;
 }
@@ -20,6 +26,61 @@ export const ProductsSection = component$((props: ProductSectionProps) => {
     track(() => products.value.total);
     total.value = products.value.total;
   });
+
+  useOnDocument(
+    "DOMContentLoaded",
+    $(() => {
+      // add products schema
+      const jsonProducts = document.createElement("script");
+      jsonProducts.type = "application/ld+json";
+      const object = {
+        "@context": "http://schema.org/",
+        "@type": "Service",
+        serviceType: "Weekly home cleaning",
+        provider: {
+          "@type": "LocalBusiness",
+          name: "ACME Home Cleaning",
+        },
+        areaServed: {
+          "@type": "State",
+          name: "Massachusetts",
+        },
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: "Beauty Products",
+          itemListElement: products.value?.result?.map((product: any) => {
+            return {
+              "@type": "OfferCatalog",
+              itemOffered: {
+                "@type": "Product",
+                name: product.name,
+                sku: product.sku,
+                description: product.description,
+                image: (product?.imgs ?? [])[0] ?? "",
+                brand: {
+                  "@type": "Brand",
+                  name: product?.companyName?.name ?? "",
+                },
+                offers: {
+                  "@type": "Offer",
+                  priceCurrency: "USD",
+                  price:
+                    product?.variatons?.length > 0
+                      ? parseFloat(product.price.min).toFixed(2)
+                      : parseFloat(product.price.regular).toFixed(2),
+                  priceValidUntil: new Date().toISOString(),
+                  availability: "http://schema.org/InStock",
+                  url: `https://xpressbeauty.ca/products/${product.perfix}/`,
+                },
+              },
+            };
+          }),
+        },
+      };
+      jsonProducts.text = JSON.stringify(object);
+      document.head.appendChild(jsonProducts);
+    })
+  );
 
   return (
     <div class="flex flex-col gap-7 w-full">
