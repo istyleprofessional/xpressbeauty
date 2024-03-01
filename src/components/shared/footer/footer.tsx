@@ -114,7 +114,7 @@ export const Footer = component$(() => {
                 <span>Facebook</span>
               </a>
               <a
-                href="https://web.whatsapp.com/send/?phone=12134014667"
+                href="https://web.whatsapp.com/send/?phone=12265585027/?text=Hello%20Xpress%20Beauty%20I%20need%20help%20with%20my%20order"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
                 <img
@@ -245,7 +245,7 @@ export const Footer = component$(() => {
                 <span>Facebook</span>
               </a>
               <a
-                href="https://wa.me/12134014667"
+                href="https://wa.me/12265585027/?text=Hello%20Xpress%20Beauty%20I%20need%20help%20with%20my%20order"
                 class="text-white font-light text-base flex flex-row gap-2"
               >
                 <img
