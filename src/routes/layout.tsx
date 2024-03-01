@@ -399,7 +399,7 @@ export default component$(() => {
       <main>
         <div class="fixed bottom-0 right-0 z-50 p-5">
           <a
-            href="https://wa.me/send/?phone=12265585027/?text=Hello%20Xpress%20Beauty%20I%20need%20help%20with%20my%20order"
+            href="https://wa.me/send?phone=12265585027&text=Hello%20Xpress%20Beauty%20I%20need%20help%20with%20my%20order"
             class="btn btn-lg p-3 btn-ghost"
           >
             <img src="/whatsapplogo.png" alt="whatsapp" class="w-12 h-12" />
