@@ -9,15 +9,9 @@ import { Steps } from "~/components/shared/steps/steps";
 import { CartDetails } from "~/components/cart/cart-details/cart-details";
 import { ProductList } from "~/components/cart/product-list/product-list";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
+import { server$, useLocation } from "@builder.io/qwik-city";
 import { CartContext } from "~/context/cart.context";
 import { CurContext } from "~/context/cur.context";
-
-export const useRequest = routeLoader$(() => {
-  return {
-    status: "success",
-  };
-});
 
 export const changeToken = server$(async function (token: string) {
   this.cookie.set("token", token, {

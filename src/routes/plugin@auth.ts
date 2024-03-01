@@ -6,6 +6,10 @@ import {
   userRegistration,
 } from "~/express/services/user.service";
 import jwt from "jsonwebtoken";
+import {
+  getCartByUserId,
+  updateUserCart,
+} from "~/express/services/cart.service";
 
 export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
   serverAuth$(({ env, cookie }) => ({
@@ -29,6 +33,25 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
               if (user.err) {
                 console.log("user.err", user.err);
                 return false;
+              }
+              const prevToken = cookie.get("token");
+              if (prevToken?.value) {
+                const decodeToken: any = jwt.verify(
+                  prevToken.value,
+                  env.get("VITE_JWTSECRET") ?? ""
+                );
+                if (decodeToken) {
+                  const checkForCart: any = await getCartByUserId(
+                    decodeToken.user_id ?? ""
+                  );
+                  if (checkForCart?.status !== "failed") {
+                    const data = {
+                      userId: user.result?._id ?? "",
+                      products: checkForCart?.products ?? [],
+                    };
+                    await updateUserCart(data);
+                  }
+                }
               }
               const newToken = jwt.sign(
                 {

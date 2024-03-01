@@ -1,4 +1,4 @@
-import { useVisibleTask$, $, useTask$ } from "@builder.io/qwik";
+import { $, useTask$ } from "@builder.io/qwik";
 import { useStore } from "@builder.io/qwik";
 import { useContextProvider } from "@builder.io/qwik";
 import { component$, Slot } from "@builder.io/qwik";
@@ -392,16 +392,6 @@ export default component$(() => {
     await clearUser();
     localStorage.removeItem("copon");
     location.reload();
-  });
-
-  useVisibleTask$(() => {
-    const christmasAnimation = document.getElementById("christmasAnimation");
-    if (christmasAnimation) {
-      christmasAnimation.classList.remove("hidden");
-      setTimeout(() => {
-        christmasAnimation.classList.add("hidden");
-      }, 3000);
-    }
   });
 
   return (
