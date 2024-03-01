@@ -1,5 +1,10 @@
 import { component$, $, useSignal } from "@builder.io/qwik";
-import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
+import {
+  routeLoader$,
+  server$,
+  useLocation,
+  useNavigate,
+} from "@builder.io/qwik-city";
 import { connect } from "~/express/db.connection";
 import {
   getAllProductForDownload,
@@ -49,6 +54,7 @@ export default component$(() => {
   const totalPages = Math.ceil(count.value / 20);
   const currentProduct = useSignal<any>({});
   const searchValue = loc.url.searchParams.get("search") ?? "";
+  const nav = useNavigate();
 
   const handleVisibilityChange = $((product: any) => {
     (document?.getElementById("my_modal_1") as any)?.showModal();
@@ -84,7 +90,7 @@ export default component$(() => {
     const url = new URL(window.location.href);
     url.searchParams.set("page", "1");
     url.searchParams.set("search", value);
-    history.pushState({}, "", url.toString());
+    nav(url.toString());
   });
 
   const handleDownloadClick = $(async () => {
@@ -110,9 +116,9 @@ export default component$(() => {
         // maxium 9999 characters
         product.description
           ? product.description
-            .replace(/<img .*?>/g, "")
-            .replace(/Cosmo Prof/g, "Xpress Beauty")
-            .substring(0, 9999)
+              .replace(/<img .*?>/g, "")
+              .replace(/Cosmo Prof/g, "Xpress Beauty")
+              .substring(0, 9999)
           : "",
         parseInt(product.quantity_on_hand) > 0 ? "in stock" : "out of stock",
         "new",
@@ -189,7 +195,11 @@ export default component$(() => {
                   </th>
                   <th>
                     <Image
-                      src={(product?.imgs as any[])[0].includes("http") ? (product?.imgs as any[])[0] : (product?.imgs as any[])[0].replace(".", "")}
+                      src={
+                        (product?.imgs as any[])[0].includes("http")
+                          ? (product?.imgs as any[])[0]
+                          : (product?.imgs as any[])[0].replace(".", "")
+                      }
                       class="w-12 h-12 object-contain"
                       onError$={(_: any, element: HTMLImageElement) => {
                         element.src = "/placeholder.webp";
@@ -206,10 +216,11 @@ export default component$(() => {
                   <th>{product.sku}</th>
                   <th>
                     <p
-                      class={`badge ${!product.isHidden
-                        ? "bg-[#D1FAE5] text-[#059669]"
-                        : "bg-[#FEF2F2] text-[#DC2626]"
-                        }`}
+                      class={`badge ${
+                        !product.isHidden
+                          ? "bg-[#D1FAE5] text-[#059669]"
+                          : "bg-[#FEF2F2] text-[#DC2626]"
+                      }`}
                     >
                       {!product.isHidden ? "Active" : "In Active"}
                     </p>
@@ -248,8 +259,9 @@ export default component$(() => {
       <div class="bg-[#fff]">
         <div class="flex flex-row justify-between gap-2 p-2">
           <button
-            class={`btn btn-ghost btn-sm ${currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
-              } text-xs`}
+            class={`btn btn-ghost btn-sm ${
+              currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
+            } text-xs`}
             disabled={currentPageNo === "1"}
             onClick$={() => {
               const url = new URL(window.location.href);
@@ -266,10 +278,11 @@ export default component$(() => {
             {currentPageNo} of {totalPages}
           </p>
           <button
-            class={`btn btn-ghost btn-sm text-xs ${currentPageNo === totalPages.toString()
-              ? "text-[#D1D5DB]"
-              : "text-[#7C3AED]"
-              }`}
+            class={`btn btn-ghost btn-sm text-xs ${
+              currentPageNo === totalPages.toString()
+                ? "text-[#D1D5DB]"
+                : "text-[#7C3AED]"
+            }`}
             disabled={currentPageNo === totalPages.toString()}
             onClick$={() => {
               const url = new URL(window.location.href);

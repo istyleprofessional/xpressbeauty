@@ -398,11 +398,6 @@ export const get_products_data = async (
       sortObj["score"] = { $meta: "textScore" };
       // console.log(buildQuery);
     }
-    if (query && query !== "") {
-      buildQuery["$text"] = { $search: query };
-
-      // console.log(buildQuery);
-    }
     buildQuery["isHidden"] = { $ne: true };
     buildQuery["isDeleted"] = { $ne: true };
     if (inStock) {

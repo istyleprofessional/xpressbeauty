@@ -289,6 +289,7 @@ async function adjustData() {
       await Brand.findByIdAndUpdate(brand._id, brand, { new: true });
     }
   }
+
   console.log("done");
   await connection.close();
 }
