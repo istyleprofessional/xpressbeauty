@@ -1,4 +1,5 @@
 import { component$, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { Image } from "@unpic/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { Form, routeAction$ } from "@builder.io/qwik-city";
 import { Toast } from "~/components/admin/toast/toast";
@@ -262,6 +263,23 @@ export default component$(() => {
             Send Message
           </button>
         </Form>
+        {/* display whatsapp button here and say "Need help? Chat with us on WhatsApp" */}
+        <div class="flex flex-col gap-5 justify-center items-center">
+          <div class="flex flex-col gap-4 pl-3">
+            <div class="text-zinc-900 text-xl lg:text-5xl font-bold leading-[48px]">
+              Need help?
+            </div>
+            <div class="w-96 text-zinc-600 text-md font-normal leading-7">
+              Chat with us on WhatsApp
+            </div>
+            <a
+              href="https://wa.me/send?phone=12265585027&text=Hello%20Xpress%20Beauty%20I%20need%20help"
+              class=" btn bg-black text-white w-40 h-12 flex justify-center items-center cursor-pointer"
+            >
+              Start a conversation
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
