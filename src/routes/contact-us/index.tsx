@@ -1,5 +1,4 @@
 import { component$, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import { Image } from "@unpic/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { Form, routeAction$ } from "@builder.io/qwik-city";
 import { Toast } from "~/components/admin/toast/toast";
