@@ -103,8 +103,20 @@ export default component$(() => {
     isLoading.value = true;
     const productsToAdd: any[] = [];
     let totalQuantity = 0;
+
     if (Object.values(finalVariationToAdd.value).length > 0) {
       Object.values(finalVariationToAdd.value).forEach((element: any) => {
+        let image = "";
+        if (product.variation_type === "Size") {
+          const testImage = element.variation_image;
+          if (testImage) {
+            image = testImage;
+          } else {
+            image = (product.imgs ?? [])[0] ?? "";
+          }
+        } else {
+          image = (product.imgs ?? [])[0] ?? "";
+        }
         element.price =
           currencyObject === "2" ? element.price : element.price * 0.9;
         const productToAdd = {
@@ -114,12 +126,9 @@ export default component$(() => {
           }`,
           product_name: product.product_name,
           variation_name: element.variation_name,
-          product_img:
-            product.variation_type && product.variation_type === "Size"
-              ? element.variation_image
-              : (product.imgs ?? [])[0].includes("http")
-              ? (product.imgs ?? [])[0]
-              : (product.imgs ?? [])[0].replace(".", "") ?? "/placeholder.webp",
+          product_img: image.includes("http")
+            ? image
+            : image.replace(".", "") ?? "/placeholder.webp",
           price: parseFloat(element?.price),
           quantity: element.quantity,
           currency: currencyObject === "1" ? "USD" : "CAD",
