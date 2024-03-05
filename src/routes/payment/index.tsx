@@ -1,10 +1,8 @@
 import {
   component$,
   useContext,
-  useOnWindow,
   useSignal,
   useVisibleTask$,
-  $,
 } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { loadStripe } from "@stripe/stripe-js";
@@ -35,40 +33,37 @@ export default component$(() => {
   const error = loc.url.searchParams.get("error");
   const errorSignal = useSignal<string>(error ?? "");
 
-  useOnWindow(
-    "load",
-    $(async () => {
-      try {
-        if (!cartData.cart || cartData.cart?.products?.length === 0) {
-          window.location.href = "/cart";
-        }
-        shipping.value = cartData.cart.shipping;
-        const stripe: any = await loadStripe(
-          import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
-        );
-
-        cartData.cart.shipping = shipping.value;
-        cartData.cart.currencyObject = currencyObject;
-        cartData.cart.user = userObject;
-        const response = await postRequest("/api/stripe/", cartData.cart);
-        const { clientSecret, sessionId } = await response.json();
-        const checkout = await stripe.initEmbeddedCheckout({
-          clientSecret,
-          onComplete: async () => {
-            gtag_report_conversion(sessionId);
-            window.location.href = `/api/stripe?session_id=${sessionId}&userId=${cartData.cart.userId}&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${userObject.isDummy}`;
-          },
-        });
-
-        // Mount Checkout
-        checkout.mount("#checkout");
-
-        isLoading.value = false;
-      } catch (error) {
-        console.log(error);
+  useVisibleTask$(async () => {
+    try {
+      if (!cartData.cart || cartData.cart?.products?.length === 0) {
+        window.location.href = "/cart";
       }
-    })
-  );
+      shipping.value = cartData.cart.shipping;
+      const stripe: any = await loadStripe(
+        import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
+      );
+
+      cartData.cart.shipping = shipping.value;
+      cartData.cart.currencyObject = currencyObject;
+      cartData.cart.user = userObject;
+      const response = await postRequest("/api/stripe/", cartData.cart);
+      const { clientSecret, sessionId } = await response.json();
+      const checkout = await stripe.initEmbeddedCheckout({
+        clientSecret,
+        onComplete: async () => {
+          gtag_report_conversion(sessionId);
+          window.location.href = `/api/stripe?session_id=${sessionId}&userId=${cartData.cart.userId}&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${userObject.isDummy}`;
+        },
+      });
+
+      // Mount Checkout
+      checkout.mount("#checkout");
+
+      isLoading.value = false;
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
   useVisibleTask$(({ track, cleanup }) => {
     track(() => errorSignal.value);

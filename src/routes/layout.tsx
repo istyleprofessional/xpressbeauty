@@ -304,16 +304,7 @@ export default component$(() => {
           });
           cartContextObject.cart.products.forEach((element: any) => {
             totalPrice += element.price * element.quantity;
-            shipping =
-              totalPrice > 80 && totalPrice < 100
-                ? 15 - 15 * 0.3
-                : totalPrice > 100 && totalPrice < 150
-                ? 15 - 15 * 0.5
-                : totalPrice > 150 && totalPrice < 200
-                ? 15 - 15 * 0.7
-                : totalPrice > 200
-                ? 0
-                : 15;
+            shipping = 15;
           });
         } else if (
           cartContextObject.cart.currency === "CAD" &&
@@ -327,32 +318,14 @@ export default component$(() => {
           cartContextObject.cart.products.forEach((element: any) => {
             element.price = Math.round(element.price * 100) / 100;
             totalPrice += element.price * element.quantity;
-            shipping =
-              totalPrice > 80 && totalPrice < 100
-                ? 15 - 15 * 0.3
-                : totalPrice > 100 && totalPrice < 150
-                ? 15 - 15 * 0.5
-                : totalPrice > 150 && totalPrice < 200
-                ? 15 - 15 * 0.7
-                : totalPrice > 200
-                ? 0
-                : 15;
+            shipping = 15;
           });
         } else {
           cartContextObject.cart.products.forEach((element: any) => {
             // make sure the price is 2 decimal using math
             element.price = Math.round(element.price * 100) / 100;
             totalPrice += element.price * element.quantity;
-            shipping =
-              totalPrice > 80 && totalPrice < 100
-                ? 15 - 15 * 0.3
-                : totalPrice > 100 && totalPrice < 150
-                ? 15 - 15 * 0.5
-                : totalPrice > 150 && totalPrice < 200
-                ? 15 - 15 * 0.7
-                : totalPrice > 200
-                ? 0
-                : 15;
+            shipping = 15;
           });
         }
 

@@ -163,10 +163,9 @@ async function updateLastProductsQuantity() {
   await connection.close();
 }
 
-updateLastProductsQuantity();
+// updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
-  const { ChatGPTAPI } = await import("chatgpt");
   const mainCatUrl = "https://canrad.com/categories";
   const response = await axios.get(mainCatUrl);
   const categories = response.data.Categories;
@@ -196,15 +195,6 @@ async function getProductsFromCanradWebPage() {
           if (!canradProducts || canradProducts.length === 0) continue;
 
           for (const canradProduct of canradProducts) {
-            const chatGptCategory = new ChatGPTAPI({
-              apiKey: process.env.CHAT_GPT_SECRET_KEY,
-            });
-            const msg = `I am looking for category name from that json ${JSON.stringify(
-              dbCategories
-            )} for ${canradProduct.ItemName}. 
-            please respond with the category name and the sub category name in JSON string format`;
-            const res = await chatGptCategory.sendMessage(msg);
-            console.log(res.text);
             const product = {
               "Product Name": canradProduct.ItemName,
               "Product Description": canradProduct.Description.replace(
@@ -244,16 +234,20 @@ async function getProductsFromCanradWebPage() {
       }
     }
   }
+  // delete all data from the sheet
+
   const sheet = doc.sheetsByIndex[0];
+  await sheet.clear();
   // add Headers to the sheet
   const headers = Object.keys(productsToSave[0]);
   await sheet.setHeaderRow(headers);
   // add products to the sheet
   await sheet.addRows(productsToSave);
   console.log("done");
+  await connection.close();
 }
 
-// getProductsFromCanradWebPage();
+getProductsFromCanradWebPage();
 
 async function getProductsFromModernBeauty() {
   const request = await axios.get("https://www.modernbeauty.com/hair.html");

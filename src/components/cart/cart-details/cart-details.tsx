@@ -44,29 +44,18 @@ export const checkCoponServer = server$(async function (
 export const CartDetails = component$((props: any) => {
   const cartContext: any = useContext(CartContext);
   const userContext: any = useContext(UserContext);
-  const subTotal = useSignal<number>(0.00);
-  const total = useSignal<number>(0.00);
-  const shipping = useSignal<number>(0.00);
+  const subTotal = useSignal<number>(0.0);
+  const total = useSignal<number>(0.0);
+  const shipping = useSignal<number>(15.0);
   const coponSignal = useSignal<string>("");
   const symbol = useSignal<string>("CAD");
   const applyCoponMessage = useSignal<string>("");
-  const shippingText = useSignal<string>("");
 
   useVisibleTask$(async ({ track }) => {
     track(() => cartContext?.cart?.totalPrice);
     track(() => props?.currencyObject.cur);
 
     subTotal.value = cartContext?.cart?.totalPrice;
-    shippingText.value =
-      subTotal.value > 80 && subTotal.value < 100
-        ? "Spend over $100 for <span class='font-bold text-red-700'> 50% off </span> shipping"
-        : subTotal.value > 100 && subTotal.value < 150
-          ? "Spend over $150 for <span class='font-bold text-red-700'> 70% off </span>  shipping"
-          : subTotal.value > 150 && subTotal.value < 200
-            ? "Spend over $200 for <span class='font-bold text-red-700'> free shipping </span>"
-            : subTotal.value > 200
-              ? "Free Shipping"
-              : "Spend over $80 for <span class='font-bold text-red-700'> 30% off </span> shipping";
 
     const checkCopon = localStorage.getItem("copon");
     if (checkCopon === "true") {
@@ -130,10 +119,11 @@ export const CartDetails = component$((props: any) => {
           </button>
           {applyCoponMessage.value && (
             <p
-              class={`text-xs ${applyCoponMessage?.value?.includes("Applied")
-                ? "text-success"
-                : "text-error"
-                }`}
+              class={`text-xs ${
+                applyCoponMessage?.value?.includes("Applied")
+                  ? "text-success"
+                  : "text-error"
+              }`}
             >
               {applyCoponMessage.value}
             </p>
@@ -144,15 +134,15 @@ export const CartDetails = component$((props: any) => {
         <div class="grid grid-cols-2 w-full">
           <p class="text-white text-sm font-light">Subtotal</p>
           <p class="justify-self-end text-white text-base font-light">
-            {
-              subTotal.value ? subTotal.value.toLocaleString("en-US", {
-                style: "currency",
-                currency: symbol.value,
-              }) : 0.00.toLocaleString("en-US", {
-                style: "currency",
-                currency: symbol.value,
-              })
-            }
+            {subTotal.value
+              ? subTotal.value.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: symbol.value,
+                })
+              : (0.0).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: symbol.value,
+                })}
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
@@ -162,45 +152,42 @@ export const CartDetails = component$((props: any) => {
           </p>
         </div>
         <div class="grid grid-cols-2 w-full">
-          <p class="text-white text-sm font-light">Shipping Discount</p>
-          {/* <p class="justify-self-end text-red-400 text-xs font-light w-full"> */}
-          <div class="justify-self-end text-red-400 text-sm font-light w-full" dangerouslySetInnerHTML={shippingText.value}></div>
-          {/* </p> */}
-        </div>
-        <div class="grid grid-cols-2 w-full">
           <p class="text-white text-sm font-light">Shipping</p>
           <p class="justify-self-end text-white text-base font-light">
-            {cartContext?.cart?.shipping ?
-              cartContext?.cart?.shipping?.toLocaleString("en-US", {
-                style: "currency",
-                currency: symbol.value,
-              }) : 0.00.toLocaleString("en-US", {
-                style: "currency",
-                currency: symbol.value,
-              })
-            }
+            {cartContext?.cart?.shipping
+              ? cartContext?.cart?.shipping?.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: symbol.value,
+                })
+              : (0.0).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: symbol.value,
+                })}
           </p>
         </div>
       </div>
       {!userContext?.isDummy ? (
-        <a
-          class={`btn text-black  normal-case ${cartContext?.cart?.products &&
+        <button
+          class={`btn text-black  normal-case ${
+            cartContext?.cart?.products &&
             cartContext?.cart?.products.length === 0
-            ? "disabled"
-            : ""
-            }`}
-          href="/payment"
+              ? "disabled"
+              : ""
+          }`}
+          onClick$={props.checkIfProductQuantityExist}
+          // href="/payment"
         >
           Checkout <NextArrowIconNoStick color="black" width="10%" />
-        </a>
+        </button>
       ) : (
         <>
           <a
-            class={`btn bg-emerald-600 text-white hover:bg-emerald-900  normal-case ${cartContext?.cart?.products &&
+            class={`btn bg-emerald-600 text-white hover:bg-emerald-900  normal-case ${
+              cartContext?.cart?.products &&
               cartContext?.cart?.products.length === 0
-              ? "disabled"
-              : ""
-              }`}
+                ? "disabled"
+                : ""
+            }`}
             href="/login"
           >
             Login or Register
@@ -219,16 +206,17 @@ export const CartDetails = component$((props: any) => {
             </p>
           </div>
 
-          <a
-            class={`btn text-black  normal-case ${cartContext?.cart?.products &&
+          <button
+            class={`btn text-black  normal-case ${
+              cartContext?.cart?.products &&
               cartContext?.cart?.products.length === 0
-              ? "disabled"
-              : ""
-              }`}
-            href="/payment"
+                ? "disabled"
+                : ""
+            }`}
+            onClick$={props.checkIfProductQuantityExist}
           >
             Guest Checkout <NextArrowIconNoStick color="black" width="10%" />
-          </a>
+          </button>
         </>
       )}
     </>

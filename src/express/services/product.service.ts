@@ -24,6 +24,48 @@ export const get_products_service = async (token: string, page: number) => {
   }
 };
 
+export const updateVarations = async (id: string, variations: any) => {
+  try {
+    const result = await Product.findByIdAndUpdate(
+      id,
+      { variations: variations },
+      { new: true }
+    );
+
+    return { status: "success", result: result };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};
+
+export const addNewVarient = async (data: any) => {
+  try {
+    //console.log(product);
+
+    const result = await Product.findOne({ _id: data._id });
+
+    if (result) {
+      result.variations.push({
+        variation_name: data.variation_name,
+        variation_image: data.variation_image,
+        variation_id: uuidv4(),
+        price: data.price,
+        quantity_on_hand: data.quantity_on_hand,
+        upc: data.upc ?? "",
+        proprice: data.proprice,
+      });
+
+      result.save();
+    }
+
+    return result;
+  } catch (err) {
+    console.log(err);
+
+    return { err: err };
+  }
+};
+
 export const get_products_count_service = async (token: string) => {
   const isAdmin = verifyTokenAdmin(token);
   if (isAdmin) {
@@ -650,6 +692,14 @@ export const update_hair_product_service = async (product: any) => {
   } catch (err) {
     return { status: "failed", result: err };
   }
+};
+
+export const uuidv4 = () => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 };
 
 export const getTotalQuantityService = async (

@@ -3,15 +3,18 @@ import {
   useContext,
   useSignal,
   useVisibleTask$,
+  $,
 } from "@builder.io/qwik";
 import { PerviousArrowIconNoStick } from "~/components/shared/icons/icons";
 import { Steps } from "~/components/shared/steps/steps";
 import { CartDetails } from "~/components/cart/cart-details/cart-details";
 import { ProductList } from "~/components/cart/product-list/product-list";
 import type { DocumentHead } from "@builder.io/qwik-city";
-import { server$, useLocation } from "@builder.io/qwik-city";
+import { server$, useLocation, useNavigate } from "@builder.io/qwik-city";
 import { CartContext } from "~/context/cart.context";
 import { CurContext } from "~/context/cur.context";
+import { connect } from "~/express/db.connection";
+import products from "~/express/schemas/product.schema";
 
 export const changeToken = server$(async function (token: string) {
   this.cookie.set("token", token, {
@@ -20,12 +23,65 @@ export const changeToken = server$(async function (token: string) {
   });
 });
 
+export const serverQuantityChecker = server$(async function (
+  productChecker: any
+) {
+  await connect();
+  const productsIds = productChecker.map((product: any) => product.id);
+  for (const productId of productsIds) {
+    if (productId.includes(".")) {
+      const [id, variant] = productId.split(".");
+      const product = await products.findOne({ _id: id });
+      if (product) {
+        for (const variantItem of product.variations) {
+          if (
+            variantItem.variation_id === variant ||
+            variantItem.variation_name.replace(/[^A-Za-z0-9]+/g, "") === variant
+          ) {
+            if (
+              !variantItem.quantity_on_hand ||
+              variantItem.quantity_on_hand === 0
+            ) {
+              return JSON.stringify({
+                msg: `${product.product_name} - ${variantItem.variation_name} is out of stock please remove it from your cart`,
+              });
+            }
+          }
+        }
+      }
+    } else {
+      const product = await products.findOne({ _id: productId });
+      if (product) {
+        if (!product.quantity_on_hand || product.quantity_on_hand === 0) {
+          return JSON.stringify({
+            msg: `${product.product_name} is out of stock please remove it from your cart`,
+          });
+        }
+      }
+    }
+  }
+  return JSON.stringify({ msg: "ok" });
+});
+
 export default component$(() => {
   const isLoading = useSignal<boolean>(false);
   const loc = useLocation();
   const token = loc.url.searchParams.get("token");
   const context: any = useContext(CartContext);
   const currencyObject: any = useContext(CurContext);
+  const nav = useNavigate();
+
+  const checkIfProductQuantityExist = $(async () => {
+    const productChecker = context?.cart?.products;
+    const req = await serverQuantityChecker(productChecker);
+    const res = JSON.parse(req ?? "{}");
+    console.log(res);
+    if (res.msg !== "ok") {
+      alert(res.msg);
+    } else {
+      nav("/payment");
+    }
+  });
 
   useVisibleTask$(
     async () => {
@@ -69,7 +125,10 @@ export default component$(() => {
         <div class="flex flex-col md:flex-row gap-5 justify-center items-start mb-2">
           <ProductList currencyObject={currencyObject} />
           <div class="bg-black h-full w-96 rounded-lg flex flex-col gap-3 p-5 md:sticky md:top-0 ">
-            <CartDetails currencyObject={currencyObject} />
+            <CartDetails
+              currencyObject={currencyObject}
+              checkIfProductQuantityExist={checkIfProductQuantityExist}
+            />
           </div>
         </div>
       </div>
