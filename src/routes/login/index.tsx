@@ -140,8 +140,9 @@ export default component$(() => {
           {" "}
         </div>
         <script
-          src={`https://www.google.com/recaptcha/api.js?render=${import.meta.env.VITE_RECAPTCHA_SITE_KEY
-            }`}
+          src={`https://www.google.com/recaptcha/api.js?render=${
+            import.meta.env.VITE_RECAPTCHA_SITE_KEY
+          }`}
         ></script>
         <Form action={action} reloadDocument={false}>
           <div class="card w-[90%] md:w-[35rem] h-fit m-6 shadow-xl bg-[#F4F4F5] flex flex-col justify-center items-center gap-5 p-5">
@@ -171,24 +172,44 @@ export default component$(() => {
               </label>
               <div class="relative w-full">
                 <div class="absolute inset-y-0 right-0 flex items-center px-2">
-                  <input onChange$={(e: any) => {
-                    const input = e.target;
-                    console.log(input.checked);
-                    const password = document.querySelector('.js-password');
-                    const button = document.querySelector('.js-password-label');
-                    if (!password || !button) return;
-                    if (input.checked) {
-                      password.setAttribute('type', 'text');
-                      button.textContent = 'hide';
-                    } else {
-                      password.setAttribute('type', 'password');
-                      button.textContent = 'show';
-                    }
-                  }} class="hidden js-password-toggle" id="toggle" type="checkbox" />
-                  <label class="bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer js-password-label" for="toggle">show</label>
+                  <input
+                    onChange$={(e: any) => {
+                      const input = e.target;
+                      console.log(input.checked);
+                      const password = document.querySelector(".js-password");
+                      const button =
+                        document.querySelector(".js-password-label");
+                      if (!password || !button) return;
+                      if (input.checked) {
+                        password.setAttribute("type", "text");
+                        button.textContent = "hide";
+                      } else {
+                        password.setAttribute("type", "password");
+                        button.textContent = "show";
+                      }
+                    }}
+                    class="hidden js-password-toggle"
+                    id="toggle"
+                    type="checkbox"
+                  />
+                  <label
+                    class="bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer js-password-label"
+                    for="toggle"
+                  >
+                    show
+                  </label>
                 </div>
-                <input name="password" class={`input input-bordered w-full text-black js-password 
-                ${action.value?.validation?.password === false ? 'input-error' : ""}`} id="password" type="password" autoComplete="off"
+                <input
+                  name="password"
+                  class={`input input-bordered w-full text-black js-password 
+                ${
+                  action.value?.validation?.password === false
+                    ? "input-error"
+                    : ""
+                }`}
+                  id="password"
+                  type="password"
+                  autoComplete="off"
                 />
               </div>
             </div>
@@ -232,8 +253,9 @@ export default component$(() => {
                 Forget Password ?
               </button>
               <a
-                class={`btn btn-ghost text-black ${recaptchaToken.value.length === 0 ? "pointer-events-none" : ""
-                  }`}
+                class={`btn btn-ghost text-black ${
+                  recaptchaToken.value.length === 0 ? "pointer-events-none" : ""
+                }`}
                 href="/register"
               >
                 Don't have an account? Register Now

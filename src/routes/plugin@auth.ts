@@ -10,6 +10,7 @@ import {
   getCartByUserId,
   updateUserCart,
 } from "~/express/services/cart.service";
+import { connect } from "~/express/db.connection";
 
 export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
   serverAuth$(({ env, cookie }) => ({
@@ -18,6 +19,7 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
 
     callbacks: {
       async signIn({ profile }) {
+        await connect();
         if (profile?.name && profile?.email) {
           try {
             const { given_name, family_name, email, at_hash } = profile;
