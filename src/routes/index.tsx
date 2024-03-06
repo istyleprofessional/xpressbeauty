@@ -73,48 +73,15 @@ export default component$(() => {
       const jsonProducts = document.createElement("script");
       jsonProducts.type = "application/ld+json";
       const object = {
-        "@context": "http://schema.org/",
-        "@type": "Service",
-        serviceType: "Weekly home cleaning",
-        provider: {
-          "@type": "LocalBusiness",
-          name: "ACME Home Cleaning",
-        },
-        areaServed: {
-          "@type": "State",
-          name: "Massachusetts",
-        },
-        hasOfferCatalog: {
-          "@type": "OfferCatalog",
-          name: "Beauty Products",
-          itemListElement: products?.map((product: any) => {
-            return {
-              "@type": "OfferCatalog",
-              itemOffered: {
-                "@type": "Product",
-                name: product.name,
-                sku: product.sku,
-                description: product.description,
-                image: (product?.imgs ?? [])[0] ?? "",
-                brand: {
-                  "@type": "Brand",
-                  name: product?.companyName?.name ?? "",
-                },
-                offers: {
-                  "@type": "Offer",
-                  priceCurrency: "USD",
-                  price:
-                    product?.variatons?.length > 0
-                      ? parseFloat(product.price.min).toFixed(2)
-                      : parseFloat(product.price.regular).toFixed(2),
-                  priceValidUntil: new Date().toISOString(),
-                  availability: "http://schema.org/InStock",
-                  url: `https://xpressbeauty.ca/products/${product.perfix}/`,
-                },
-              },
-            };
-          }),
-        },
+        "@context": "https://schema.org/",
+        "@type": "ItemList",
+        itemListElement: products.map((product, index) => {
+          return {
+            "@type": "ListItem",
+            position: index + 1,
+            url: `https://xpressbeauty.ca/products/${product.perfix}`,
+          };
+        }),
       };
       jsonProducts.text = JSON.stringify(object);
       document.head.appendChild(jsonProducts);
