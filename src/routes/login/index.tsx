@@ -268,7 +268,7 @@ export default component$(() => {
                     providerId: "google",
                     options: {
                       callbackUrl:
-                        "https://xpressbeauty.ca/api/auth/callback/google",
+                        "http://localhost:5173/api/auth/callback/google",
                     },
                   })
                 }

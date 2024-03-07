@@ -30,7 +30,8 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
               password: at_hash,
             };
             const addNewUserReq = await userRegistration(userObject);
-            if (addNewUserReq.err.includes("exists")) {
+            console.log("addNewUserReq", addNewUserReq);
+            if (addNewUserReq.err?.includes("exists")) {
               const user = await userGoogleLogin(userObject);
               if (user.err) {
                 console.log("user.err", user.err);
@@ -64,6 +65,9 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
                 env.get("VITE_JWTSECRET") ?? ""
               );
               cookie.set("token", newToken, { httpOnly: true, path: "/" });
+              return true;
+            }
+            if (addNewUserReq.status.includes("success")) {
               return true;
             }
             // console.log("addNewUserReq", addNewUserReq);
