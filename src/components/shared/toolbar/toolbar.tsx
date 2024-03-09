@@ -74,41 +74,7 @@ export const ToolBar = component$((props: ToolBarProps) => {
     track(() => context?.cart?.totalPrice);
     track(() => context?.cart?.shipping);
     quantity.value = context?.cart?.totalQuantity;
-    shippingText.value = "Spend $80 more to get 30% off shipping";
-    shippingStep.value = 0;
-    if (context?.cart?.totalPrice < 80) {
-      shippingText.value = `Spend $${
-        (80 - context?.cart?.totalPrice).toFixed(2) ?? 0
-      } more to get 30% off shipping`;
-      shippingStep.value = 0;
-    } else if (
-      context.cart?.totalPrice > 80 &&
-      context?.cart?.totalPrice < 100
-    ) {
-      shippingText.value = `Spend $${
-        (100 - context?.cart?.totalPrice).toFixed(2) ?? 0
-      } more to get 50% off shipping`;
-      shippingStep.value = 1;
-    } else if (
-      context.cart?.totalPrice > 100 &&
-      context?.cart?.totalPrice < 150
-    ) {
-      shippingText.value = `Spend $${
-        (150 - context?.cart?.totalPrice).toFixed(2) ?? 0
-      } more to get 70% off shipping`;
-      shippingStep.value = 2;
-    } else if (
-      context.cart?.totalPrice > 150 &&
-      context?.cart?.totalPrice < 200
-    ) {
-      shippingText.value = `Spend $${
-        (200 - context?.cart?.totalPrice).toFixed(2) ?? 0
-      } more to get free shipping`;
-      shippingStep.value = 3;
-    } else if (context.cart?.totalPrice > 200) {
-      shippingText.value = `You get free shipping`;
-      shippingStep.value = 4;
-    }
+
     console.log(shippingStep.value);
     totalPrice.value = parseFloat(context?.cart?.totalPrice).toFixed(2);
   });
@@ -267,36 +233,6 @@ export const ToolBar = component$((props: ToolBarProps) => {
                   <p class="text-xs text-gray-500">
                     {shippingText.value ? shippingText.value : ""}
                   </p>
-                  <ul class="steps steps-horizontal">
-                    <li
-                      class={`step ${
-                        shippingStep.value !== 0 ? "step-info" : ""
-                      }`}
-                    >
-                      30%
-                    </li>
-                    <li
-                      class={`step ${
-                        shippingStep.value >= 2 ? "step-info" : ""
-                      }`}
-                    >
-                      50%
-                    </li>
-                    <li
-                      class={`step ${
-                        shippingStep.value >= 3 ? "step-info" : ""
-                      }`}
-                    >
-                      70%
-                    </li>
-                    <li
-                      class={`step ${
-                        shippingStep.value === 4 ? "step-info" : ""
-                      }`}
-                    >
-                      Free
-                    </li>
-                  </ul>
                 </div>
               </div>
             </div>

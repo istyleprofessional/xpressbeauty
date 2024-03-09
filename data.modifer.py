@@ -5,6 +5,7 @@ import requests
 import undetected_chromedriver as uc
 import boto3
 import os
+from imageio.plugins._tifffile import product
     
 def return_product_if_range(parsed_json, d, url, driver):
 
@@ -164,7 +165,7 @@ def get_last_prices_and_upc():
         driver.get('https://www.cosmoprofbeauty.ca/')
         time.sleep(40)
         for i, d in enumerate(datas):
-            if "Hair" in ','.join(d['categories']):
+            if "tool" in ','.join(d['categories']).lower():
                 try:
                     if('variations' in d and len(d['variations']) > 0):
                         url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
@@ -262,7 +263,7 @@ def get_last_prices_and_upc():
             json.dump(updated_datas, f)
                 # print remaining products length
         
-get_last_prices_and_upc()
+# get_last_prices_and_upc()
 
 
 
@@ -639,3 +640,236 @@ def get_all_details_for_each_product_from_cosmoprof_api():
     
 
 # get_all_details_for_each_product_from_cosmoprof_api()
+
+
+def get_all_offers_from_cosmoProf():
+    driver = uc.Chrome()
+    objects = []
+    driver.get('https://www.cosmoprofbeauty.ca/promotions')
+    soap = BeautifulSoup(driver.page_source, 'html.parser')
+    offers = soap.find_all('div', class_='promo-tile')
+    for offer in offers:
+        offerObject = {}
+        offer_a_tag = offer.find('a')
+        offerObject['name'] = offer_a_tag.text.replace('\n', '').replace('  ', '').strip()
+        offerObject['url'] = offer_a_tag['href']
+        driver.get(f'''https://www.cosmoprofbeauty.ca{offerObject['url']}''')
+        time.sleep(10)
+        # scroll all way down to get all the products
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        while True:
+            # Scroll down to bottom
+            driver.execute_script(
+                "window.scrollTo(0, document.body.scrollHeight);")
+            # Wait to load page
+            time.sleep(20)
+            # Calculate new scroll height and compare with last scroll height
+            new_height = driver.execute_script(
+                "return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
+        soap = BeautifulSoup(driver.page_source, 'html.parser')
+        products_divs = soap.find_all('div', class_='product-tile')
+        offerObject['products'] = []
+        for product_div in products_divs:
+            data_pid = product_div['data-product-item-id']
+            product_object = {}
+            product_object['id'] = data_pid
+            offerObject['products'].append(product_object)
+        for product in offerObject['products']:
+            driver.get(f'''https://www.cosmoprofbeauty.ca/{product['id']}.html''')
+            time.sleep(2)
+            soap = BeautifulSoup(driver.page_source, 'html.parser')
+            # find if there is a div with data-attr = size
+            # find any secuirty check word
+            if 'SECURITY' in soap.text:
+                time.sleep(20)
+                driver.get(f'''https://www.cosmoprofbeauty.ca/{product['id']}.html''')
+                soap = BeautifulSoup(driver.page_source, 'html.parser')
+            size_div = soap.find('div', {'data-attr': 'size'})
+            color_div = soap.find('div', class_='color-container')
+            if size_div != None:
+                product['variation_type'] = 'Size'
+                product['variations'] = []
+                sizes = size_div.find_all('button', class_='select-size')
+                for size in sizes:
+                    product['variations'].append({
+                        "variation_id": size['id']
+                    })
+            elif color_div != None:
+                product['variation_type'] = 'Color'
+                product['variations'] = []
+                colors = color_div.find_all('div', class_='swatch-line')
+                for color in colors:
+                    product['variations'].append({
+                        "variation_id": color['data-pid']
+                    })
+            else:
+                product['variation_type'] = 'Single'
+
+        
+        objects.append(offerObject)
+   
+    with open('cosmo-offers.json', 'w') as f:
+        json.dump(objects, f)
+
+
+# get_all_offers_from_cosmoProf()
+
+
+def get_all_offers_from_cosmoProf_from_json_file():
+    driver = uc.Chrome()
+    driver.get('https://www.cosmoprofbeauty.ca/login')
+    time.sleep(40)
+
+    objects = []
+    with open('cosmo-offers.json', 'r') as f:
+        offers = json.load(f)
+        for offer in offers:
+            for product in offer['products']:
+                if(product['variation_type'] != "Single"):
+                    for variation in product['variations']:
+                        try:
+                            url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}'''
+                            driver.get(url)
+                            soap = BeautifulSoup(driver.page_source, 'html.parser')
+                            json_element = soap.find('pre')
+
+                            json_data = json_element.get_text()
+                            parsed_json = json.loads(json_data)
+                            variation['name'] = parsed_json['product']['productName']
+                            variation['upc'] = parsed_json['product']['upc']
+                            if 'price' in parsed_json['product']:
+                                if 'tiered' in parsed_json['product']['price']['type']:
+                                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
+                                else:
+                                    if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] != None:
+                                        variation['price'] = parsed_json['product']['price']['list']['value']
+                                    if 'sales' in parsed_json['product']['price'] and parsed_json['product']['price']['sales'] != None:
+                                        variation['sale_price'] = parsed_json['product']['price']['sales']['value']
+                            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+                                variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+                            else:
+                                variation['quantity_on_hand'] = 0
+                            if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
+                                variation['variation_image'] = parsed_json['product']['images']['pdpLarge'][0]['url']
+                        except:
+                            time.sleep(20)
+                            driver.get(url)
+                            soap = BeautifulSoup(driver.page_source, 'html.parser')
+                            json_element = soap.find('pre')
+
+                            json_data = json_element.get_text()
+                            parsed_json = json.loads(json_data)
+                            variation['name'] = parsed_json['product']['productName']
+                            variation['upc'] = parsed_json['product']['upc']
+                            if 'price' in parsed_json['product']:
+                                if 'tiered' in parsed_json['product']['price']['type']:
+                                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
+                                else:
+                                    if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] != None:
+                                        variation['price'] = parsed_json['product']['price']['list']['value']
+                                    if 'sales' in parsed_json['product']['price'] and parsed_json['product']['price']['sales'] != None:
+                                        variation['sale_price'] = parsed_json['product']['price']['sales']['value']
+
+                            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+                                variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+                            else:
+                                variation['quantity_on_hand'] = 0
+                            if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
+                                variation['variation_image'] = parsed_json['product']['images']['pdpLarge'][0]['url']
+                else:
+                    try:
+                        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={product['id']}'''
+                        driver.get(url)
+                        soap = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soap.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        product['name'] = parsed_json['product']['productName']
+                        product['upc'] = parsed_json['product']['upc']
+                        if 'price' in parsed_json['product']:
+                            if 'tiered' in parsed_json['product']['price']['type']:
+                                product['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
+                            else:
+                                if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] != None:
+                                    product['price'] = parsed_json['product']['price']['list']['value']
+                                if 'sales' in parsed_json['product']['price'] and parsed_json['product']['price']['sales'] != None:
+                                    product['sale_price'] = parsed_json['product']['price']['sales']['value']
+                        if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+                            product['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+                        else:
+                            product['quantity_on_hand'] = 0
+                        if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
+                            product['image'] = parsed_json['product']['images']['pdpLarge'][0]['url']
+                    except:
+                        time.sleep(20)
+                        driver.get(url)
+                        soap = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soap.find('pre')
+
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        product['name'] = parsed_json['product']['productName']
+                        product['upc'] = parsed_json['product']['upc']
+                        if 'price' in parsed_json['product']:
+                            if 'tiered' in parsed_json['product']['price']['type']:
+                                product['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
+                            else:
+                                if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] != None:
+                                    product['price'] = parsed_json['product']['price']['list']['value']
+                                if 'sales' in parsed_json['product']['price'] and parsed_json['product']['price']['sales'] != None:
+                                    product['sale_price'] = parsed_json['product']['price']['sales']['value']
+                        if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+                            product['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+                        else:
+                            product['quantity_on_hand'] = 0
+                        if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
+                            product['image'] = parsed_json['product']['images']['pdpLarge'][0]['url']
+
+            objects.append(offer)
+    with open('cosmo-offers-final.json', 'w') as f:
+        json.dump(objects, f)
+
+# get_all_offers_from_cosmoProf_from_json_file()
+
+
+def get_brands_name_and_variation_name_for_offers():
+    driver = uc.Chrome()
+    with open('./cosmo-offers-final.json', 'r') as f:
+        data = json.load(f)
+        for offer in data:
+            for product in offer['products']:
+                driver.get(f'''https://www.cosmoprofbeauty.ca/{product['id']}.html''')
+                soap = BeautifulSoup(driver.page_source, 'html.parser')
+                if 'SECURITY' in soap.text:
+                    driver.get(f'''https://www.cosmoprofbeauty.ca/{product['id']}.html''')
+                    soap = BeautifulSoup(driver.page_source, 'html.parser')
+        
+                # find a tag with class pdp-brand
+                brand = soap.findAll('a', class_='pdp-brand')
+                if len(brand) > 0:
+                    # get last index of the brand array
+                    product['brand'] = brand[len(brand) - 1].text.replace('\n', '').strip()
+                else:
+                    product['brand'] = ''
+                # get variation name
+                size_div = soap.find('div', {'data-attr': 'size'})
+                color_div = soap.find('div', class_='color-container')
+                if size_div != None:
+                    for variation in product['variations']:
+                        for size in size_div.find_all('button', class_='select-size'):
+                            if variation['variation_id'] == size['id']:
+                                variation['variation_name'] = size.text.replace('\n', '').strip()
+                elif color_div != None:
+                    for variation in product['variations']:
+                        for color in color_div.find_all('div', class_='swatch-line'):
+                            if variation['variation_id'] == color['data-pid']:
+                                variation['variation_name'] = color.text.replace('\n', '').strip()
+
+    with open('cosmo-offers-final-2.json', 'w') as f:
+        json.dump(data, f)
+                
+
+get_brands_name_and_variation_name_for_offers()

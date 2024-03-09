@@ -1,0 +1,2484 @@
+[
+    {
+        "name": "LIGHTENERS Save Up To 30%",
+        "url": "/blonding-savings?icid=promo_save30_lighteners-blonding",
+        "products": [
+            {
+                "id": "CAN-M-813200",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-014146"
+                    },
+                    {
+                        "variation_id": "CAN-014012"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-021856",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026723",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-026726"
+                    },
+                    {
+                        "variation_id": "CAN-026723"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-010663",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-010664"
+                    },
+                    {
+                        "variation_id": "CAN-010663"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-010664",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-010664"
+                    },
+                    {
+                        "variation_id": "CAN-010663"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-013869",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-020259",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-020258",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-810701",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-810702",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-810703",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-810704",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-023944",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-023945",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-M-347233",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-351896"
+                    },
+                    {
+                        "variation_id": "CAN-352529"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-338592",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-337273",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-023176",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-338953",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027700",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-027702"
+                    },
+                    {
+                        "variation_id": "CAN-027700"
+                    },
+                    {
+                        "variation_id": "CAN-027701"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-263181",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-019780"
+                    },
+                    {
+                        "variation_id": "CAN-019779"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-813157",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-021458"
+                    },
+                    {
+                        "variation_id": "CAN-021429"
+                    },
+                    {
+                        "variation_id": "CAN-021456"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-813167",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-021459"
+                    },
+                    {
+                        "variation_id": "CAN-021418"
+                    },
+                    {
+                        "variation_id": "CAN-021457"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-815892",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-815890",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-819755",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-819757",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-819758",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-M-813109",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-819759"
+                    },
+                    {
+                        "variation_id": "CAN-819756"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-021522",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-021523",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-021525",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-021527",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-021528",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-819754",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "TRENDY TOOLS & TECH Save Up To 30%",
+        "url": "/thetoolbox?icid=promo_save30_tools-tech",
+        "products": [
+            {
+                "id": "CAN-018434",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019630",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-022504",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-014996",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026409",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-038863",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-018697",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027749",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-020446",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-022905",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-023249",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026410",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-474216",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-022503",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027763",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-133153",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-133176",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-038663",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-029600",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-133918",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027750",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-018698",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-014285",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019517",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019511",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031954",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-018696",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-765284",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-765285",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-032595",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-014284",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019793",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027803",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-038333",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027357",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027358",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-018700",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-021470",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-020447",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "PUCK SALE Save Up To 40%",
+        "url": "/pucksale?icid=promo_save40_puck-sale",
+        "products": [
+            {
+                "id": "CAN-024201",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024203",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-007880",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019487",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-025502",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024204",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-025635",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024206",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-022896",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024802",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-024802"
+                    },
+                    {
+                        "variation_id": "CAN-024803"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-023320",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024800",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-024800"
+                    },
+                    {
+                        "variation_id": "CAN-024801"
+                    },
+                    {
+                        "variation_id": "CAN-024799"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-018458",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026924",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026925",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026926",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027339",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026806",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026805",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-243030",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-243029",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031890",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-010368",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031905",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-471025",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-471028",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-471100",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-029775",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027282",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027285",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027606",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027274",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027273",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027286",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-011888",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-011886"
+                    },
+                    {
+                        "variation_id": "CAN-011888"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-011886",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-011886"
+                    },
+                    {
+                        "variation_id": "CAN-011888"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-011874",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-011871"
+                    },
+                    {
+                        "variation_id": "CAN-011874"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-011871",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-011871"
+                    },
+                    {
+                        "variation_id": "CAN-011874"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-011870",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-011868"
+                    },
+                    {
+                        "variation_id": "CAN-011870"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-011868",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-011868"
+                    },
+                    {
+                        "variation_id": "CAN-011870"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-018703",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-018826",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-018702",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024205",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-025251",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024760",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-471138",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "BARBERING TOOLS Save Up To 25%",
+        "url": "/clippers-and-trimmers?icid=promo_save25_barbering-tools",
+        "products": [
+            {
+                "id": "CAN-014284",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-018434",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-765284",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-765285",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019630",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026531",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-013552",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-585035",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852910",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852821",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-859909",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026393",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-859905",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019849",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852200",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026392",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-859970",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-133239",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-014285",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852353",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-859908",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852850",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-770110",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019517",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-859965",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-859956",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852548",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852751",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-132671",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-013689",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-770120",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019511",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027767",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-001409",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-132664",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-765291",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-020028",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019798",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-770906",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019793",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027803",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852060",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852820",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027358",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852248",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019513",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019797",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852074",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-859973",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-859011",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-008267",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-028237",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-033612",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-132672",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-020030",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852254",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-433205",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852365",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852547",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852582",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852374",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-010097",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852545",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852511",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-008262",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019516",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-011192",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852293",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852803",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-008268",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-008266",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-852509",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "MATRIX 20% Off Hair Care Litres",
+        "url": "/matrix-3?prefn1=Promotion&prefv1=20%25%20Off&icid=promo_20off_matrix_litres",
+        "products": [
+            {
+                "id": "CAN-M-805372",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-027714"
+                    },
+                    {
+                        "variation_id": "CAN-027642"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805371",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-027638"
+                    },
+                    {
+                        "variation_id": "CAN-027639"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805357",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-022907"
+                    },
+                    {
+                        "variation_id": "CAN-022908"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805358",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-022913"
+                    },
+                    {
+                        "variation_id": "CAN-022914"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-020258",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-020259",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-M-805097",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810120"
+                    },
+                    {
+                        "variation_id": "CAN-810121"
+                    },
+                    {
+                        "variation_id": "CAN-810122"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805127",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810130"
+                    },
+                    {
+                        "variation_id": "CAN-810131"
+                    },
+                    {
+                        "variation_id": "CAN-810132"
+                    },
+                    {
+                        "variation_id": "CAN-810133"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805129",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810137"
+                    },
+                    {
+                        "variation_id": "CAN-810138"
+                    },
+                    {
+                        "variation_id": "CAN-810139"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805098",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810124"
+                    },
+                    {
+                        "variation_id": "CAN-810125"
+                    },
+                    {
+                        "variation_id": "CAN-810126"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805137",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810159"
+                    },
+                    {
+                        "variation_id": "CAN-810160"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805136",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810157"
+                    },
+                    {
+                        "variation_id": "CAN-810158"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805131",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810145"
+                    },
+                    {
+                        "variation_id": "CAN-810146"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805243",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-817528"
+                    },
+                    {
+                        "variation_id": "CAN-817529"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805169",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-812335"
+                    },
+                    {
+                        "variation_id": "CAN-812333"
+                    },
+                    {
+                        "variation_id": "CAN-812334"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805176",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-812365"
+                    },
+                    {
+                        "variation_id": "CAN-812364"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805132",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810147"
+                    },
+                    {
+                        "variation_id": "CAN-810148"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805174",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-812359"
+                    },
+                    {
+                        "variation_id": "CAN-812358"
+                    },
+                    {
+                        "variation_id": "CAN-812360"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805345",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-021298"
+                    },
+                    {
+                        "variation_id": "CAN-021297"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805135",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810153"
+                    },
+                    {
+                        "variation_id": "CAN-810154"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805298",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-008656"
+                    },
+                    {
+                        "variation_id": "CAN-007807"
+                    },
+                    {
+                        "variation_id": "CAN-007809"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805134",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810151"
+                    },
+                    {
+                        "variation_id": "CAN-810152"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805167",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-812324"
+                    },
+                    {
+                        "variation_id": "CAN-812323"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805138",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810167"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805166",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-812320"
+                    },
+                    {
+                        "variation_id": "CAN-812321"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805374",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-028776"
+                    },
+                    {
+                        "variation_id": "CAN-028775"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805245",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-817530"
+                    },
+                    {
+                        "variation_id": "CAN-817531"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805293",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-578564"
+                    },
+                    {
+                        "variation_id": "CAN-578565"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805168",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-812332"
+                    },
+                    {
+                        "variation_id": "CAN-812330"
+                    },
+                    {
+                        "variation_id": "CAN-812331"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805307",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-008980"
+                    },
+                    {
+                        "variation_id": "CAN-009961"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805296",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-578561"
+                    },
+                    {
+                        "variation_id": "CAN-000325"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805344",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-021300"
+                    },
+                    {
+                        "variation_id": "CAN-021301"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805373",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-028769"
+                    },
+                    {
+                        "variation_id": "CAN-028768"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805323",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-011970"
+                    },
+                    {
+                        "variation_id": "CAN-011971"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805324",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-011976"
+                    },
+                    {
+                        "variation_id": "CAN-011975"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805175",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-812361"
+                    },
+                    {
+                        "variation_id": "CAN-812362"
+                    },
+                    {
+                        "variation_id": "CAN-812363"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-021856",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-M-805336",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-019298"
+                    },
+                    {
+                        "variation_id": "CAN-019303"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805337",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-019301"
+                    },
+                    {
+                        "variation_id": "CAN-019293"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805365",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-026726"
+                    },
+                    {
+                        "variation_id": "CAN-026723"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-578566",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-M-805314",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-010667"
+                    },
+                    {
+                        "variation_id": "CAN-010666"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "HEMPZ Up To 40% Off Specialty Bath Products",
+        "url": "/hempz-2?prefn1=Promotion&prefv1=40%25%20Off&icid=promo_40off_hempz_specialty-bath",
+        "products": [
+            {
+                "id": "CAN-031035",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031049",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031341",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031170",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031036",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031051",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031342",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031033",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031050",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031054",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031037",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031048",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031340",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031034",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031052",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031343",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "FRAMESI 50% Off Decolor B Plus, Diamond, Clay & Infinity+ Lighteners",
+        "url": "/blonding-savings?prefn1=brandcustom&prefv1=Framesi&icid=promo_50off_framesi_lighteners",
+        "products": [
+            {
+                "id": "CAN-338592",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-337273",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-023176",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-338953",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "GHD 30% Off Dryers",
+        "url": "/thetoolbox?prefn1=brandcustom&prefv1=GHD%20%28Good%20Hair%20Day%29&icid=promo_30off_ghd_dryers",
+        "products": [
+            {
+                "id": "CAN-014996",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-474216",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-021470",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "AMIKA 20% Off Maskswhen you buy 2 or more",
+        "url": "/amika_products?prefn1=Promotion&prefv1=20%25%20Off&icid=promo_20off_amika_masks-ca",
+        "products": [
+            {
+                "id": "CAN-M-046028",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-046265"
+                    },
+                    {
+                        "variation_id": "CAN-046266"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-046056",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-020886"
+                    },
+                    {
+                        "variation_id": "CAN-020888"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-046089",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-028276"
+                    },
+                    {
+                        "variation_id": "CAN-029684"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "BIOLAGE 20% Off Litres",
+        "url": "/biolage-2?prefn1=Promotion&prefv1=20%25%20Off&icid=promo_20off_biolage_litres",
+        "products": [
+            {
+                "id": "CAN-M-805097",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810120"
+                    },
+                    {
+                        "variation_id": "CAN-810121"
+                    },
+                    {
+                        "variation_id": "CAN-810122"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805098",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810124"
+                    },
+                    {
+                        "variation_id": "CAN-810125"
+                    },
+                    {
+                        "variation_id": "CAN-810126"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805127",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810130"
+                    },
+                    {
+                        "variation_id": "CAN-810131"
+                    },
+                    {
+                        "variation_id": "CAN-810132"
+                    },
+                    {
+                        "variation_id": "CAN-810133"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805138",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810167"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805129",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810137"
+                    },
+                    {
+                        "variation_id": "CAN-810138"
+                    },
+                    {
+                        "variation_id": "CAN-810139"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805131",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810145"
+                    },
+                    {
+                        "variation_id": "CAN-810146"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805132",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810147"
+                    },
+                    {
+                        "variation_id": "CAN-810148"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805136",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810157"
+                    },
+                    {
+                        "variation_id": "CAN-810158"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805137",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810159"
+                    },
+                    {
+                        "variation_id": "CAN-810160"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805134",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810151"
+                    },
+                    {
+                        "variation_id": "CAN-810152"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-M-805135",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-810153"
+                    },
+                    {
+                        "variation_id": "CAN-810154"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-026413",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-M-805298",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-008656"
+                    },
+                    {
+                        "variation_id": "CAN-007807"
+                    },
+                    {
+                        "variation_id": "CAN-007809"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-026418",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-M-805375",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-026597"
+                    },
+                    {
+                        "variation_id": "CAN-026596"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "CLEAN+EASY 25% Off 14 oz. Pot Wax",
+        "url": "/cleaneasy?icid=promo_25off_clean-easy_pot-wax",
+        "products": [
+            {
+                "id": "CAN-828510",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828520",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828231",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828061",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828620",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828377",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828237",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828402",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828400",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828532",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828055",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828787",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828234",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-828072",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "AG CARE 20% Off Spray Stylers",
+        "url": "/refresh-save?prefn1=brandcustom&prefv1=AG%20Care&icid=promo_20off_ag-care_spray-stylers",
+        "products": [
+            {
+                "id": "CAN-025996",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026040",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026057",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026009",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026033",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-025959",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-025965",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026236",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031967",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "TIGI 25% Off Bed Head Hairspray Favorites",
+        "url": "/refresh-save?prefn1=brandcustom&prefv1=TIGI&icid=promo_25off_tigi_bed-head",
+        "products": [
+            {
+                "id": "CAN-018212",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019459",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-018181",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-787531",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-018225",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-021448",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "KENRA 2 For $26 Hairspray",
+        "url": "/refresh-save?prefn1=brandcustom&prefv1=Kenra%20Professional&icid=promo_2for26_kenra_hairspray",
+        "products": [
+            {
+                "id": "CAN-711126",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-711579",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-029010",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-711595",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-029012",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-712547",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "AMIKA 2 For $35 Hold Collection",
+        "url": "/refresh-save?prefn1=brandcustom&prefv1=amika&icid=promo_2for35_amika_hold-collection",
+        "products": [
+            {
+                "id": "CAN-046323",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-046323"
+                    },
+                    {
+                        "variation_id": "CAN-046324"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-046321",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-046321"
+                    },
+                    {
+                        "variation_id": "CAN-046322"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-026957",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "PAUL MITCHELL Up To 30% Off Stylers",
+        "url": "/refresh-save?prefn1=brandcustom&prefv1=John%20Paul%20Mitchell%20Systems&icid=promo_30off_paul-mitchell_stylers",
+        "products": [
+            {
+                "id": "CAN-570236",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-570235"
+                    },
+                    {
+                        "variation_id": "CAN-570236"
+                    },
+                    {
+                        "variation_id": "CAN-570237"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-575275",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-028458",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-573797",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-573797"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-570245",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-570245"
+                    },
+                    {
+                        "variation_id": "CAN-570246"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-570240",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-570240"
+                    },
+                    {
+                        "variation_id": "CAN-570241"
+                    },
+                    {
+                        "variation_id": "CAN-570242"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-575276",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-578118",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-572379",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-572405",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "FRAMESI 30% Off Color Lover Stylers",
+        "url": "/refresh-save?prefn1=brandcustom&prefv1=Framesi&icid=promo_30off_framesi_stylers",
+        "products": [
+            {
+                "id": "CAN-338410",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-028433",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-338305",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-338593",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-338590",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-015634",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-015636",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-338595",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-338594",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-338596",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "SEBASTIAN 15% Off Select Stylers",
+        "url": "/refresh-save?prefn1=brandcustom&prefv1=Sebastian&icid=promo_15off_sebastian_select-stylers",
+        "products": [
+            {
+                "id": "CAN-193270",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-192227",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-192227"
+                    },
+                    {
+                        "variation_id": "CAN-192228"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-193112",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019842",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-192232",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-192231"
+                    },
+                    {
+                        "variation_id": "CAN-192232"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-192235",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-192234",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "CHI 20% Off Select Styling Products",
+        "url": "/refresh-save?prefn1=brandcustom&prefv1=CHI&icid=promo_20off_chi_select-styling",
+        "products": [
+            {
+                "id": "CAN-636075",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-636276",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-636072",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-636076",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-028261",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019317",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019772",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-018978",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-028262",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-028423",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-636071",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-636277",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-636077",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-028264",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "GIBS GROOMING 20% Off Stylers",
+        "url": "/pucksale?prefn1=brandcustom&prefv1=GIBS%20Grooming&icid=promo_20off_gibs_stylers",
+        "products": [
+            {
+                "id": "CAN-026924",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026925",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026926",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-027339",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026806",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-026805",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-243030",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-243029",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031890",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-010368",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-031905",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "AMERICAN CREW 20% Off Stylers",
+        "url": "/pucksale?prefn1=brandcustom&prefv1=American%20Crew&icid=promo_20off_american-crew_stylers",
+        "products": [
+            {
+                "id": "CAN-024201",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024203",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-007880",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-019487",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-025502",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024204",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-025635",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024206",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-022896",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024802",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-024802"
+                    },
+                    {
+                        "variation_id": "CAN-024803"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-023320",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024800",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-024800"
+                    },
+                    {
+                        "variation_id": "CAN-024801"
+                    },
+                    {
+                        "variation_id": "CAN-024799"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-018458",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024205",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-025251",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-024760",
+                "variation_type": "Single"
+            }
+        ]
+    },
+    {
+        "name": "MARIA NILA 20% Off Select Stylers",
+        "url": "/refresh-save?prefn1=brandcustom&prefv1=Maria%20Nila&icid=promo_20off_maria-nila_select-stylers",
+        "products": [
+            {
+                "id": "CAN-028735",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-029978",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-029979",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-028705",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-028705"
+                    },
+                    {
+                        "variation_id": "CAN-028706"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-028706",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-028705"
+                    },
+                    {
+                        "variation_id": "CAN-028706"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-028734",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-015882",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-013216",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-013214"
+                    },
+                    {
+                        "variation_id": "CAN-013216"
+                    }
+                ]
+            },
+            {
+                "id": "CAN-015875",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-015880",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-015883",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-015881",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-013217",
+                "variation_type": "Size",
+                "variations": [
+                    {
+                        "variation_id": "CAN-013215"
+                    },
+                    {
+                        "variation_id": "CAN-013217"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "WOODY'S 40% Off Styling Pucks",
+        "url": "/pucksale?prefn1=brandcustom&prefv1=Woodys&icid=promo_40off_woodys_pucks",
+        "products": [
+            {
+                "id": "CAN-471025",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-471028",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-471100",
+                "variation_type": "Single"
+            },
+            {
+                "id": "CAN-471138",
+                "variation_type": "Single"
+            }
+        ]
+    }
+]

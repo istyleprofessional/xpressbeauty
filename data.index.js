@@ -330,7 +330,7 @@ async function getProductsFromCanradWebPage() {
   await connection.close();
 }
 
-getProductsFromCanradWebPage();
+// getProductsFromCanradWebPage();
 
 async function getProductsFromModernBeauty() {
   const request = await axios.get("https://www.modernbeauty.com/hair.html");
@@ -371,3 +371,65 @@ async function adjustData() {
   await connection.close();
 }
 // adjustData();
+
+async function addCosmoOfferToGoogleSheet() {
+  const json = require("./cosmo-offers-final.json");
+  const auth = new JWT({
+    email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+    key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  const doc = new GoogleSpreadsheet(
+    "1m6vciiNYUJoGaDAlxJqsAF_IMjqMftjWa838dbhrmJc",
+    auth
+  );
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0];
+  const rows = [];
+  for (const offer of json) {
+    for (const product of offer.products) {
+      const row = {};
+      if (product.variation_type === "Single") {
+        row["Product Name"] = product.name;
+        row["Product Price"] = product.price;
+        row["Product Sale Price"] = product.sale_price;
+        row["Product Quantity"] = product.quantity_on_hand;
+        row["UPC"] = product.upc;
+        row["Item ID"] = product.id;
+        row["imagelink"] = `=image("${product.image}", 1)`;
+        row["offer name"] = offer.name;
+        rows.push(row);
+      } else {
+        for (const variation of product.variations) {
+          row["Product Name"] = variation.name;
+          row["Product Price"] = variation.price;
+          row["Product Sale Price"] = variation.sale_price;
+          row["Product Quantity"] = variation.quantity_on_hand;
+          row["UPC"] = variation.upc;
+          row["Item ID"] = variation.variation_id;
+          row["imagelink"] = `=image("${variation.variation_image}", 1)`;
+          row["offer name"] = offer.name;
+          rows.push(row);
+        }
+      }
+    }
+  }
+  // increase row height to 100
+
+  // delete all data from the sheet
+  await sheet.clear();
+  // add Headers to the sheet
+  const headers = Object.keys(rows[0]);
+  await sheet.setHeaderRow(headers);
+  await sheet.loadCells("A1:G1");
+  const firstRow = sheet.getCell(0, 0);
+  firstRow.textFormat = { fontSize: 20, bold: true };
+  await sheet.saveUpdatedCells();
+
+  // add products to the sheet
+  await sheet.addRows(rows);
+  console.log("done");
+}
+
+addCosmoOfferToGoogleSheet();
