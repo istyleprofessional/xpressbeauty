@@ -46,6 +46,9 @@ export default component$(() => {
       cartData.cart.shipping = shipping.value;
       cartData.cart.currencyObject = currencyObject;
       cartData.cart.user = userObject;
+      cartData.cart.products = cartData.cart.products.filter(
+        (product: any) => product.quantity > 0
+      );
       const response = await postRequest("/api/stripe/", cartData.cart);
       const { clientSecret, sessionId } = await response.json();
       const checkout = await stripe.initEmbeddedCheckout({
