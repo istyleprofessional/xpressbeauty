@@ -628,7 +628,7 @@ async function addProductsToGoogleSheet() {
   }
   try {
     const sheet = doc.sheetsByIndex[0]; // loads document properties and worksheets
-    await sheet.clear("A2:Z");
+    await sheet.clear();
     await sheet.addRows(newArray);
   } catch (error) {
     console.log(error);
