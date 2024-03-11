@@ -1,6 +1,5 @@
 import { component$ } from "@builder.io/qwik";
 import { routeLoader$, useLocation } from "@builder.io/qwik-city";
-import { Image } from "@unpic/qwik";
 import { Pagination } from "~/components/shared/pagination/pagination";
 import { connect } from "~/express/db.connection";
 import brandSchema from "~/express/schemas/brand.schema";
