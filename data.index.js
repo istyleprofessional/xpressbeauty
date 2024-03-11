@@ -626,6 +626,8 @@ async function addProductsToGoogleSheet() {
       continue;
     }
   }
+  try {
+    // loads document properties and worksheets
     await sheet.clear("A2:Z");
     await sheet.addRows(newArray);
   } catch (error) {
