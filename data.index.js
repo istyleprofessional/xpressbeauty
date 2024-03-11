@@ -537,7 +537,7 @@ async function addCanradProductsFromGoogleSheet() {
 async function addProductsToGoogleSheet() {
   await connect(mongoUrl);
 
-  const productsDb = await productSchema.find();
+  const productsDb = await Product.find();
   const newArray = [];
   const auth = new JWT({
     email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
