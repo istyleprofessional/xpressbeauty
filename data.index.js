@@ -540,8 +540,8 @@ async function addProductsToGoogleSheet() {
   const productsDb = await productSchema.find();
   const newArray = [];
   const auth = new JWT({
-    email: import.meta.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
-    key: import.meta.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+    email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+    key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
 
