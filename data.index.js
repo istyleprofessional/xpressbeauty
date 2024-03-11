@@ -166,7 +166,7 @@ async function updateLastProductsQuantity() {
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-// updateLastProductsQuantity();
+updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -458,4 +458,4 @@ async function addCosmoOfferToGoogleSheet() {
   console.log("done");
 }
 
-addCosmoOfferToGoogleSheet();
+// addCosmoOfferToGoogleSheet();
