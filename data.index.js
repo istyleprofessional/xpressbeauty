@@ -166,7 +166,7 @@ async function updateLastProductsQuantity() {
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-updateLastProductsQuantity();
+// updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -445,7 +445,7 @@ async function addCosmoOfferToGoogleSheet() {
     }
   }
   // increase row height to 100
-
+  console.log(uniqueRows.length);
   // delete all data from the sheet
   await sheet.clear();
   // add Headers to the sheet
@@ -457,4 +457,4 @@ async function addCosmoOfferToGoogleSheet() {
   console.log("done");
 }
 
-// addCosmoOfferToGoogleSheet();
+addCosmoOfferToGoogleSheet();
