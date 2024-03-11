@@ -440,12 +440,13 @@ async function addCosmoOfferToGoogleSheet() {
         .replace(/ /g, "+");
       const fileName = `https://salonbrandz.s3.ca-central-1.amazonaws.com/imageFolder/${imageName}.jpg`;
       row["Image"] = `=image("${fileName}", 1)`;
+      row["Image Link"] = fileName;
     } catch (error) {
       continue;
     }
   }
   // increase row height to 100
-  console.log(uniqueRows.length);
+  console.log(rows.length, uniqueRows.length);
   // delete all data from the sheet
   await sheet.clear();
   // add Headers to the sheet
