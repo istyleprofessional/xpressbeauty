@@ -84,6 +84,7 @@ export const findUserByUserId = async (id: string) => {
 export const userGoogleLogin = async (userObject: any) => {
   try {
     const result = await User.findOne({ email: userObject.email });
+    console.log(result);
     if (result) {
       return { status: "success", result: result };
     } else {
