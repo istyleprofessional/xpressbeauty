@@ -373,7 +373,7 @@ async function adjustData() {
 // adjustData();
 
 async function addCosmoOfferToGoogleSheet() {
-  const json = require("./cosmo-offers-final.json");
+  const json = require("./cosmo-offers-final-2.json");
   const auth = new JWT({
     email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
     key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
@@ -392,6 +392,7 @@ async function addCosmoOfferToGoogleSheet() {
       const row = {};
       if (product.variation_type === "Single") {
         row["Product Name"] = product.name;
+        row["Brand"] = product.brand;
         row["Product Price"] = product.price;
         row["Product Sale Price"] = product.sale_price;
         row["Product Quantity"] = product.quantity_on_hand;
@@ -402,7 +403,8 @@ async function addCosmoOfferToGoogleSheet() {
         rows.push(row);
       } else {
         for (const variation of product.variations) {
-          row["Product Name"] = variation.name;
+          row["Product Name"] = `${variation.name}-${variation.variation_name}`;
+          row["Brand"] = product.brand;
           row["Product Price"] = variation.price;
           row["Product Sale Price"] = variation.sale_price;
           row["Product Quantity"] = variation.quantity_on_hand;

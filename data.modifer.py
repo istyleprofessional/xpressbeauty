@@ -165,7 +165,7 @@ def get_last_prices_and_upc():
         driver.get('https://www.cosmoprofbeauty.ca/')
         time.sleep(40)
         for i, d in enumerate(datas):
-            if "tool" in ','.join(d['categories']).lower():
+            if not "tool" in ','.join(d['categories']).lower():
                 try:
                     if('variations' in d and len(d['variations']) > 0):
                         url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
@@ -872,4 +872,4 @@ def get_brands_name_and_variation_name_for_offers():
         json.dump(data, f)
                 
 
-get_brands_name_and_variation_name_for_offers()
+# get_brands_name_and_variation_name_for_offers()

@@ -37,8 +37,6 @@ export const useRegisterForm = routeAction$(async (data, { env }) => {
       newData?.password?.length >= 8,
     confirmPassword:
       newData?.confirmPassword?.trim() === newData?.password?.trim(),
-    lastName: validate(newData?.lastName?.trim(), "lastName"),
-    firstName: validate(newData?.firstName?.trim(), "firstName"),
     phoneNumber:
       validate(newData?.phoneNumber?.trim(), "phoneNumber") &&
       newData?.phoneNumber?.length === 12 &&
@@ -199,14 +197,12 @@ export default component$(() => {
               <InputField
                 label="First Name"
                 placeholder="John"
-                validation={action?.value?.validation?.firstName}
                 type="text"
                 identifier="firstName"
               />
               <InputField
                 label="Last Name"
                 placeholder="Doe"
-                validation={action?.value?.validation?.lastName}
                 type="text"
                 identifier="lastName"
               />
