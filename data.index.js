@@ -166,7 +166,7 @@ async function updateLastProductsQuantity() {
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-// updateLastProductsQuantity();
+updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -398,23 +398,50 @@ async function addCosmoOfferToGoogleSheet() {
         row["Product Quantity"] = product.quantity_on_hand;
         row["UPC"] = product.upc;
         row["Item ID"] = product.id;
-        row["imagelink"] = `=image("${product.image}", 1)`;
+        row["Image"] = `=image("${product.image}", 1)`;
         row["offer name"] = offer.name;
         rows.push(row);
       } else {
         for (const variation of product.variations) {
-          row["Product Name"] = `${variation.name}-${variation.variation_name}`;
+          // download image and save it in a folder
+
+          row[
+            "Product Name"
+          ] = `${variation.name} - ${variation.variation_name}`;
           row["Brand"] = product.brand;
           row["Product Price"] = variation.price;
           row["Product Sale Price"] = variation.sale_price;
           row["Product Quantity"] = variation.quantity_on_hand;
           row["UPC"] = variation.upc;
           row["Item ID"] = variation.variation_id;
-          row["imagelink"] = `=image("${variation.variation_image}", 1)`;
+          row["Image"] = `=image("${variation.variation_image}", 1)`;
           row["offer name"] = offer.name;
           rows.push(row);
         }
       }
+    }
+  }
+
+  // check if there is a duplicate product in the rows by product name
+  const unique = [];
+  const uniqueRows = [];
+  for (const row of rows) {
+    if (!unique.includes(row["Product Name"])) {
+      if (row["Product Quantity"] < 10) continue;
+      unique.push(row["Product Name"]);
+      uniqueRows.push(row);
+    }
+  }
+  for (const row of uniqueRows) {
+    // replace =image() with the image url
+    try {
+      const imageName = row["Product Name"]
+        .replace(/[^a-zA-Z0-9\s]/g, "")
+        .replace(/ /g, "+");
+      const fileName = `https://salonbrandz.s3.ca-central-1.amazonaws.com/imageFolder/${imageName}.jpg`;
+      row["Image"] = `=image("${fileName}", 1)`;
+    } catch (error) {
+      continue;
     }
   }
   // increase row height to 100
@@ -422,16 +449,12 @@ async function addCosmoOfferToGoogleSheet() {
   // delete all data from the sheet
   await sheet.clear();
   // add Headers to the sheet
-  const headers = Object.keys(rows[0]);
+  const headers = Object.keys(uniqueRows[0]);
   await sheet.setHeaderRow(headers);
-  await sheet.loadCells("A1:G1");
-  const firstRow = sheet.getCell(0, 0);
-  firstRow.textFormat = { fontSize: 20, bold: true };
-  await sheet.saveUpdatedCells();
 
   // add products to the sheet
-  await sheet.addRows(rows);
+  await sheet.addRows(uniqueRows);
   console.log("done");
 }
 
-addCosmoOfferToGoogleSheet();
+// addCosmoOfferToGoogleSheet();
