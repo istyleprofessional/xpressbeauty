@@ -66,15 +66,6 @@ export default component$(() => {
               class="flex flex-col items-center justify-center gap-3 p-3 bg-white rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out cursor-pointer w-44 h-44"
               href={`/products/filterBrands/${brand.name}`}
             >
-              <Image
-                src={`${brand.image}`}
-                onError$={(e: any) => {
-                  e.target.src = "/placeholder.webp";
-                }}
-                class="w-32 h-32 object-contain"
-                alt={brand.name}
-              />
-
               <h2 class="text-sm font-bold">{brand.name}</h2>
             </a>
           );

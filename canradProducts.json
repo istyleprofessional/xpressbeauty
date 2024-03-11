@@ -1,34 +1,5 @@
 [
     {
-        "product_name": "ALCOVE LITRE DEAL BUY 36 LTRS MIX & MATCH - ONGOING",
-        "description": "ALCOVE LITRE DEAL BUY 36 LTRS MIX & MATCH - ONGOING",
-        "item_no": "ALCPROMO5",
-        "sale_price": {
-            "sale": 499.99
-        },
-        "price": {
-            "regular": 499.99
-        },
-        "quantity_on_hand": "0.00E+00",
-        "upc": "",
-        "sku": "",
-        "imgs": [
-            "https://istyleprofessional.s3.ca-central-1.amazonaws.com/istyleprofessionalImgs/ALCOVELITREDEALBUY36LTRSMIXMATCHONGOING.webp"
-        ],
-        "status": "NORMAL",
-        "isHidden": false,
-        "companyName": {
-            "name": "Canrad"
-        },
-        "categories": [
-            {
-                "name": "INTROS",
-                "main": ""
-            }
-        ],
-        "priceType": "single"
-    },
-    {
         "product_name": "170g ALCOVE STRONG HOLD HAIRSPRAY",
         "description": "170g ALCOVE STRONG HOLD HAIRSPRAY",
         "item_no": "ALCSHH170",

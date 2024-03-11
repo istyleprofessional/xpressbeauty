@@ -166,7 +166,7 @@ async function updateLastProductsQuantity() {
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-updateLastProductsQuantity();
+// updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -228,28 +228,6 @@ async function getProductsFromCanradWebPage() {
               productsToSave.push(product);
             }
             await sleep(2000);
-          }
-        } else {
-          const canradProducts = response.data.Products;
-          if (canradProducts && canradProducts.length > 0) {
-            for (const canradProduct of canradProducts) {
-              const product = {
-                "Product Name": canradProduct.ItemName,
-                "Product Description": canradProduct.Description.replace(
-                  /<[^>]*>?/gm,
-                  ""
-                ),
-                brand: category.Name,
-                "Product Price": canradProduct.Price,
-                "Product Sale Price": canradProduct.SpecialPriceDiscount,
-                "Product Quantity": canradProduct.OnHandQuantity,
-                UPC: canradProduct.UPC,
-                "Item ID": canradProduct.ItemID,
-                imagelink: canradProduct.ImageURL,
-                "Product Price": canradProduct.Price,
-              };
-              productsToSave.push(product);
-            }
           }
         }
         console.log(productsToSave.length);
@@ -458,4 +436,100 @@ async function addCosmoOfferToGoogleSheet() {
   console.log("done");
 }
 
+async function addCanradProductsFromGoogleSheet() {
+  await connect(mongoUrl);
+  const auth = new JWT({
+    email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+    key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  const doc = new GoogleSpreadsheet(
+    "1FLHOdsDGIH_gnXUjZ0SBYfc1dXYqpgxmfTnH4FEFMeg",
+    auth
+  );
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0];
+  const categories = await Category.find({});
+
+  const rows = await sheet.getRows();
+  // skip the first row
+  for (let i = 1; i < rows.length; i++) {
+    // download the image and upload it to s3 and get the url and replace the image url
+    const rowBefore = rows[i];
+    const row = rowBefore.toObject();
+    if (!row["Product Name"]) continue;
+    if (!row["categories"]) continue;
+    if (!row["brand"] || row["brand"] === "Canrad" || row["brand"] === "Barber")
+      continue;
+    if (!row["Product Price"] || row["Product Price"] === 0) continue;
+    // check if product quantity is a number
+    if (isNaN(parseInt(row["Product Quantity"]))) continue;
+
+    const imageToBeInserted = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/manage/${row[
+      "Product Name"
+    ]
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .replace(/ /g, "")}.webp`;
+    const product = {
+      product_name: row["Product Name"],
+      description: row["Product Description"].includes("IN STORE ONLY")
+        ? ""
+        : row["Product Description"],
+      item_no: row["Item ID"],
+      sale_price: {
+        sale: 0,
+      },
+      price: {
+        regular: parseFloat(row["Product Price"]) + 8,
+      },
+      quantity_on_hand: row["Product Quantity"],
+      upc: row["UPC"],
+      sku: "",
+      imgs: [imageToBeInserted],
+      status: "NORMAL",
+      isHidden: false,
+      bar_code_value: "",
+      manufacturer_part_number: "",
+      companyName: { name: row["brand"] },
+      categories: [
+        {
+          name: row["categories"],
+          main:
+            categories.filter((item) =>
+              item.name?.toLowerCase().includes(row["categories"].toLowerCase())
+            )[0]?.main ?? "",
+        },
+      ],
+      perfix: row["Product Name"]
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .replace(/ /g, ""),
+      priceType: "single",
+    };
+    await Product.findOneAndUpdate(
+      { product_name: product.product_name },
+      product,
+      { upsert: true }
+    );
+    for (const category of product.categories) {
+      if (category.name && category.main) {
+        await Category.findOneAndUpdate(
+          { name: category.name },
+          { name: category.name, main: category.main },
+          { upsert: true }
+        );
+      }
+    }
+    if (product.companyName.name) {
+      await Brand.findOneAndUpdate(
+        { name: product.companyName.name },
+        { name: product.companyName.name },
+        { upsert: true }
+      );
+    }
+  }
+  console.log("done");
+  await connection.close();
+}
+addCanradProductsFromGoogleSheet();
 // addCosmoOfferToGoogleSheet();
