@@ -63,16 +63,9 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           {product_name}
         </h1>
         {companyName.name && companyName.name !== "" && (
-          <div
-            itemProp="brand"
-            itemScope
-            itemType="http://schema.org/Brand"
-            id={`brand-${companyName.name.replace(/ /g, "-")}`}
-          >
-            <h2 class="text-black text-lg md:text-2xl" itemProp="name">
-              {companyName.name}
-            </h2>
-          </div>
+          <h2 class="text-black text-lg md:text-2xl" itemProp="name">
+            {companyName.name}
+          </h2>
         )}
       </div>
       {ratings?.result?.ratings?.length > 0 && (
