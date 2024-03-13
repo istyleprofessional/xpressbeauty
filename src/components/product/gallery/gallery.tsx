@@ -15,7 +15,10 @@ export const Gallery = component$((props: GalleryProps) => {
           itemProp="image"
           // src={imgs[0].includes('http') ? imgs[0] : imgs[0].replace(".", "")}
           onError$={(e: any) => {
-            e.target.src = "/placeholder.webp";
+            e.target.src = imgs[0].includes("http")
+              ? imgs[0]
+              : imgs[0].replace(".", "") ??
+                "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
           }}
           id="product-image"
           alt={product_name}

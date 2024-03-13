@@ -484,7 +484,7 @@ async function addCanradProductsFromGoogleSheet() {
         regular: parseFloat(row["Product Price"]) + 8,
       },
       quantity_on_hand: row["Product Quantity"],
-      upc: row["UPC"],
+      gtin: row["UPC"],
       sku: "",
       imgs: [imageToBeInserted],
       status: "NORMAL",
@@ -531,13 +531,14 @@ async function addCanradProductsFromGoogleSheet() {
   console.log("done");
   await connection.close();
 }
-// addCanradProductsFromGoogleSheet();
-// addCosmoOfferToGoogleSheet();
+addCanradProductsFromGoogleSheet();
 
 async function addProductsToGoogleSheet() {
   await connect(mongoUrl);
 
-  const productsDb = await Product.find();
+  const productsDb = await Product.find({
+    isHidden: { $ne: true },
+  });
   const newArray = [];
   const auth = new JWT({
     email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
@@ -554,9 +555,6 @@ async function addProductsToGoogleSheet() {
   const rows = await sheet.getRows();
   for (const product of productsDb) {
     try {
-      const checkIfCat = product.categories?.find(
-        (cat) => cat?.main === "Tools"
-      );
       const row = rows.find((r) => r.toObject().id === product._id.toString());
       if (product?.variations?.length > 0) {
         for (const variant of product.variations) {
@@ -587,7 +585,7 @@ async function addProductsToGoogleSheet() {
             product?.quantity_on_hand?.toString() ?? "0"
           );
           oldRow.price = `${product?.price?.regular} CAD` ?? "0";
-          oldRow.shipping_label = checkIfCat ? "free shipping" : "";
+          oldRow.shipping_label = "";
           oldRow.gtin =
             product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
           oldRow["identifier exists"] =
@@ -614,7 +612,7 @@ async function addProductsToGoogleSheet() {
             price: `${product?.price?.regular} CAD` ?? "0",
             brand: product?.companyName?.name ?? "Qwik City",
             condition: "new",
-            shipping_label: checkIfCat ? "free shipping" : "",
+            shipping_label: "",
             gtin: product?.gtin ?? "",
             "identifier exists": product?.gtin ? "yes" : "no",
           };
@@ -628,8 +626,19 @@ async function addProductsToGoogleSheet() {
   }
   try {
     // loads document properties and worksheets
-    await sheet.clear("A2:Z");
-    await sheet.addRows(newArray);
+    const auth1 = new JWT({
+      email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+      key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    });
+    const doc1 = new GoogleSpreadsheet(
+      "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
+      auth1
+    );
+    await doc1.loadInfo();
+    const sheet1 = doc.sheetsByIndex[0]; // loads document properties and worksheets
+    await sheet1.clear("A2:Z");
+    await sheet1.addRows(newArray);
   } catch (error) {
     console.log(error);
   }
