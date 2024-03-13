@@ -515,22 +515,6 @@ async function addCanradProductsFromGoogleSheet() {
       product,
       { upsert: true }
     );
-    for (const category of product.categories) {
-      if (category.name && category.main) {
-        await Category.findOneAndUpdate(
-          { name: category.name },
-          { name: category.name, main: category.main },
-          { upsert: true }
-        );
-      }
-    }
-    if (product.companyName.name) {
-      await Brand.findOneAndUpdate(
-        { name: product.companyName.name },
-        { name: product.companyName.name },
-        { upsert: true }
-      );
-    }
   }
   console.log("done");
   await connection.close();
