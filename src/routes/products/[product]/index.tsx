@@ -7,7 +7,6 @@ import {
   useStore,
   Fragment,
   useTask$,
-  useOnWindow,
   useOnDocument,
 } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
@@ -260,36 +259,8 @@ export default component$(() => {
     })
   );
 
-  useOnWindow(
-    "load",
-    $(async () => {
-      if (product.priceType === "range") {
-        const stripe = await loadStripe(
-          import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
-        );
-
-        const elements: any = stripe?.elements({
-          locale: "en-GB",
-        });
-
-        const options = {
-          amount: (product.price?.min ?? 0) * 100,
-          currency: currencyObject === "1" ? "USD" : "CAD",
-          logoType: "badge",
-          lockupTheme: "black",
-          modalLinkStyle: "learn-more-text",
-          modalTheme: "mint",
-          introText: "Pay",
-        };
-
-        const afterpayClearpayMessageElement = elements?.create(
-          "afterpayClearpayMessage",
-          options
-        );
-
-        afterpayClearpayMessageElement.mount("#afterpay-clearpay-message");
-        return;
-      }
+  useVisibleTask$(async () => {
+    if (product.priceType === "range") {
       const stripe = await loadStripe(
         import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
       );
@@ -299,7 +270,7 @@ export default component$(() => {
       });
 
       const options = {
-        amount: (product.price?.regular ?? 0) * 100,
+        amount: (product.price?.min ?? 0) * 100,
         currency: currencyObject === "1" ? "USD" : "CAD",
         logoType: "badge",
         lockupTheme: "black",
@@ -314,8 +285,33 @@ export default component$(() => {
       );
 
       afterpayClearpayMessageElement.mount("#afterpay-clearpay-message");
-    })
-  );
+      return;
+    }
+    const stripe = await loadStripe(
+      import.meta.env.VITE_STRIPE_TEST_PUBLISHABLE_KEY ?? ""
+    );
+
+    const elements: any = stripe?.elements({
+      locale: "en-GB",
+    });
+
+    const options = {
+      amount: (product.price?.regular ?? 0) * 100,
+      currency: currencyObject === "1" ? "USD" : "CAD",
+      logoType: "badge",
+      lockupTheme: "black",
+      modalLinkStyle: "learn-more-text",
+      modalTheme: "mint",
+      introText: "Pay",
+    };
+
+    const afterpayClearpayMessageElement = elements?.create(
+      "afterpayClearpayMessage",
+      options
+    );
+
+    afterpayClearpayMessageElement.mount("#afterpay-clearpay-message");
+  });
 
   useTask$(() => {
     if (product.variation_type && product.variation_type === "Size") {
@@ -330,39 +326,38 @@ export default component$(() => {
     }
   });
 
-  useOnDocument(
-    "DOMContentLoaded",
-    $(() => {
-      if (
-        product.variation_type === "Size" &&
-        (product?.variations ?? []).length > 0
-      ) {
-        const img = document?.getElementById("product-image");
-        img?.setAttribute(
-          "src",
-          `${
-            (product?.variations ?? [])[0].variation_image ??
-            (product?.imgs ?? [])[0]
-          }`
-        );
-        currentProduct.value = {
-          ...product,
-          quantity_on_hand: (product?.variations ?? [])[0].quantity_on_hand,
-        };
-      } else {
-        const img = document?.getElementById("product-image");
-        img?.setAttribute(
-          "src",
-          `${
-            (product?.imgs ?? [])[0].includes("http")
-              ? (product?.imgs ?? [])[0]
-              : (product?.imgs ?? [])[0].replace(".", "")
-          }`
-        );
-        currentProduct.value = product;
-      }
-    })
-  );
+  useVisibleTask$(() => {
+    if (
+      product.variation_type === "Size" &&
+      (product?.variations ?? []).length > 0
+    ) {
+      const img = document?.getElementById("product-image");
+      img?.setAttribute(
+        "src",
+        `${
+          (product?.variations ?? [])[0].variation_image.includes("+")
+            ? (product?.variations ?? [])[0].variation_image.replace("+", "%2B")
+            : (product?.variations ?? [])[0].variation_image ??
+              (product?.imgs ?? [])[0]
+        }`
+      );
+      currentProduct.value = {
+        ...product,
+        quantity_on_hand: (product?.variations ?? [])[0].quantity_on_hand,
+      };
+    } else {
+      const img = document?.getElementById("product-image");
+      img?.setAttribute(
+        "src",
+        `${
+          (product?.imgs ?? [])[0].includes("http")
+            ? (product?.imgs ?? [])[0]
+            : (product?.imgs ?? [])[0].replace(".", "")
+        }`
+      );
+      currentProduct.value = product;
+    }
+  });
 
   return (
     <>
@@ -461,8 +456,16 @@ export default component$(() => {
                               img?.setAttribute(
                                 "src",
                                 `${
-                                  variation?.variation_image ??
-                                  (product?.imgs ?? [])[0]
+                                  (product?.variations ??
+                                    [])[0].variation_image.includes("+")
+                                    ? (product?.variations ??
+                                        [])[0].variation_image.replace(
+                                        "+",
+                                        "%2B"
+                                      )
+                                    : (product?.variations ?? [])[0]
+                                        .variation_image ??
+                                      (product?.imgs ?? [])[0]
                                 }`
                               );
                             }}
