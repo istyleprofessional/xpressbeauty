@@ -455,6 +455,10 @@ async function addCanradProductsFromGoogleSheet() {
   const rows = await sheet.getRows();
   // skip the first row
   for (let i = 1; i < rows.length; i++) {
+    // check if mongodb is connected
+    if (!(connection.readyState === 1 || connection.readyState === 2)) {
+      await connect(mongoUrl);
+    }
     // download the image and upload it to s3 and get the url and replace the image url
     const rowBefore = rows[i];
     const row = rowBefore.toObject();
