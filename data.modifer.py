@@ -6,7 +6,6 @@ import undetected_chromedriver as uc
 import boto3
 import os
 from imageio.plugins._tifffile import product
-from transformers import AutoTokenizer, AutoModelForCausalLM
     
 def return_product_if_range(parsed_json, d, url, driver):
 
@@ -263,7 +262,7 @@ def get_last_prices_and_upc():
             json.dump(updated_datas, f)
                 # print remaining products length
         
-# get_last_prices_and_upc()
+get_last_prices_and_upc()
 
 
 
@@ -873,22 +872,3 @@ def get_brands_name_and_variation_name_for_offers():
                 
 
 # get_brands_name_and_variation_name_for_offers()
-
-
-def get_all_canard_products():
-    tokenizer = AutoTokenizer.from_pretrained("google/gemma-7b")
-    model = AutoModelForCausalLM.from_pretrained("google/gemma-7b")
-    with open('./canradProducts.json') as f:
-        data = json.load(f)
-        for product in data:
-            with open('./categories.json') as j:
-                categories = json.load(j)
-                for category in categories:
-                    category_str = ', '.join([category['name'], category['main']])
-                    product_str = ', '.join([product['product_name'], product['description']])
-                    inputs = tokenizer.encode("classify: " + category_str + " " + product_str, return_tensors="pt", padding=True, truncation=True, max_length=512)
-                    outputs = model.generate(inputs, max_length=2)
-                    print(outputs)
-
-
-get_all_canard_products()

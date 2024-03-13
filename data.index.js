@@ -166,7 +166,7 @@ async function updateLastProductsQuantity() {
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-// updateLastProductsQuantity();
+updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -639,22 +639,4 @@ async function addProductsToGoogleSheet() {
   }
   await connection.close();
 }
-addProductsToGoogleSheet();
-
-async function mergeBrandNames() {
-  await connect(mongoUrl);
-  const brands = await Brand.find({});
-  // check if the brand name is duplicated by lowercasing the name
-  const unique = [];
-  for (const brand of brands) {
-    if (!unique.includes(brand.name.toLowerCase())) {
-      unique.push(brand.name.toLowerCase());
-    } else {
-      await Brand.findByIdAndDelete(brand._id);
-      await Product.updateMany(
-        { "companyName.name": brand.name },
-        { "companyName.name": brand.name.toLowerCase() }
-      );
-    }
-  }
-}
+// addProductsToGoogleSheet();
