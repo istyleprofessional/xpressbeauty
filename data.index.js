@@ -519,7 +519,7 @@ async function addCanradProductsFromGoogleSheet() {
   console.log("done");
   await connection.close();
 }
-addCanradProductsFromGoogleSheet();
+// addCanradProductsFromGoogleSheet();
 
 async function addProductsToGoogleSheet() {
   await connect(mongoUrl);
