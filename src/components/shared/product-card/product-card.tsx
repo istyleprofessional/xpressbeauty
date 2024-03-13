@@ -142,7 +142,9 @@ export const ProductCard = component$((props: ProductCardProps) => {
         class={`overflow-hidden truncate lg:text-base text-sm text-black whitespace-normal max-w-40 max-h-14 md:max-h-24 font-semibold pt-5 text-center`}
         itemProp="name"
       >
-        {product.product_name}
+        {product.product_name?.includes("CR")
+          ? product.product_name?.replace(/CR.*/, "")
+          : product.product_name}
       </h2>
       <div class="flex flex-col gap-2">
         {isInStock.value ? (

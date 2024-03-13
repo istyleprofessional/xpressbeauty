@@ -155,10 +155,12 @@ export const RatingAndDescription = component$(
                     onClick$={() => {
                       const mainDiv = document.getElementById("mainDiv");
                       if (mainDiv) {
-                        // dangerouslySetInnerHTML={product_description}
                         mainDiv.innerHTML = product_description
                           .replace(/<img .*?>/g, "")
-                          .replace(/Cosmo Prof/g, "Xpress Beauty");
+                          .replace(/Cosmo Prof/g, "Xpress Beauty")
+                          .replace(/([A-Z])([a-z])/g, " $1")
+                          .trim();
+
                         tabState.value = "description";
                       }
                     }}
@@ -178,7 +180,9 @@ export const RatingAndDescription = component$(
                       if (mainDiv) {
                         mainDiv.innerHTML = ingredients
                           .replace(/<img .*?>/g, "")
-                          .replace(/Cosmo Prof/g, "Xpress Beauty");
+                          .replace(/Cosmo Prof/g, "Xpress Beauty")
+                          .replace(/([A-Z])([a-z])/g, " $1")
+                          .trim();
                         tabState.value = "ingredients";
                       }
                     }}
@@ -197,7 +201,9 @@ export const RatingAndDescription = component$(
                       if (mainDiv) {
                         mainDiv.innerHTML = directions
                           .replace(/<img .*?>/g, "")
-                          .replace(/Cosmo Prof/g, "Xpress Beauty");
+                          .replace(/Cosmo Prof/g, "Xpress Beauty")
+                          .replace(/([A-Z])([a-z])/g, " $1")
+                          .trim();
                         tabState.value = "directions";
                       }
                     }}
@@ -215,7 +221,9 @@ export const RatingAndDescription = component$(
                 itemProp="description"
                 dangerouslySetInnerHTML={product_description
                   .replace(/<img .*?>/g, "")
-                  .replace(/Cosmo Prof/g, "Xpress Beauty")}
+                  .replace(/Cosmo Prof/g, "Xpress Beauty")
+                  .replace(/([A-Z])([a-z])/g, " $1")
+                  .trim()}
               ></div>
             </div>
           ) : (

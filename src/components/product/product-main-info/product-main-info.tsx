@@ -55,12 +55,14 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
       });
     }
   });
-  // console.log("product", sale_price);
+
   return (
     <div class="flex flex-col gap-10">
       <div class="flex flex-col gap-3">
         <h1 class="text-xl md:text-4xl font-bold text-black" itemProp="name">
-          {product_name}
+          {product_name.includes("CR")
+            ? product_name.replace(/CR.*/, "")
+            : product_name}
         </h1>
         {companyName.name && companyName.name !== "" && (
           <h2 class="text-black text-lg md:text-2xl" itemProp="name">

@@ -438,6 +438,7 @@ export default component$(() => {
                                 : "btn-outline"
                             }`}
                             onClick$={() => {
+                              // debugger;
                               finalVariationToAdd.value = {};
                               finalVariationToAdd.value[index] = {
                                 variation_id: variation._id,
@@ -451,20 +452,28 @@ export default component$(() => {
                                 ...product,
                                 quantity_on_hand: variation.quantity_on_hand,
                               };
+                              const imgSrcs = `${
+                                variation.variation_image.includes("+")
+                                  ? variation.variation_image.replace(
+                                      "+",
+                                      "%2B"
+                                    )
+                                  : variation.variation_image ??
+                                    (product?.imgs ?? [])[0]
+                              }`;
+                              console.log(imgSrcs);
                               const img =
                                 document?.getElementById("product-image");
+                              if (!img) return;
                               img?.setAttribute(
                                 "src",
                                 `${
-                                  (product?.variations ??
-                                    [])[0].variation_image.includes("+")
-                                    ? (product?.variations ??
-                                        [])[0].variation_image.replace(
+                                  variation.variation_image.includes("+")
+                                    ? variation.variation_image.replace(
                                         "+",
                                         "%2B"
                                       )
-                                    : (product?.variations ?? [])[0]
-                                        .variation_image ??
+                                    : variation.variation_image ??
                                       (product?.imgs ?? [])[0]
                                 }`
                               );

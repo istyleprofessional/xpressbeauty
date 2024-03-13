@@ -67,7 +67,12 @@ export const ProductList = component$((props: any) => {
                   />
                 </figure>
                 <div class="card-body">
-                  <h2 class="card-title">{product?.product_name}</h2>
+                  <h2 class="card-title">
+                    {" "}
+                    {product.product_name?.includes("CR")
+                      ? product.product_name?.replace(/CR.*/, "")
+                      : product.product_name}
+                  </h2>
                   <p class="text-black text-xs md:text-sm">
                     {product?.variation_name ?? ""}
                   </p>
