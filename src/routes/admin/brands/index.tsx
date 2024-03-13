@@ -12,6 +12,7 @@ import {
   get_brands_per_page,
   updateVisibility,
 } from "~/express/services/brand.service";
+import { updateProductsVisibilityByBrand } from "~/express/services/product.service";
 
 export const useBrands = routeLoader$(async ({ url }) => {
   await connect();
@@ -31,7 +32,7 @@ export const getBrandsServer = server$(async function (value: string) {
 
 export const updateBrandVisibility = server$(async function (data: any) {
   const update = await updateVisibility(data._id, !data.isHidden);
-  // const updateProducts = await updateProductsVisibility()
+  await updateProductsVisibilityByBrand(data.name, !data.isHidden);
   return JSON.stringify(update);
 });
 

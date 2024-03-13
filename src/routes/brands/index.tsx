@@ -10,7 +10,10 @@ export const useBrands = routeLoader$(async ({ url }) => {
   const alphabet = url.searchParams.get("alphabet");
   if (alphabet) {
     const brands = await brandSchema
-      .find({ name: { $regex: `^${alphabet}`, $options: "i" } })
+      .find({
+        name: { $regex: `^${alphabet}`, $options: "i" },
+        isHidden: { $ne: true },
+      })
       .skip((parseInt(page) - 1) * 20)
       .limit(20)
       .sort({ name: 1 });
@@ -20,7 +23,7 @@ export const useBrands = routeLoader$(async ({ url }) => {
     return JSON.stringify({ brands: brands, total: total });
   }
   const brands = await brandSchema
-    .find({})
+    .find({ isHidden: { $ne: true } })
     .skip((parseInt(page) - 1) * 20)
     .limit(20)
     .sort({ name: 1 });

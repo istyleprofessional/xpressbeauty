@@ -30,11 +30,9 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
               password: at_hash,
             };
             const addNewUserReq = await userRegistration(userObject);
-            console.log("addNewUserReq", addNewUserReq);
             if (addNewUserReq.err?.includes("exists")) {
               const user = await userGoogleLogin(userObject);
               if (user.err) {
-                console.log("user.err", user.err);
                 return false;
               }
               const prevToken = cookie.get("token");
