@@ -33,7 +33,8 @@ export const Gallery = component$((props: GalleryProps) => {
               itemProp="image"
               src={img.includes("http") ? img : img.replace(".", "")}
               onError$={(e: any) => {
-                e.target.src = "/placeholder.webp";
+                e.target.src =
+                  "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg";
               }}
               alt={product_name}
               onClick$={() => {
