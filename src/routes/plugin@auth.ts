@@ -68,6 +68,15 @@ export const { onRequest, useAuthSession, useAuthSignin, useAuthSignout } =
               return true;
             }
             if (addNewUserReq.status.includes("success")) {
+              const newToken = jwt.sign(
+                {
+                  user_id: addNewUserReq.result?._id ?? "",
+                  isDummy: false,
+                  exp: Math.floor(Date.now() / 1000) + 60 * 60,
+                },
+                env.get("VITE_JWTSECRET") ?? ""
+              );
+              cookie.set("token", newToken, { httpOnly: true, path: "/" });
               return true;
             }
             // console.log("addNewUserReq", addNewUserReq);

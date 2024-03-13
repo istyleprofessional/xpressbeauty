@@ -770,3 +770,19 @@ export const updateVisibility = async (id: string, isHidden: boolean) => {
     return { status: "failed", err: err };
   }
 };
+
+export const updateProductsVisibilityByBrand = async (
+  brandName: string,
+  isHidden: boolean
+) => {
+  try {
+    const result = await Product.updateMany(
+      { "companyName.name": brandName },
+      { isHidden: isHidden },
+      { new: true }
+    );
+    return { status: "success", result: result };
+  } catch (err) {
+    return { status: "failed", err: err };
+  }
+};

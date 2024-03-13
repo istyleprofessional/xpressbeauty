@@ -31,6 +31,7 @@ export const getBrandsServer = server$(async function (value: string) {
 
 export const updateBrandVisibility = server$(async function (data: any) {
   const update = await updateVisibility(data._id, !data.isHidden);
+  // const updateProducts = await updateProductsVisibility()
   return JSON.stringify(update);
 });
 

@@ -11,7 +11,7 @@ export const sendForgetPasswordEmail = async (email: string, token: string) => {
     },
   });
   const mailOptions = {
-    from: import.meta.env.VITE_EMAIL ?? "",
+    from: `XpressBeauty Reset Password <${import.meta.env.VITE_EMAIL ?? ""}>`,
     to: email,
     subject: "Xpress Beauty Reset Password",
     html: `
