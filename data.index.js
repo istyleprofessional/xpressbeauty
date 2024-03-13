@@ -574,6 +574,9 @@ async function addProductsToGoogleSheet() {
           oldRow.availability = parseInt(
             product?.quantity_on_hand?.toString() ?? "0"
           );
+          oldRow.title = oldRow.title?.includes("CR")
+            ? oldRow.title?.replace(/CR.*/, "")
+            : oldRow.title ?? "";
           oldRow.price = `${product?.price?.regular} CAD` ?? "0";
           oldRow.shipping_label = "";
           oldRow.gtin =
@@ -637,3 +640,21 @@ async function addProductsToGoogleSheet() {
   await connection.close();
 }
 addProductsToGoogleSheet();
+
+async function mergeBrandNames() {
+  await connect(mongoUrl);
+  const brands = await Brand.find({});
+  // check if the brand name is duplicated by lowercasing the name
+  const unique = [];
+  for (const brand of brands) {
+    if (!unique.includes(brand.name.toLowerCase())) {
+      unique.push(brand.name.toLowerCase());
+    } else {
+      await Brand.findByIdAndDelete(brand._id);
+      await Product.updateMany(
+        { "companyName.name": brand.name },
+        { "companyName.name": brand.name.toLowerCase() }
+      );
+    }
+  }
+}
