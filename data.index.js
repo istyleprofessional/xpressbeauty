@@ -548,7 +548,9 @@ async function addProductsToGoogleSheet() {
         for (const variant of product.variations) {
           const newRow = {
             id: `${product._id.toString()}-${variant?.variation_id}`,
-            title: product?.product_name ?? "",
+            title: product.product_name?.includes("CR")
+              ? product.product_name?.replace(/CR.*/, "")
+              : product.product_name ?? "",
             description: product?.description ?? "",
             link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0].includes("http")
@@ -587,7 +589,9 @@ async function addProductsToGoogleSheet() {
         } else {
           const newRow = {
             id: product._id.toString(),
-            title: product?.product_name ?? "",
+            title: product.product_name?.includes("CR")
+              ? product.product_name?.replace(/CR.*/, "")
+              : product.product_name ?? "",
             description: product?.description ?? "",
             link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0].includes("http")
