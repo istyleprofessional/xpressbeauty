@@ -158,6 +158,7 @@ export const RatingAndDescription = component$(
                         mainDiv.innerHTML = product_description
                           .replace(/<img .*?>/g, "")
                           .replace(/Cosmo Prof/g, "Xpress Beauty")
+                          .replace(/CanRad /g, "Xpress Beauty")
                           .replace(/([A-Z])([a-z])/g, " $1")
                           .trim();
 
@@ -181,6 +182,7 @@ export const RatingAndDescription = component$(
                         mainDiv.innerHTML = ingredients
                           .replace(/<img .*?>/g, "")
                           .replace(/Cosmo Prof/g, "Xpress Beauty")
+                          .replace(/CanRad /g, "Xpress Beauty")
                           .replace(/([A-Z])([a-z])/g, " $1")
                           .trim();
                         tabState.value = "ingredients";
@@ -202,6 +204,7 @@ export const RatingAndDescription = component$(
                         mainDiv.innerHTML = directions
                           .replace(/<img .*?>/g, "")
                           .replace(/Cosmo Prof/g, "Xpress Beauty")
+                          .replace(/CanRad /g, "Xpress Beauty")
                           .replace(/([A-Z])([a-z])/g, " $1")
                           .trim();
                         tabState.value = "directions";
@@ -222,6 +225,7 @@ export const RatingAndDescription = component$(
                 dangerouslySetInnerHTML={product_description
                   .replace(/<img .*?>/g, "")
                   .replace(/Cosmo Prof/g, "Xpress Beauty")
+                  .replace(/CanRad /g, "Xpress Beauty")
                   .replace(/([A-Z])([a-z])/g, " $1")
                   .trim()}
               ></div>
