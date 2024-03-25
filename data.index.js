@@ -694,6 +694,17 @@ async function addFakeReviews() {
         const response = completion.choices[0].message.content;
         const res = JSON.parse(response);
         oldReviews.push(res);
+        const randomMilliseconds =
+          Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000;
+
+        // Create a new date object using the current date minus the random milliseconds
+        const randomDate = new Date(new Date() - randomMilliseconds);
+        const randomHours = Math.floor(Math.random() * 24);
+        const randomMinutes = Math.floor(Math.random() * 60);
+        const randomSeconds = Math.floor(Math.random() * 60);
+
+        // Set the random time
+        randomDate.setHours(randomHours, randomMinutes, randomSeconds);
         const ratingAndReview = {
           user_id: user._id,
           reviewTitle: res.title,
@@ -702,10 +713,8 @@ async function addFakeReviews() {
             // between 4 and 5
             Math.floor(Math.random() * 2) + 4,
           createdAt:
-            // random date last 90 days
-            new Date(
-              Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000
-            ),
+            // random date and time last 90 days
+            randomDate,
         };
         await RatingReviews.findOneAndUpdate(
           { product_id: product._id },
