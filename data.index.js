@@ -663,8 +663,9 @@ async function addFakeReviews() {
   }
   for (const product of products) {
     // pick a random number of reviews between 1 and 20
-    const numberOfReviews = Math.floor(Math.random() * 20) + 1;
+    const numberOfReviews = Math.floor(Math.random() * 10) + 1;
     const openai = new OpenAI();
+    const oldReviews = [];
     for (let i = 0; i < numberOfReviews; i++) {
       try {
         const user = await User.create({
@@ -678,8 +679,10 @@ async function addFakeReviews() {
           messages: [
             {
               role: "system",
-              content: `You are a helpful assistant. You will write a review for a product as a customer already purchased and tried it. 
-                 be creative so put rating between 4 to 5 and review should be max 100 character and dont be repeat yourself. return the result in json format {title: string, review: string, rating: number from 4 to 5} `,
+              content: `You are a customer writing a review of a product. max 100 character and rating should be between 3 and 5 stars and return the result in json format {title: string, review: string, rating: number}
+                do not include the product name in the review or title and do not be repetitive in the review or title. 
+                
+                old reviews: ${JSON.stringify(oldReviews)}`,
             },
             {
               role: "user",
@@ -690,6 +693,7 @@ async function addFakeReviews() {
         });
         const response = completion.choices[0].message.content;
         const res = JSON.parse(response);
+        oldReviews.push(res);
         const ratingAndReview = {
           user_id: user._id,
           reviewTitle: res.title,
