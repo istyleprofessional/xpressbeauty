@@ -697,7 +697,11 @@ async function addFakeReviews() {
           rating:
             // between 4 and 5
             Math.floor(Math.random() * 2) + 4,
-          createdAt: new Date(),
+          createdAt:
+            // random date last 90 days
+            new Date(
+              Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000
+            ),
         };
         await RatingReviews.findOneAndUpdate(
           { product_id: product._id },
