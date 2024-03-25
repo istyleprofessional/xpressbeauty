@@ -11,6 +11,10 @@ const { GoogleSpreadsheet } = require("google-spreadsheet");
 const { JWT } = require("google-auth-library");
 const cheerio = require("cheerio");
 const Brand = models.Brand;
+const Order = models.Order;
+const User = models.User;
+const RatingReviews = models.RatingReviews;
+const OpenAI = require("openai");
 
 set("strictQuery", false);
 const mongoUrl = NEXT_APP_MONGO_URL || "";
@@ -166,7 +170,8 @@ async function updateLastProductsQuantity() {
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-updateLastProductsQuantity();
+
+// updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -640,3 +645,63 @@ async function addProductsToGoogleSheet() {
   await connection.close();
 }
 // addProductsToGoogleSheet();
+
+async function addFakeReviews() {
+  await connect(mongoUrl);
+  const orders = await Order.find({});
+  // find all products in the orders
+  const products = [];
+  for (const order of orders) {
+    for (const item of order.products) {
+      const productFromDb = await Product.findOne({
+        _id: item.id.includes(".") ? item.id.split(".")[0] : item.id,
+      });
+      if (productFromDb) {
+        products.push(productFromDb);
+      }
+    }
+  }
+  for (const product of products) {
+    // pick a random number of reviews between 1 and 20
+    const numberOfReviews = Math.floor(Math.random() * 20) + 1;
+    const reviews = [];
+    const openai = new OpenAI();
+    for (let i = 0; i < numberOfReviews; i++) {
+      const user = await User.create({
+        // create a fake email with unique email
+        email: `
+        ${Math.random().toString(36).substring(2, 15)}@gmail.com`,
+        password: "123456",
+      });
+      const completion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo-16k-0613",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a helpful assistant. You will write a review for a product as a customer already purchase from xpressbeauty.ca that product and happy with it. in json format {title: 'title', review: 'review', rating: 'rating'}",
+          },
+          {
+            role: "user",
+            content: `Write a review for ${product.product_name}`,
+          },
+        ],
+        // prompt: `Write a review for ${product.product_name}`,
+      });
+      const response = completion.choices[0].message.content;
+      const res = JSON.parse(response);
+      console.log(res);
+      // const review = {
+      //   product_id: product._id,
+      //   rating: Math.floor(Math.random() * 5) + 1,
+      //   review: "This is a fake review",
+      // };
+    }
+    product.reviews = reviews;
+    await Product.findByIdAndUpdate(product._id, product, { new: true });
+  }
+  await connection.close();
+  console.log(products.length);
+}
+
+addFakeReviews();

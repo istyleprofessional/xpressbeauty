@@ -102,6 +102,37 @@ const cartSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const orderSchema = new mongoose.Schema(
+  {
+    notes: { type: String, default: null },
+    userId: { type: String, default: null },
+    products: { type: Array, default: [] },
+    totalPrice: { type: Number, default: 0 },
+    totalQuantity: { type: Number, default: 0 },
+    paymentMethod: { type: String, default: null },
+    paymentStatus: { type: String, default: null },
+    shippingAddress: { type: Object, default: null },
+    shippingName: { type: String, default: null },
+    orderStatus: { type: String, default: null },
+    paymentId: { type: String, default: null },
+    order_number: { type: String, default: null },
+    currency: { type: String, default: null },
+    totalInfo: { type: Object, default: null },
+    payment_intent: { type: String, default: null },
+    paid: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
+
+const ratingReviewsSchema = new mongoose.Schema(
+  {
+    product_id: { type: String, unique: true },
+    ratings: { type: Array },
+    // reviews: { type: Array },
+  },
+  { timestamps: true }
+);
+
 module.exports = {
   Product: mongoose.model("products", productsSchema),
   Admin: mongoose.model("admins", adminSchema),
@@ -110,4 +141,6 @@ module.exports = {
   Brand: mongoose.model("brands", brandSchema),
   Category: mongoose.model("categories", categorySchema),
   Cart: mongoose.model("carts", cartSchema),
+  Order: mongoose.model("orders", orderSchema),
+  RatingReviews: mongoose.model("ratingReviews", ratingReviewsSchema),
 };
