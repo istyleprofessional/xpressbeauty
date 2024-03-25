@@ -4,18 +4,54 @@ import {
   PerviousArrowIconNoStick,
 } from "../../shared/icons/icons";
 import styles from "./hero.css?inline";
-import OfferOneImage from "~/media/hero-images/1.jpg?jsx";
-import OfferTwoImage from "~/media/hero-images/2.jpg?jsx";
-import OfferThreeImage from "~/media/hero-images/3.jpg?jsx";
-import OfferFourImage from "~/media/hero-images/4.jpg?jsx";
-import OfferFiveImage from "~/media/hero-images/5.jpg?jsx";
-import OfferSixImage from "~/media/hero-images/6.jpg?jsx";
-import OfferSevenImage from "~/media/hero-images/7.jpg?jsx";
-import OfferEightImage from "~/media/hero-images/8.jpg?jsx";
-import OfferNineImage from "~/media/hero-images/9.jpg?jsx";
-import OfferTenImage from "~/media/hero-images/10.jpg?jsx";
+import { Image } from "@unpic/qwik";
 
 export const Hero = component$(() => {
+  const photosArray = [
+    { imgUrl: "/hero-images/1.jpg", link: "/products/filterBrands/Matrix/" },
+    {
+      imgUrl: "/hero-images/2.jpg",
+      link: "/products/filterBrands/BABYLISSPRO/",
+    },
+    {
+      imgUrl: "/hero-images/3.jpg",
+      link: "/products/filterBrands/PAUL-MITCHELL/",
+    },
+    { imgUrl: "/hero-images/4.jpg", link: "/products/filterBrands/Rusk/" },
+    {
+      imgUrl: "/hero-images/5.jpg",
+      link: "/products/filterBrands/American-Crew/",
+    },
+    { imgUrl: "/hero-images/6.jpg", link: "/products/filterBrands/Olaplex/" },
+    {
+      imgUrl: "/hero-images/7.jpg",
+      link: "/products/filterBrands/Wella+WELLA/",
+    },
+    {
+      imgUrl: "/hero-images/8.jpg",
+      link: "/products/filterBrands/SCHWARZKOPF/",
+    },
+    { imgUrl: "/hero-images/9.jpg", link: "/products/filterBrands/ANDIS/" },
+    {
+      imgUrl: "/hero-images/10.jpg",
+      link: "/products/filterBrands/Deva-Curl/",
+    },
+    { imgUrl: "/hero-images/11.jpg", link: "/products/filterBrands/Biolage/" },
+    {
+      imgUrl: "/hero-images/12.jpg",
+      link: "/products/filterBrands/DESIGN.ME/",
+    },
+    { imgUrl: "/hero-images/13.jpg", link: "/products/filterBrands/amika/" },
+    { imgUrl: "/hero-images/14.jpg", link: "/products/filterBrands/OLIGO/" },
+    {
+      imgUrl: "/hero-images/15.jpg",
+      link: "/products/filterBrands/MOROCCANOIL/",
+    },
+    { imgUrl: "/hero-images/16.jpg", link: "/products/filterBrands/WAHL/" },
+    { imgUrl: "/hero-images/17.jpg", link: "/products/filterBrands/KMS/" },
+    { imgUrl: "/hero-images/18.jpg", link: "/products/filterBrands/JRL/" },
+    { imgUrl: "/hero-images/19.jpg", link: "/products/filterBrands/Joico/" },
+  ];
   useStylesScoped$(styles);
   const handleNextSlideClick = $(() => {
     const carousel = document.querySelector<HTMLElement>(".carousel")!;
@@ -62,185 +98,29 @@ export const Hero = component$(() => {
         <div class="flex flex-col gap-8 items-center w-full z-0">
           <div class="carousel carousel-center w-full p-4 space-x-4 bg-white rounded-box">
             <div class="carousel-item gap-4">
-              <a
-                href="/products/filterBrands/Matrix/"
-                class="carousel-item w-fit"
-              >
-                <div class="flex flex-col gap-2">
-                  <OfferOneImage
-                    alt="barber products"
-                    class="rounded-box w-80 h-80 lg:w-96 lg:h-96"
-                  />
-                  <p
-                    aria-label="barbering link"
-                    class="pl-3 flex flex-row items-center font-bold text-black underline"
-                  >
-                    <span>SHOP NOW </span>{" "}
-                    <span>
-                      <NextArrowIconNoStick color="black" width="8%" />
-                    </span>
-                  </p>
-                </div>
-              </a>
-              <a
-                href="/products/filterBrands/BABYLISSPRO/"
-                class="carousel-item"
-              >
-                <div class="flex flex-col gap-2">
-                  <OfferTwoImage
-                    alt="hair care products"
-                    class="rounded-box w-80 h-80 lg:w-96 lg:h-96"
-                  />
-                  <p
-                    aria-label="barbering link"
-                    class="pl-3 flex flex-row items-center font-bold text-black underline"
-                  >
-                    <span>SHOP NOW </span>{" "}
-                    <span>
-                      <NextArrowIconNoStick color="black" width="8%" />
-                    </span>
-                  </p>
-                </div>
-              </a>
-              <a href="/products/filterBrands/Olaplex/" class="carousel-item">
-                <div class="flex flex-col gap-2">
-                  <OfferThreeImage
-                    alt="hair color products"
-                    class="rounded-box w-80 h-80 lg:w-96 lg:h-96"
-                  />
-                  <p
-                    aria-label="barbering link"
-                    class="pl-3 flex flex-row items-center font-bold text-black underline"
-                  >
-                    <span>SHOP NOW </span>{" "}
-                    <span>
-                      <NextArrowIconNoStick color="black" width="8%" />
-                    </span>
-                  </p>
-                </div>
-              </a>
-              <a href="/products/filterBrands/Wella/" class="carousel-item">
-                <div class="flex flex-col gap-2">
-                  <OfferFourImage
-                    alt="hair tools brushes"
-                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
-                  />
-                  <p
-                    aria-label="barbering link"
-                    class="pl-3 flex flex-row items-center font-bold text-black underline"
-                  >
-                    <span>SHOP NOW </span>{" "}
-                    <span>
-                      <NextArrowIconNoStick color="black" width="8%" />
-                    </span>
-                  </p>
-                </div>
-              </a>
-              <a href="/products/filterBrands/ANDIS/" class="carousel-item">
-                <div class="flex flex-col gap-2">
-                  <OfferFiveImage
-                    alt="Men's grooming products"
-                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
-                  />
-                  <p
-                    aria-label="barbering link"
-                    class="pl-3 flex flex-row items-center font-bold text-black underline"
-                  >
-                    <span>SHOP NOW </span>{" "}
-                    <span>
-                      <NextArrowIconNoStick color="black" width="8%" />
-                    </span>
-                  </p>
-                </div>
-              </a>
-              <a href="/products/filterBrands/Deva Curl/" class="carousel-item">
-                <div class="flex flex-col gap-2">
-                  <OfferSixImage
-                    alt="Textured Hair Products"
-                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
-                  />
-                  <p
-                    aria-label="barbering link"
-                    class="pl-3 flex flex-row items-center font-bold text-black underline"
-                  >
-                    <span>SHOP NOW </span>{" "}
-                    <span>
-                      <NextArrowIconNoStick color="black" width="8%" />
-                    </span>
-                  </p>
-                </div>
-              </a>
-              <a href="/products/filterBrands/Biolage/" class="carousel-item">
-                <div class="flex flex-col gap-2">
-                  <OfferSevenImage
-                    alt="Textured Hair Products"
-                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
-                  />
-                  <p
-                    aria-label="barbering link"
-                    class="pl-3 flex flex-row items-center font-bold text-black underline"
-                  >
-                    <span>SHOP NOW </span>{" "}
-                    <span>
-                      <NextArrowIconNoStick color="black" width="8%" />
-                    </span>
-                  </p>
-                </div>
-              </a>
-              <a href="/products/filterBrands/amika/" class="carousel-item">
-                <div class="flex flex-col gap-2">
-                  <OfferEightImage
-                    alt="Textured Hair Products"
-                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
-                  />
-                  <p
-                    aria-label="barbering link"
-                    class="pl-3 flex flex-row items-center font-bold text-black underline"
-                  >
-                    <span>SHOP NOW </span>{" "}
-                    <span>
-                      <NextArrowIconNoStick color="black" width="8%" />
-                    </span>
-                  </p>
-                </div>
-              </a>
-              <a
-                href="/products/filterBrands/American-Crew/"
-                class="carousel-item"
-              >
-                <div class="flex flex-col gap-2">
-                  <OfferNineImage
-                    alt="Textured Hair Products"
-                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
-                  />
-                  <p
-                    aria-label="barbering link"
-                    class="pl-3 flex flex-row items-center font-bold text-black underline"
-                  >
-                    <span>SHOP NOW </span>{" "}
-                    <span>
-                      <NextArrowIconNoStick color="black" width="8%" />
-                    </span>
-                  </p>
-                </div>
-              </a>
-              <a href="/products/filterBrands/Rusk/" class="carousel-item">
-                <div class="flex flex-col gap-2">
-                  <OfferTenImage
-                    alt="Textured Hair Products"
-                    class="rounded-box  w-80 h-80 lg:w-96 lg:h-96"
-                  />
-                  <p
-                    aria-label="barbering link"
-                    class="pl-3 flex flex-row items-center font-bold text-black underline"
-                  >
-                    <span>SHOP NOW </span>{" "}
-                    <span>
-                      <NextArrowIconNoStick color="black" width="8%" />
-                    </span>
-                  </p>
-                </div>
-              </a>
+              {photosArray
+                // shuffle the array to show different images on each load
+                .sort(() => Math.random() - 0.5)
+                .map((photo: any, index: number) => (
+                  <a key={index} href={photo.link} class="carousel-item w-fit">
+                    <div class="flex flex-col gap-2">
+                      <Image
+                        src={photo.imgUrl}
+                        alt="barber products"
+                        class="rounded-box w-80 h-80 lg:w-96 lg:h-96"
+                      />
+                      <p
+                        aria-label="barbering link"
+                        class="pl-3 flex flex-row items-center font-bold text-black underline"
+                      >
+                        <span>SHOP NOW </span>{" "}
+                        <span>
+                          <NextArrowIconNoStick color="black" width="8%" />
+                        </span>
+                      </p>
+                    </div>
+                  </a>
+                ))}
             </div>
           </div>
         </div>

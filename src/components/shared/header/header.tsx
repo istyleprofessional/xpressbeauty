@@ -29,6 +29,21 @@ export const Header = component$((props: HeaderProps) => {
 
   return (
     <div class="flex flex-col">
+      <div class="flex flex-col bg-gradient-to-b from-pink-200 to-yellow-200 w-full justify-center gap-3 items-center h-fit p-2">
+        <div class="flex items-stretch text-xl font-semibold">
+          🐣🌷 Easter Savings Are Here! 🌷🐣
+        </div>
+        <div class="flex flex-col gap-1 justify-center items-center">
+          <h5 class="font-bold text-lg">Holiday Alert:</h5>{" "}
+          <p class="font-light text-center w-2/3 p-2">
+            Please be advised all shipping carriers and our warehouse will be
+            closed in Canada on Friday March 29th, 2024 for Good Friday and
+            throughout the weekend. As with any holiday closures, please be
+            prepared for potential transit delays. All orders and emails will
+            resume Monday April 1st 2024.
+          </p>
+        </div>
+      </div>
       <div class="bg-black navbar flex flex-col lg:flex-row justify-center gap-3 items-center  h-fit lg:h-12">
         <div class="flex w-full justify-center lg:justify-end flex-1 px-2">
           <div class="flex items-stretch">

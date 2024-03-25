@@ -131,10 +131,10 @@ export const ProductActions = component$((props: ProductActionsProps) => {
           </>
         )}
       </div>
-      <div class="flex flex-row gap-3 lg:gap-10">
+      <div class="flex flex-col lg:flex-row gap-3">
         {qunatity > 0 && (
           <button
-            class={`btn text-white md:w-96 font-bold font-inter text-sm w-fit md:text-xl ${
+            class={`btn text-white lg:w-fit font-bold font-inter text-sm w-fit md:text-xl ${
               isButtonDisabled.value
                 ? " bg-neutral-300 btn-disabled"
                 : "bg-black"
@@ -146,7 +146,7 @@ export const ProductActions = component$((props: ProductActionsProps) => {
         )}
 
         <button
-          class="btn btn-outline border-0 md:w-96 w-git flex text-sm md:text-xl flex-row gap-3 text-black"
+          class="btn btn-outline border-2 lg:w-fit w-fit flex text-sm md:text-xl flex-row gap-3 text-black"
           onClick$={handleAddToFav}
         >
           <svg

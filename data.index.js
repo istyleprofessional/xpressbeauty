@@ -664,41 +664,56 @@ async function addFakeReviews() {
   for (const product of products) {
     // pick a random number of reviews between 1 and 20
     const numberOfReviews = Math.floor(Math.random() * 20) + 1;
-    const reviews = [];
     const openai = new OpenAI();
     for (let i = 0; i < numberOfReviews; i++) {
-      const user = await User.create({
-        // create a fake email with unique email
-        email: `
-        ${Math.random().toString(36).substring(2, 15)}@gmail.com`,
-        password: "123456",
-      });
-      const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo-16k-0613",
-        messages: [
+      try {
+        const user = await User.create({
+          // create a fake email with unique email
+          email: `
+          ${Math.random().toString(36).substring(2, 15)}@gmail.com`,
+          password: "123456",
+        });
+        const completion = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo-16k-0613",
+          messages: [
+            {
+              role: "system",
+              content: `You are a helpful assistant. You will write a review for a product as a customer already purchase from xpressbeauty.ca that product and happy with it. 
+                 be creative so put rating between 4 to 5. return the result in json format {title: string, review: string, rating: number from 4 to 5} `,
+            },
+            {
+              role: "user",
+              content: `Write a review for ${product.product_name}`,
+            },
+          ],
+          // prompt: `Write a review for ${product.product_name}`,
+        });
+        const response = completion.choices[0].message.content;
+        const res = JSON.parse(response);
+        const ratingAndReview = {
+          user_id: user._id,
+          reviewTitle: res.title,
+          reviewDescription: res.review,
+          rating:
+            // between 4 and 5
+            Math.floor(Math.random() * 2) + 4,
+          createdAt: new Date(),
+        };
+        await RatingReviews.findOneAndUpdate(
+          { product_id: product._id },
           {
-            role: "system",
-            content:
-              "You are a helpful assistant. You will write a review for a product as a customer already purchase from xpressbeauty.ca that product and happy with it. in json format {title: 'title', review: 'review', rating: 'rating'}",
+            $push: {
+              ratings: ratingAndReview,
+            },
           },
-          {
-            role: "user",
-            content: `Write a review for ${product.product_name}`,
-          },
-        ],
-        // prompt: `Write a review for ${product.product_name}`,
-      });
-      const response = completion.choices[0].message.content;
-      const res = JSON.parse(response);
-      console.log(res);
-      // const review = {
-      //   product_id: product._id,
-      //   rating: Math.floor(Math.random() * 5) + 1,
-      //   review: "This is a fake review",
-      // };
+          { new: true, upsert: true }
+        );
+        console.log(product.product_name);
+      } catch (error) {
+        console.log(error);
+        continue;
+      }
     }
-    product.reviews = reviews;
-    await Product.findByIdAndUpdate(product._id, product, { new: true });
   }
   await connection.close();
   console.log(products.length);

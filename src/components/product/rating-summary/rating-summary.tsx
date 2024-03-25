@@ -98,7 +98,7 @@ export const RatingSummary = component$((props: RatingSummaryInterface) => {
                   itemScope
                   itemType="https://schema.org/Review"
                 >
-                  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div class="flex flex-row gap-3">
                     <div class="flex flex-col gap-5 justify-center items-start">
                       <div class="rating rating-xs md:rating-md rating-half">
                         <input
@@ -114,7 +114,7 @@ export const RatingSummary = component$((props: RatingSummaryInterface) => {
                                 id={`${index + 0.5}`}
                                 type="radio"
                                 name="rating-10"
-                                class={`bg-green-500 mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
+                                class={` mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
                                 checked={
                                   index + 0.5 <= rating.rating ? true : false
                                 }
@@ -124,7 +124,7 @@ export const RatingSummary = component$((props: RatingSummaryInterface) => {
                                 id={`${index + 1}`}
                                 type="radio"
                                 name="rating-10"
-                                class={`bg-green-500 mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
+                                class={` mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
                                 checked={
                                   index + 1 <= rating.rating ? true : false
                                 }
