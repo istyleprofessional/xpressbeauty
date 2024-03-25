@@ -678,8 +678,8 @@ async function addFakeReviews() {
           messages: [
             {
               role: "system",
-              content: `You are a helpful assistant. You will write a review for a product as a customer already purchase from xpressbeauty.ca that product and happy with it. 
-                 be creative so put rating between 4 to 5. return the result in json format {title: string, review: string, rating: number from 4 to 5} `,
+              content: `You are a helpful assistant. You will write a review for a product as a customer already purchased and tried it. 
+                 be creative so put rating between 4 to 5 and review should be max 100 character and dont be repeat yourself. return the result in json format {title: string, review: string, rating: number from 4 to 5} `,
             },
             {
               role: "user",
