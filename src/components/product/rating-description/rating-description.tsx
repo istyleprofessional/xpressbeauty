@@ -285,76 +285,80 @@ export const RatingAndDescription = component$(
                 {ratings.value.length > 0 && (
                   <div class="card shadow-md w-full h-fit md:p-5">
                     <div class="card-body h-96 overflow-y-auto">
-                      {ratings.value.map((rating: any, index: number) => (
-                        <Fragment key={index}>
-                          <div
-                            itemProp="review"
-                            itemScope
-                            itemType="https://schema.org/Review"
-                          >
-                            <div class="flex flex-row gap-3">
-                              <div class="flex flex-col gap-5 justify-center items-start">
-                                <div class="rating rating-xs md:rating-md rating-half">
-                                  <input
-                                    type="radio"
-                                    name="rating-10"
-                                    class="rating-hidden"
-                                  />
-                                  {Array(5)
-                                    .fill("")
-                                    .map((_, index) => (
-                                      <Fragment key={index}>
-                                        <input
-                                          id={`${index + 0.5}`}
-                                          type="radio"
-                                          name="rating-10"
-                                          class={`mask mask-star-2 mask-half-1 ${
-                                            rating.rating > index
-                                              ? "bg-[#FFC75B]"
-                                              : "bg-[#E4E4E7]"
-                                          }`}
-                                        />
-                                        <input
-                                          id={`${index + 1}`}
-                                          type="radio"
-                                          name="rating-10"
-                                          class={`mask mask-star-2 mask-half-2 ${
-                                            rating.rating > index
-                                              ? "bg-[#FFC75B]"
-                                              : "bg-[#E4E4E7]"
-                                          }`}
-                                        />
-                                      </Fragment>
-                                    ))}
+                      {ratings.value
+                        .sort((rating: any) => {
+                          return new Date(rating.createdAt).getTime();
+                        })
+                        .map((rating: any, index: number) => (
+                          <Fragment key={index}>
+                            <div
+                              itemProp="review"
+                              itemScope
+                              itemType="https://schema.org/Review"
+                            >
+                              <div class="flex flex-row gap-3">
+                                <div class="flex flex-col gap-5 justify-center items-start">
+                                  <div class="rating rating-xs md:rating-md rating-half">
+                                    <input
+                                      type="radio"
+                                      name="rating-10"
+                                      class="rating-hidden"
+                                    />
+                                    {Array(5)
+                                      .fill("")
+                                      .map((_, index) => (
+                                        <Fragment key={index}>
+                                          <input
+                                            id={`${index + 0.5}`}
+                                            type="radio"
+                                            name="rating-10"
+                                            class={`mask mask-star-2 mask-half-1 ${
+                                              rating.rating > index
+                                                ? "bg-[#FFC75B]"
+                                                : "bg-[#E4E4E7]"
+                                            }`}
+                                          />
+                                          <input
+                                            id={`${index + 1}`}
+                                            type="radio"
+                                            name="rating-10"
+                                            class={`mask mask-star-2 mask-half-2 ${
+                                              rating.rating > index
+                                                ? "bg-[#FFC75B]"
+                                                : "bg-[#E4E4E7]"
+                                            }`}
+                                          />
+                                        </Fragment>
+                                      ))}
+                                  </div>
+                                  <p
+                                    class="text-xs md:text-base"
+                                    itemProp="datePublished"
+                                  >
+                                    {new Date(rating.createdAt).toLocaleString(
+                                      "en-US",
+                                      {
+                                        timeZone: "America/New_York",
+                                      }
+                                    )}
+                                  </p>
                                 </div>
-                                <p
-                                  class="text-xs md:text-base"
-                                  itemProp="datePublished"
-                                >
-                                  {new Date(rating.createdAt).toLocaleString(
-                                    "en-US",
-                                    {
-                                      timeZone: "America/New_York",
-                                    }
-                                  )}
-                                </p>
-                              </div>
-                              <div class="flex flex-col gap-3 lg:col-span-3 w-full ">
-                                <h3 class="text-black font-bold text-md break-words">
-                                  {rating.reviewTitle}
-                                </h3>
-                                <p
-                                  class="text-black text-sm break-words"
-                                  itemProp="reviewBody"
-                                >
-                                  {rating.reviewDescription}
-                                </p>
+                                <div class="flex flex-col gap-3 lg:col-span-3 w-full ">
+                                  <h3 class="text-black font-bold text-md break-words">
+                                    {rating.reviewTitle}
+                                  </h3>
+                                  <p
+                                    class="text-black text-sm break-words"
+                                    itemProp="reviewBody"
+                                  >
+                                    {rating.reviewDescription}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          <div class="divider"></div>
-                        </Fragment>
-                      ))}
+                            <div class="divider"></div>
+                          </Fragment>
+                        ))}
                     </div>
                   </div>
                 )}
