@@ -163,8 +163,6 @@ async function updateLastProductsQuantity() {
       });
     }
   }
-  // log done and close connection
-  console.log("done");
   await connection.close();
 }
 
@@ -172,7 +170,7 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-updateLastProductsQuantity();
+// updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -658,13 +656,18 @@ async function addFakeReviews() {
         _id: item.id.includes(".") ? item.id.split(".")[0] : item.id,
       });
       if (productFromDb) {
-        products.push(productFromDb);
+        // check if the product is already in the products array
+        if (
+          !products.find((p) => p.product_name === productFromDb.product_name)
+        ) {
+          products.push(productFromDb);
+        }
       }
     }
   }
   for (const product of products) {
     // pick a random number of reviews between 1 and 20
-    const numberOfReviews = Math.floor(Math.random() * 10) + 1;
+    const numberOfReviews = Math.floor(Math.random() * 6) + 1;
     const openai = new OpenAI();
     const oldReviews = [];
     for (let i = 0; i < numberOfReviews; i++) {
@@ -741,4 +744,4 @@ async function addFakeReviews() {
   console.log(products.length);
 }
 
-// addFakeReviews();
+addFakeReviews();
