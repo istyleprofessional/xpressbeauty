@@ -1,4 +1,5 @@
 import {
+  Fragment,
   component$,
   // useOnDocument,
   useSignal,
@@ -7,6 +8,8 @@ import {
 } from "@builder.io/qwik";
 import type { ProductModel } from "~/models/product.model";
 import { Image } from "@unpic/qwik";
+import { server$ } from "@builder.io/qwik-city";
+import { getRatingByProductId } from "~/express/services/rating.reviews.service";
 
 interface ProductCardProps {
   product: ProductModel;
@@ -16,12 +19,28 @@ interface ProductCardProps {
   currencyObject?: any;
 }
 
+export const ratingServer = server$(async (productId: string) => {
+  const request = await getRatingByProductId(productId ?? "");
+  return JSON.stringify(request);
+});
+
 export const ProductCard = component$((props: ProductCardProps) => {
   const { product, i, cardSize, currencyObject } = props;
   const finalRegularPrice = useSignal<string>("");
   const verifiedPrice = useSignal<string>("");
   const verifiedSalePrice = useSignal<string>("");
   const isInStock = useSignal<boolean>(false);
+  const ratings = useSignal<any[]>([]);
+  const averageRating = useSignal<number>(0);
+  const totalRatings = useSignal<number>(0);
+
+  useTask$(async () => {
+    const request: any = await ratingServer(product._id ?? "");
+    const response = JSON.parse(request);
+    if (response.status === "success") {
+      ratings.value = response?.result?.ratings || [];
+    }
+  });
 
   useTask$(({ track }) => {
     track(() => currencyObject);
@@ -110,6 +129,20 @@ export const ProductCard = component$((props: ProductCardProps) => {
     }
   });
 
+  useTask$(async () => {
+    const ratingsCount: any[] = [];
+    for (const rating of ratings.value || []) {
+      ratingsCount.push(rating.rating);
+    }
+    const sumOfRatings = ratingsCount.reduce(
+      (total: any, rating: any) => total + rating,
+      0
+    );
+    averageRating.value =
+      Math.round((sumOfRatings / ratingsCount.length) * 2) / 2;
+    totalRatings.value = ratingsCount.length;
+  });
+
   return (
     <a
       class={`btn btn-ghost grid grid-rows-4 justify-items-center items-center md:h-96
@@ -146,6 +179,37 @@ export const ProductCard = component$((props: ProductCardProps) => {
           ? product.product_name?.replace(/CR.*/, "")
           : product.product_name}
       </h2>
+
+      {/* <input type="radio" name="rating-10" class="rating-hidden" /> */}
+      {ratings.value.length > 0 && (
+        <div class="rating rating-sm rating-half">
+          {Array(5)
+            .fill("")
+            .map((_, index) => (
+              <Fragment key={index}>
+                <input
+                  key={index + 0.5}
+                  type="radio"
+                  aria-label="Rate 0.5 stars"
+                  name="rating-10"
+                  class={`bg-[#FFC75B] mask mask-star-2 mask-half-1 `}
+                  checked={index + 0.5 === averageRating.value ? true : false}
+                  disabled={true}
+                />
+                <input
+                  key={index + 1}
+                  type="radio"
+                  name="rating-10"
+                  aria-label="Rate 1 stars"
+                  class={`bg-[#FFC75B] mask mask-star-2 mask-half-2 `}
+                  checked={index + 1 === averageRating.value ? true : false}
+                  disabled={true}
+                />
+              </Fragment>
+            ))}
+        </div>
+      )}
+
       <div class="flex flex-col gap-2">
         {isInStock.value ? (
           <>

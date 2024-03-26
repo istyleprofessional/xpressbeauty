@@ -94,8 +94,7 @@ export const RatingAndDescription = component$(
       } else {
         errorMessage.value = "Something went wrong please try again later";
       }
-      ratings.value = response?.result?.ratings || [];
-      nav();
+      window.location.reload();
     });
 
     useVisibleTask$(
