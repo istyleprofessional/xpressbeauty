@@ -729,7 +729,7 @@ async function addFakeReviews() {
           },
           { new: true, upsert: true }
         );
-        console.log(product.product_name);
+        console.log(product.perfix);
       } catch (error) {
         console.log(error);
         continue;
