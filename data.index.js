@@ -675,11 +675,12 @@ async function addFakeReviews() {
           password: "123456",
         });
         const completion = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo-16k-0613",
+          model: "gpt-4-0125-preview",
+          response_format: { type: "json_object" },
           messages: [
             {
               role: "system",
-              content: `You are a customer writing a review of a product. max 100 character and rating should be between 3 and 5 stars and return the result in json format {title: string, review: string, rating: number}
+              content: `You are a customer writing a review of a product. from 100 to 200 character and rating should be between 3.5, 4, 4.5 and 5 stars and return the result in json format {title: string, review: string, rating: number}
                 do not include the product name in the review or title and do not be repetitive in the review or title. 
                 
                 old reviews: ${JSON.stringify(oldReviews)}`,
