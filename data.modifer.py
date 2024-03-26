@@ -9,7 +9,8 @@ from imageio.plugins._tifffile import product
     
 def return_product_if_range(parsed_json, d, url, driver):
 
-        
+    if 'longDescription' in parsed_json['product']:
+        d['description'] = parsed_json['product']['longDescription']  
     if 'range' in parsed_json['product']['price']['type']:
         d['price']['min'] =parsed_json['product']['price']['min']['sales']['value'] + 5
         d['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 5
@@ -74,6 +75,7 @@ def return_product_if_range(parsed_json, d, url, driver):
             json_element = soup.find('pre')
             json_data = json_element.get_text()
             parsed_json = json.loads(json_data)
+        
             if 'upc' in parsed_json['product']:
                 variation['upc'] = parsed_json['product']['upc']
             if 'price' in parsed_json['product']:
@@ -126,6 +128,8 @@ def return_product_if_single(parsed_json, d):
         d['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
     else:
         d['quantity_on_hand'] = 0
+    if 'longDescription' in parsed_json['product']:
+        d['description'] = parsed_json['product']['longDescription']
 
     # if 'promotions' in parsed_json['product'] and parsed_json['product']['promotions'] != None and len(parsed_json['product']['promotions']) > 1:
     #     for promotion in parsed_json['product']['promotions']:

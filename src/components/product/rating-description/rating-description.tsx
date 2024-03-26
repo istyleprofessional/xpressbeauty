@@ -4,12 +4,13 @@ import {
   component$,
   useSignal,
   useStore,
+  useTask$,
   useVisibleTask$,
 } from "@builder.io/qwik";
-import { RatingSummary } from "../rating-summary/rating-summary";
-import { useNavigate } from "@builder.io/qwik-city";
-import { getRequest, postRequest } from "~/utils/fetch.utils";
+import { server$, useNavigate } from "@builder.io/qwik-city";
+import { postRequest } from "~/utils/fetch.utils";
 import { Toast } from "~/components/admin/toast/toast";
+import { getRatingByProductId } from "~/express/services/rating.reviews.service";
 
 interface RatingAndDescriptionProps {
   product_description: string;
@@ -18,6 +19,11 @@ interface RatingAndDescriptionProps {
   user?: any;
   productId: string;
 }
+
+export const ratingServer = server$(async (productId: string) => {
+  const request = await getRatingByProductId(productId ?? "");
+  return JSON.stringify(request);
+});
 
 export const RatingAndDescription = component$(
   (props: RatingAndDescriptionProps) => {
@@ -42,17 +48,15 @@ export const RatingAndDescription = component$(
     const ratings = useSignal<any[]>([]);
     const recaptchaToken = useSignal<string>("");
     const tabState = useSignal<string>("description");
+    const ratingsPercentatge = useSignal<number[]>([0, 0, 0, 0, 0, 0]);
 
-    useVisibleTask$(
-      async () => {
-        const request: any = await getRequest(`/api/rating/?id=${productId}`);
-        const response = await request.json();
-        if (response.status === "success") {
-          ratings.value = response?.result?.ratings || [];
-        }
-      },
-      { strategy: "document-idle" }
-    );
+    useTask$(async () => {
+      const request: any = await ratingServer(productId);
+      const response = JSON.parse(request);
+      if (response.status === "success") {
+        ratings.value = response?.result?.ratings || [];
+      }
+    });
     const handleDescription = $(() => {
       isDescriptionActive.value = true;
     });
@@ -115,6 +119,18 @@ export const RatingAndDescription = component$(
     const handleAlertClose = $(() => {
       errorMessage.value = "";
     });
+
+    useVisibleTask$(
+      ({ track }) => {
+        track(() => ratings.value);
+        ratings.value;
+        for (let i = 0; i < ratings.value.length; i++) {
+          const ratingValue = ratings.value[i].rating;
+          ratingsPercentatge.value[ratingValue] += 1;
+        }
+      },
+      { strategy: "document-ready" }
+    );
 
     return (
       <div class="flex flex-col gap-8 md:pl-14 justify-center items-center md:justify-start md:items-start">
@@ -241,7 +257,108 @@ export const RatingAndDescription = component$(
                   {user ? "Write a review" : "Login to add a review"}
                 </button>
               </div>
-              <RatingSummary ratings={ratings} />
+              {/* <RatingSummary ratings={ratings} />
+               */}
+
+              <div class="flex flex-col gap-4">
+                <h1 class="text-black text-sm">Summary</h1>
+                <div class="flex flex-col gap-8">
+                  {Array.from(Array(5).keys())
+                    .sort((a, b) => b - a)
+                    .map((index) => (
+                      <div
+                        key={index}
+                        class="flex flex-row gap-2 jusify-center items-center"
+                      >
+                        <p class="text-black text-xs">{index + 1}</p>
+                        <progress
+                          class="progress w-56 bg-[#E4E4E7]"
+                          value={
+                            (ratingsPercentatge.value[index + 1] * 100) /
+                            ratings.value.length
+                          }
+                          max="100"
+                        ></progress>
+                      </div>
+                    ))}
+                </div>
+                {ratings.value.length > 0 && (
+                  <div class="card shadow-md w-full h-fit md:p-5">
+                    <div class="card-body h-96 overflow-y-auto">
+                      {ratings.value.map((rating: any, index: number) => (
+                        <Fragment key={index}>
+                          <div
+                            itemProp="review"
+                            itemScope
+                            itemType="https://schema.org/Review"
+                          >
+                            <div class="flex flex-row gap-3">
+                              <div class="flex flex-col gap-5 justify-center items-start">
+                                <div class="rating rating-xs md:rating-md rating-half">
+                                  <input
+                                    type="radio"
+                                    name="rating-10"
+                                    class="rating-hidden"
+                                  />
+                                  {Array(5)
+                                    .fill("")
+                                    .map((_, index) => (
+                                      <Fragment key={index}>
+                                        <input
+                                          id={`${index + 0.5}`}
+                                          type="radio"
+                                          name="rating-10"
+                                          class={`mask mask-star-2 mask-half-1 ${
+                                            rating.rating > index
+                                              ? "bg-[#FFC75B]"
+                                              : "bg-[#E4E4E7]"
+                                          }`}
+                                        />
+                                        <input
+                                          id={`${index + 1}`}
+                                          type="radio"
+                                          name="rating-10"
+                                          class={`mask mask-star-2 mask-half-2 ${
+                                            rating.rating > index
+                                              ? "bg-[#FFC75B]"
+                                              : "bg-[#E4E4E7]"
+                                          }`}
+                                        />
+                                      </Fragment>
+                                    ))}
+                                </div>
+                                <p
+                                  class="text-xs md:text-base"
+                                  itemProp="datePublished"
+                                >
+                                  {new Date(rating.createdAt).toLocaleString(
+                                    "en-US",
+                                    {
+                                      timeZone: "America/New_York",
+                                    }
+                                  )}
+                                </p>
+                              </div>
+                              <div class="flex flex-col gap-3 lg:col-span-3 w-full ">
+                                <h3 class="text-black font-bold text-md break-words">
+                                  {rating.reviewTitle}
+                                </h3>
+                                <p
+                                  class="text-black text-sm break-words"
+                                  itemProp="reviewBody"
+                                >
+                                  {rating.reviewDescription}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="divider"></div>
+                        </Fragment>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {isReviewActive.value && (
                 <div class="w-full h-full fixed top-0 left-0 backdrop-blur-md z-50 ">

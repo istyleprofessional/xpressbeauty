@@ -90,7 +90,7 @@ export const RatingSummary = component$((props: RatingSummaryInterface) => {
       </div>
       {ratings.value.length > 0 && (
         <div class="card shadow-md w-full h-fit md:p-5">
-          <div class="card-body">
+          <div class="card-body h-96 overflow-y-auto">
             {ratings.value.map((rating: any, index: number) => (
               <Fragment key={index}>
                 <div
@@ -138,16 +138,6 @@ export const RatingSummary = component$((props: RatingSummaryInterface) => {
                           timeZone: "America/New_York",
                         })}
                       </p>
-                    </div>
-                    <div
-                      itemProp="reviewRating"
-                      itemScope
-                      itemType="https://schema.org/Rating"
-                      class="hidden"
-                    >
-                      <meta itemProp="worstRating" content="1" />
-                      <span itemProp="ratingValue">{rating.rating}</span>/
-                      <span itemProp="bestRating">5</span>stars
                     </div>
                     <div class="flex flex-col gap-3 lg:col-span-3 w-full ">
                       <h3 class="text-black font-bold text-md break-words">
