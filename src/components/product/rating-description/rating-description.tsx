@@ -286,8 +286,11 @@ export const RatingAndDescription = component$(
                   <div class="card shadow-md w-full h-fit md:p-5">
                     <div class="card-body h-96 overflow-y-auto">
                       {ratings.value
-                        .sort((rating: any) => {
-                          return new Date(rating.createdAt).getTime();
+                        .sort((ratingA: any, ratingB: any) => {
+                          return (
+                            new Date(ratingB.createdAt).getTime() -
+                            new Date(ratingA.createdAt).getTime()
+                          );
                         })
                         .map((rating: any, index: number) => (
                           <Fragment key={index}>
