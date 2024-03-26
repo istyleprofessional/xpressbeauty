@@ -681,7 +681,7 @@ async function addFakeReviews() {
             {
               role: "system",
               content: `You are a customer writing a review of a product. from 100 to 200 character and rating should be between 3.5, 4, 4.5 and 5 stars and return the result in json format {title: string, review: string, rating: number}
-                do not include the product name in the review or title and do not be repetitive in the review or title. 
+                do not include the product name in the review or title and do not be repetitive in the review or title. and use sample wordings 
                 
                 old reviews: ${JSON.stringify(oldReviews)}`,
             },
