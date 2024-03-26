@@ -157,6 +157,7 @@ async function updateLastProductsQuantity() {
         productFound.quantity_on_hand = product.quantity_on_hand;
         productFound.price.regular = product.price;
       }
+      if (product.description) productFound.description = product.description;
       await Product.findByIdAndUpdate({ _id: productFound._id }, productFound, {
         new: true,
       });
@@ -171,7 +172,7 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// updateLastProductsQuantity();
+updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -740,4 +741,4 @@ async function addFakeReviews() {
   console.log(products.length);
 }
 
-addFakeReviews();
+// addFakeReviews();
