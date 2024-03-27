@@ -52,8 +52,12 @@ export const useUserData = routeLoader$(
         request.headers.get("do-connecting-ip") ??
         request.headers.get("X-Real-IP") ??
         "";
-      const ipObject = await ip2location.fetch(userIP);
-      country_name = ipObject?.country_name;
+      // call free api to get location
+      const req = await fetch(`http://ip-api.com/json/${userIP}`, {
+        method: "GET",
+      });
+      const ipObject = await req.json();
+      country_name = ipObject?.country;
       city = ipObject?.city;
     } catch (error) {
       console.log(error);
