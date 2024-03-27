@@ -384,14 +384,14 @@ export default component$(() => {
                     type="text"
                     name="price.min"
                     class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                    value={product.price.min}
+                    value={product.price?.min}
                   />
                   <p class="col-span-1">-</p>
                   <input
                     type="text"
                     name="price.max"
                     class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                    value={product.price.max}
+                    value={product.price?.max}
                   />
                 </div>
               </>
@@ -430,14 +430,14 @@ export default component$(() => {
                     type="text"
                     name="sale_price.min"
                     class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                    value={product?.sale_price.min}
+                    value={product?.sale_price?.min}
                   />
                   <p class="col-span-1">-</p>
                   <input
                     type="text"
                     name="sale_price.max"
                     class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                    value={product?.sale_price.max}
+                    value={product?.sale_price?.max}
                   />
                 </div>
               </>
@@ -449,7 +449,7 @@ export default component$(() => {
                   type="text"
                   name="sale_price.sale"
                   class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
-                  value={product?.sale_price.sale}
+                  value={product?.sale_price?.sale}
                 />
               </>
             )}
