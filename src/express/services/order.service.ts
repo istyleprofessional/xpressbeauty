@@ -153,11 +153,22 @@ export const getOrdersService = async (page: number, search?: string) => {
   }
 };
 
-export const updateOrderStatus = async (orderId: string, status: string) => {
+export const updateOrderStatus = async (
+  orderId: string,
+  status: string,
+  trackingLink?: string,
+  trackingCompanyName?: string,
+  trackingNumber?: string
+) => {
   try {
+    const trackingInfo = {
+      link: trackingLink,
+      companyName: trackingCompanyName,
+      trackingNumber: trackingNumber,
+    };
     const request = await Order.findOneAndUpdate(
       { _id: orderId },
-      { orderStatus: status },
+      { orderStatus: status, trackinginfo: trackingInfo },
       { new: true }
     );
     return { status: "success", request: request };

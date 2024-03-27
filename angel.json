@@ -1,0 +1,124 @@
+[
+    {
+        "product_name": "Orange Flower Shining Color Shampoo",
+        "companyName": {
+            "name": "Angel"
+        },
+        "price": {
+            "min": 20.75,
+            "max": 40.75
+        },
+        "priceType": "range",
+        "variation_type": "size",
+        "variations": [
+            {
+                "variation_name": "400ml",
+                "price": 20.75,
+                "variation_image": "https://xpressbeauty.s3.ca-central-1.amazonaws.com/newProductsImages/Orange%2BFlower%2BShining%2BColor%2BShampoo-0-400.jpg"
+            },
+            {
+                "variation_name": "800ml",
+                "price": 40.75,
+                "variation_image": "https://xpressbeauty.s3.ca-central-1.amazonaws.com/newProductsImages/Orange%2BFlower%2BShining%2BColor%2BShampoo-0-800.jpg"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/newProductsImages/Orange%2BFlower%2BShining%2BColor%2BShampoo-0-0.jpg"
+        ],
+        "description": "CND Clear&nbsp;Retention+ Powders create color-stable, strong and durable enhancements. Liquid Attraction Technology provides superior clarity and brightness with a creamy and dense workability for a scratch-resistant, ultra-smooth finish. Use with Retention+ Sculpting Liquid.",
+        "directions": "Please follow manufacturer's packaged instructions.",
+        "ingredients": null,
+        "categories": [
+            {
+                "main": "Hair",
+                "name": "Shampoo"
+            }
+        ],
+        "upc": ""
+    },
+    {
+        "product_name": "Orange Flower Shining Color Conditioner",
+        "companyName": {
+            "name": "Angel"
+        },
+        "price": {
+            "min": 20.75,
+            "max": 40.75
+        },
+        "priceType": "range",
+        "variation_type": "size",
+        "variations": [
+            {
+                "variation_name": "400ml",
+                "price": 20.75,
+                "variation_image": "https://xpressbeauty.s3.ca-central-1.amazonaws.com/newProductsImages/Orange%2BFlower%2BShining%2BColor%2BConditioner-0-400.jpg"
+            },
+            {
+                "variation_name": "800ml",
+                "price": 40.75,
+                "variation_image": "https://xpressbeauty.s3.ca-central-1.amazonaws.com/newProductsImages/Orange%2BFlower%2BShining%2BColor%2BConditioner-0-800.jpg"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/newProductsImages/Orange%2BFlower%2BShining%2BColor%2BConditioner-0-0.jpg"
+        ],
+        "description": "CND Clear&nbsp;Retention+ Powders create color-stable, strong and durable enhancements. Liquid Attraction Technology provides superior clarity and brightness with a creamy and dense workability for a scratch-resistant, ultra-smooth finish. Use with Retention+ Sculpting Liquid.",
+        "directions": "Please follow manufacturer's packaged instructions.",
+        "ingredients": null,
+        "categories": [
+            {
+                "main": "Hair",
+                "name": "Shampoo"
+            }
+        ],
+        "upc": ""
+    },
+    {
+        "product_name": "Orange Flower Shining Color Hair Mask",
+        "companyName": {
+            "name": "Angel"
+        },
+        "price": {
+            "regular": 20.75
+        },
+        "priceType": "single",
+        "variations": [],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/newProductsImages/Orange%2BFlower%2BShining%2BColor%2BHair%2BMask-0-0.jpg"
+        ],
+        "description": "CND Clear&nbsp;Retention+ Powders create color-stable, strong and durable enhancements. Liquid Attraction Technology provides superior clarity and brightness with a creamy and dense workability for a scratch-resistant, ultra-smooth finish. Use with Retention+ Sculpting Liquid.",
+        "directions": "Please follow manufacturer's packaged instructions.",
+        "ingredients": null,
+        "categories": [
+            {
+                "main": "Hair",
+                "name": "Hair Mask"
+            }
+        ],
+        "upc": ""
+    },
+    {
+        "product_name": "Morocco Color Protect Silky Oil 100ml",
+        "companyName": {
+            "name": "Angel"
+        },
+        "price": {
+            "regular": 20.75
+        },
+        "priceType": "single",
+        "variations": [],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/newProductsImages/Orange%2BFlower%2BShining%2BColor%2BHair%2BOil-0-0.jpg"
+        ],
+        "directions": "Please follow manufacturer's packaged instructions.",
+        "description": "CND Clear&nbsp;Retention+ Powders create color-stable, strong and durable enhancements. Liquid Attraction Technology provides superior clarity and brightness with a creamy and dense workability for a scratch-resistant, ultra-smooth finish. Use with Retention+ Sculpting Liquid.",
+        "ingredients": null,
+        "categories": [
+            {
+                "main": "Hair",
+                "name": "Hair Oil"
+            }
+        ],
+        "upc": ""
+    }
+]

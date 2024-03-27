@@ -47,7 +47,13 @@ export const sendShippedEmailServer = server$(async function (data: any) {
     data.trackingLink,
     orderNo ?? ""
   );
-  const updateOrderStatusreq = await updateOrderStatus(data.orderId, "Shipped");
+  const updateOrderStatusreq = await updateOrderStatus(
+    data.orderId,
+    "Shipped",
+    data.trackingNumber,
+    data.trackingCompanyName,
+    data.trackingLink
+  );
   if (updateOrderStatusreq.status === "error")
     return { status: "error", message: "Order status not updated" };
   return {
@@ -74,17 +80,40 @@ export const capturePaymentServer = server$(async function (
   orderId: string
 ) {
   const stripe = new Stripe(this.env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
-  const payment = await stripe.paymentIntents.capture(paymentIntent);
-  if (payment.status === "succeeded") {
-    const updateOrderStatusreq = await updatePaymentOrderStatus(orderId, true);
-    if (updateOrderStatusreq.status === "error")
-      return { status: "error", message: "Order status not updated" };
-    return {
-      status: "success",
-      message: JSON.stringify(updateOrderStatusreq.request),
-    };
-  } else {
-    return { status: "error", message: "Payment not captured" };
+  try {
+    const payment = await stripe.paymentIntents.capture(paymentIntent);
+    console.log(payment);
+    if (payment.status === "succeeded") {
+      const updateOrderStatusreq = await updatePaymentOrderStatus(
+        orderId,
+        true,
+        "Processing"
+      );
+      if (updateOrderStatusreq.status === "error")
+        return { status: "error", message: "Order status not updated" };
+      return {
+        status: "success",
+        message: JSON.stringify(updateOrderStatusreq.request),
+      };
+    } else {
+      return { status: "error", message: "Payment not captured" };
+    }
+  } catch (error: any) {
+    // check if the error is due to payment got canceled
+    if (error.code === "payment_intent_unexpected_state") {
+      console.log("Payment got canceled");
+      const updateOrderStatusreq = await updatePaymentOrderStatus(
+        orderId,
+        false,
+        "Cancelled"
+      );
+      if (updateOrderStatusreq.status === "error")
+        return { status: "error", message: "Order status not updated" };
+      return {
+        status: "error",
+        message: "Payment got canceled",
+      };
+    }
   }
 });
 
@@ -222,17 +251,18 @@ export default component$(() => {
         order.payment_intent,
         order._id
       );
-      if (callStripe.status === "error") {
-        alert(callStripe.message);
+      if (callStripe?.status === "error") {
+        alert(callStripe?.message);
+        location.reload();
       } else {
-        const result = JSON.parse(callStripe.message);
+        const result = JSON.parse(callStripe?.message ?? "");
         ordersData.request = ordersData.request.map((order: any) => {
           if (order._id === result._id) {
             order.paid = result.paid;
           }
           return order;
         });
-        alert("Payment captured successfully");
+        alert(callStripe?.message ?? "Payment captured successfully");
         location.reload();
       }
     }
@@ -357,11 +387,15 @@ export default component$(() => {
                             ? "bg-[#FEF9C3] text-[#CA8A04]"
                             : order.orderStatus === "Shipped"
                             ? "bg-[#E0F2FE] text-[#0EA5E9]"
-                            : order.orderStatus === "Return"
-                            ? "bg-[#FED7D7] text-[#B91C1C]"
-                            : order.orderStatus === "Refund"
-                            ? "bg-[#FED7D7] text-[#B91C1C]"
-                            : "bg-[#D1FAE5] text-[#047857]"
+                            : order.orderStatus === "Completed"
+                            ? "bg-[#C6F6D5] text-[#059669]"
+                            : order.orderStatus === "Cancelled"
+                            ? "bg-[#FED7D7] text-[#E53E3E]"
+                            : order.orderStatus === "Refunded"
+                            ? "bg-[#FED7D7] text-[#E53E3E]"
+                            : order.orderStatus === "Processing"
+                            ? "bg-lime-300 text-lime-800"
+                            : "bg-[#FED7D7] text-[#E53E3E]"
                         } text-xs`}
                       >
                         {order.orderStatus}
@@ -406,7 +440,6 @@ export default component$(() => {
                           <li>
                             <button
                               onClick$={() => {
-                                console.log(order);
                                 handleStatusChanged(
                                   "Shipped",
                                   order?.user?.email ??

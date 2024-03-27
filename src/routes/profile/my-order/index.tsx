@@ -82,7 +82,13 @@ export default component$(() => {
                           ? "bg-[#E0F2FE] text-[#0EA5E9]"
                           : order.orderStatus === "Completed"
                           ? "bg-[#C6F6D5] text-[#059669]"
-                          : "bg-[#FED7D7] text-[#B91C1C]"
+                          : order.orderStatus === "Cancelled"
+                          ? "bg-[#FED7D7] text-[#E53E3E]"
+                          : order.orderStatus === "Refunded"
+                          ? "bg-[#FED7D7] text-[#E53E3E]"
+                          : order.orderStatus === "Processing"
+                          ? "bg-lime-300 text-lime-800"
+                          : "bg-[#FED7D7] text-[#E53E3E]"
                       } text-xs`}
                     >
                       {order.orderStatus}

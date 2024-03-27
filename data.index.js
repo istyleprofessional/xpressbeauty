@@ -744,4 +744,20 @@ async function addFakeReviews() {
   console.log(products.length);
 }
 
-addFakeReviews();
+// addFakeReviews();
+
+async function addAngelProductsFromJsonFile() {
+  const json = require("./angel.json");
+  await connect(mongoUrl);
+  for (const product of json) {
+    await Product.findOneAndUpdate(
+      { product_name: product.product_name },
+      product,
+      { upsert: true }
+    );
+  }
+  console.log("done");
+  await connection.close();
+}
+
+addAngelProductsFromJsonFile();

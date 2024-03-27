@@ -359,6 +359,8 @@ export default component$(() => {
     }
   });
 
+  // console.log(product);
+
   return (
     <>
       {isLoading.value && (
@@ -419,7 +421,7 @@ export default component$(() => {
               categories={product?.categories ?? []}
             />
             {(product?.variations?.length ?? 0) > 0 &&
-              product?.variation_type === "Size" && (
+              product?.variation_type?.toLocaleLowerCase() === "size" && (
                 <div class="flex flex-row gap-3 w-full md:w-96 flex-wrap md:flex-nowrap">
                   {product?.variations
                     ?.sort(
@@ -526,7 +528,7 @@ export default component$(() => {
               variationValue={variationValue}
             />
 
-            {product.variation_type !== "Size" &&
+            {product.variation_type?.toLocaleLowerCase() !== "size" &&
               (product?.variations?.length ?? 0) > 0 && (
                 // product?.variation_type === "Color" &&
                 <div

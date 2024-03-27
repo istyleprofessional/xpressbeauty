@@ -18,6 +18,7 @@ const orderSchema = new Schema(
     totalInfo: { type: Object, default: null },
     payment_intent: { type: String, default: null },
     paid: { type: Boolean, default: false },
+    trackinginfo: { type: Object, default: null },
   },
   { timestamps: true }
 );
