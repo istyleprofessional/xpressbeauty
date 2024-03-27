@@ -57,8 +57,8 @@ export const useFormAction = routeAction$(async function (data, event) {
       if (formData[key].max) formData[key].max = parseFloat(formData[key].max);
     }
     if (key === "sale_price") {
-      if (formData[key].sale)
-        formData[key].sale = parseFloat(formData[key].sale);
+      if (formData[key]?.sale)
+        formData[key].sale = parseFloat(formData[key]?.sale);
       if (formData[key].min) formData[key].min = parseFloat(formData[key].min);
       if (formData[key].max) formData[key].max = parseFloat(formData[key].max);
     }
@@ -430,14 +430,14 @@ export default component$(() => {
                     type="text"
                     name="sale_price.min"
                     class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                    value={product.sale_price.min}
+                    value={product?.sale_price.min}
                   />
                   <p class="col-span-1">-</p>
                   <input
                     type="text"
                     name="sale_price.max"
                     class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                    value={product.sale_price.max}
+                    value={product?.sale_price.max}
                   />
                 </div>
               </>
@@ -449,7 +449,7 @@ export default component$(() => {
                   type="text"
                   name="sale_price.sale"
                   class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
-                  value={product.sale_price.sale}
+                  value={product?.sale_price.sale}
                 />
               </>
             )}
