@@ -87,9 +87,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
       </div>
       {ratings?.result?.ratings?.length > 0 && (
         <div class="flex flex-row gap-2 items-center">
-          <div class="rating rating-lg rating-half">
-            {/* <input type="radio" name="rating-10" class="rating-hidden" /> */}
-
+          <div class="rating rasting-lg rating-half">
             {Array(5)
               .fill("")
               .map((_, index) => (

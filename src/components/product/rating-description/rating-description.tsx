@@ -174,7 +174,7 @@ export const RatingAndDescription = component$(
                           .replace(/<img .*?>/g, "")
                           .replace(/Cosmo Prof/g, "Xpress Beauty")
                           .replace(/CanRad /g, "Xpress Beauty")
-                          .replace(/([A-Z])([a-z])/g, " $1")
+                          // .replace(/([A-Z])([a-z])/g, " $1")
                           .trim();
 
                         tabState.value = "description";
@@ -198,7 +198,7 @@ export const RatingAndDescription = component$(
                           .replace(/<img .*?>/g, "")
                           .replace(/Cosmo Prof/g, "Xpress Beauty")
                           .replace(/CanRad /g, "Xpress Beauty")
-                          .replace(/([A-Z])([a-z])/g, " $1")
+                          // .replace(/([A-Z])([a-z])/g, " $1")
                           .trim();
                         tabState.value = "ingredients";
                       }
@@ -220,7 +220,7 @@ export const RatingAndDescription = component$(
                           .replace(/<img .*?>/g, "")
                           .replace(/Cosmo Prof/g, "Xpress Beauty")
                           .replace(/CanRad /g, "Xpress Beauty")
-                          .replace(/([A-Z])([a-z])/g, " $1")
+                          // .replace(/([A-Z])([a-z])/g, " $1")
                           .trim();
                         tabState.value = "directions";
                       }
@@ -241,7 +241,7 @@ export const RatingAndDescription = component$(
                   .replace(/<img .*?>/g, "")
                   .replace(/Cosmo Prof/g, "Xpress Beauty")
                   .replace(/CanRad /g, "Xpress Beauty")
-                  .replace(/([A-Z])([a-z])/g, " $1")
+                  // .replace(/([A-Z])([a-z])/g, " $1")
                   .trim()}
               ></div>
             </div>
