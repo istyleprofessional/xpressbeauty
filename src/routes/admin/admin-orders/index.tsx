@@ -18,6 +18,8 @@ import {
   updateOrderStatus,
   updatePaymentOrderStatus,
 } from "~/express/services/order.service";
+import { sendCancelOrderEmail } from "~/utils/sendCancelOrderEmail";
+import { sendProcessingOrderEmail } from "~/utils/sendProcessingOrderEmail";
 import { sendShippedEmail } from "~/utils/sendShippedEmail";
 
 export const useOrderTableData = routeLoader$(async ({ url }) => {
@@ -77,23 +79,33 @@ export const updateOrderStatusServer = server$(async function (
 
 export const capturePaymentServer = server$(async function (
   paymentIntent: string,
-  orderId: string
+  orderId: string,
+  order?: any
 ) {
   const stripe = new Stripe(this.env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
   try {
     const payment = await stripe.paymentIntents.capture(paymentIntent);
-    console.log(payment);
     if (payment.status === "succeeded") {
       const updateOrderStatusreq = await updatePaymentOrderStatus(
         orderId,
         true,
         "Processing"
       );
-      if (updateOrderStatusreq.status === "error")
+      if (updateOrderStatusreq.status === "failed")
         return { status: "error", message: "Order status not updated" };
+      await sendProcessingOrderEmail(
+        order?.user?.email ?? order.dummyUser.email,
+        `${order?.user?.firstName ?? order.dummyUser.firstName} ${
+          order?.user?.lastName ?? order.dummyUser.lastName
+        }`,
+        order.shippingAddress,
+        order.products,
+        order.totalInfo,
+        order.order_number
+      );
       return {
         status: "success",
-        message: JSON.stringify(updateOrderStatusreq.request),
+        message: "Payment captured successfully",
       };
     } else {
       return { status: "error", message: "Payment not captured" };
@@ -109,6 +121,16 @@ export const capturePaymentServer = server$(async function (
       );
       if (updateOrderStatusreq.status === "error")
         return { status: "error", message: "Order status not updated" };
+      await sendCancelOrderEmail(
+        order?.user?.email ?? order.dummyUser.email,
+        `${order?.user?.firstName ?? order.dummyUser.firstName} ${
+          order?.user?.lastName ?? order.dummyUser.lastName
+        }`,
+        order.shippingAddress,
+        order.products,
+        order.totalInfo,
+        order.order_number
+      );
       return {
         status: "error",
         message: "Payment got canceled",
@@ -119,10 +141,13 @@ export const capturePaymentServer = server$(async function (
 
 export const cancelPaymentServer = server$(async function (
   paymentIntent: string,
-  orderId: string
+  orderId: string,
+  order?: any
 ) {
   const stripe = new Stripe(this.env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
   try {
+    console.log(order);
+
     const updateOrderStatusreq = await updatePaymentOrderStatus(
       orderId,
       false,
@@ -132,9 +157,19 @@ export const cancelPaymentServer = server$(async function (
     if (payment.status === "canceled") {
       if (updateOrderStatusreq.status === "error")
         return { status: "error", message: "Order status not updated" };
+      await sendCancelOrderEmail(
+        order?.user?.email ?? order.dummyUser.email,
+        `${order?.user?.firstName ?? order.dummyUser.firstName} ${
+          order?.user?.lastName ?? order.dummyUser.lastName
+        }`,
+        order.shippingAddress,
+        order.products,
+        order.totalInfo,
+        order.order_number
+      );
       return {
         status: "success",
-        message: JSON.stringify(updateOrderStatusreq.request),
+        message: "Payment canceled successfully",
       };
     } else {
       return { status: "error", message: "Payment not canceled" };
@@ -249,11 +284,11 @@ export default component$(() => {
     if (order.payment_intent) {
       const callStripe = await capturePaymentServer(
         order.payment_intent,
-        order._id
+        order._id,
+        order
       );
       if (callStripe?.status === "error") {
         alert(callStripe?.message);
-        location.reload();
       } else {
         const result = JSON.parse(callStripe?.message ?? "");
         ordersData.request = ordersData.request.map((order: any) => {
@@ -263,8 +298,8 @@ export default component$(() => {
           return order;
         });
         alert(callStripe?.message ?? "Payment captured successfully");
-        location.reload();
       }
+      window.location.reload();
     }
   });
 
@@ -274,7 +309,8 @@ export default component$(() => {
     if (order.payment_intent) {
       const callStripe = await cancelPaymentServer(
         order.payment_intent,
-        order._id
+        order._id,
+        order
       );
       if (callStripe.status === "error") {
         alert(callStripe.message);
@@ -288,9 +324,9 @@ export default component$(() => {
           return order;
         });
         alert("Payment cancelled successfully");
-        location.reload();
       }
     }
+    location.reload();
   });
 
   return (
