@@ -1,10 +1,11 @@
 import {
   Fragment,
   component$,
+  useOnWindow,
   // useOnDocument,
   useSignal,
   useTask$,
-  // $,
+  $,
 } from "@builder.io/qwik";
 import type { ProductModel } from "~/models/product.model";
 import { Image } from "@unpic/qwik";
@@ -129,19 +130,22 @@ export const ProductCard = component$((props: ProductCardProps) => {
     }
   });
 
-  useTask$(async () => {
-    const ratingsCount: any[] = [];
-    for (const rating of ratings.value || []) {
-      ratingsCount.push(rating.rating);
-    }
-    const sumOfRatings = ratingsCount.reduce(
-      (total: any, rating: any) => total + rating,
-      0
-    );
-    averageRating.value =
-      Math.round((sumOfRatings / ratingsCount.length) * 2) / 2;
-    totalRatings.value = ratingsCount.length;
-  });
+  useOnWindow(
+    "load",
+    $(async () => {
+      const ratingsCount: any[] = [];
+      for (const rating of ratings.value || []) {
+        ratingsCount.push(rating.rating);
+      }
+      const sumOfRatings = ratingsCount.reduce(
+        (total: any, rating: any) => total + rating,
+        0
+      );
+      averageRating.value =
+        Math.round((sumOfRatings / ratingsCount.length) * 2) / 2;
+      totalRatings.value = ratingsCount.length;
+    })
+  );
 
   return (
     <a
@@ -181,7 +185,6 @@ export const ProductCard = component$((props: ProductCardProps) => {
             : product.product_name}
         </h2>
 
-        {/* <input type="radio" name="rating-10" class="rating-hidden" /> */}
         {ratings.value.length > 0 && (
           <div class="rating rating-sm rating-half">
             {Array(5)
