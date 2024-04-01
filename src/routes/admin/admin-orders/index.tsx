@@ -179,6 +179,18 @@ export const cancelPaymentServer = server$(async function (
   }
 });
 
+export const getOrdersServer = server$(async function (
+  page: number,
+  status: string
+) {
+  const orders = await getOrdersService(page, status);
+  if (orders.status === "success") {
+    return { status: orders.status, res: JSON.stringify(orders) };
+  } else {
+    return { status: orders.status };
+  }
+});
+
 export default component$(() => {
   const loc = useLocation();
   const orders = useOrderTableData();
@@ -329,6 +341,21 @@ export default component$(() => {
     location.reload();
   });
 
+  const ordersStatus = [
+    "Pending",
+    "Shipped",
+    "Cancelled",
+    "Refund",
+    "Processing",
+  ];
+
+  const handleFilterChanged = $(async (status: string) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("page", "1");
+    url.searchParams.set("search", status);
+    nav(url.toString());
+  });
+
   return (
     <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
       <div class="flex flex-row gap-5 items-center">
@@ -353,12 +380,26 @@ export default component$(() => {
                 </label>
               </th>
               <th align="right" colSpan={7}>
-                <button class="flex flex-row gap-2 items-center btn btn-ghost">
-                  <OrderFilterIcon />
-                </button>
+                <details class="dropdown">
+                  <summary class="m-1 btn">
+                    {" "}
+                    <OrderFilterIcon />
+                  </summary>
+                  <ul class="p-2 z-50 shadow menu dropdown-content bg-base-100 rounded-box w-52">
+                    {ordersStatus.map((status, index) => {
+                      return (
+                        <li key={index}>
+                          <button onClick$={() => handleFilterChanged(status)}>
+                            {status}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </details>
               </th>
             </tr>
-            <tr class="bg-[#F1F5F9]">
+            <tr class="bg-[#F1F5F9] z-0">
               <th></th>
               <th>User</th>
               <th>Order No.</th>

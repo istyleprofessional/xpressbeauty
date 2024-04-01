@@ -5,8 +5,8 @@ import { Card } from "~/components/admin/card/card";
 import { Revenues } from "~/components/admin/revenues/revenues";
 import { getAllDummyUsersCount } from "~/express/services/dummy.user.service";
 import {
-  getAllItemsNumberInAllShippedOrders,
   getAllPendingOrdersCount,
+  getAllProcessedOrdersCount,
   getAllShippedOrdersCount,
   getTotalRevenue,
 } from "~/express/services/order.service";
@@ -14,8 +14,6 @@ import { getAllRegisteredUsersCount } from "~/express/services/user.service";
 
 export const useLoader = routeLoader$(async () => {
   const shippedOrders = await getAllShippedOrdersCount();
-  const totalItems = await getAllItemsNumberInAllShippedOrders();
-  console.log(totalItems);
   const shippedOrdersCount =
     shippedOrders.status === "success"
       ? shippedOrders.request?.toString()
@@ -25,6 +23,7 @@ export const useLoader = routeLoader$(async () => {
     pendingOrders.status === "success"
       ? pendingOrders.request?.toString()
       : "0";
+  const processingOrders = await getAllProcessedOrdersCount();
   const allOrderCount = (
     parseInt(shippedOrdersCount ?? "0") + parseInt(pendingOrdersCount ?? "0")
   ).toString();
@@ -46,6 +45,7 @@ export const useLoader = routeLoader$(async () => {
     registeredUsersCount,
     dummyUsersCount,
     totalRev,
+    processingOrders: processingOrders.request?.toString() ?? "0",
   };
 });
 
@@ -74,7 +74,7 @@ export default component$(() => {
         <h2 class="text-gray-500 text-2xl font-medium font-['Inter'] leading-loose">
           Orders
         </h2>
-        <div class="flex flex-row gap-10">
+        <div class="flex flex-row gap-5 flex-wrap">
           <Card
             icon={`
               <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none">
@@ -92,6 +92,15 @@ export default component$(() => {
               `}
             title="Pending Orders"
             count={loader.value.pendingOrdersCount ?? "0"}
+          />
+          <Card
+            icon={`
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                  <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+              `}
+            title="Processing Orders"
+            count={loader.value.processingOrders ?? "0"}
           />
           <Card
             icon={`

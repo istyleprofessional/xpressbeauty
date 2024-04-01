@@ -83,6 +83,7 @@ export const getOrdersService = async (page: number, search?: string) => {
         "dummyUser.phoneNumber": { $regex: search, $options: "i" },
       });
       query["$or"].push({ order_number: { $regex: search, $options: "i" } });
+      query["$or"].push({ orderStatus: { $regex: search, $options: "i" } });
     }
     const request = await Order.aggregate([
       {
@@ -239,13 +240,22 @@ export const getAllPendingOrdersCount = async () => {
   }
 };
 
+export const getAllProcessedOrdersCount = async () => {
+  try {
+    const request = await Order.countDocuments({ orderStatus: "Processing" });
+    return { status: "success", request: request };
+  } catch (error: any) {
+    return { status: "failed", err: error.message };
+  }
+};
+
 export const getTotalRevenue = async () => {
   // return revenue of each month by calculating total price of each order in that month using createdAt field
   try {
     const request = await Order.aggregate([
       {
         $match: {
-          orderStatus: { $nin: ["Refund", "Return"] },
+          orderStatus: "Shipped",
         },
       },
       {
