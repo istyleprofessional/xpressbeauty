@@ -596,7 +596,7 @@ async function addProductsToGoogleSheet() {
           oldRow.title = oldRow.title?.includes("CR")
             ? oldRow.title?.replace(/CR.*/, "")
             : oldRow.title ?? "";
-          oldRow.oldRow.price = `${product?.price?.regular} CAD` ?? "0";
+          oldRow.price = `${product?.price?.regular} CAD` ?? "0";
           oldRow.shipping_label = "";
           oldRow.gtin =
             product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
