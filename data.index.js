@@ -19,6 +19,10 @@ const OpenAI = require("openai");
 set("strictQuery", false);
 const mongoUrl = NEXT_APP_MONGO_URL || "";
 
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function changeCurrency() {
   await connect(mongoUrl);
   const products = await Product.find({});
@@ -166,11 +170,7 @@ async function updateLastProductsQuantity() {
   await connection.close();
 }
 
-async function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-updateLastProductsQuantity();
+// updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -552,14 +552,17 @@ async function addProductsToGoogleSheet() {
         for (const variant of product.variations) {
           const newRow = {
             id: `${product._id.toString()}-${variant?.variation_id}`,
-            title: product.product_name?.includes("CR")
-              ? product.product_name?.replace(/CR.*/, "")
-              : product.product_name ?? "",
+            title: `${
+              product.product_name?.includes("CR")
+                ? product.product_name?.replace(/CR.*/, "")
+                : product.product_name ?? ""
+            } - ${variant?.variation_name}`,
             description: product?.description ?? "",
             link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0].includes("http")
               ? product?.imgs[0]
               : `https://xpressbeauty.ca${product?.imgs[0].replace(".", "")}`,
+
             availability:
               parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
                 ? "in_stock"
@@ -570,6 +573,18 @@ async function addProductsToGoogleSheet() {
             gtin: variant?.upc ?? "",
             "identifier exists": variant?.upc ? "yes" : "no",
           };
+          if (variant.variation_image) {
+            if (product?.variation_type === "Color") {
+              const src = product?.product_name?.replace(/[^A-Za-z0-9]+/g, "");
+              const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${
+                // index of the variation
+                product?.variations?.indexOf(variant)
+              }.webp`;
+              newRow["additional image link"] = folder;
+            } else {
+              newRow["additional image link"] = variant?.variation_image;
+            }
+          }
           newArray.push(newRow);
         }
       } else {
@@ -581,7 +596,7 @@ async function addProductsToGoogleSheet() {
           oldRow.title = oldRow.title?.includes("CR")
             ? oldRow.title?.replace(/CR.*/, "")
             : oldRow.title ?? "";
-          oldRow.price = `${product?.price?.regular} CAD` ?? "0";
+          oldRow.oldRow.price = `${product?.price?.regular} CAD` ?? "0";
           oldRow.shipping_label = "";
           oldRow.gtin =
             product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
@@ -643,7 +658,7 @@ async function addProductsToGoogleSheet() {
   }
   await connection.close();
 }
-// addProductsToGoogleSheet();
+addProductsToGoogleSheet();
 
 async function addFakeReviews() {
   await connect(mongoUrl);

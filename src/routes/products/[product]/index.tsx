@@ -223,10 +223,16 @@ export default component$(() => {
         "@context": "https://schema.org/",
         "@type": "Product",
         name: product.product_name,
-        image: (product.imgs ?? [])[0] ?? "",
+        image: (product.imgs ?? [])[0].includes("http")
+          ? (product.imgs ?? [])[0]
+          : `https://xpressbeauty.ca${(product.imgs ?? [])[0].replace(
+              ".",
+              ""
+            )}`,
         description: product.description
           ?.replace(/<img .*?>/g, "")
-          ?.replace(/Cosmo Prof/g, "Xpress Beauty"),
+          ?.replace(/Cosmo Prof/g, "Xpress Beauty")
+          ?.replace(/Canrad/g, "Xpress Beauty"),
         sku: product._id,
         brand: {
           "@type": "Brand",
