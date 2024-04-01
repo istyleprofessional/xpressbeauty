@@ -12,7 +12,7 @@ export const BestSellerChart = component$((prop: any) => {
       const getChartOptions = () => {
         return {
           series: series,
-          colors: ["#1C64F2", "#16BDCA", "#FDBA8C", "#E74694"],
+          colors: ["#1C64F2", "#16BDCA", "#FDBA8C", "#E74694", "#76694"],
           chart: {
             height: 320,
             width: "100%",
@@ -35,7 +35,7 @@ export const BestSellerChart = component$((prop: any) => {
                   total: {
                     showAlways: true,
                     show: true,
-                    label: "Unique visitors",
+                    label: "Best Seller",
                     fontFamily: "Inter, sans-serif",
                     formatter: (w: any) => {
                       const sum = w.globals.seriesTotals.reduce(
