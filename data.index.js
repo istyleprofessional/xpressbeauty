@@ -778,19 +778,24 @@ async function updateCanardProducts() {
   await connect(mongoUrl);
   const rows = await sheet.getRows();
   for (const row of rows) {
-    const rowObject = row.toObject();
-    const id = rowObject["Item ID"];
-    const quantityReq = await axios.get(
-      `https://canrad.com/products/${id}/ccrd`
-    );
-    const quantity = quantityReq.data.Product.OnHandQuantity;
-    const updateReq = await Product.findOneAndUpdate(
-      { product_name: rowObject["Product Name"] },
-      { quantity_on_hand: quantity },
-      { new: true }
-    );
-    if (updateReq) {
-      console.log(updateReq.product_name);
+    try {
+      const rowObject = row.toObject();
+      const id = rowObject["Item ID"];
+      const quantityReq = await axios.get(
+        `https://canrad.com/products/${id}/ccrd`
+      );
+      const quantity = quantityReq.data.Product.OnHandQuantity;
+      const updateReq = await Product.findOneAndUpdate(
+        { product_name: rowObject["Product Name"] },
+        { quantity_on_hand: quantity },
+        { new: true }
+      );
+      if (updateReq) {
+        console.log(updateReq.product_name);
+      }
+    } catch (error) {
+      console.log(error.message);
+      continue;
     }
   }
   console.log("done");
