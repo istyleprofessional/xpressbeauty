@@ -242,16 +242,32 @@ export default component$(() => {
           priceValidUntil: "2022-11-05",
           itemCondition: "https://schema.org/NewCondition",
           availability:
-            (product?.quantity_on_hand ?? 0) > 0
+            (product.variations?.length ?? 0) > 0
+              ? product.variations?.some(
+                  (variation: any) => variation.quantity_on_hand > 0
+                )
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock"
+              : (product?.quantity_on_hand ?? 0) > 0
               ? "https://schema.org/InStock"
               : "https://schema.org/OutOfStock",
         },
       };
-      if (ratings?.averageRating) {
+      const ratingsCount: any[] = [];
+      let averageRating = 0;
+      for (const rating of ratings.result?.ratings || []) {
+        ratingsCount.push(rating.rating);
+      }
+      const sumOfRatings = ratingsCount.reduce(
+        (total: any, rating: any) => total + rating,
+        0
+      );
+      averageRating = Math.round((sumOfRatings / ratingsCount.length) * 2) / 2;
+      if (averageRating > 0) {
         object["aggregateRating"] = {
           "@type": "AggregateRating",
-          ratingValue: ratings?.averageRating,
-          reviewCount: ratings?.totalRatings,
+          ratingValue: averageRating,
+          reviewCount: ratingsCount.length,
         };
       }
       jsonProduct.text = JSON.stringify(object);
