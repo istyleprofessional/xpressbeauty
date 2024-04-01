@@ -760,4 +760,41 @@ async function addAngelProductsFromJsonFile() {
   await connection.close();
 }
 
-addAngelProductsFromJsonFile();
+// addAngelProductsFromJsonFile();
+
+async function updateCanardProducts() {
+  const auth = new JWT({
+    email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+    key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  const doc = new GoogleSpreadsheet(
+    "1FLHOdsDGIH_gnXUjZ0SBYfc1dXYqpgxmfTnH4FEFMeg",
+    auth
+  );
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0];
+  await connect(mongoUrl);
+  const rows = await sheet.getRows();
+  for (const row of rows) {
+    const rowObject = row.toObject();
+    const id = rowObject["Item ID"];
+    const quantityReq = await axios.get(
+      `https://canrad.com/products/${id}/ccrd`
+    );
+    const quantity = quantityReq.data.Product.OnHandQuantity;
+    const updateReq = await Product.findOneAndUpdate(
+      { product_name: rowObject["Product Name"] },
+      { quantity_on_hand: quantity },
+      { new: true }
+    );
+    if (updateReq) {
+      console.log(updateReq.product_name);
+    }
+  }
+  console.log("done");
+  await connection.close();
+}
+
+updateCanardProducts();

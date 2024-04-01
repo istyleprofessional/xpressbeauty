@@ -54,22 +54,7 @@ export const Rating = component$((props: RatingInterface) => {
           ))}
       </div>
       {(ratings?.length ?? 0) > 0 && (
-        <div
-          itemProp="aggregateRating"
-          itemScope
-          itemType="https://schema.org/AggregateRating"
-          class="text-sm font-semibold text-gray-400"
-        >
-          <meta itemProp="worstRating" content="0" />
-          <meta itemProp="bestRating" content="5" />
-          <meta
-            itemProp="ratingValue"
-            content={averageRating.value ? averageRating.value.toString() : "0"}
-          />
-          <meta
-            itemProp="reviewCount"
-            content={totalRatings.value ? totalRatings.value.toString() : "0"}
-          />
+        <div class="text-sm font-semibold text-gray-400">
           Rated <span>{averageRating.value ? averageRating.value : 0}</span>
           /5 based on <span>{totalRatings.value}</span> customer reviews
         </div>
