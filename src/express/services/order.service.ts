@@ -250,11 +250,16 @@ export const getAllProcessedOrdersCount = async () => {
 };
 
 export const getTotalRevenue = async () => {
-  // return revenue of each month by calculating total price of each order in that month using createdAt field
+  // return revenue of each month by calculating total price of each order in that month using createdAt field for specific current year
+  const currentYear = new Date().getFullYear();
   try {
     const request = await Order.aggregate([
       {
         $match: {
+          createdAt: {
+            $gte: new Date(currentYear, 0, 1),
+            $lt: new Date(currentYear + 1, 0, 1),
+          },
           orderStatus: "Shipped",
         },
       },
@@ -266,7 +271,31 @@ export const getTotalRevenue = async () => {
         },
       },
     ]);
-    console.log(request);
+    return { status: "success", request: request };
+  } catch (error: any) {
+    return { status: "failed", err: error.message };
+  }
+};
+
+export const getBestProductsSold = async () => {
+  try {
+    const request = await Order.aggregate([
+      {
+        $unwind: "$products",
+      },
+      {
+        $group: {
+          _id: "$products.product_name",
+          total: { $sum: "$products.quantity" },
+        },
+      },
+      {
+        $sort: { total: -1 },
+      },
+      {
+        $limit: 5,
+      },
+    ]);
     return { status: "success", request: request };
   } catch (error: any) {
     return { status: "failed", err: error.message };

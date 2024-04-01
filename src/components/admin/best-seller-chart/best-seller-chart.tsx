@@ -1,13 +1,17 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 
-export const BestSellerChart = component$(() => {
+export const BestSellerChart = component$((prop: any) => {
   const dountChart = useSignal<HTMLDivElement>();
 
   useVisibleTask$(
     async () => {
+      const data = prop.best;
+      // create the series data
+      const series = data.map((d: any) => d.total);
+      const labels = data.map((d: any) => d._id);
       const getChartOptions = () => {
         return {
-          series: [35.1, 23.5, 2.4, 5.4],
+          series: series,
           colors: ["#1C64F2", "#16BDCA", "#FDBA8C", "#E74694"],
           chart: {
             height: 320,
@@ -61,7 +65,7 @@ export const BestSellerChart = component$(() => {
               top: -2,
             },
           },
-          labels: ["Direct", "Sponsor", "Affiliate", "Email marketing"],
+          labels: labels,
           dataLabels: {
             enabled: false,
           },
@@ -72,14 +76,14 @@ export const BestSellerChart = component$(() => {
           yaxis: {
             labels: {
               formatter: (value: any) => {
-                return value + "k";
+                return value;
               },
             },
           },
           xaxis: {
             labels: {
               formatter: (value: any) => {
-                return value + "k";
+                return value;
               },
             },
             axisTicks: {
@@ -104,14 +108,14 @@ export const BestSellerChart = component$(() => {
   );
 
   return (
-    <div class=" w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
-      <div class="flex justify-between pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
+    <div class=" w-full bg-white rounded-lg shadow  p-4 md:p-6">
+      <div class="flex justify-between pb-4 mb-4 border-b border-gray-200 ">
         <div class="flex items-center">
           <div>
             <h5 class="leading-none text-2xl font-bold text-gray-900 pb-1">
               Best Seller
             </h5>
-            <p class="text-sm font-normal text-gray-500 dark:text-gray-400"></p>
+            <p class="text-sm font-normal text-gray-500 "></p>
           </div>
         </div>
         <div>
@@ -138,13 +142,13 @@ export const BestSellerChart = component$(() => {
 
       <div ref={dountChart} class="py-6" id="donut-chart"></div>
 
-      <div class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
+      <div class="grid grid-cols-1 items-center border-gray-200 border-t  justify-between">
         <div class="flex justify-between items-center pt-5">
           <button
             id="dropdownDefaultButton"
             data-dropdown-toggle="lastDaysdropdown"
             data-dropdown-placement="bottom"
-            class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
+            class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center "
             type="button"
           >
             Last 7 days

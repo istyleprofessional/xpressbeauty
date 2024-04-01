@@ -11,9 +11,8 @@ export const Revenues = component$((props: RevenuesProps) => {
 
   useVisibleTask$(
     async ({ track }) => {
-      track(() => rev.length);
+      track(() => rev.length > 0);
       if (!columnChart.value) return;
-      columnChart.value.innerHTML = "is loading...";
       const months = [
         rev
           .map((r) => {
@@ -146,7 +145,7 @@ export const Revenues = component$((props: RevenuesProps) => {
             data: [
               {
                 x: "Jan",
-                y: parseInt(months[0] ?? "0"),
+                y: parseInt(months[0] ?? 0),
               },
               {
                 x: "Feb",
@@ -198,6 +197,7 @@ export const Revenues = component$((props: RevenuesProps) => {
         chart: {
           type: "bar",
           height: "320px",
+          width: "100%",
           fontFamily: "Inter, sans-serif",
           toolbar: {
             show: false,
@@ -208,7 +208,7 @@ export const Revenues = component$((props: RevenuesProps) => {
             horizontal: false,
             columnWidth: "70%",
             borderRadiusApplication: "end",
-            borderRadius: 8,
+            // borderRadius: 8,
           },
         },
         tooltip: {
@@ -246,34 +246,15 @@ export const Revenues = component$((props: RevenuesProps) => {
         legend: {
           show: true,
         },
-        xaxis: {
-          floating: true,
-          labels: {
-            show: true,
-            style: {
-              fontFamily: "Inter, sans-serif",
-              cssClass: "text-xs font-normal fill-gray-500 text-gray-500 ",
-            },
-          },
-          axisBorder: {
-            show: false,
-          },
-          axisTicks: {
-            show: false,
-          },
-        },
-        yaxis: {
-          show: false,
-        },
-        fill: {
-          opacity: 1,
-        },
       };
       columnChart.value.innerHTML = "";
       // const ApexCharts = await import("apexcharts");
       if (columnChart.value && ApexCharts && rev.length > 0) {
-        const chart = new ApexCharts(columnChart.value, options);
-        chart.render();
+        const chart = new ApexCharts(
+          document.querySelector("#column-chart"),
+          options
+        );
+        await chart.render();
       } else {
         console.log("no chart");
       }
@@ -287,7 +268,7 @@ export const Revenues = component$((props: RevenuesProps) => {
         <div class="flex items-center">
           <div>
             <h5 class="leading-none text-2xl font-bold text-gray-900 pb-1">
-              2023 Revenue
+              {new Date().getFullYear()} Revenue
             </h5>
             <p class="text-sm font-normal text-gray-500 dark:text-gray-400"></p>
           </div>

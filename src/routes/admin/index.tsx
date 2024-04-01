@@ -8,6 +8,7 @@ import {
   getAllPendingOrdersCount,
   getAllProcessedOrdersCount,
   getAllShippedOrdersCount,
+  getBestProductsSold,
   getTotalRevenue,
 } from "~/express/services/order.service";
 import { getAllRegisteredUsersCount } from "~/express/services/user.service";
@@ -38,6 +39,7 @@ export const useLoader = routeLoader$(async () => {
   const totalRevenue = await getTotalRevenue();
   const totalRev =
     totalRevenue.status === "success" ? totalRevenue?.request ?? [] : [];
+  const bestProductsSold = await getBestProductsSold();
   return {
     shippedOrdersCount,
     pendingOrdersCount,
@@ -46,6 +48,7 @@ export const useLoader = routeLoader$(async () => {
     dummyUsersCount,
     totalRev,
     processingOrders: processingOrders.request?.toString() ?? "0",
+    bestProductsSold: bestProductsSold.request ?? [],
   };
 });
 
@@ -144,13 +147,15 @@ export default component$(() => {
           <h2 class="text-gray-500 text-2xl font-medium font-['Inter'] leading-loose">
             Revenues
           </h2>
+          {/* {loader.value.totalRev.length === 0 && ( */}
           <Revenues rev={loader.value.totalRev} />
+          {/* )} */}
         </div>
         <div class="flex-col justify-start items-start gap-6 flex">
           <h2 class="text-gray-500 text-2xl font-medium font-['Inter'] leading-loose">
             Products
           </h2>
-          <BestSellerChart />
+          <BestSellerChart best={loader.value.bestProductsSold} />
         </div>
       </div>
     </div>
