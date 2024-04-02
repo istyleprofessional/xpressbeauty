@@ -131,6 +131,8 @@ export const RatingAndDescription = component$(
       { strategy: "document-ready" }
     );
 
+    // console.log(ratings.value);
+
     return (
       <div class="flex flex-col gap-8 md:pl-14 justify-center items-center md:justify-start md:items-start">
         <div class="bg-[#F4F4F5] w-96 md:w-[32rem] h-20 justify-center flex items-center rounded-lg">
@@ -299,13 +301,8 @@ export const RatingAndDescription = component$(
                               itemType="https://schema.org/Review"
                             >
                               <div class="flex flex-row gap-3">
-                                <div class="flex flex-col gap-5 justify-center items-start">
+                                <div class="flex flex-col gap-5 justify-center items-center">
                                   <div class="rating rating-xs md:rating-md rating-half">
-                                    <input
-                                      type="radio"
-                                      name="rating-10"
-                                      class="rating-hidden"
-                                    />
                                     {Array(5)
                                       .fill("")
                                       .map((_, index) => (
@@ -314,21 +311,21 @@ export const RatingAndDescription = component$(
                                             id={`${index + 0.5}`}
                                             type="radio"
                                             name="rating-10"
-                                            class={`mask mask-star-2 mask-half-1 ${
-                                              rating.rating > index
-                                                ? "bg-[#FFC75B]"
-                                                : "bg-[#E4E4E7]"
-                                            }`}
+                                            class={`mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
+                                            checked={
+                                              rating.rating === index + 0.5
+                                            }
+                                            disabled={true}
                                           />
                                           <input
                                             id={`${index + 1}`}
                                             type="radio"
                                             name="rating-10"
-                                            class={`mask mask-star-2 mask-half-2 ${
-                                              rating.rating > index
-                                                ? "bg-[#FFC75B]"
-                                                : "bg-[#E4E4E7]"
-                                            }`}
+                                            class={` mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
+                                            checked={
+                                              rating.rating === index + 1
+                                            }
+                                            disabled={true}
                                           />
                                         </Fragment>
                                       ))}

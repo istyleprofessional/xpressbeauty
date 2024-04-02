@@ -22,6 +22,8 @@ import { getWishList } from "~/express/services/wishList.service";
 import { WishListContext } from "~/context/wishList.context";
 import { CurContext } from "~/context/cur.context";
 import { getUniqueMainCategories } from "~/express/services/category.service";
+import { User } from "~/express/schemas/users.schema";
+import dummyUsers from "~/express/schemas/dummy.user.schema";
 // import GmailFactory from "gmail-js";
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
@@ -51,13 +53,29 @@ export const useUserData = routeLoader$(
         request.headers.get("do-connecting-ip") ??
         request.headers.get("X-Real-IP") ??
         "";
-      // call free api to get location
-      const req = await fetch(`http://ip-api.com/json/${userIP}`, {
-        method: "GET",
+      const checkPrevUser = await User.findOne({
+        "generalInfo.ip": userIP,
       });
-      const ipObject = await req.json();
-      country_name = ipObject?.country;
-      city = ipObject?.city;
+      if (checkPrevUser) {
+        country_name = checkPrevUser.generalInfo.address.country;
+        city = checkPrevUser.generalInfo.address.city;
+      } else {
+        const checkDumUser = await dummyUsers.findOne({
+          "generalInfo.ip": userIP,
+        });
+        if (checkDumUser) {
+          country_name = checkDumUser.generalInfo.address.country;
+          city = checkDumUser.generalInfo.address.city;
+        } else {
+          // call free api to get location
+          const req = await fetch(`http://ip-api.com/json/${userIP}`, {
+            method: "GET",
+          });
+          const ipObject = await req.json();
+          country_name = ipObject?.country;
+          city = ipObject?.city;
+        }
+      }
     } catch (error) {
       console.log(error);
     }

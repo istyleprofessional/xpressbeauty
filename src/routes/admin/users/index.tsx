@@ -37,7 +37,7 @@ export default component$(() => {
   const users = useUserTableData();
 
   const userSignel = useSignal(JSON.parse(users.value?.res ?? "[]"));
-  const count = useSignal(userSignel.value.total);
+  const count = useSignal(userSignel.value.count);
   const currentPageNo = loc.url.searchParams.get("page") ?? "1";
   const total = count.value ?? 0;
   const totalPages = Math.ceil(total / 20);
@@ -179,6 +179,14 @@ export default component$(() => {
               currentPageNo === "1" ? "text-[#D1D5DB]" : "text-[#7C3AED]"
             } text-xs`}
             disabled={currentPageNo === "1"}
+            onClick$={() => {
+              const url = new URL(window.location.href);
+              url.searchParams.set(
+                "page",
+                (parseInt(currentPageNo) - 1).toString()
+              );
+              location.href = url.toString();
+            }}
           >
             Previous
           </button>
@@ -192,6 +200,14 @@ export default component$(() => {
                 : "text-[#7C3AED]"
             }`}
             disabled={currentPageNo === totalPages.toString()}
+            onClick$={() => {
+              const url = new URL(window.location.href);
+              url.searchParams.set(
+                "page",
+                (parseInt(currentPageNo) + 1).toString()
+              );
+              location.href = url.toString();
+            }}
           >
             Next
           </button>
@@ -269,33 +285,6 @@ export default component$(() => {
                     </td>
                   </tr>
                 </thead>
-                <tbody>
-                  {/* {orderDetail.value?.products?.map(
-                        (product: any, index: number) => {
-                          const total =
-                            parseFloat(product?.price) * product?.quantity;
-                          const subTotal = total.toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "CAD",
-                          });
-                          return (
-                            <tr key={index}>
-                              <td>
-                                <img
-                                  src={product?.product_img}
-                                  alt=""
-                                  class="w-24 h-24"
-                                />
-                              </td>
-                              <td>{product?.product_name}</td>
-                              <td>{product?.price}</td>
-                              <td>{product?.quantity}</td>
-                              <td>{subTotal}</td>
-                            </tr>
-                          );
-                        }
-                      )} */}
-                </tbody>
               </table>
             </div>
           </div>

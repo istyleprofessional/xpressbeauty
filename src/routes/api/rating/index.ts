@@ -13,24 +13,25 @@ export const onPost: RequestHandler = async ({
 }) => {
   const token = cookie.get("token")?.value;
   const body = await parseBody();
-  const secret_key = env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
-  const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${
-    (body as any)?.recaptcha
-  }`;
-  const recaptcha = await fetch(url, { method: "post" });
-  const recaptchaText = await recaptcha.text();
-  const google_response = JSON.parse(recaptchaText);
-  if (!google_response.success) {
-    json(200, { status: "failed", message: "Boot detected" });
-    return;
-  }
-
+  // const secret_key = env.get("VITE_RECAPTCHA_SECRET_KEY") ?? "";
+  // const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${
+  //   (body as any)?.recaptcha
+  // }`;
+  // const recaptcha = await fetch(url, { method: "post" });
+  // const recaptchaText = await recaptcha.text();
+  // const google_response = JSON.parse(recaptchaText);
+  // if (!google_response.success) {
+  //   json(200, { status: "failed", message: "Boot detected" });
+  //   return;
+  // }
+  console.log("body", token);
   if (!token) {
     json(200, { status: "failed", message: "Unauthorized" });
     return;
   }
   try {
     const verify: any = jwt.verify(token, env.get("VITE_JWTSECRET") ?? "");
+    console.log("verify", verify);
     if (verify && !verify?.isDummy) {
       const request = await updateProductReviews(body);
       if (request.status === "success") {

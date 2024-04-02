@@ -15,6 +15,7 @@ const Order = models.Order;
 const User = models.User;
 const RatingReviews = models.RatingReviews;
 const OpenAI = require("openai");
+const DummyUser = models.DummyUser;
 
 set("strictQuery", false);
 const mongoUrl = NEXT_APP_MONGO_URL || "";
@@ -658,7 +659,7 @@ async function addProductsToGoogleSheet() {
   }
   await connection.close();
 }
-addProductsToGoogleSheet();
+// addProductsToGoogleSheet();
 
 async function addFakeReviews() {
   await connect(mongoUrl);
@@ -818,3 +819,35 @@ async function updateCanardProducts() {
 }
 
 // updateCanardProducts();
+
+async function dumpAllUnkownCartAndUsers() {
+  await connect(mongoUrl);
+  const users = await User.find({});
+  const dummyUsers = await DummyUser.find({});
+  if (users.length > 0) {
+    for (const user of users) {
+      if (!(user.firstName && user.lastName && user.phoneNumber)) {
+        await User.findByIdAndDelete(user._id);
+      }
+    }
+  }
+  if (dummyUsers.length > 0) {
+    for (const dummyUser of dummyUsers) {
+      if (
+        !(
+          dummyUser.firstName &&
+          dummyUser.lastName &&
+          dummyUser.phoneNumber &&
+          dummyUser.email
+        )
+      ) {
+        await User.findByIdAndDelete(dummyUser._id);
+      }
+    }
+  }
+
+  console.log("done");
+  await connection.close();
+}
+
+dumpAllUnkownCartAndUsers();

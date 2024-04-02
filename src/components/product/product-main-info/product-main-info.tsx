@@ -93,21 +93,29 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
               .map((_, index) => (
                 <Fragment key={index}>
                   <input
-                    key={index + 0.5}
+                    id={`${index + 0.5}`}
                     type="radio"
-                    aria-label="Rate 0.5 stars"
                     name="rating-10"
-                    class={`bg-[#FFC75B] mask mask-star-2 mask-half-1 `}
-                    checked={index + 0.5 === averageRating.value ? true : false}
+                    class={`mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
+                    checked={
+                      averageRating.value &&
+                      averageRating.value >= index + 0.5 &&
+                      averageRating.value < index + 1
+                        ? true
+                        : false
+                    }
                     disabled={true}
                   />
                   <input
-                    key={index + 1}
+                    id={`${index + 1}`}
                     type="radio"
                     name="rating-10"
-                    aria-label="Rate 1 stars"
-                    class={`bg-[#FFC75B] mask mask-star-2 mask-half-2 `}
-                    checked={index + 1 === averageRating.value ? true : false}
+                    class={` mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
+                    checked={
+                      averageRating.value && averageRating.value >= index + 1
+                        ? true
+                        : false
+                    }
                     disabled={true}
                   />
                 </Fragment>
