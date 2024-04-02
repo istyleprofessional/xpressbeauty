@@ -1,5 +1,4 @@
 import {
-  Fragment,
   component$,
   useOnWindow,
   // useOnDocument,
@@ -190,26 +189,26 @@ export const ProductCard = component$((props: ProductCardProps) => {
             {Array(5)
               .fill("")
               .map((_, index) => (
-                <Fragment key={index}>
+                <>
                   <input
-                    key={index + 0.5}
-                    type="radio"
-                    aria-label="Rate 0.5 stars"
-                    name="rating-10"
-                    class={`bg-[#FFC75B] mask mask-star-2 mask-half-1 `}
-                    checked={index + 0.5 === averageRating.value ? true : false}
-                    disabled={true}
-                  />
-                  <input
-                    key={index + 1}
                     type="radio"
                     name="rating-10"
-                    aria-label="Rate 1 stars"
-                    class={`bg-[#FFC75B] mask mask-star-2 mask-half-2 `}
-                    checked={index + 1 === averageRating.value ? true : false}
-                    disabled={true}
+                    class="bg-yellow-500 mask mask-star-2 mask-half-1"
+                    checked={
+                      // first half star
+                      index + 0.5 === averageRating.value
+                    }
                   />
-                </Fragment>
+                  <input
+                    type="radio"
+                    name="rating-10"
+                    class="bg-yellow-500 mask mask-star-2 mask-half-2"
+                    checked={
+                      // second half star
+                      index + 1 === averageRating.value
+                    }
+                  />
+                </>
               ))}
           </div>
         )}

@@ -306,28 +306,26 @@ export const RatingAndDescription = component$(
                                     {Array(5)
                                       .fill("")
                                       .map((_, index) => (
-                                        <Fragment key={index}>
+                                        <>
                                           <input
-                                            id={`${index + 0.5}`}
                                             type="radio"
                                             name="rating-10"
-                                            class={`mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
+                                            class="bg-yellow-500 mask mask-star-2 mask-half-1"
                                             checked={
-                                              rating.rating === index + 0.5
+                                              // first half star
+                                              index + 0.5 === rating.rating
                                             }
-                                            disabled={true}
                                           />
                                           <input
-                                            id={`${index + 1}`}
                                             type="radio"
                                             name="rating-10"
-                                            class={` mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
+                                            class="bg-yellow-500 mask mask-star-2 mask-half-2"
                                             checked={
-                                              rating.rating === index + 1
+                                              // second half star
+                                              index + 1 === rating.rating
                                             }
-                                            disabled={true}
                                           />
-                                        </Fragment>
+                                        </>
                                       ))}
                                   </div>
                                   <p

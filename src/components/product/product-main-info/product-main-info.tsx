@@ -1,4 +1,4 @@
-import { Fragment, component$, useSignal, useTask$ } from "@builder.io/qwik";
+import { component$, useSignal, useTask$ } from "@builder.io/qwik";
 
 interface ProductMainInfoProps {
   product_name: string;
@@ -68,6 +68,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     );
     averageRating.value =
       Math.round((sumOfRatings / ratingsCount.length) * 2) / 2;
+
     totalRatings.value = ratingsCount.length;
   });
 
@@ -91,34 +92,27 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
             {Array(5)
               .fill("")
               .map((_, index) => (
-                <Fragment key={index}>
+                <>
                   <input
-                    id={`${index + 0.5}`}
                     type="radio"
                     name="rating-10"
-                    class={`mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
+                    class="bg-yellow-500 mask mask-star-2 mask-half-1"
                     checked={
-                      averageRating.value &&
-                      averageRating.value >= index + 0.5 &&
-                      averageRating.value < index + 1
-                        ? true
-                        : false
+                      // first half star
+                      index + 0.5 === averageRating.value
                     }
-                    disabled={true}
                   />
                   <input
-                    id={`${index + 1}`}
                     type="radio"
                     name="rating-10"
-                    class={` mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
+                    class="bg-yellow-500 mask mask-star-2 mask-half-2"
                     checked={
-                      averageRating.value && averageRating.value >= index + 1
-                        ? true
-                        : false
+                      // second half star
+                      index + 1 === averageRating.value
                     }
-                    disabled={true}
                   />
-                </Fragment>
+                  <label for={`star${index + 1}`}></label>
+                </>
               ))}
           </div>
           {(ratings?.result?.ratings?.length ?? 0) > 0 && (
