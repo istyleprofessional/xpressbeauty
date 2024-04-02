@@ -12,7 +12,14 @@ export const BestSellerChart = component$((prop: any) => {
       const getChartOptions = () => {
         return {
           series: series,
-          colors: ["#1C64F2", "#16BDCA", "#FDBA8C", "#E74694", "#76694"],
+          colors: [
+            "#1abc9c",
+            "#3498db",
+            "#9b59b6",
+            "#f1c40f",
+            "#e74c3c",
+            "#2ecc71",
+          ],
           chart: {
             height: 320,
             width: "100%",

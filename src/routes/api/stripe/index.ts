@@ -49,10 +49,6 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     shipping_address_collection: {
       allowed_countries: ["US", "CA"],
     },
-    tax_id_collection: {
-      enabled: true,
-    },
-
     custom_text: {
       shipping_address: {
         message:
