@@ -932,11 +932,7 @@ async function aiCategorization() {
   const uniqueCategories = [];
   for (const product of products) {
     for (const category of product.categories) {
-      if (
-        !uniqueCategories.find(
-          (cat) => cat.name === category.name && cat.main === category.main
-        )
-      ) {
+      if (!uniqueCategories.find((cat) => cat.name === category.name)) {
         uniqueCategories.push(category);
       }
     }
