@@ -868,7 +868,6 @@ async function aiCategorization() {
     console.log(error.message);
   }
   const dbCategories = await Category.find({});
-  db;
   for (const product of products) {
     console.log(`${products.indexOf(product) + 1} out of ${products.length}.
     ---------------------------------
