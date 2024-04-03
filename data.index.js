@@ -864,7 +864,7 @@ async function aiCategorization() {
       name: "Nail Polish",
       main: "Nails",
     });
-    
+
   } catch (error) {
     console.log(error.message);
     continue;
@@ -883,6 +883,9 @@ async function aiCategorization() {
           isProductCoropted = true;
           break;
         }
+      }
+      if(product.product_name.toLowerCase().includes("dryer")){ 
+        isProductCoropted = true;
       }
       if (isProductCoropted) {
         const openai = new OpenAI();
