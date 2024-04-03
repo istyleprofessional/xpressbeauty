@@ -937,7 +937,11 @@ async function aiCategorization() {
   // add the unique categories to the database
   await Category.deleteMany({});
   for (const category of uniqueCategories) {
-    await Category.create(category);
+    try {
+      await Category.create(category);
+    } catch (error) {
+      console.log(error.message);
+    }
   }
   console.log("done");
   await connection.close();
