@@ -864,13 +864,11 @@ async function aiCategorization() {
       name: "Nail Polish",
       main: "Nails",
     });
-
   } catch (error) {
     console.log(error.message);
-    continue;
   }
   const dbCategories = await Category.find({});
-  db
+  db;
   for (const product of products) {
     console.log(`${products.indexOf(product) + 1} out of ${products.length}.
     ---------------------------------
@@ -884,7 +882,7 @@ async function aiCategorization() {
           break;
         }
       }
-      if(product.product_name.toLowerCase().includes("dryer")){ 
+      if (product.product_name.toLowerCase().includes("dryer")) {
         isProductCoropted = true;
       }
       if (isProductCoropted) {
