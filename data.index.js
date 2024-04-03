@@ -881,9 +881,6 @@ async function aiCategorization() {
           break;
         }
       }
-      if (product.product_name.toLowerCase().includes("dryer")) {
-        isProductCoropted = true;
-      }
       if (isProductCoropted) {
         const openai = new OpenAI();
         const completion = await openai.chat.completions.create({
