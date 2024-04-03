@@ -857,7 +857,9 @@ async function aiCategorization() {
   const products = await Product.find({ isHidden: { $ne: true } });
   const dbCategories = await Category.find({});
   for (const product of products) {
-    console.log(products.indexOf(product) + 1, products.length);
+    console.log(`${products.indexOf(product) + 1} out of ${products.length}.
+    ---------------------------------
+    product name: ${product.product_name} - id: ${product._id}`);
     let isProductCoropted = false;
     try {
       for (const category of product.categories) {
