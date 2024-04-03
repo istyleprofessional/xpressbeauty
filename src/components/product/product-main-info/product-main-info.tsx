@@ -75,15 +75,13 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
   return (
     <div class="flex flex-col gap-10">
       <div class="flex flex-col gap-3">
-        <h1 class="text-xl md:text-4xl font-bold text-black" itemProp="name">
+        <h1 class="text-xl md:text-4xl font-bold text-black">
           {product_name.includes("CR")
             ? product_name.replace(/CR.*/, "")
             : product_name}
         </h1>
         {companyName.name && companyName.name !== "" && (
-          <h2 class="text-black text-lg md:text-2xl" itemProp="name">
-            {companyName.name}
-          </h2>
+          <h2 class="text-black text-lg md:text-2xl">{companyName.name}</h2>
         )}
       </div>
       {ratings?.length > 0 && (
@@ -129,23 +127,14 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         <h2 class="flex flex-row gap-2 text-xl lg:text-3xl text-black">
           {priceType === "single" && sale_price?.sale !== "" && (
             <>
-              <span class="text-black" itemProp="price">
-                {finalRegularPrice.value}
-              </span>
-              {/* <span class=" text-red-600" itemProp="price">
-                {salePrice.value}
-              </span> */}
+              <span class="text-black">{finalRegularPrice.value}</span>
             </>
           )}
           {priceType === "single" && sale_price?.sale === "" && (
-            <span class="text-black" itemProp="price">
-              {finalRegularPrice.value}
-            </span>
+            <span class="text-black">{finalRegularPrice.value}</span>
           )}
           {priceType === "range" && (
-            <span class="text-black" itemProp="price">
-              {finalRegularPrice.value}
-            </span>
+            <span class="text-black">{finalRegularPrice.value}</span>
           )}
         </h2>
 

@@ -137,8 +137,6 @@ export const RatingAndDescription = component$(
       { strategy: "document-ready" }
     );
 
-    // console.log(ratings.value);
-
     return (
       <div class="flex flex-col gap-8 md:pl-14 justify-center items-center md:justify-start md:items-start">
         <div class="bg-[#F4F4F5] w-96 md:w-[32rem] h-20 justify-center flex items-center rounded-lg">
@@ -182,7 +180,7 @@ export const RatingAndDescription = component$(
                           .replace(/<img .*?>/g, "")
                           .replace(/Cosmo Prof/g, "Xpress Beauty")
                           .replace(/CanRad /g, "Xpress Beauty")
-                          // .replace(/([A-Z])([a-z])/g, " $1")
+                          .replace(/CR.*/, "")
                           .trim();
 
                         tabState.value = "description";
@@ -206,7 +204,7 @@ export const RatingAndDescription = component$(
                           .replace(/<img .*?>/g, "")
                           .replace(/Cosmo Prof/g, "Xpress Beauty")
                           .replace(/CanRad /g, "Xpress Beauty")
-                          // .replace(/([A-Z])([a-z])/g, " $1")
+                          .replace(/CR.*/, "")
                           .trim();
                         tabState.value = "ingredients";
                       }
@@ -228,7 +226,7 @@ export const RatingAndDescription = component$(
                           .replace(/<img .*?>/g, "")
                           .replace(/Cosmo Prof/g, "Xpress Beauty")
                           .replace(/CanRad /g, "Xpress Beauty")
-                          // .replace(/([A-Z])([a-z])/g, " $1")
+                          .replace(/CR.*/, "")
                           .trim();
                         tabState.value = "directions";
                       }
@@ -244,12 +242,11 @@ export const RatingAndDescription = component$(
               <div
                 class="text-black font-normal text-base w-full p-2"
                 id="mainDiv"
-                itemProp="description"
                 dangerouslySetInnerHTML={product_description
                   .replace(/<img .*?>/g, "")
                   .replace(/Cosmo Prof/g, "Xpress Beauty")
                   .replace(/CanRad /g, "Xpress Beauty")
-                  // .replace(/([A-Z])([a-z])/g, " $1")
+                  .replace(/CR.*/, "")
                   .trim()}
               ></div>
             </div>
@@ -301,64 +298,53 @@ export const RatingAndDescription = component$(
                         })
                         .map((rating: any, index: number) => (
                           <Fragment key={index}>
-                            <div
-                              itemProp="review"
-                              itemScope
-                              itemType="https://schema.org/Review"
-                            >
-                              <div class="flex flex-row gap-3">
-                                <div class="flex flex-col gap-5 justify-center items-center">
-                                  <div class="rating rating-xs md:rating-md rating-half">
-                                    {Array(5)
-                                      .fill("")
-                                      .map((_, index) => (
-                                        <>
-                                          <input
-                                            type="radio"
-                                            name="rating-10"
-                                            class="bg-yellow-500 mask mask-star-2 mask-half-1"
-                                            checked={
-                                              // first half star
-                                              index + 0.5 === rating.rating
-                                            }
-                                          />
-                                          <input
-                                            type="radio"
-                                            name="rating-10"
-                                            class="bg-yellow-500 mask mask-star-2 mask-half-2"
-                                            checked={
-                                              // second half star
-                                              index + 1 === rating.rating
-                                            }
-                                          />
-                                        </>
-                                      ))}
-                                  </div>
-                                  <p
-                                    class="text-xs md:text-base"
-                                    itemProp="datePublished"
-                                  >
-                                    {new Date(rating.createdAt).toLocaleString(
-                                      "en-US",
-                                      {
-                                        timeZone: "America/New_York",
-                                      }
-                                    )}
-                                  </p>
+                            <div class="flex flex-row gap-3">
+                              <div class="flex flex-col gap-5 justify-center items-center">
+                                <div class="rating rating-xs md:rating-md rating-half">
+                                  {Array(5)
+                                    .fill("")
+                                    .map((_, index) => (
+                                      <>
+                                        <input
+                                          type="radio"
+                                          name="rating-10"
+                                          class="bg-yellow-500 mask mask-star-2 mask-half-1"
+                                          checked={
+                                            // first half star
+                                            index + 0.5 === rating.rating
+                                          }
+                                        />
+                                        <input
+                                          type="radio"
+                                          name="rating-10"
+                                          class="bg-yellow-500 mask mask-star-2 mask-half-2"
+                                          checked={
+                                            // second half star
+                                            index + 1 === rating.rating
+                                          }
+                                        />
+                                      </>
+                                    ))}
                                 </div>
-                                <div class="flex flex-col gap-3 lg:col-span-3 w-full ">
-                                  <h3 class="text-black font-bold text-md break-words">
-                                    {rating.reviewTitle}
-                                  </h3>
-                                  <p
-                                    class="text-black text-sm break-words"
-                                    itemProp="reviewBody"
-                                  >
-                                    {rating.reviewDescription}
-                                  </p>
-                                </div>
+                                <p class="text-xs md:text-base">
+                                  {new Date(rating.createdAt).toLocaleString(
+                                    "en-US",
+                                    {
+                                      timeZone: "America/New_York",
+                                    }
+                                  )}
+                                </p>
+                              </div>
+                              <div class="flex flex-col gap-3 lg:col-span-3 w-full ">
+                                <h3 class="text-black font-bold text-md break-words">
+                                  {rating.reviewTitle}
+                                </h3>
+                                <p class="text-black text-sm break-words">
+                                  {rating.reviewDescription}
+                                </p>
                               </div>
                             </div>
+
                             <div class="divider"></div>
                           </Fragment>
                         ))}

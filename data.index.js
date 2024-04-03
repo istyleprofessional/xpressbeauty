@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { connect, set, connection } = require("mongoose");
+const { connect, set, connection, default: mongoose } = require("mongoose");
 const models = require("./model");
 const Product = models.Product;
 const Category = models.Category;
@@ -850,4 +850,85 @@ async function dumpAllUnkownCartAndUsers() {
   await connection.close();
 }
 
-dumpAllUnkownCartAndUsers();
+// dumpAllUnkownCartAndUsers();
+
+async function aiCategorization() {
+  mongoose.connect(mongoUrl);
+  const products = await Product.find({ isHidden: { $ne: true } });
+  const dbCategories = await Category.find({});
+  for (const product of products) {
+    console.log(products.indexOf(product) + 1, products.length);
+    let isProductCoropted = false;
+    try {
+      for (const category of product.categories) {
+        if (category.name === "" || category.main === "") {
+          isProductCoropted = true;
+          break;
+        }
+      }
+      if (isProductCoropted) {
+        const openai = new OpenAI();
+        const completion = await openai.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content: `You are a helpful assistant designed to output JSON. I will provide a json object with the category and main category that I have in my database. 
+              And I will also provide the product name and description of the product. Please return the main category and subcategory of the product. in json format {main: string, sub: string}.
+              if you can't find the category in the database please return a new category and main category in json format {main: string, sub: string}`,
+            },
+            {
+              role: "user",
+              content: `
+            All the categories and main categories that I have in my database are:
+            ${dbCategories
+              .map((category) => `${category.name} - ${category.main}`)
+              .join("\n")}
+            The product name is ${
+              product.product_name
+            } and the description is ${product.description}`,
+            },
+          ],
+          model: "gpt-3.5-turbo-0125",
+          response_format: { type: "json_object" },
+        });
+        const gbtCategory = completion.choices[0].message.content;
+        const finalCategory = JSON.parse(gbtCategory);
+        product.categories = [];
+        product.categories.push({
+          name: finalCategory.sub,
+          main: finalCategory.main,
+        });
+        await Product.findByIdAndUpdate(
+          product._id,
+          { categories: product.categories },
+          { new: true }
+        );
+      }
+    } catch (error) {
+      console.log(error.message);
+      await Product.deleteOne({ _id: product._id });
+      continue;
+    }
+  }
+  // get Unique categories from the products
+  const uniqueCategories = [];
+  for (const product of products) {
+    for (const category of product.categories) {
+      if (
+        !uniqueCategories.find(
+          (cat) => cat.name === category.name && cat.main === category.main
+        )
+      ) {
+        uniqueCategories.push(category);
+      }
+    }
+  }
+  // add the unique categories to the database
+  await Category.deleteMany({});
+  for (const category of uniqueCategories) {
+    await Category.create(category);
+  }
+  console.log("done");
+  await connection.close();
+}
+aiCategorization();

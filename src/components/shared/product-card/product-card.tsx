@@ -172,12 +172,10 @@ export const ProductCard = component$((props: ProductCardProps) => {
         }}
         alt={product.product_name}
         class={` w-32 h-32 object-contain row-span-2 bg-white rounded-lg`}
-        itemProp="image"
       />
       <div>
         <h2
           class={`overflow-hidden truncate lg:text-base text-sm text-black whitespace-normal max-w-40 max-h-14 md:max-h-24 font-semibold pt-5 text-center`}
-          itemProp="name"
         >
           {product.product_name?.includes("CR")
             ? product.product_name?.replace(/CR.*/, "")

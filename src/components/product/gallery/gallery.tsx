@@ -12,7 +12,6 @@ export const Gallery = component$((props: GalleryProps) => {
     <div class="flex flex-col gap-3 justify-center items-center w-full">
       <div class="w-full h-full flex justify-center items-center">
         <img
-          itemProp="image"
           // src={imgs[0].includes('http') ? imgs[0] : imgs[0].replace(".", "")}
           onError$={(e: any) => {
             e.target.src = imgs[0].includes("http")
@@ -30,7 +29,6 @@ export const Gallery = component$((props: GalleryProps) => {
           imgs.map((img: string, i: number) => (
             <img
               key={i}
-              itemProp="image"
               src={img.includes("http") ? img : img.replace(".", "")}
               onError$={(e: any) => {
                 e.target.src =

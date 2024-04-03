@@ -93,63 +93,54 @@ export const RatingSummary = component$((props: RatingSummaryInterface) => {
           <div class="card-body h-96 overflow-y-auto">
             {ratings.value.map((rating: any, index: number) => (
               <Fragment key={index}>
-                <div
-                  itemProp="review"
-                  itemScope
-                  itemType="https://schema.org/Review"
-                >
-                  <div class="flex flex-row gap-3">
-                    <div class="flex flex-col gap-5 justify-center items-start">
-                      <div class="rating rating-xs md:rating-md rating-half">
-                        <input
-                          type="radio"
-                          name="rating-10"
-                          class="rating-hidden"
-                        />
-                        {Array(5)
-                          .fill("")
-                          .map((_, index) => (
-                            <Fragment key={index}>
-                              <input
-                                id={`${index + 0.5}`}
-                                type="radio"
-                                name="rating-10"
-                                class={` mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
-                                checked={
-                                  index + 0.5 <= rating.rating ? true : false
-                                }
-                                disabled
-                              />
-                              <input
-                                id={`${index + 1}`}
-                                type="radio"
-                                name="rating-10"
-                                class={` mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
-                                checked={
-                                  index + 1 <= rating.rating ? true : false
-                                }
-                                disabled
-                              />
-                            </Fragment>
-                          ))}
-                      </div>
-                      <p class="text-xs md:text-base" itemProp="datePublished">
-                        {new Date(rating.createdAt).toLocaleString("en-US", {
-                          timeZone: "America/New_York",
-                        })}
-                      </p>
+                <div class="flex flex-row gap-3">
+                  <div class="flex flex-col gap-5 justify-center items-start">
+                    <div class="rating rating-xs md:rating-md rating-half">
+                      <input
+                        type="radio"
+                        name="rating-10"
+                        class="rating-hidden"
+                      />
+                      {Array(5)
+                        .fill("")
+                        .map((_, index) => (
+                          <Fragment key={index}>
+                            <input
+                              id={`${index + 0.5}`}
+                              type="radio"
+                              name="rating-10"
+                              class={` mask mask-star-2 mask-half-1 bg-[#FFC75B]`}
+                              checked={
+                                index + 0.5 <= rating.rating ? true : false
+                              }
+                              disabled
+                            />
+                            <input
+                              id={`${index + 1}`}
+                              type="radio"
+                              name="rating-10"
+                              class={` mask mask-star-2 mask-half-2 bg-[#FFC75B]`}
+                              checked={
+                                index + 1 <= rating.rating ? true : false
+                              }
+                              disabled
+                            />
+                          </Fragment>
+                        ))}
                     </div>
-                    <div class="flex flex-col gap-3 lg:col-span-3 w-full ">
-                      <h3 class="text-black font-bold text-md break-words">
-                        {rating.reviewTitle}
-                      </h3>
-                      <p
-                        class="text-black text-sm break-words"
-                        itemProp="reviewBody"
-                      >
-                        {rating.reviewDescription}
-                      </p>
-                    </div>
+                    <p class="text-xs md:text-base">
+                      {new Date(rating.createdAt).toLocaleString("en-US", {
+                        timeZone: "America/New_York",
+                      })}
+                    </p>
+                  </div>
+                  <div class="flex flex-col gap-3 lg:col-span-3 w-full ">
+                    <h3 class="text-black font-bold text-md break-words">
+                      {rating.reviewTitle}
+                    </h3>
+                    <p class="text-black text-sm break-words">
+                      {rating.reviewDescription}
+                    </p>
                   </div>
                 </div>
                 <div class="divider"></div>

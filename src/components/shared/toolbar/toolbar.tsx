@@ -126,25 +126,14 @@ export const ToolBar = component$((props: ToolBarProps) => {
             </label>
             {isSearchOpen.value && (
               <div class="md:flex flex-col ml-auto hidden">
-                <form
-                  itemProp="potentialAction"
-                  itemScope
-                  itemType="https://schema.org/SearchAction"
-                >
-                  <meta
-                    itemProp="target"
-                    content="https://xpressbeauty.ca/search/{search_term_string}/"
-                  />
-                  <input
-                    class="input input-md w-full md:w-96 border-black border-5"
-                    type="search"
-                    name="search"
-                    placeholder="Search"
-                    itemProp="query-input"
-                    onInput$={handleSearchInput}
-                    onKeyUp$={handleSearchInput}
-                  />
-                </form>
+                <input
+                  class="input input-md w-full md:w-96 border-black border-5"
+                  type="search"
+                  name="search"
+                  placeholder="Search"
+                  onInput$={handleSearchInput}
+                  onKeyUp$={handleSearchInput}
+                />
 
                 <>
                   {searchResults.value.length > 0 && (
@@ -405,25 +394,14 @@ export const ToolBar = component$((props: ToolBarProps) => {
       {/* Mobile search display as animated dropdown */}
       {isSearchOpen.value && (
         <div class="md:hidden block">
-          <form
-            itemProp="potentialAction"
-            itemScope
-            itemType="https://schema.org/SearchAction"
-          >
-            <meta
-              itemProp="target"
-              content="https://xpressbeauty.ca/search/{search_term_string}/"
-            />
-            <input
-              class="input input-md w-96 md:w-full border-black border-5"
-              type="search"
-              name="search"
-              placeholder="Search"
-              itemProp="query-input"
-              onInput$={handleSearchInput}
-              onKeyUp$={handleSearchInput}
-            />
-          </form>
+          <input
+            class="input input-md w-96 md:w-full border-black border-5"
+            type="search"
+            name="search"
+            placeholder="Search"
+            onInput$={handleSearchInput}
+            onKeyUp$={handleSearchInput}
+          />
           <div class="divider"></div>
           <>
             {searchResults.value.length > 0 && (
