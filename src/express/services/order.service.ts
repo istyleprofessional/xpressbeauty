@@ -21,7 +21,6 @@ export const createOrder = async (data: any) => {
       payment_intent: data.payment_intent,
       paid: data.paid,
     });
-    console.log("order created", request);
     return { status: "success", request: request };
   } catch (error: any) {
     console.log("order error", error);

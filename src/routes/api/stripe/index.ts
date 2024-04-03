@@ -132,6 +132,9 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
       }
     );
     console.log(session);
+    if (session.status !== "complete") {
+      throw redirect(301, "/payment/?error=Payment Failed. Please Try Again");
+    }
     const productsFromCart: any = await getCartByUserId(
       query.get("userId") ?? ""
     );
@@ -176,7 +179,6 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
       },
       paid: false,
     };
-    // console.log("session", session);
     await createOrder(orderData);
     await update_product_quantity(productsFromCart.products ?? []);
     await sendConfirmationEmail(
@@ -215,6 +217,7 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
     } else {
       await updateExistingUser(
         {
+          phoneNumber: session.customer_details?.phone ?? "",
           generalInfo: {
             address: {
               addressLine1: session.shipping_details?.address?.line1 ?? "",

@@ -431,7 +431,7 @@ export default component$(() => {
           />
           <div class=" col-span-2 flex flex-col gap-5">
             <ProductMainInfo
-              ratings={ratings}
+              ratings={ratings.result?.ratings ?? []}
               currencyObject={currencyObject}
               product_name={product.product_name ?? ""}
               price={product?.price ?? ""}
@@ -594,6 +594,7 @@ export default component$(() => {
             product_description={product.description ?? ""}
             user={user.email ? user : null}
             productId={product._id ?? ""}
+            ratingsProp={ratings.result?.ratings ?? []}
           />
         </div>
         {relatedProducts.value?.length > 0 && (

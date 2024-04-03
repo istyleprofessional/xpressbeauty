@@ -73,7 +73,7 @@ export default component$(() => {
     if (errorSignal.value !== "") {
       const timer = setTimeout(() => {
         errorSignal.value = "";
-      }, 3000);
+      }, 10000);
       cleanup(() => clearTimeout(timer));
     }
   });

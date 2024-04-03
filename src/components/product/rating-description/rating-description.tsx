@@ -7,10 +7,13 @@ import {
   useTask$,
   useVisibleTask$,
 } from "@builder.io/qwik";
-import { server$, useNavigate } from "@builder.io/qwik-city";
+import {
+  // server$,
+  useNavigate,
+} from "@builder.io/qwik-city";
 import { postRequest } from "~/utils/fetch.utils";
 import { Toast } from "~/components/admin/toast/toast";
-import { getRatingByProductId } from "~/express/services/rating.reviews.service";
+// import { getRatingByProductId } from "~/express/services/rating.reviews.service";
 
 interface RatingAndDescriptionProps {
   product_description: string;
@@ -18,17 +21,24 @@ interface RatingAndDescriptionProps {
   directions: string;
   user?: any;
   productId: string;
+  ratingsProp: any[];
 }
 
-export const ratingServer = server$(async (productId: string) => {
-  const request = await getRatingByProductId(productId ?? "");
-  return JSON.stringify(request);
-});
+// export const ratingServer = server$(async (productId: string) => {
+//   const request = await getRatingByProductId(productId ?? "");
+//   return JSON.stringify(request);
+// });
 
 export const RatingAndDescription = component$(
   (props: RatingAndDescriptionProps) => {
-    const { product_description, user, productId, ingredients, directions } =
-      props;
+    const {
+      product_description,
+      user,
+      productId,
+      ingredients,
+      directions,
+      ratingsProp,
+    } = props;
     const nav = useNavigate();
     const isDescriptionActive = useSignal<boolean>(true);
     const isReviewActive = useSignal<boolean>(false);
@@ -51,11 +61,7 @@ export const RatingAndDescription = component$(
     const ratingsPercentatge = useSignal<number[]>([0, 0, 0, 0, 0, 0]);
 
     useTask$(async () => {
-      const request: any = await ratingServer(productId);
-      const response = JSON.parse(request);
-      if (response.status === "success") {
-        ratings.value = response?.result?.ratings || [];
-      }
+      ratings.value = ratingsProp;
     });
     const handleDescription = $(() => {
       isDescriptionActive.value = true;

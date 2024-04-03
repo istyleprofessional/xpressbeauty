@@ -59,7 +59,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
 
   useTask$(async () => {
     const ratingsCount: any[] = [];
-    for (const rating of ratings.result?.ratings || []) {
+    for (const rating of ratings || []) {
       ratingsCount.push(rating.rating);
     }
     const sumOfRatings = ratingsCount.reduce(
@@ -86,7 +86,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
           </h2>
         )}
       </div>
-      {ratings?.result?.ratings?.length > 0 && (
+      {ratings?.length > 0 && (
         <div class="flex flex-row gap-2 items-center">
           <div class="rating rasting-lg rating-half">
             {Array(5)
@@ -115,7 +115,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
                 </>
               ))}
           </div>
-          {(ratings?.result?.ratings?.length ?? 0) > 0 && (
+          {(ratings?.length ?? 0) > 0 && (
             <div class="text-sm font-semibold text-gray-400">
               Rated <span>{averageRating.value ? averageRating.value : 0}</span>
               /5 based on <span>{totalRatings.value}</span> customer reviews
