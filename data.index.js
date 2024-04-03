@@ -876,7 +876,7 @@ async function aiCategorization() {
               role: "system",
               content: `You are a helpful assistant designed to output JSON. I will provide a json object with the category and main category that I have in my database. 
               And I will also provide the product name and description of the product. Please return the main category and subcategory of the product. in json format {main: string, sub: string}.
-              if you can't find the category in the database please return a new category and main category in json format {main: string, sub: string}`,
+              if you can't find the category in the database or you have a better sub category for it please return a new category and main category in json format {main: string, sub: string}`,
             },
             {
               role: "user",
