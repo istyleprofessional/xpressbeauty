@@ -855,12 +855,28 @@ async function dumpAllUnkownCartAndUsers() {
 async function aiCategorization() {
   mongoose.connect(mongoUrl);
   const products = await Product.find({ isHidden: { $ne: true } });
+  try {
+    await Category.create({
+      name: "Hair Dryers",
+      main: "Tools",
+    });
+    await Category.create({
+      name: "Nail Polish",
+      main: "Nails",
+    });
+    
+  } catch (error) {
+    console.log(error.message);
+    continue;
+  }
   const dbCategories = await Category.find({});
+  db
   for (const product of products) {
     console.log(`${products.indexOf(product) + 1} out of ${products.length}.
     ---------------------------------
     product name: ${product.product_name} - id: ${product._id}`);
     let isProductCoropted = false;
+
     try {
       for (const category of product.categories) {
         if (category.name === "" || category.main === "") {
