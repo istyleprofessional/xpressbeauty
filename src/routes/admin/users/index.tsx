@@ -43,11 +43,8 @@ export const accessServerAccount = server$(async function (email: string) {
     { user_id: user?._id, isDummy: false },
     this.env.get("VITE_JWTSECRET") ?? ""
   );
-  this.cookie.set("token", newToken, {
-    httpOnly: true,
-    sameSite: "strict",
-    secure: true,
-  });
+  console.log(newToken);
+  this.cookie.set("token", newToken, { path: "/" });
   return true;
 });
 
@@ -183,7 +180,7 @@ export default component$(() => {
                         class="btn btn-primary"
                         onClick$={async () => {
                           await accessServerAccount(user.email);
-                          location.href = "/";
+                          // location.href = "/";
                         }}
                       >
                         Access User Account
