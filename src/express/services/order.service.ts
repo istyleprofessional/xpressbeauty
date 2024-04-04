@@ -33,10 +33,10 @@ export const createOrder = async (data: any) => {
 export const getMyOrdersService = async (email: string) => {
   try {
     const guestUser = await dummyUsers.findOne({
-      email: email,
+      email: { $regex: email, $options: "i" },
     });
     const user: any = await User.findOne({
-      email: email,
+      email: { $regex: email, $options: "i" },
     });
     const request: any = await Order.find({
       $or: [
