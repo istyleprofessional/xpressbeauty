@@ -171,7 +171,7 @@ async function updateLastProductsQuantity() {
   await connection.close();
 }
 
-// updateLastProductsQuantity();
+updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -947,5 +947,3 @@ async function aiCategorization() {
   await connection.close();
 }
 // aiCategorization();
-
-async function adjustUsersAndDummyUsers() {}
