@@ -946,4 +946,6 @@ async function aiCategorization() {
   console.log("done");
   await connection.close();
 }
-aiCategorization();
+// aiCategorization();
+
+async function adjustUsersAndDummyUsers() {}

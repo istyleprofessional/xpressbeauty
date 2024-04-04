@@ -1,4 +1,6 @@
+import dummyUsers from "../schemas/dummy.user.schema";
 import Order from "../schemas/order.schema";
+import { User } from "../schemas/users.schema";
 
 export const createOrder = async (data: any) => {
   try {
@@ -28,9 +30,20 @@ export const createOrder = async (data: any) => {
   }
 };
 
-export const getMyOrdersService = async (userId: string) => {
+export const getMyOrdersService = async (email: string) => {
   try {
-    const request = await Order.find({ userId: userId });
+    const guestUser = await dummyUsers.findOne({
+      email: email,
+    });
+    const user: any = await User.findOne({
+      email: email,
+    });
+    const request: any = await Order.find({
+      $or: [
+        { userId: user?._id.toString() },
+        { userId: guestUser?._id.toString() },
+      ],
+    });
     return { status: "success", request: request };
   } catch (error: any) {
     return { status: "failed", err: error.message };

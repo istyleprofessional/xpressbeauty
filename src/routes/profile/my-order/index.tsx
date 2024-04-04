@@ -5,7 +5,6 @@ import { UserContext } from "~/context/user.context";
 import { getMyOrdersService } from "~/express/services/order.service";
 
 export const getMyOrdersServer = server$(async (user_id: string) => {
-  console.log(user_id);
   const getMyOrders = await getMyOrdersService(user_id);
   return JSON.stringify(getMyOrders);
 });
@@ -16,7 +15,7 @@ export default component$(() => {
   const user: any = useContext(UserContext);
 
   useTask$(async () => {
-    const myOrdersString = await getMyOrdersServer(user?._id);
+    const myOrdersString = await getMyOrdersServer(user?.email ?? "");
     const myOrdersServer = JSON.parse(myOrdersString);
     if (myOrdersServer.status === "success") {
       myOrders.value = myOrdersServer?.request ?? [];
