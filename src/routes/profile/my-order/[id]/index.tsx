@@ -30,6 +30,7 @@ export const useGetMyOrderDetails = routeLoader$(
           user.result?.lastName ?? ""
         }`,
       };
+      console.log("data", data);
       return JSON.stringify({ status: "success", data: data });
     } catch (err) {
       return JSON.stringify({ status: "failed", data: {} });
@@ -192,7 +193,7 @@ export default component$(() => {
                     <img
                       src={product.product_img}
                       alt={product.product_name}
-                      class="w-20 h-20"
+                      class="w-20 h-20 object-contain"
                     />
                   </div>
                 </div>
@@ -237,6 +238,83 @@ export default component$(() => {
             );
           })}
         </div>
+        {order?.trackinginfo && (
+          <div class="flex flex-col gap-2 justify-center  py-8">
+            {/* add shipping comany name and link */}
+            <div>
+              <span class="font-bold text-black text-xl ">
+                Shipping Details:
+              </span>
+            </div>
+            <div class="grid grid-flow-row-dense gap-3 pl-6 md:grid-cols-4 grid-cols-2">
+              <div class="">
+                <span>Shipping Company:</span>
+              </div>
+              <div class="">
+                <span class="font-bold">
+                  {order?.trackinginfo?.companyName ?? ""}
+                </span>
+              </div>
+            </div>
+            <div class="grid grid-flow-row-dense gap-3 pl-6 md:grid-cols-4 grid-cols-2">
+              <div class="">
+                <span>Tracking Number:</span>
+              </div>
+              <div class="">
+                <span class="font-bold">{order?.trackinginfo?.link ?? ""}</span>
+              </div>
+            </div>
+            <div class="grid grid-flow-row-dense gap-3 pl-6 md:grid-cols-4 grid-cols-2">
+              <div class="">
+                <span>Tracking Url</span>
+              </div>
+              <div class="">
+                <span class="font-bold">
+                  <a
+                    href={order?.trackinginfo?.trackingNumber ?? ""}
+                    target="_blank"
+                    class="text-blue-500"
+                  >
+                    Click here
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+        {order.orderStatus && (
+          <div class="flex flex-col gap-2 justify-center  py-8">
+            <div>
+              <span class="font-bold text-black text-xl ">Order Status:</span>
+            </div>
+            <div class="grid grid-flow-row-dense gap-3 pl-6 md:grid-cols-4 grid-cols-2">
+              <div class="">
+                <span>Order Status:</span>
+              </div>
+              <div class="">
+                <p
+                  class={`badge badge-lg ${
+                    order.orderStatus === "Pending"
+                      ? "bg-[#FEF9C3] text-[#CA8A04]"
+                      : order.orderStatus === "Shipped"
+                      ? "bg-[#E0F2FE] text-[#0EA5E9]"
+                      : order.orderStatus === "Completed"
+                      ? "bg-[#C6F6D5] text-[#059669]"
+                      : order.orderStatus === "Cancelled"
+                      ? "bg-[#FED7D7] text-[#E53E3E]"
+                      : order.orderStatus === "Refunded"
+                      ? "bg-[#FED7D7] text-[#E53E3E]"
+                      : order.orderStatus === "Processing"
+                      ? "bg-lime-300 text-lime-800"
+                      : "bg-[#FED7D7] text-[#E53E3E]"
+                  } text-lg`}
+                >
+                  {order.orderStatus}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
