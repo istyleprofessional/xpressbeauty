@@ -7,6 +7,8 @@ import {
   getuserBySearchAdmin,
 } from "~/express/services/user.service";
 import { connect } from "~/express/db.connection";
+import jwt from "jsonwebtoken";
+import { User } from "~/express/schemas/users.schema";
 
 export const useUserTableData = routeLoader$(async ({ url }) => {
   const page = url.searchParams.get("page") ?? "1";
@@ -30,6 +32,23 @@ export const getAllUsersServer = server$(async function () {
   await connect();
   const users = await getAllUsersForDownload();
   return JSON.stringify(users.result);
+});
+
+export const accessServerAccount = server$(async function (email: string) {
+  await connect();
+  const user = await User.findOne({
+    email: email,
+  });
+  const newToken = jwt.sign(
+    { user_id: user?._id, isDummy: false },
+    this.env.get("VITE_JWTSECRET") ?? ""
+  );
+  this.cookie.set("token", newToken, {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: true,
+  });
+  return true;
 });
 
 export default component$(() => {
@@ -157,6 +176,17 @@ export default component$(() => {
                         }}
                       >
                         Veiw Details
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        class="btn btn-primary"
+                        onClick$={async () => {
+                          await accessServerAccount(user.email);
+                          location.href = "/";
+                        }}
+                      >
+                        Access User Account
                       </button>
                     </td>
                   </tr>
