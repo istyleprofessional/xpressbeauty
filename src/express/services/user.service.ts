@@ -83,7 +83,9 @@ export const findUserByUserId = async (id: string) => {
 
 export const userGoogleLogin = async (userObject: any) => {
   try {
-    const result = await User.findOne({ email: userObject.email });
+    const result = await User.findOne({
+      email: { $regex: new RegExp(userObject.email, "i") },
+    });
     console.log(result);
     if (result) {
       return { status: "success", result: result };
@@ -97,7 +99,9 @@ export const userGoogleLogin = async (userObject: any) => {
 
 export const userLogin = async (userObject: any) => {
   try {
-    const result = await User.findOne({ email: userObject.email });
+    const result = await User.findOne({
+      email: { $regex: new RegExp(userObject.email, "i") },
+    });
     if (userObject.password === cryptr.decrypt(result?.password ?? "")) {
       delete result?.password;
       return { status: "success", result: result };

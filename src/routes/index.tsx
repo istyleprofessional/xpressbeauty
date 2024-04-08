@@ -131,6 +131,7 @@ export default component$(() => {
             userObj={userObj}
             currencyObject={currencyObject}
           />
+
           <div class="flex justify-center items-center">
             <a
               class="btn bg-black text-white font-['Inter'] w-fit  rounded-sm mt-8"
