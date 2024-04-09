@@ -27,7 +27,11 @@ export const updateUserCart = async (data: any) => {
       const result = await cart.create({
         userId: data.userId,
         products: data.products,
-        totalQuantity: data.totalQuantity,
+        totalQuantity: data.products.reduce(
+          (acc: any, curr: any) => acc + curr.quantity,
+          0
+        ),
+
         currency: data.currency,
       });
       return result;
