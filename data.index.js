@@ -171,7 +171,7 @@ async function updateLastProductsQuantity() {
   await connection.close();
 }
 
-updateLastProductsQuantity();
+// updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -353,7 +353,7 @@ async function adjustData() {
   console.log("done");
   await connection.close();
 }
-// adjustData();
+adjustData();
 
 async function addCosmoOfferToGoogleSheet() {
   const json = require("./cosmo-offers-final-2.json");
