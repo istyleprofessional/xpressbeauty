@@ -11,6 +11,15 @@ import { CartContext } from "~/context/cart.context";
 import { CurContext } from "~/context/cur.context";
 import { UserContext } from "~/context/user.context";
 import { postRequest } from "~/utils/fetch.utils";
+declare const gtag: Function;
+
+export function gtag_report_conversion(transactionId: string) {
+  gtag("event", "conversion", {
+    send_to: "AW-11167601664/ApSoCLPu2IwZEICokM0p",
+    transaction_id: transactionId,
+  });
+  return false;
+}
 
 export default component$(() => {
   const cartData: any = useContext(CartContext);
@@ -45,10 +54,7 @@ export default component$(() => {
       const checkout = await stripe.initEmbeddedCheckout({
         clientSecret,
         onComplete: async () => {
-          (window as any)?.gtag("event", "conversion", {
-            send_to: "AW-11167601664/ApSoCLPu2IwZEICokM0p",
-            transaction_id: sessionId,
-          });
+          gtag_report_conversion(sessionId);
           window.location.href = `/api/stripe?session_id=${sessionId}&userId=${cartData.cart.userId}&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${userObject.isDummy}`;
         },
       });
