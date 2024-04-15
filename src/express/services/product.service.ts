@@ -548,7 +548,16 @@ export const get_products_on_filter_service = async (
       query["category"] = { $in: filter.categories };
     }
     if (filter.brands.length > 0) {
-      query["companyName"] = { $in: filter.brands };
+      // case insensitive search
+      const regex = filter.brands.map((brand: string) => {
+        return new RegExp(brand, "i");
+      });
+      query["companyName.name"] = { $in: regex };
+      // product name starts with the brand name
+      query["product_name"] = {
+        $regex: `^(${filter.brands.join("|")})`,
+        $options: "i",
+      };
     }
     query["isHidden"] = { $ne: true };
     query["isDeleted"] = { $ne: true };

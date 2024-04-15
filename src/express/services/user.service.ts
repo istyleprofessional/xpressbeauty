@@ -9,7 +9,7 @@ export const userRegistration = async (userObject: any) => {
   const encryptedString = cryptr.encrypt(userObject.password);
   try {
     const result: any = await User.create({
-      email: userObject.email?.trim(),
+      email: userObject.email?.toLowerCase()?.trim(),
       password: encryptedString,
       firstName: userObject.firstName?.trim(),
       lastName: userObject.lastName?.trim(),
@@ -84,7 +84,7 @@ export const findUserByUserId = async (id: string) => {
 export const userGoogleLogin = async (userObject: any) => {
   try {
     const result = await User.findOne({
-      email: { $regex: new RegExp(userObject.email, "i") },
+      email: { $regex: new RegExp("^" + userObject.email + "$", "i") },
     });
     console.log(result);
     if (result) {
@@ -100,7 +100,7 @@ export const userGoogleLogin = async (userObject: any) => {
 export const userLogin = async (userObject: any) => {
   try {
     const result = await User.findOne({
-      email: { $regex: new RegExp(userObject.email, "i") },
+      email: { $regex: new RegExp("^" + userObject.email + "$", "i") },
     });
     if (userObject.password === cryptr.decrypt(result?.password ?? "")) {
       delete result?.password;
