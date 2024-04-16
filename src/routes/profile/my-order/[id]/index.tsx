@@ -234,6 +234,34 @@ export default component$(() => {
                     <span class="font-bold">{product.quantity}</span>
                   </div>
                 </div>
+                {product?.status && (
+                  <div class="grid grid-flow-row-dense gap-3 pl-6 md:grid-cols-4 grid-cols-2">
+                    <div class="">
+                      <span>Product Status:</span>
+                    </div>
+                    <div class="">
+                      <p
+                        class={`badge badge-sm ${
+                          product?.status === "Pending"
+                            ? "bg-[#FEF9C3] text-[#CA8A04]"
+                            : product?.status === "Shipped"
+                            ? "bg-[#E0F2FE] text-[#0EA5E9]"
+                            : product?.status === "Completed"
+                            ? "bg-[#C6F6D5] text-[#059669]"
+                            : product?.status === "Cancelled"
+                            ? "bg-[#FED7D7] text-[#E53E3E]"
+                            : product?.status === "Refunded"
+                            ? "bg-[#FED7D7] text-[#E53E3E]"
+                            : product?.status === "Processing"
+                            ? "bg-lime-300 text-lime-800"
+                            : "bg-[#FED7D7] text-[#E53E3E]"
+                        } text-sm`}
+                      >
+                        {product?.status}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}

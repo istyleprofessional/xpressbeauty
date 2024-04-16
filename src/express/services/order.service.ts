@@ -210,6 +210,22 @@ export const updatePaymentOrderStatus = async (
   }
 };
 
+export const updateOrderProductStatus = async (
+  orderId: string,
+  products: any
+) => {
+  try {
+    const request = await Order.findOneAndUpdate(
+      { _id: orderId },
+      { products: products },
+      { new: true }
+    );
+    return { status: "success", request: request };
+  } catch (error: any) {
+    return { status: "failed", err: error.message };
+  }
+};
+
 export const getAllShippedOrdersCount = async () => {
   try {
     const request = await Order.countDocuments({ orderStatus: "Shipped" });

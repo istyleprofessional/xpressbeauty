@@ -15,6 +15,7 @@ import {
 import {
   getOrderByOrderIdService,
   getOrdersService,
+  updateOrderProductStatus,
   updateOrderStatus,
   updatePaymentOrderStatus,
 } from "~/express/services/order.service";
@@ -34,6 +35,7 @@ export const useOrderTableData = routeLoader$(async ({ url }) => {
 });
 
 export const sendShippedEmailServer = server$(async function (data: any) {
+  await updateOrderProductStatus(data.orderId, data.selectedProducts);
   const getOrder = await getOrderByOrderIdService(data.orderId);
   if (getOrder.status === "error")
     return { status: "error", message: "Order not found" };
@@ -49,6 +51,7 @@ export const sendShippedEmailServer = server$(async function (data: any) {
     data.trackingLink,
     orderNo ?? ""
   );
+
   const updateOrderStatusreq = await updateOrderStatus(
     data.orderId,
     "Shipped",
@@ -265,6 +268,9 @@ export default component$(() => {
   const handleSendTrackingNumber = $(async () => {
     (document?.getElementById("my_modal_2") as any)?.close();
     (document?.getElementById("my_modal_3") as any)?.showModal();
+    selectedProducts.value = orderDetail.value?.products.map((product: any) => {
+      return { ...product, status: "Refunded" };
+    });
   });
 
   const handleSendTrackingNumberConfirm = $(async () => {
@@ -737,15 +743,46 @@ export default component$(() => {
                               class="checkbox"
                               onChange$={(e: any) => {
                                 if (e.target.checked) {
-                                  selectedProducts.value = [
-                                    ...selectedProducts.value,
-                                    product,
-                                  ];
+                                  product.status = "Shipped";
+                                  // push the selected product to selectedProducts signal but first check if the product is already in the list
+                                  if (
+                                    !selectedProducts.value.some(
+                                      (item: any) => item.id === product.id
+                                    )
+                                  ) {
+                                    selectedProducts.value.push(product);
+                                  } else {
+                                    // update the status of the product in the selectedProducts signal
+                                    selectedProducts.value =
+                                      selectedProducts.value.map(
+                                        (item: any) => {
+                                          if (item.id === product.id) {
+                                            item.status = "Shipped";
+                                          }
+                                          return item;
+                                        }
+                                      );
+                                  }
                                 } else {
-                                  selectedProducts.value =
-                                    selectedProducts.value.filter(
-                                      (item: any) => item.id !== product.id
-                                    );
+                                  product.status = "Refunded";
+                                  if (
+                                    !selectedProducts.value.some(
+                                      (item: any) => item.id === product.id
+                                    )
+                                  ) {
+                                    selectedProducts.value.push(product);
+                                  } else {
+                                    // update the status of the product in the selectedProducts signal
+                                    selectedProducts.value =
+                                      selectedProducts.value.map(
+                                        (item: any) => {
+                                          if (item.id === product.id) {
+                                            item.status = "Refunded";
+                                          }
+                                          return item;
+                                        }
+                                      );
+                                  }
                                 }
                               }}
                             />
