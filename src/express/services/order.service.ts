@@ -288,7 +288,7 @@ export const getTotalRevenue = async () => {
             $gte: new Date(currentYear, 0, 1),
             $lt: new Date(currentYear + 1, 0, 1),
           },
-          orderStatus: "Shipped",
+          $or: [{ orderStatus: "Shipped" }, { orderStatus: "Processing" }],
         },
       },
       {
