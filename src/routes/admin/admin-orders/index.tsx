@@ -142,6 +142,31 @@ export const capturePaymentServer = server$(async function (
   }
 });
 
+export const sendProcessingEmailServer = server$(async function (order: any) {
+  console.log(order);
+  await sendProcessingOrderEmail(
+    order?.user?.email ?? order.dummyUser.email,
+    `${order?.user?.firstName ?? order.dummyUser.firstName} ${
+      order?.user?.lastName ?? order.dummyUser.lastName
+    }`,
+    order.shippingAddress,
+    order.products,
+    order.totalInfo,
+    order.order_number
+  );
+  const updateOrderStatusreq = await updatePaymentOrderStatus(
+    order._id,
+    true,
+    "Processing"
+  );
+  if (updateOrderStatusreq.status === "error")
+    return { status: "error", message: "Order status not updated" };
+  return {
+    status: "success",
+    message: JSON.stringify(updateOrderStatusreq.request),
+  };
+});
+
 export const cancelPaymentServer = server$(async function (
   paymentIntent: string,
   orderId: string,
@@ -240,6 +265,27 @@ export default component$(() => {
           shippingAddress: shippingAddress,
           fullName: `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
         };
+      } else if (status === "Processing") {
+        orderId.value = id.toString();
+        orderDetail.value = {
+          products: products,
+          shippingAddress: shippingAddress,
+          fullName: `${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
+        };
+        const sendEmail = await sendProcessingEmailServer(orderDetail.value);
+        if (sendEmail?.status === "error") {
+          alert(sendEmail?.message);
+          location.reload();
+        } else {
+          const result = JSON.parse(sendEmail?.message);
+          ordersData.request = ordersData.request.map((order: any) => {
+            if (order._id === result._id) {
+              order.orderStatus = result.orderStatus;
+            }
+            return order;
+          });
+          alert("Order status updated successfully");
+        }
       } else {
         const updateOrderStatusreq = await updateOrderStatusServer(id, status);
         if (updateOrderStatusreq.status === "error") {
@@ -292,6 +338,23 @@ export default component$(() => {
       alert(sendShippedEmailreq.message);
       location.reload();
     } else {
+      alert("Order status updated successfully");
+    }
+  });
+
+  const handleManualProcessingOrderClick = $(async (order: any) => {
+    const sendEmail = await sendProcessingEmailServer(order);
+    if (sendEmail?.status === "error") {
+      alert(sendEmail?.message);
+      location.reload();
+    } else {
+      const result = JSON.parse(sendEmail?.message);
+      ordersData.request = ordersData.request.map((order: any) => {
+        if (order._id === result._id) {
+          order.orderStatus = result.orderStatus;
+        }
+        return order;
+      });
       alert("Order status updated successfully");
     }
   });
@@ -536,6 +599,15 @@ export default component$(() => {
                               }}
                             >
                               Shipped
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              onClick$={() => {
+                                handleManualProcessingOrderClick(order);
+                              }}
+                            >
+                              Processing
                             </button>
                           </li>
                           <li>

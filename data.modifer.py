@@ -471,7 +471,10 @@ def get_all_products_ids_for_each_cat_cosmoprof():
                 products_divs = soup.find_all('div', class_='product-tile')
                 for product_div in products_divs:
                     data_pid = product_div['data-product-item-id']
-                    data_brand = product_div['pdp-link__brand']
+                    try:
+                        data_brand = product_div['pdp-link__brand']
+                    except:
+                        data_brand = ''
                     products.append({
                         "id": data_pid,
                         "category": {
