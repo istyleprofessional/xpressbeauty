@@ -291,7 +291,9 @@ export const getUserPhoneOtp = async (data: any) => {
 
 export const findUserByUserEmail = async (email: string) => {
   try {
-    const req = await User.find({ email: email });
+    const req = await User.find({
+      email: { $regex: new RegExp("^" + email.toLowerCase() + "$", "i") },
+    });
     if (req.length > 0) {
       return { status: "success", result: req };
     } else {

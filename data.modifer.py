@@ -266,7 +266,7 @@ def get_last_prices_and_upc():
             json.dump(updated_datas, f)
                 # print remaining products length
         
-get_last_prices_and_upc()
+# get_last_prices_and_upc()
 
 
 
@@ -471,16 +471,20 @@ def get_all_products_ids_for_each_cat_cosmoprof():
                 products_divs = soup.find_all('div', class_='product-tile')
                 for product_div in products_divs:
                     data_pid = product_div['data-product-item-id']
+                    data_brand = product_div['pdp-link__brand']
                     products.append({
                         "id": data_pid,
                         "category": {
                             "main": category['main'],
                             "name": category['name']
+                        },
+                        "companyName": { 
+                            "name": data_brand
                         }
                     })
     with open('cosmoprof_products_ids_cat.json', 'w') as f:
         json.dump(products, f)
-# get_all_products_ids_for_each_cat_cosmoprof()
+get_all_products_ids_for_each_cat_cosmoprof()
         
 def get_duplicates_from_cosmoprof_new_file_by_id():
     with open('cosmoprof_products_ids_cat.json', 'r') as f:
