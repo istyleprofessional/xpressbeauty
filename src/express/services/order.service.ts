@@ -295,7 +295,9 @@ export const getTotalRevenue = async () => {
         $group: {
           _id: { $month: "$createdAt" },
           total: { $sum: "$totalPrice" },
-          count: { $sum: "$totalQuantity" },
+          count: {
+            $sum: "$products.quantity",
+          },
         },
       },
     ]);

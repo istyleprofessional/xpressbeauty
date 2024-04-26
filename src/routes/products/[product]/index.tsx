@@ -71,7 +71,6 @@ export default component$(() => {
   const relatedProducts = useSignal<any[]>([]);
   const isLoading = useSignal<boolean>(false);
   const variationValue = useStore<any>({}, { deep: true });
-  const src = product?.product_name?.replace(/[^A-Za-z0-9]+/g, "");
   const finalVariationToAdd = useSignal<any>({});
   const userObj: any = useContext(UserContext);
   const user = userObj ?? {};
@@ -558,7 +557,6 @@ export default component$(() => {
                   items-center md:p-4 w-full lg:w-[30vw]`}
                 >
                   {product?.variations?.map((variation: any, index: number) => {
-                    const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;
                     useVisibleTask$(() => {
                       variationValue[index] = 0;
                     });
@@ -575,7 +573,6 @@ export default component$(() => {
                           // variation_type={product.variation_type}
                           value={variationValue}
                           productId={product.id ?? ""}
-                          folder={folder}
                           index={index}
                           variationQuantity={variation?.quantity_on_hand ?? 0}
                           finalVariationToAdd={finalVariationToAdd}

@@ -36,9 +36,7 @@ export const useAction = routeAction$(async (data, { env }) => {
 
   try {
     const checkUserByEmail = await findUserByUserEmail(form.email);
-    console.log(checkUserByEmail);
     if (checkUserByEmail.status === "success") {
-      console.log(checkUserByEmail.result);
       const tokenToSend = jwt.sign(
         { email: form.email },
         env.get("VITE_JWTSECRET") ?? "",

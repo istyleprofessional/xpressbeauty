@@ -171,7 +171,7 @@ async function updateLastProductsQuantity() {
   await connection.close();
 }
 
-updateLastProductsQuantity();
+// updateLastProductsQuantity();
 
 async function getProductsFromCanradWebPage() {
   const mainCatUrl = "https://canrad.com/categories";
@@ -659,7 +659,7 @@ async function addProductsToGoogleSheet() {
   }
   await connection.close();
 }
-addProductsToGoogleSheet();
+// addProductsToGoogleSheet();
 
 async function addFakeReviews() {
   await connect(mongoUrl);
@@ -947,3 +947,52 @@ async function aiCategorization() {
   await connection.close();
 }
 // aiCategorization();
+
+async function addLatestCosmoProducts() {
+  await connect(mongoUrl);
+  const products = require("./cosmoprof_products_details_with_variation_updated.json");
+  for (const product of products) {
+    if (product.variation_type === "Size") {
+      continue;
+    } else {
+      if (product.variation_type === "Color") {
+        product.variations = product.variations.map((variation) => {
+          return {
+            variation_name: variation.variation_name,
+            variation_image: variation.variation_image[0].includes("+")
+              ? // replace all + with %2B
+                variation.variation_image[0].replace(/\+/g, "%2B")
+              : variation.variation_image[0],
+            quantity_on_hand: variation.quantity_on_hand,
+            price: variation.price,
+            sale_price: variation.sale_price,
+            upc: variation.upc,
+            variation_id: variation.variation_id,
+          };
+        });
+      }
+      product.imgs = product.imgs.map((img) => {
+        return img.includes("+") ? img.replace(/\+/g, "%2B") : img;
+      });
+      if (product.priceType === "range") {
+        product.price = {
+          min: product.price.min,
+          max: product.price.max,
+        };
+      } else {
+        product.price = {
+          regular: product.price,
+        };
+      }
+      await Product.findOneAndUpdate(
+        { product_name: product.product_name },
+        { ...product },
+        { upsert: true }
+      );
+    }
+  }
+  console.log("done");
+  await connection.close();
+}
+
+addLatestCosmoProducts();

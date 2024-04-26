@@ -51,7 +51,7 @@ export const BestSellerChart = component$((prop: any) => {
                         },
                         0
                       );
-                      return `${sum}k`;
+                      return `${sum}`;
                     },
                   },
                   value: {
@@ -59,7 +59,7 @@ export const BestSellerChart = component$((prop: any) => {
                     fontFamily: "Inter, sans-serif",
                     offsetY: -20,
                     formatter: (value: any) => {
-                      return value + "k";
+                      return value;
                     },
                   },
                 },

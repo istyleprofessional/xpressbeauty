@@ -3,7 +3,6 @@ import { CurContext } from "~/context/cur.context";
 
 export interface VariationsProps {
   value: any;
-  folder: string;
   variation: any;
   index: number;
   variationQuantity: any;
@@ -16,7 +15,6 @@ export interface VariationsProps {
 export const Variations = component$((props: VariationsProps) => {
   const {
     value,
-    folder,
     variation,
     index,
     productId,
@@ -87,7 +85,7 @@ export const Variations = component$((props: VariationsProps) => {
         <div class="flex flex-row gap-5 w-full items-center">
           {/* {variation_type === "Color" && ( */}
           <img
-            src={folder}
+            src={variation.variation_image ?? "/images/placeholder.png"}
             class="rounded-full"
             alt={variation.variation_name}
             width="60"

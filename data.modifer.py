@@ -5,7 +5,8 @@ import requests
 import undetected_chromedriver as uc
 import boto3
 import os
-from imageio.plugins._tifffile import product
+from selenium.webdriver.support.ui import WebDriverWait
+
     
 def return_product_if_range(parsed_json, d, url, driver):
 
@@ -28,6 +29,12 @@ def return_product_if_range(parsed_json, d, url, driver):
         # d['price'] = parsed_json['product']['price']['list']['value'] + 5
         d['priceType'] = 'single'
     for variation in d['variations']:
+        try:
+            variation['variation_id'] = variation['id']
+        except:
+            if not 'id' in variation:
+                # remove the product from the json file
+                continue
         url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
         try: 
             driver.get(url)
@@ -51,64 +58,36 @@ def return_product_if_range(parsed_json, d, url, driver):
                 variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
             else:
                 variation['quantity_on_hand'] = 0
-
-
-            # if d['variation_type'] == 'Size':
-            #     # download the image from the url and upload it to aws s3 bucket
-            #     images = []
-            #     if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
-            #         images.append(parsed_json['product']['images']['pdpLarge'][0])
-            #         for i, image in enumerate(images):
-            #             imageName = d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '') + '-' + variation['variation_id']
-            #             imgUrl = upload_image(image['url'], f'''{imageName}-{i}''')
-            #             variation['variation_image'] = imgUrl
-            # if 'promotions' in parsed_json['product'] and parsed_json['product']['promotions'] != None and len(parsed_json['product']['promotions']) > 1:
-            #     # add 30% off to the variation price
-            #     for promotion in parsed_json['product']['promotions']:
-            #         if 'id' in promotion and promotion['id'] == 'BigBottle':
-            #             variation['sale_price'] = variation['price'] - (variation['price'] * 0.3)
             
         except:
-            time.sleep(40)
-            driver.get(url)
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
-            json_element = soup.find('pre')
-            json_data = json_element.get_text()
-            parsed_json = json.loads(json_data)
-        
-            if 'upc' in parsed_json['product']:
-                variation['upc'] = parsed_json['product']['upc']
-            if 'price' in parsed_json['product']:
-                if 'tiered' in parsed_json['product']['price']['type']:
-                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
-                else:
-                    if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
-                        variation['price'] = parsed_json['product']['price']['list']['value'] + 5
-                    elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
-                        variation['price'] = parsed_json['product']['price']['sales']['value'] + 5
-                    else:
-                        variation['price'] = 0
-            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-            else:
-                variation['quantity_on_hand'] = 0
+            try:
+                url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id'][:-1]}&quantity=undefined'''
+                driver.get(url)
+                soup = BeautifulSoup(driver.page_source, 'html.parser')
+                json_element = soup.find('pre')
+                json_data = json_element.get_text()
+                parsed_json = json.loads(json_data)
             
-            # if d['variation_type'] == 'Size':
-            #     # download the image from the url and upload it to aws s3 bucket
-            #     images = []
-            #     if 'pdpLarge' in parsed_json['product']['images'] and len(parsed_json['product']['images']['pdpLarge']) > 0:
-            #         images.append(parsed_json['product']['images']['pdpLarge'][0])
-            #     # upload images to aws s3 bucket
-            #         for i, image in enumerate(images):
-            #             imageName = d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '') + '-' + variation['variation_id']
-            #             imgUrl = upload_image(image['url'], f'''{imageName}-{i}''')
-            #             variation['variation_image'] = imgUrl
-            # if 'promotions' in parsed_json['product'] and parsed_json['product']['promotions'] != None and len(parsed_json['product']['promotions']) > 1:
-            #     # add 30% off to the variation price
-            #     # variation['sale_price'] = variation['price'] - (variation['price'] * 0.3)
-            #     for promotion in parsed_json['product']['promotions']:
-            #         if 'id' in promotion and promotion['id'] == 'BigBottle':
-            #             variation['sale_price'] = variation['price'] - (variation['price'] * 0.3)
+                if 'upc' in parsed_json['product']:
+                    variation['upc'] = parsed_json['product']['upc']
+                if 'price' in parsed_json['product']:
+                    if 'tiered' in parsed_json['product']['price']['type']:
+                        variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
+                    else:
+                        if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
+                            variation['price'] = parsed_json['product']['price']['list']['value'] + 5
+                        elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+                            variation['price'] = parsed_json['product']['price']['sales']['value'] + 5
+                        else:
+                            variation['price'] = 0
+                if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+                    variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+                else:
+                    variation['quantity_on_hand'] = 0
+            except:
+                # remove the variation from the array
+                d['variations'].remove(variation)
+                continue
 
 def return_product_if_single(parsed_json, d):
     if 'upc' in parsed_json['product']:
@@ -425,15 +404,22 @@ def get_all_products_ids_for_each_cat_cosmoprof():
         for category in categories:
             try:
                 driver.get(f'''https://www.cosmoprofbeauty.ca{category['url']}''')
-                time.sleep(5)
                 last_height = driver.execute_script("return document.body.scrollHeight")
                 while True:
                     # Scroll down to bottom
                     driver.execute_script(
                         "window.scrollTo(0, document.body.scrollHeight);")
                     # Wait to load page
-                    time.sleep(15)
+                    # time.sleep(15)
                     # Calculate new scroll height and compare with last scroll height
+                    try:
+                        WebDriverWait(driver, 10).until(
+                            # wait until the height changes
+                            lambda driver: driver.execute_script("return document.body.scrollHeight") != last_height
+                        )
+                    except Exception as e:
+                        print(e)
+                    
                     new_height = driver.execute_script(
                         "return document.body.scrollHeight")
                     if new_height == last_height:
@@ -442,16 +428,22 @@ def get_all_products_ids_for_each_cat_cosmoprof():
                 soup = BeautifulSoup(driver.page_source, 'html.parser')
                 products_divs = soup.find_all('div', class_='product-tile')
                 for product_div in products_divs:
+                    try:
+                        data_brand = product_div.find('a', class_='pdp-link__brand').text
+                    except:
+                        data_brand = ''
                     data_pid = product_div['data-product-item-id']
                     products.append({
                         "id": data_pid,
                         "category": {
                             "main": category['main'],
                             "name": category['name']
+                        },
+                         "companyName": { 
+                            "name": data_brand
                         }
                     })
             except Exception as e:
-                time.sleep(60)
                 driver.get(f'''https://www.cosmoprofbeauty.ca{category['url']}''')
                 time.sleep(5)
                 last_height = driver.execute_script("return document.body.scrollHeight")
@@ -460,7 +452,13 @@ def get_all_products_ids_for_each_cat_cosmoprof():
                     driver.execute_script(
                         "window.scrollTo(0, document.body.scrollHeight);")
                     # Wait to load page
-                    time.sleep(15)
+                    try:
+                        WebDriverWait(driver, 10).until(
+                            # wait until the height changes
+                            lambda driver: driver.execute_script("return document.body.scrollHeight") != last_height
+                        )
+                    except Exception as e:
+                        print(e)
                     # Calculate new scroll height and compare with last scroll height
                     new_height = driver.execute_script(
                         "return document.body.scrollHeight")
@@ -487,7 +485,7 @@ def get_all_products_ids_for_each_cat_cosmoprof():
                     })
     with open('cosmoprof_products_ids_cat.json', 'w') as f:
         json.dump(products, f)
-get_all_products_ids_for_each_cat_cosmoprof()
+# get_all_products_ids_for_each_cat_cosmoprof()
         
 def get_duplicates_from_cosmoprof_new_file_by_id():
     with open('cosmoprof_products_ids_cat.json', 'r') as f:
@@ -504,7 +502,10 @@ def get_duplicates_from_cosmoprof_new_file_by_id():
             if not found:
                 ids.append({
                     "id": d['id'],
-                    "categories": [d['category']]
+                    "categories": [d['category']],
+                    "companyName": {
+                        "name": d['companyName']['name']
+                    }
                 })
     with open('cosmoprof_products_ids_cat_no_duplicates.json', 'w') as f:
         json.dump(ids, f)
@@ -553,21 +554,27 @@ def get_all_details_for_each_product_from_cosmoprof_api():
                     productJson['variation_type'] =  parsed_json['product']['variationAttributes'][0]['displayName']
       
                     for variation in parsed_json['product']['variationAttributes'][0]['values']:
-                        if(parsed_json['product']['variationAttributes'][0]['values'] == "Size"):
+                        if(parsed_json['product']['variationAttributes'][0]['attributeId'] == "size"):
                             productJson['variations']= {
                                 "variation_name": variation['displayValue'],
                             } 
-                        elif(parsed_json['product']['variationAttributes'][0]['values'] == "Color"):
+                        elif(parsed_json['product']['variationAttributes'][0]['attributeId'] == "color"):
                             variant_img = []
+                            variant_id = ''
                             for i, img in enumerate(variation['images']['swatch']):
                                 if 'url' not in img:
                                     continue
                                 imageName = f'''{productJson['product_name'].replace(' ', '').replace('/', '').replace('?', '').replace(os.sep, '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')}-{variation['id'].replace('/', '').replace('?', '').replace(os.sep, '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')}-{i}'''
                                 imgUrl = upload_image(img['url'], imageName)
+                                variant_id = img['url'].split('/')[-1].split('?')[0].split('.')[0]
+                                # get only the number format of the variant id
+                                variant_id = ''.join(filter(str.isdigit, variant_id))
+                                # get the last slash in the url and remove the query string
                                 variant_img.append(imgUrl)
                             productJson['variations'].append({
                                 "variation_name": variation['displayValue'],
-                                "variation_image": variant_img
+                                "variation_image": variant_img,
+                                "id": f'''CAN-{variant_id}'''
                             })
                 productJson['imgs'] = []
                 for i, image in enumerate(parsed_json['product']['images']['pdpLarge']):
@@ -579,7 +586,6 @@ def get_all_details_for_each_product_from_cosmoprof_api():
                 productJson['ingredients'] = parsed_json['product']['ingredients']
                 productJson['categories'] = d['categories']
                 productJson['upc'] = parsed_json['product']['upc']
-
             except Exception as e:
                 print(e)
                 time.sleep(10)
@@ -615,21 +621,26 @@ def get_all_details_for_each_product_from_cosmoprof_api():
                 if 'variationAttributes' in parsed_json['product'] and parsed_json['product']['variationAttributes'] != None and  len(parsed_json['product']['variationAttributes']) > 0:
                     productJson['variation_type'] =  parsed_json['product']['variationAttributes'][0]['displayName']
                     for variation in parsed_json['product']['variationAttributes'][0]['values']:
-                        if(parsed_json['product']['variationAttributes'][0]['values'] == "Size"):
+                        if(parsed_json['product']['variationAttributes'][0]['attributeId'] == "size"):
                             productJson['variations']= {
                                 "variation_name": variation['displayValue'],
                             } 
-                        elif(parsed_json['product']['variationAttributes'][0]['values'] == "Color"):
+                        elif(parsed_json['product']['variationAttributes'][0]['attributeId'] == "color"):
                             variant_img = []
                             for i, img in enumerate(variation['images']['swatch']):
                                 if 'url' not in img:
                                     continue
                                 imageName = f'''{productJson['product_name'].replace(' ', '').replace('/', '').replace('?', '').replace(os.sep, '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')}-{variation['id'].replace('/', '').replace('?', '').replace(os.sep, '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')}-{i}'''
                                 imgUrl = upload_image(img['url'], imageName)
+                                variant_id = img['url'].split('/')[-1].split('?')[0].split('.')[0]
+                                # get only the number format of the variant id
+                                variant_id = ''.join(filter(str.isdigit, variant_id))
+                                # get the last slash in the url and remove the query string
                                 variant_img.append(imgUrl)
                             productJson['variations'].append({
                                 "variation_name": variation['displayValue'],
-                                "variation_image": variant_img
+                                "variation_image": variant_img,
+                                "id": f'''CAN-{variant_id}'''
                             })
                 productJson['imgs'] = []
                 for i, image in enumerate(parsed_json['product']['images']['pdpLarge']):
@@ -651,6 +662,53 @@ def get_all_details_for_each_product_from_cosmoprof_api():
 
 # get_all_details_for_each_product_from_cosmoprof_api()
 
+def get_variant_details_from_json_file():
+    driver = uc.Chrome()
+    driver.get('https://www.cosmoprofbeauty.ca/')
+    time.sleep(40)
+    with open('cosmoprof_products_details.json' , 'r') as f:
+        json_data = json.load(f)
+        # filter only products with variations length greater than 0
+        totalNumberOfProducts = [d for d in json_data if 'variations' in d and len(d['variations']) > 0]
+        for i, d in enumerate(json_data):
+            # get index of the d
+            try:
+                if d['variations'] and len(d['variations']) > 0:
+                    # check if all the variations has id attribute if not then delete the product
+
+                    checker = [v for v in d['variations'] if 'id' in v]
+                    if len(checker) == 0:
+                        json_data.remove(d)
+                        continue
+                    url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
+                    driver.get(url)
+                    soup = BeautifulSoup(driver.page_source, 'html.parser')
+                    json_element = soup.find('pre')
+                    jsons_data = json_element.get_text()
+                    parsed_json = json.loads(jsons_data)
+                    return_product_if_range(parsed_json, d, url, driver)
+                    print(f'''{i}/{len(totalNumberOfProducts)}''')
+            except Exception as e:
+                print(e)
+                time.sleep(10)
+                if d['variations'] and len(d['variations']) > 0:
+                    checker = [v for v in d['variations'] if 'id' in v]
+                    if len(checker) == 0:
+                        json_data.remove(d)
+                        continue
+                    url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
+                    driver.get(url)
+                    soup = BeautifulSoup(driver.page_source, 'html.parser')
+                    json_element = soup.find('pre')
+                    jsons_data = json_element.get_text()
+                    parsed_json = json.loads(jsons_data)
+                    return_product_if_range(parsed_json, d, url, driver)
+                    print(f'''{i}/{len(totalNumberOfProducts)}''')
+                    continue
+        with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
+            json.dump(json_data, f)
+
+get_variant_details_from_json_file()
 
 def get_all_offers_from_cosmoProf():
     driver = uc.Chrome()

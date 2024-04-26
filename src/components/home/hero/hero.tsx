@@ -51,6 +51,7 @@ export const Hero = component$(() => {
     { imgUrl: "/hero-images/17.jpg", link: "/products/filterBrands/KMS/" },
     { imgUrl: "/hero-images/18.jpg", link: "/products/filterBrands/JRL/" },
     { imgUrl: "/hero-images/19.jpg", link: "/products/filterBrands/Joico/" },
+    { imgUrl: "/hero-images/32.jpg", link: "/products/search/pet/" },
   ];
   useStylesScoped$(styles);
   const handleNextSlideClick = $(() => {
