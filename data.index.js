@@ -828,9 +828,8 @@ async function addLatestCosmoProducts() {
     );
   }
   console.log("done");
-  await connection.close();
+  // await connection.close();
 }
-addLatestCosmoProducts();
 
 async function adjustData() {
   await connect(mongoUrl);
@@ -853,9 +852,7 @@ async function adjustData() {
   }
 
   console.log("done");
-  await connection.close();
 }
-adjustData();
 
 async function addProductsToGoogleSheet() {
   await connect(mongoUrl);
@@ -990,4 +987,7 @@ async function addProductsToGoogleSheet() {
   }
   await connection.close();
 }
+
+addLatestCosmoProducts();
+adjustData();
 addProductsToGoogleSheet();
