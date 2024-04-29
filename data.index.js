@@ -330,31 +330,6 @@ async function getProductsFromModernBeauty() {
 }
 // getProductsFromModernBeauty();
 
-async function adjustData() {
-  await connect(mongoUrl);
-  const products = await Product.find({});
-  const regex = /[^a-zA-Z0-9\s]/g;
-  for (const product of products) {
-    if (regex.test(product.companyName.name)) {
-      product.companyName.name = product.companyName.name.replace(regex, "");
-      product.companyName.name = product.companyName.name.trim();
-      await Product.findByIdAndUpdate(product._id, product, { new: true });
-    }
-  }
-  const brands = await Brand.find({});
-  for (const brand of brands) {
-    if (regex.test(brand.name)) {
-      brand.name = brand.name.replace(regex, "");
-      brand.name = brand.name.trim();
-      await Brand.findByIdAndUpdate(brand._id, brand, { new: true });
-    }
-  }
-
-  console.log("done");
-  await connection.close();
-}
-adjustData();
-
 async function addCosmoOfferToGoogleSheet() {
   const json = require("./cosmo-offers-final-2.json");
   const auth = new JWT({
@@ -525,141 +500,6 @@ async function addCanradProductsFromGoogleSheet() {
   await connection.close();
 }
 // addCanradProductsFromGoogleSheet();
-
-async function addProductsToGoogleSheet() {
-  await connect(mongoUrl);
-
-  const productsDb = await Product.find({
-    isHidden: { $ne: true },
-  });
-  const newArray = [];
-  const auth = new JWT({
-    email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
-    key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-  });
-
-  const doc = new GoogleSpreadsheet(
-    "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
-    auth
-  );
-  await doc.loadInfo();
-  const sheet = doc.sheetsByIndex[0]; // loads document properties and worksheets
-  const rows = await sheet.getRows();
-  for (const product of productsDb) {
-    try {
-      const row = rows.find((r) => r.toObject().id === product._id.toString());
-      if (product?.variations?.length > 0) {
-        for (const variant of product.variations) {
-          const newRow = {
-            id: `${product._id.toString()}-${variant?.variation_id}`,
-            title: `${
-              product.product_name?.includes("CR")
-                ? product.product_name?.replace(/CR.*/, "")
-                : product.product_name ?? ""
-            } - ${variant?.variation_name}`,
-            description: product?.description ?? "",
-            link: `https://xpressbeauty.ca/products/${product.perfix}`,
-            "image link": product?.imgs[0].includes("http")
-              ? product?.imgs[0]
-              : `https://xpressbeauty.ca${product?.imgs[0].replace(".", "")}`,
-
-            availability:
-              parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
-                ? "in_stock"
-                : "out_of_stock",
-            price: `${variant?.price} CAD` ?? "0",
-            brand: product?.companyName?.name ?? "Qwik City",
-            condition: "new",
-            gtin: variant?.upc ?? "",
-            "identifier exists": variant?.upc ? "yes" : "no",
-          };
-          if (variant.variation_image) {
-            if (product?.variation_type === "Color") {
-              const src = product?.product_name?.replace(/[^A-Za-z0-9]+/g, "");
-              const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${
-                // index of the variation
-                product?.variations?.indexOf(variant)
-              }.webp`;
-              newRow["additional image link"] = folder;
-            } else {
-              newRow["additional image link"] = variant?.variation_image;
-            }
-          }
-          newArray.push(newRow);
-        }
-      } else {
-        if (row) {
-          const oldRow = row.toObject();
-          oldRow.availability = parseInt(
-            product?.quantity_on_hand?.toString() ?? "0"
-          );
-          oldRow.title = oldRow.title?.includes("CR")
-            ? oldRow.title?.replace(/CR.*/, "")
-            : oldRow.title ?? "";
-          oldRow.price = `${product?.price?.regular} CAD` ?? "0";
-          oldRow.shipping_label = "";
-          oldRow.gtin =
-            product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
-          oldRow["identifier exists"] =
-            product?.gtin || oldRow?.gtin ? "yes" : "no";
-          oldRow.availability =
-            parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
-              ? "in_stock"
-              : "out_of_stock";
-          oldRow.link = `https://xpressbeauty.ca/products/${product.perfix}`;
-          newArray.push(oldRow);
-        } else {
-          const newRow = {
-            id: product._id.toString(),
-            title: product.product_name?.includes("CR")
-              ? product.product_name?.replace(/CR.*/, "")
-              : product.product_name ?? "",
-            description: product?.description ?? "",
-            link: `https://xpressbeauty.ca/products/${product.perfix}`,
-            "image link": product?.imgs[0].includes("http")
-              ? product?.imgs[0]
-              : `https://xpressbeauty.ca${product?.imgs[0].replace(".", "")}`,
-            availability:
-              parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
-                ? "in_stock"
-                : "out_of_stock",
-            price: `${product?.price?.regular} CAD` ?? "0",
-            brand: product?.companyName?.name ?? "Qwik City",
-            condition: "new",
-            shipping_label: "",
-            gtin: product?.gtin ?? "",
-            "identifier exists": product?.gtin ? "yes" : "no",
-          };
-          newArray.push(newRow);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      continue;
-    }
-  }
-  try {
-    // loads document properties and worksheets
-    const auth1 = new JWT({
-      email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
-      key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
-      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-    });
-    const doc1 = new GoogleSpreadsheet(
-      "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
-      auth1
-    );
-    await doc1.loadInfo();
-    const sheet1 = doc.sheetsByIndex[0]; // loads document properties and worksheets
-    await sheet1.clear("A2:Z");
-    await sheet1.addRows(newArray);
-  } catch (error) {
-    console.log(error);
-  }
-  await connection.close();
-}
-addProductsToGoogleSheet();
 
 async function addFakeReviews() {
   await connect(mongoUrl);
@@ -991,4 +831,164 @@ async function addLatestCosmoProducts() {
   await connection.close();
 }
 
-// addLatestCosmoProducts();
+addLatestCosmoProducts();
+
+async function adjustData() {
+  await connect(mongoUrl);
+  const products = await Product.find({});
+  const regex = /[^a-zA-Z0-9\s]/g;
+  for (const product of products) {
+    if (regex.test(product.companyName.name)) {
+      product.companyName.name = product.companyName.name.replace(regex, "");
+      product.companyName.name = product.companyName.name.trim();
+      await Product.findByIdAndUpdate(product._id, product, { new: true });
+    }
+  }
+  const brands = await Brand.find({});
+  for (const brand of brands) {
+    if (regex.test(brand.name)) {
+      brand.name = brand.name.replace(regex, "");
+      brand.name = brand.name.trim();
+      await Brand.findByIdAndUpdate(brand._id, brand, { new: true });
+    }
+  }
+
+  console.log("done");
+  await connection.close();
+}
+adjustData();
+
+async function addProductsToGoogleSheet() {
+  await connect(mongoUrl);
+
+  const productsDb = await Product.find({
+    isHidden: { $ne: true },
+  });
+  const newArray = [];
+  const auth = new JWT({
+    email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+    key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  const doc = new GoogleSpreadsheet(
+    "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
+    auth
+  );
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0]; // loads document properties and worksheets
+  const rows = await sheet.getRows();
+  for (const product of productsDb) {
+    try {
+      const row = rows.find((r) => r.toObject().id === product._id.toString());
+      if (product?.variations?.length > 0) {
+        for (const variant of product.variations) {
+          const newRow = {
+            id: `${product._id.toString()}-${variant?.variation_id}`,
+            title: `${
+              product.product_name?.includes("CR")
+                ? product.product_name?.replace(/CR.*/, "")
+                : product.product_name ?? ""
+            } - ${variant?.variation_name}`,
+            description: product?.description ?? "",
+            link: `https://xpressbeauty.ca/products/${product.perfix}`,
+            "image link": product?.imgs[0].includes("http")
+              ? product?.imgs[0]
+              : `https://xpressbeauty.ca${product?.imgs[0].replace(".", "")}`,
+
+            availability:
+              parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
+                ? "in_stock"
+                : "out_of_stock",
+            price: `${variant?.price} CAD` ?? "0",
+            brand: product?.companyName?.name ?? "Qwik City",
+            condition: "new",
+            gtin: variant?.upc ?? "",
+            "identifier exists": variant?.upc ? "yes" : "no",
+          };
+          if (variant.variation_image) {
+            if (product?.variation_type === "Color") {
+              const src = product?.product_name?.replace(/[^A-Za-z0-9]+/g, "");
+              const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${
+                // index of the variation
+                product?.variations?.indexOf(variant)
+              }.webp`;
+              newRow["additional image link"] = folder;
+            } else {
+              newRow["additional image link"] = variant?.variation_image;
+            }
+          }
+          newArray.push(newRow);
+        }
+      } else {
+        if (row) {
+          const oldRow = row.toObject();
+          oldRow.availability = parseInt(
+            product?.quantity_on_hand?.toString() ?? "0"
+          );
+          oldRow.title = oldRow.title?.includes("CR")
+            ? oldRow.title?.replace(/CR.*/, "")
+            : oldRow.title ?? "";
+          oldRow.price = `${product?.price?.regular} CAD` ?? "0";
+          oldRow.shipping_label = "";
+          oldRow.gtin =
+            product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
+          oldRow["identifier exists"] =
+            product?.gtin || oldRow?.gtin ? "yes" : "no";
+          oldRow.availability =
+            parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
+              ? "in_stock"
+              : "out_of_stock";
+          oldRow.link = `https://xpressbeauty.ca/products/${product.perfix}`;
+          newArray.push(oldRow);
+        } else {
+          const newRow = {
+            id: product._id.toString(),
+            title: product.product_name?.includes("CR")
+              ? product.product_name?.replace(/CR.*/, "")
+              : product.product_name ?? "",
+            description: product?.description ?? "",
+            link: `https://xpressbeauty.ca/products/${product.perfix}`,
+            "image link": product?.imgs[0].includes("http")
+              ? product?.imgs[0]
+              : `https://xpressbeauty.ca${product?.imgs[0].replace(".", "")}`,
+            availability:
+              parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
+                ? "in_stock"
+                : "out_of_stock",
+            price: `${product?.price?.regular} CAD` ?? "0",
+            brand: product?.companyName?.name ?? "Qwik City",
+            condition: "new",
+            shipping_label: "",
+            gtin: product?.gtin ?? "",
+            "identifier exists": product?.gtin ? "yes" : "no",
+          };
+          newArray.push(newRow);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      continue;
+    }
+  }
+  try {
+    // loads document properties and worksheets
+    const auth1 = new JWT({
+      email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
+      key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    });
+    const doc1 = new GoogleSpreadsheet(
+      "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
+      auth1
+    );
+    await doc1.loadInfo();
+    const sheet1 = doc.sheetsByIndex[0]; // loads document properties and worksheets
+    await sheet1.clear("A2:Z");
+    await sheet1.addRows(newArray);
+  } catch (error) {
+    console.log(error);
+  }
+  await connection.close();
+}
+addProductsToGoogleSheet();
