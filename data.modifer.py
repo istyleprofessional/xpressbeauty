@@ -58,6 +58,11 @@ def return_product_if_range(parsed_json, d, url, driver):
                 variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
             else:
                 variation['quantity_on_hand'] = 0
+            variation['variation_image'] = parsed_json['product']['images']['pdpLarge'][0]['url']
+            variation['variation_image'] = upload_image(variation['variation_image'],
+                d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')
+            + "-" + variation['variation_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')
+            )
             
         except:
             try:
@@ -153,8 +158,6 @@ def get_last_prices_and_upc():
         for i, d in enumerate(datas):
             try:
                 if('variations' in d and len(d['variations']) > 0):
-                    if "variation_type" in d and d['variation_type'] == 'Color':
-                        continue
                     if "variation_type" in d and d['variation_type'] == 'Size':
                         # grap the id for each variation from the website
                         url = f'''https://www.cosmoprofbeauty.ca/{d['cosmoprof_id']}.html'''
@@ -174,75 +177,29 @@ def get_last_prices_and_upc():
                         # data-attr = "size"
                         
 
-                    url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
-                    try: 
-                        driver.get(url)
-                        soup = BeautifulSoup(driver.page_source, 'html.parser')
-                        json_element = soup.find('pre')
-                        json_data = json_element.get_text()
-                        parsed_json = json.loads(json_data)
-                        return_product_if_range(parsed_json, d, url, driver)
-                        updated_datas.append(d)
-                        print(f'''{i}/{len(datas)}''')
-                    except Exception as e:
-                        time.sleep(40)
-                        driver.get(url)
-                        soup = BeautifulSoup(driver.page_source, 'html.parser')
-                        json_element = soup.find('pre')
-                        json_data = json_element.get_text()
-                        parsed_json = json.loads(json_data)
-                        return_product_if_range(parsed_json, d, url, driver)
-                        updated_datas.append(d)
-                        print(f'''{i}/{len(datas)}''')
-                        continue
-                else:
-                    url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
-                    try:
-                        driver.get(url)
-                        soup = BeautifulSoup(driver.page_source, 'html.parser')
-                        json_element = soup.find('pre')
-                        json_data = json_element.get_text()
-                        parsed_json = json.loads(json_data)
-                        return_product_if_single(parsed_json, d)
-                        updated_datas.append(d)
-                        print(f'''{i}/{len(datas)}''')
-                    except:
-                        time.sleep(40)
-                        driver.get(url)
-                        soup = BeautifulSoup(driver.page_source, 'html.parser')
-                        json_element = soup.find('pre')
-                        json_data = json_element.get_text()
-                        parsed_json = json.loads(json_data)
-                        return_product_if_single(parsed_json, d)
-                        updated_datas.append(d)
-                        print(f'''{i}/{len(datas)}''')
-                        continue
-            except Exception as e:
-                print(e)
-                # if('variations' in d and len(d['variations']) > 0):
-                #     url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
-                #     try: 
-                #         driver.get(url)
-                #         soup = BeautifulSoup(driver.page_source, 'html.parser')
-                #         json_element = soup.find('pre')
-                #         json_data = json_element.get_text()
-                #         parsed_json = json.loads(json_data)
-                #         return_product_if_range(parsed_json, d, url, driver)
-                #         updated_datas.append(d)
-                #         print(f'''{i}/{len(datas)}''')
-                #     except:
-                #         time.sleep(40)
-                #         driver.get(url)
-                #         soup = BeautifulSoup(driver.page_source, 'html.parser')
-                #         json_element = soup.find('pre')
-                #         json_data = json_element.get_text()
-                #         parsed_json = json.loads(json_data)
-                #         return_product_if_range(parsed_json, d, url, driver)
-                #         print(f'''{i}/{len(datas)}''')
-                #         updated_datas.append(d)    
-                #         continue
+                        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
+                        try: 
+                            driver.get(url)
+                            soup = BeautifulSoup(driver.page_source, 'html.parser')
+                            json_element = soup.find('pre')
+                            json_data = json_element.get_text()
+                            parsed_json = json.loads(json_data)
+                            return_product_if_range(parsed_json, d, url, driver)
+                            updated_datas.append(d)
+                            print(f'''{i}/{len(datas)}''')
+                        except Exception as e:
+                            time.sleep(40)
+                            driver.get(url)
+                            soup = BeautifulSoup(driver.page_source, 'html.parser')
+                            json_element = soup.find('pre')
+                            json_data = json_element.get_text()
+                            parsed_json = json.loads(json_data)
+                            return_product_if_range(parsed_json, d, url, driver)
+                            updated_datas.append(d)
+                            print(f'''{i}/{len(datas)}''')
+                            continue
                 # else:
-                #     url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
+                #     url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
                 #     try:
                 #         driver.get(url)
                 #         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -250,8 +207,8 @@ def get_last_prices_and_upc():
                 #         json_data = json_element.get_text()
                 #         parsed_json = json.loads(json_data)
                 #         return_product_if_single(parsed_json, d)
-                #         print(f'''{i}/{len(datas)}''')
                 #         updated_datas.append(d)
+                #         print(f'''{i}/{len(datas)}''')
                 #     except:
                 #         time.sleep(40)
                 #         driver.get(url)
@@ -260,9 +217,11 @@ def get_last_prices_and_upc():
                 #         json_data = json_element.get_text()
                 #         parsed_json = json.loads(json_data)
                 #         return_product_if_single(parsed_json, d)
-                #         print(f'''{i}/{len(datas)}''')
                 #         updated_datas.append(d)
+                #         print(f'''{i}/{len(datas)}''')
                 #         continue
+            except Exception as e:
+                print(e)
                 continue
         with open('updated_cosmo_products.json', 'w') as f:
             json.dump(updated_datas, f)
