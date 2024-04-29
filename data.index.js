@@ -830,7 +830,6 @@ async function addLatestCosmoProducts() {
   console.log("done");
   await connection.close();
 }
-
 addLatestCosmoProducts();
 
 async function adjustData() {
