@@ -950,7 +950,7 @@ async function aiCategorization() {
 
 async function addLatestCosmoProducts() {
   await connect(mongoUrl);
-  const products = require("./cosmoprof_products_details_with_variation_updated.json");
+  const products = require("./updated_cosmo_products.json");
   for (const product of products) {
     if (product.variation_type === "Color") {
       product.variations = product.variations.map((variation) => {
