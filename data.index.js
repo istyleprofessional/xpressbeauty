@@ -353,7 +353,7 @@ async function adjustData() {
   console.log("done");
   await connection.close();
 }
-// adjustData();
+adjustData();
 
 async function addCosmoOfferToGoogleSheet() {
   const json = require("./cosmo-offers-final-2.json");
@@ -659,7 +659,7 @@ async function addProductsToGoogleSheet() {
   }
   await connection.close();
 }
-// addProductsToGoogleSheet();
+addProductsToGoogleSheet();
 
 async function addFakeReviews() {
   await connect(mongoUrl);
@@ -991,4 +991,4 @@ async function addLatestCosmoProducts() {
   await connection.close();
 }
 
-addLatestCosmoProducts();
+// addLatestCosmoProducts();
