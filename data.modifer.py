@@ -35,7 +35,7 @@ def return_product_if_range(parsed_json, d, url, driver):
             if not 'id' in variation:
                 # remove the product from the json file
                 continue
-        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id']}&quantity=undefined'''
+        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['id']}&quantity=undefined'''
         try: 
             driver.get(url)
             soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -61,7 +61,10 @@ def return_product_if_range(parsed_json, d, url, driver):
             
         except:
             try:
-                url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['variation_id'][:-1]}&quantity=undefined'''
+                # check ig soup contain any Press and hold the box below to confirm you are human:
+                if 'Press and hold the box below to confirm you are human:' in soup.text:
+                    time.sleep(40)
+                url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['id'][:-1]}&quantity=undefined'''
                 driver.get(url)
                 soup = BeautifulSoup(driver.page_source, 'html.parser')
                 json_element = soup.find('pre')
@@ -140,7 +143,7 @@ def upload_image(url, name):
 
 
 def get_last_prices_and_upc():
-    with open('./backups/file-7.json', encoding='utf-8') as f:
+    with open('./cosmoprof_products_details_with_variation_updated.json', encoding='utf-8') as f:
         datas = json.load(f)
         updated_datas = []
         print(len(datas))
@@ -148,104 +151,124 @@ def get_last_prices_and_upc():
         driver.get('https://www.cosmoprofbeauty.ca/')
         time.sleep(40)
         for i, d in enumerate(datas):
-            if not "tool" in ','.join(d['categories']).lower():
-                try:
-                    if('variations' in d and len(d['variations']) > 0):
-                        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
-                        try: 
-                            driver.get(url)
-                            soup = BeautifulSoup(driver.page_source, 'html.parser')
-                            json_element = soup.find('pre')
-                            json_data = json_element.get_text()
-                            parsed_json = json.loads(json_data)
-                            return_product_if_range(parsed_json, d, url, driver)
-                            updated_datas.append(d)
-                            print(f'''{i}/{len(datas)}''')
-                        except Exception as e:
-                            time.sleep(40)
-                            driver.get(url)
-                            soup = BeautifulSoup(driver.page_source, 'html.parser')
-                            json_element = soup.find('pre')
-                            json_data = json_element.get_text()
-                            parsed_json = json.loads(json_data)
-                            return_product_if_range(parsed_json, d, url, driver)
-                            updated_datas.append(d)
-                            print(f'''{i}/{len(datas)}''')
+            try:
+                if('variations' in d and len(d['variations']) > 0):
+                    if "variation_type" in d and d['variation_type'] == 'Color':
+                        continue
+                    if "variation_type" in d and d['variation_type'] == 'Size':
+                        # grap the id for each variation from the website
+                        url = f'''https://www.cosmoprofbeauty.ca/{d['cosmoprof_id']}.html'''
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        size_div = soup.find('div', 'attribute')
+                        if size_div == None:
                             continue
-                    else:
-                        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
-                        try:
-                            driver.get(url)
-                            soup = BeautifulSoup(driver.page_source, 'html.parser')
-                            json_element = soup.find('pre')
-                            json_data = json_element.get_text()
-                            parsed_json = json.loads(json_data)
-                            return_product_if_single(parsed_json, d)
-                            updated_datas.append(d)
-                            print(f'''{i}/{len(datas)}''')
-                        except:
-                            time.sleep(40)
-                            driver.get(url)
-                            soup = BeautifulSoup(driver.page_source, 'html.parser')
-                            json_element = soup.find('pre')
-                            json_data = json_element.get_text()
-                            parsed_json = json.loads(json_data)
-                            return_product_if_single(parsed_json, d)
-                            updated_datas.append(d)
-                            print(f'''{i}/{len(datas)}''')
-                            continue
-                except Exception as e:
-                    print(e)
-                    # if('variations' in d and len(d['variations']) > 0):
-                    #     url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
-                    #     try: 
-                    #         driver.get(url)
-                    #         soup = BeautifulSoup(driver.page_source, 'html.parser')
-                    #         json_element = soup.find('pre')
-                    #         json_data = json_element.get_text()
-                    #         parsed_json = json.loads(json_data)
-                    #         return_product_if_range(parsed_json, d, url, driver)
-                    #         updated_datas.append(d)
-                    #         print(f'''{i}/{len(datas)}''')
-                    #     except:
-                    #         time.sleep(40)
-                    #         driver.get(url)
-                    #         soup = BeautifulSoup(driver.page_source, 'html.parser')
-                    #         json_element = soup.find('pre')
-                    #         json_data = json_element.get_text()
-                    #         parsed_json = json.loads(json_data)
-                    #         return_product_if_range(parsed_json, d, url, driver)
-                    #         print(f'''{i}/{len(datas)}''')
-                    #         updated_datas.append(d)    
-                    #         continue
-                    # else:
-                    #     url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
-                    #     try:
-                    #         driver.get(url)
-                    #         soup = BeautifulSoup(driver.page_source, 'html.parser')
-                    #         json_element = soup.find('pre')
-                    #         json_data = json_element.get_text()
-                    #         parsed_json = json.loads(json_data)
-                    #         return_product_if_single(parsed_json, d)
-                    #         print(f'''{i}/{len(datas)}''')
-                    #         updated_datas.append(d)
-                    #     except:
-                    #         time.sleep(40)
-                    #         driver.get(url)
-                    #         soup = BeautifulSoup(driver.page_source, 'html.parser')
-                    #         json_element = soup.find('pre')
-                    #         json_data = json_element.get_text()
-                    #         parsed_json = json.loads(json_data)
-                    #         return_product_if_single(parsed_json, d)
-                    #         print(f'''{i}/{len(datas)}''')
-                    #         updated_datas.append(d)
-                    #         continue
-                    continue
+                        size_options = size_div.find_all('button')
+                        d['variations'] = []
+                        for size_option in size_options:
+                            d['variations'].append(
+                            {
+                                "variation_name": size_option['data-variation-id'],
+                                "id": size_option['id']
+                            })
+                        # data-attr = "size"
+                        
+
+                    url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
+                    try: 
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        return_product_if_range(parsed_json, d, url, driver)
+                        updated_datas.append(d)
+                        print(f'''{i}/{len(datas)}''')
+                    except Exception as e:
+                        time.sleep(40)
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        return_product_if_range(parsed_json, d, url, driver)
+                        updated_datas.append(d)
+                        print(f'''{i}/{len(datas)}''')
+                        continue
+                else:
+                    url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
+                    try:
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        return_product_if_single(parsed_json, d)
+                        updated_datas.append(d)
+                        print(f'''{i}/{len(datas)}''')
+                    except:
+                        time.sleep(40)
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        return_product_if_single(parsed_json, d)
+                        updated_datas.append(d)
+                        print(f'''{i}/{len(datas)}''')
+                        continue
+            except Exception as e:
+                print(e)
+                # if('variations' in d and len(d['variations']) > 0):
+                #     url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
+                #     try: 
+                #         driver.get(url)
+                #         soup = BeautifulSoup(driver.page_source, 'html.parser')
+                #         json_element = soup.find('pre')
+                #         json_data = json_element.get_text()
+                #         parsed_json = json.loads(json_data)
+                #         return_product_if_range(parsed_json, d, url, driver)
+                #         updated_datas.append(d)
+                #         print(f'''{i}/{len(datas)}''')
+                #     except:
+                #         time.sleep(40)
+                #         driver.get(url)
+                #         soup = BeautifulSoup(driver.page_source, 'html.parser')
+                #         json_element = soup.find('pre')
+                #         json_data = json_element.get_text()
+                #         parsed_json = json.loads(json_data)
+                #         return_product_if_range(parsed_json, d, url, driver)
+                #         print(f'''{i}/{len(datas)}''')
+                #         updated_datas.append(d)    
+                #         continue
+                # else:
+                #     url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}'''
+                #     try:
+                #         driver.get(url)
+                #         soup = BeautifulSoup(driver.page_source, 'html.parser')
+                #         json_element = soup.find('pre')
+                #         json_data = json_element.get_text()
+                #         parsed_json = json.loads(json_data)
+                #         return_product_if_single(parsed_json, d)
+                #         print(f'''{i}/{len(datas)}''')
+                #         updated_datas.append(d)
+                #     except:
+                #         time.sleep(40)
+                #         driver.get(url)
+                #         soup = BeautifulSoup(driver.page_source, 'html.parser')
+                #         json_element = soup.find('pre')
+                #         json_data = json_element.get_text()
+                #         parsed_json = json.loads(json_data)
+                #         return_product_if_single(parsed_json, d)
+                #         print(f'''{i}/{len(datas)}''')
+                #         updated_datas.append(d)
+                #         continue
+                continue
         with open('updated_cosmo_products.json', 'w') as f:
             json.dump(updated_datas, f)
                 # print remaining products length
         
-# get_last_prices_and_upc()
+get_last_prices_and_upc()
 
 
 
@@ -708,7 +731,7 @@ def get_variant_details_from_json_file():
         with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
             json.dump(json_data, f)
 
-get_variant_details_from_json_file()
+# get_variant_details_from_json_file()
 
 def get_all_offers_from_cosmoProf():
     driver = uc.Chrome()
