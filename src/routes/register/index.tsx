@@ -10,7 +10,6 @@ import jwt from "jsonwebtoken";
 import { validate } from "~/utils/validate.utils";
 import Twilio from "twilio";
 import { sendVerficationMail } from "~/utils/sendVerficationMail";
-import Stripe from "stripe";
 import { useAuthSignin } from "../plugin@auth";
 
 export const useRegisterForm = routeAction$(async (data, { env }) => {
@@ -53,12 +52,6 @@ export const useRegisterForm = routeAction$(async (data, { env }) => {
     };
   }
   newData.EmailVerifyToken = generateUniqueInteger();
-  const stripe = new Stripe(env.get("VITE_STRIPE_TEST_SECRET_KEY") ?? "");
-  const createStripeCustomer = await stripe.customers.create({
-    email: newData?.email,
-    name: `${newData?.firstName} ${newData?.lastName}`,
-  });
-  newData.stripeCustomerId = createStripeCustomer.id;
   const saveNewUser = await userRegistration(newData);
   if (saveNewUser.status === "failed") {
     return {

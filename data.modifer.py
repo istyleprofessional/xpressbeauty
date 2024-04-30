@@ -58,44 +58,46 @@ def return_product_if_range(parsed_json, d, url, driver):
                 variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
             else:
                 variation['quantity_on_hand'] = 0
-            variation['variation_image'] = parsed_json['product']['images']['pdpLarge'][0]['url']
-            variation['variation_image'] = upload_image(variation['variation_image'],
-                d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')
-            + "-" + variation['variation_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '')
-            )
+            # if(d['variation_type'] == 'Size'):
+            #     variation['variation_image'] = parsed_json['product']['images']['pdpLarge'][0]['url']
+            #     if 'variation_image' in variation and variation['variation_image'] != None:
+            #         variation['variation_image'] = upload_image(variation['variation_image'],
+            #             # create a dynamic name for the image by removing all special characters and spaces from the product name and the variation name and make it clean url
+            #             d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('à', 'a').replace('â', 'a').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('î', 'i').replace('ï', 'i').replace('ç', 'c').replace('ë', 'e').replace('ü', 'u').replace('ö', 'o').replace('û', 'u').replace('â', 'a').replace('î', 'i').replace('ï', 'i').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('à', 'a').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ç', 'c').replace('ë', 'e').replace('ü', 'u').replace('ö', 'o').replace('û', 'u').replace('â', 'a').replace('î', 'i').replace('ï', 'i').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('à', 'a').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ç', 'c').replace('ë', 'e').replace('ü', 'u').replace('ö', 'o').replace('û', 'u').replace('â', 'a').replace('î', 'i').replace('ï', 'i').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('à', 'a').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ç', 'c')
+            #         +"-" + variation['variation_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('à', 'a').replace('â', 'a').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('î', 'i').replace('ï', 'i').replace('ç', 'c').replace('ë', 'e').replace('ü', 'u').replace('ö', 'o').replace('û', 'u').replace('â', 'a').replace('î', 'i').replace('ï', 'i').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('à', 'a').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ç', 'c').replace('ë', 'e').replace('ü', 'u').replace('ö', 'o').replace('û', 'u').replace('â', 'a').replace('î', 'i').replace('ï', 'i').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('à', 'a').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ç', 'c')
+            #         )
             
         except:
-            try:
-                # check ig soup contain any Press and hold the box below to confirm you are human:
-                if 'Press and hold the box below to confirm you are human:' in soup.text:
-                    time.sleep(40)
-                url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variation['id'][:-1]}&quantity=undefined'''
-                driver.get(url)
-                soup = BeautifulSoup(driver.page_source, 'html.parser')
-                json_element = soup.find('pre')
-                json_data = json_element.get_text()
-                parsed_json = json.loads(json_data)
-            
-                if 'upc' in parsed_json['product']:
-                    variation['upc'] = parsed_json['product']['upc']
-                if 'price' in parsed_json['product']:
-                    if 'tiered' in parsed_json['product']['price']['type']:
-                        variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
-                    else:
-                        if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
-                            variation['price'] = parsed_json['product']['price']['list']['value'] + 5
-                        elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
-                            variation['price'] = parsed_json['product']['price']['sales']['value'] + 5
-                        else:
-                            variation['price'] = 0
-                if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                    variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+            time.sleep(40)
+            driver.get(url)
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            json_element = soup.find('pre')
+            json_data = json_element.get_text()
+            parsed_json = json.loads(json_data)
+            if 'upc' in parsed_json['product']:
+                variation['upc'] = parsed_json['product']['upc']
+            if 'price' in parsed_json['product']:
+                if 'tiered' in parsed_json['product']['price']['type']:
+                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
                 else:
-                    variation['quantity_on_hand'] = 0
-            except:
-                # remove the variation from the array
-                d['variations'].remove(variation)
-                continue
+                    if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
+                        variation['price'] = parsed_json['product']['price']['list']['value'] + 5
+                    elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+                        variation['price'] = parsed_json['product']['price']['sales']['value'] + 5
+                    else:
+                        variation['price'] = 0
+            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+                variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+            else:
+                variation['quantity_on_hand'] = 0
+            # if(d['variation_type'] == 'Size'):
+            #     variation['variation_image'] = parsed_json['product']['images']['pdpLarge'][0]['url']
+            #     if 'variation_image' in variation and variation['variation_image'] != None:
+            #         variation['variation_image'] = upload_image(variation['variation_image'],
+            #             # create a dynamic name for the image by removing all special characters and spaces from the product name and the variation name and make it clean url
+            #             d['product_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('à', 'a').replace('â', 'a').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('î', 'i').replace('ï', 'i').replace('ç', 'c').replace('ë', 'e').replace('ü', 'u').replace('ö', 'o').replace('û', 'u').replace('â', 'a').replace('î', 'i').replace('ï', 'i').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('à', 'a').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ç', 'c').replace('ë', 'e').replace('ü', 'u').replace('ö', 'o').replace('û', 'u').replace('â', 'a').replace('î', 'i').replace('ï', 'i').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('à', 'a').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ç', 'c').replace('ë', 'e').replace('ü', 'u').replace('ö', 'o').replace('û', 'u').replace('â', 'a').replace('î', 'i').replace('ï', 'i').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('à', 'a').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ç', 'c')
+            #         +"-" + variation['variation_name'].replace(' ', '').replace('/', '').replace('\\', '').replace('?', '').replace('*', '').replace('"', '').replace('<', '').replace('>', '').replace('|', '').replace(':', '').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('à', 'a').replace('â', 'a').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('î', 'i').replace('ï', 'i').replace('ç', 'c').replace('ë', 'e').replace('ü', 'u').replace('ö', 'o').replace('û', 'u').replace('â', 'a').replace('î', 'i').replace('ï', 'i').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('à', 'a').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ç', 'c').replace('ë', 'e').replace('ü', 'u').replace('ö', 'o').replace('û', 'u').replace('â', 'a').replace('î', 'i').replace('ï', 'i').replace('ô', 'o').replace('û', 'u').replace('ù', 'u').replace('à', 'a').replace('é', 'e').replace('è', 'e').replace('ê', 'e').replace('ç', 'c')
+            #         )
 
 def return_product_if_single(parsed_json, d):
     if 'upc' in parsed_json['product']:
@@ -175,51 +177,66 @@ def get_last_prices_and_upc():
                                 "id": size_option['id']
                             })
                         # data-attr = "size"
+                    if "variation_type" in d and d['variation_type'] == 'Color':
+                        # grap the id for each variation from the website
+                        url = f'''https://www.cosmoprofbeauty.ca/{d['cosmoprof_id']}.html'''
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        # div with class swatch-line
+                        color_div = soup.find_all('div', 'swatch-line')
+                        for color_option in color_div:
+                            variantName = color_option.find('span', 'variation-name').text
+                            variantId = color_option.find('span', 'variation-pid').text
+                            for variant in d['variations']:
+                                if variant['variation_name'] == variantName:
+                                    variant['id'] = variantId 
+                                    break
+                        # data-attr = "color"
                         
 
-                        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
-                        try: 
-                            driver.get(url)
-                            soup = BeautifulSoup(driver.page_source, 'html.parser')
-                            json_element = soup.find('pre')
-                            json_data = json_element.get_text()
-                            parsed_json = json.loads(json_data)
-                            return_product_if_range(parsed_json, d, url, driver)
-                            updated_datas.append(d)
-                            print(f'''{i}/{len(datas)}''')
-                        except Exception as e:
-                            time.sleep(40)
-                            driver.get(url)
-                            soup = BeautifulSoup(driver.page_source, 'html.parser')
-                            json_element = soup.find('pre')
-                            json_data = json_element.get_text()
-                            parsed_json = json.loads(json_data)
-                            return_product_if_range(parsed_json, d, url, driver)
-                            updated_datas.append(d)
-                            print(f'''{i}/{len(datas)}''')
-                            continue
-                # else:
-                #     url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
-                #     try:
-                #         driver.get(url)
-                #         soup = BeautifulSoup(driver.page_source, 'html.parser')
-                #         json_element = soup.find('pre')
-                #         json_data = json_element.get_text()
-                #         parsed_json = json.loads(json_data)
-                #         return_product_if_single(parsed_json, d)
-                #         updated_datas.append(d)
-                #         print(f'''{i}/{len(datas)}''')
-                #     except:
-                #         time.sleep(40)
-                #         driver.get(url)
-                #         soup = BeautifulSoup(driver.page_source, 'html.parser')
-                #         json_element = soup.find('pre')
-                #         json_data = json_element.get_text()
-                #         parsed_json = json.loads(json_data)
-                #         return_product_if_single(parsed_json, d)
-                #         updated_datas.append(d)
-                #         print(f'''{i}/{len(datas)}''')
-                #         continue
+                    url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
+                    try: 
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        return_product_if_range(parsed_json, d, url, driver)
+                        updated_datas.append(d)
+                        print(f'''{i}/{len(datas)}''')
+                    except Exception as e:
+                        time.sleep(40)
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        return_product_if_range(parsed_json, d, url, driver)
+                        updated_datas.append(d)
+                        print(f'''{i}/{len(datas)}''')
+                        continue
+                else:
+                    url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
+                    try:
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        return_product_if_single(parsed_json, d)
+                        updated_datas.append(d)
+                        print(f'''{i}/{len(datas)}''')
+                    except:
+                        time.sleep(40)
+                        driver.get(url)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                        return_product_if_single(parsed_json, d)
+                        updated_datas.append(d)
+                        print(f'''{i}/{len(datas)}''')
+                        continue
             except Exception as e:
                 print(e)
                 continue
