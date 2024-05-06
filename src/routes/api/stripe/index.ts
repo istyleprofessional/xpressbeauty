@@ -133,6 +133,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
               coupon: coupon.id,
             },
           ];
+          break;
         }
       }
     }
