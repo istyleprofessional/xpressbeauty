@@ -55,6 +55,7 @@ export default component$(() => {
         clientSecret,
         onComplete: async () => {
           gtag_report_conversion(sessionId);
+          localStorage.removeItem("copon");
           window.location.href = `/api/stripe?session_id=${sessionId}&userId=${cartData.cart.userId}&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${userObject.isDummy}`;
         },
       });

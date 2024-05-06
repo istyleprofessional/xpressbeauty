@@ -61,6 +61,8 @@ export const CartDetails = component$((props: any) => {
   const coponSignal = useSignal<string>("");
   const symbol = useSignal<string>("CAD");
   const applyCoponMessage = useSignal<string>("");
+  const isLoading = useSignal<boolean>(false);
+  const discount = useSignal<number>(0.0);
 
   useVisibleTask$(async ({ track }) => {
     track(() => cartContext?.cart?.totalPrice);
@@ -87,6 +89,7 @@ export const CartDetails = component$((props: any) => {
     console.log("shipping", shipping.value);
   });
   const handleAddCopon = $(async () => {
+    isLoading.value = true;
     const checkCopon = await checkCoponServer(
       coponSignal.value,
       userContext?._id
@@ -107,12 +110,13 @@ export const CartDetails = component$((props: any) => {
       const add30DollarsDiscount = await add30PercentDiscount();
       console.log("add30DollarsDiscount", add30DollarsDiscount);
       applyCoponMessage.value = "Copon Applied";
-      total.value = total.value - 30;
+      discount.value = -30;
       localStorage.setItem("copon", "true");
     } else {
       applyCoponMessage.value = "Copon is not valid or already used";
       localStorage.setItem("copon", "false");
     }
+    isLoading.value = false;
   });
 
   return (
@@ -131,9 +135,13 @@ export const CartDetails = component$((props: any) => {
           <button
             class="btn btn-sm bg-neutral-800 text-white font-['Inter'] w-fit rounded-sm"
             onClick$={handleAddCopon}
+            disabled={isLoading.value}
           >
             Apply
           </button>
+          {isLoading.value && (
+            <span class="loading loading-dots loading-md"></span>
+          )}
           {applyCoponMessage.value && (
             <p
               class={`text-xs ${
@@ -162,6 +170,22 @@ export const CartDetails = component$((props: any) => {
                 })}
           </p>
         </div>
+        {discount.value !== 0 && (
+          <div class="grid grid-cols-2 w-full">
+            <p class="text-white text-sm font-light">Discount</p>
+            <p class="justify-self-end text-white text-base font-light">
+              {discount.value
+                ? discount.value.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: symbol.value,
+                  })
+                : (0.0).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: symbol.value,
+                  })}
+            </p>
+          </div>
+        )}
         <div class="grid grid-cols-2 w-full">
           <p class="text-white text-sm font-light">TAX</p>
           <p class="justify-self-end text-white text-xs font-light w-full">
