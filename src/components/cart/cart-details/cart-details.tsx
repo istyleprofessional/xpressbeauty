@@ -107,6 +107,7 @@ export const CartDetails = component$((props: any) => {
       const add30DollarsDiscount = await add30PercentDiscount();
       console.log("add30DollarsDiscount", add30DollarsDiscount);
       applyCoponMessage.value = "Copon Applied";
+      total.value = total.value - 30;
       localStorage.setItem("copon", "true");
     } else {
       applyCoponMessage.value = "Copon is not valid or already used";
