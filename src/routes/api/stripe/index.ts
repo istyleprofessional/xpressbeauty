@@ -38,7 +38,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     "card",
     data.currencyObject !== "1" ? "afterpay_clearpay" : "",
   ];
-  const session = await stripe.checkout.sessions.create({
+  const sessionObject: any = {
     ui_mode: "embedded",
     currency: data.currencyObject === "1" ? "usd" : "cad",
     line_items: lineItemsArray,
@@ -62,6 +62,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
         message: "Thank you for your order! you will receive an email shortly.",
       },
     },
+
     redirect_on_completion: "if_required",
     phone_number_collection: {
       enabled: true,
@@ -117,7 +118,26 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${
       data.user.isDummy
     }`,
-  });
+  };
+  if (data.user) {
+    if (data.user.cobone) {
+      for (const copone of data.user.cobone) {
+        if (copone.code === "xpressbeauty30" && copone.status === false) {
+          const coupon = await stripe.coupons.create({
+            amount_off: 3000,
+            duration: "once",
+            currency: data.currencyObject === "1" ? "usd" : "cad",
+          });
+          sessionObject.discounts = [
+            {
+              coupon: coupon.id,
+            },
+          ];
+        }
+      }
+    }
+  }
+  const session = await stripe.checkout.sessions.create(sessionObject);
   json(200, { clientSecret: session.client_secret, sessionId: session.id });
   return;
 };
@@ -131,7 +151,7 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
         expand: ["line_items"],
       }
     );
-    console.log(session);
+    // console.log(session);
     if (session.status !== "complete") {
       throw redirect(301, "/payment/?error=Payment Failed. Please Try Again");
     }
@@ -176,6 +196,7 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
         tax: Number(session.total_details?.amount_tax ?? 0) / 100,
         finalTotal: Number(session.amount_total ?? 0) / 100,
         currency: session.currency ?? "cad",
+        amountDiscount: (session.total_details?.amount_discount ?? 0) / 100,
       },
       paid: false,
     };
@@ -215,22 +236,46 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
         query.get("userId") ?? ""
       );
     } else {
-      await updateExistingUser(
-        {
-          phoneNumber: session.customer_details?.phone ?? "",
-          generalInfo: {
-            address: {
-              addressLine1: session.shipping_details?.address?.line1 ?? "",
-              addressLine2: session.shipping_details?.address?.line2 ?? "",
-              city: session.shipping_details?.address?.city ?? "",
-              country: session.shipping_details?.address?.country ?? "",
-              postalCode: session.shipping_details?.address?.postal_code ?? "",
-              state: session.shipping_details?.address?.state ?? "",
+      if (session.total_details?.amount_discount) {
+        if (session.total_details?.amount_discount === 3000) {
+          await updateExistingUser(
+            {
+              phoneNumber: session.customer_details?.phone ?? "",
+              generalInfo: {
+                address: {
+                  addressLine1: session.shipping_details?.address?.line1 ?? "",
+                  addressLine2: session.shipping_details?.address?.line2 ?? "",
+                  city: session.shipping_details?.address?.city ?? "",
+                  country: session.shipping_details?.address?.country ?? "",
+                  postalCode:
+                    session.shipping_details?.address?.postal_code ?? "",
+                  state: session.shipping_details?.address?.state ?? "",
+                },
+              },
+              cobone: [{ code: "xpressbeauty30", status: true }],
+            },
+            query.get("userId") ?? ""
+          );
+        }
+      } else {
+        await updateExistingUser(
+          {
+            phoneNumber: session.customer_details?.phone ?? "",
+            generalInfo: {
+              address: {
+                addressLine1: session.shipping_details?.address?.line1 ?? "",
+                addressLine2: session.shipping_details?.address?.line2 ?? "",
+                city: session.shipping_details?.address?.city ?? "",
+                country: session.shipping_details?.address?.country ?? "",
+                postalCode:
+                  session.shipping_details?.address?.postal_code ?? "",
+                state: session.shipping_details?.address?.state ?? "",
+              },
             },
           },
-        },
-        query.get("userId") ?? ""
-      );
+          query.get("userId") ?? ""
+        );
+      }
     }
 
     await deleteCart(query.get("userId") ?? "");

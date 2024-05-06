@@ -217,6 +217,7 @@ export const phoneUpdateToken = async (id: string, token: string) => {
 export const updateExistingUser = async (data: any, id: string) => {
   try {
     const userdata = await User.findOne({ _id: id });
+    console.log(data);
     if (
       (data.email === userdata?.email ?? "") &&
       (data.phoneNumber === userdata?.phoneNumber ?? "")

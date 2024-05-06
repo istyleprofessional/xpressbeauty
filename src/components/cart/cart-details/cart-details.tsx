@@ -15,7 +15,7 @@ export const checkCoponServer = server$(async function (
   copon: string,
   user_id: string
 ) {
-  if (copon === "xpressbeauty10") {
+  if (copon === "xpressbeauty10" || copon === "xpressbeauty30") {
     // find user id and check if he used this copon before in cobone array
     const checkIfUserUsed = await User.findOne({
       _id: user_id,
@@ -39,6 +39,17 @@ export const checkCoponServer = server$(async function (
   } else {
     return false;
   }
+});
+
+export const add30PercentDiscount = server$(async function () {
+  const users = await User.find();
+  for (const user of users) {
+    await User.updateOne(
+      { _id: user._id },
+      { $push: { cobone: { code: "xpressbeauty30", status: false } } }
+    );
+  }
+  return true;
 });
 
 export const CartDetails = component$((props: any) => {
@@ -80,7 +91,7 @@ export const CartDetails = component$((props: any) => {
       coponSignal.value,
       userContext?._id
     );
-    if (checkCopon) {
+    if (checkCopon && coponSignal.value !== "xpressbeauty30") {
       subTotal.value = cartContext?.cart?.totalPrice;
       subTotal.value = subTotal.value - subTotal.value * 0.1;
       shipping.value = cartContext.cart.shipping;
@@ -90,6 +101,11 @@ export const CartDetails = component$((props: any) => {
       } else {
         symbol.value = "CAD";
       }
+      applyCoponMessage.value = "Copon Applied";
+      localStorage.setItem("copon", "true");
+    } else if (coponSignal.value === "xpressbeauty30") {
+      const add30DollarsDiscount = await add30PercentDiscount();
+      console.log("add30DollarsDiscount", add30DollarsDiscount);
       applyCoponMessage.value = "Copon Applied";
       localStorage.setItem("copon", "true");
     } else {

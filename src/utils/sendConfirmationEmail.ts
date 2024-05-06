@@ -11,6 +11,7 @@ export const sendConfirmationEmail = async (
     finalTotal: number;
     currency: string;
     shippingTax: number;
+    amountDiscount: number;
   },
   orderNumber: string
 ) => {
@@ -27,6 +28,7 @@ export const sendConfirmationEmail = async (
   const tax = totalInfo?.tax ?? 0;
   const shippingTax = totalInfo?.shippingTax ?? 0;
   const finalTotal = totalInfo?.finalTotal ?? 0;
+  const discounts = totalInfo?.amountDiscount ?? 0;
   console.log("email", totalInfo);
   const mailOptions = {
     from: `XpressBeauty Order Confirmed <${import.meta.env.VITE_EMAIL ?? ""}>`,
@@ -69,6 +71,13 @@ export const sendConfirmationEmail = async (
             <p>Shipping Tax: $${parseFloat(shippingTax.toString()).toFixed(
               2
             )}</p>
+            ${
+              discounts > 0
+                ? `<p>Discount: $${parseFloat(discounts.toString()).toFixed(
+                    2
+                  )}</p>`
+                : ""
+            }
             <p>Final Total: $${parseFloat(finalTotal.toString()).toFixed(2)}</p>
         </div>
         <div style="text-align: center;">
