@@ -72,7 +72,12 @@ export const CartDetails = component$((props: any) => {
 
     const checkCopon = localStorage.getItem("copon");
     if (checkCopon === "true") {
-      subTotal.value = subTotal.value - subTotal.value * 0.1;
+      const value = localStorage.getItem("value");
+      if (value && parseInt(value) === 30) {
+        discount.value = -30;
+      } else {
+        subTotal.value = subTotal.value - subTotal.value * 0.1;
+      }
       applyCoponMessage.value = "Copon Applied";
     }
     total.value = subTotal.value;
@@ -110,6 +115,7 @@ export const CartDetails = component$((props: any) => {
       const add30DollarsDiscount = await add30PercentDiscount();
       console.log("add30DollarsDiscount", add30DollarsDiscount);
       applyCoponMessage.value = "Copon Applied";
+      localStorage.setItem("value", "30");
       discount.value = -30;
       localStorage.setItem("copon", "true");
     } else {
