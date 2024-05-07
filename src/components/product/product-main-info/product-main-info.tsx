@@ -55,6 +55,11 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         currency: currencyObject === "1" ? "USD" : "CAD",
       });
     }
+    if (
+      salePrice.value === finalRegularPrice.value ||
+      salePrice.value === "CA$NaN"
+    )
+      salePrice.value = "";
   });
 
   useTask$(async () => {
@@ -125,15 +130,14 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
 
       <div class="flex flex-col gap-3 ">
         <h2 class="flex flex-row gap-2 text-xl lg:text-3xl text-black">
-          {priceType === "single" && sale_price?.sale !== "" && (
+          {priceType === "single" && salePrice.value !== "" ? (
             <>
-              <span class="text-black">{finalRegularPrice.value}</span>
+              <span class="text-black line-through">
+                {finalRegularPrice.value}
+              </span>
+              <span class="text-red-500">{salePrice.value}</span>
             </>
-          )}
-          {priceType === "single" && sale_price?.sale === "" && (
-            <span class="text-black">{finalRegularPrice.value}</span>
-          )}
-          {priceType === "range" && (
+          ) : (
             <span class="text-black">{finalRegularPrice.value}</span>
           )}
         </h2>
