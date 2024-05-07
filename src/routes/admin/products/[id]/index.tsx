@@ -72,7 +72,17 @@ export const useFormAction = routeAction$(async function (data, event) {
       if (formData[key].min) formData[key].min = parseFloat(formData[key].min);
       if (formData[key].max) formData[key].max = parseFloat(formData[key].max);
     }
-
+    const regex = /s\d+Img/i.test(key);
+    if (regex) {
+      console.log("here");
+      if (formData[key].includes("http")) {
+        if (formData.imgs) {
+          formData.imgs.push(formData[key]);
+        } else {
+          formData.imgs = [formData[key]];
+        }
+      }
+    }
     if (key === "product_image") {
       // formData.imgs = [formData[key]];
       // delete formData[key];
