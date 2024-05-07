@@ -130,16 +130,7 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
 
       <div class="flex flex-col gap-3 ">
         <h2 class="flex flex-row gap-2 text-xl lg:text-3xl text-black">
-          {priceType === "single" && salePrice.value !== "" ? (
-            <>
-              <span class="text-black line-through">
-                {finalRegularPrice.value}
-              </span>
-              <span class="text-red-500">{salePrice.value}</span>
-            </>
-          ) : (
-            <span class="text-black">{finalRegularPrice.value}</span>
-          )}
+          <span class="text-black">{finalRegularPrice.value}</span>
         </h2>
 
         <div id="afterpay-clearpay-message"> </div>
