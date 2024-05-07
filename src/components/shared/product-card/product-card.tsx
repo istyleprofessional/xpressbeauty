@@ -111,6 +111,11 @@ export const ProductCard = component$((props: ProductCardProps) => {
         currency: currencyObject === "1" ? "USD" : "CAD",
       });
     }
+    if (
+      verifiedSalePrice.value === verifiedPrice.value ||
+      verifiedSalePrice.value === "CA$NaN"
+    )
+      verifiedSalePrice.value = "";
   });
 
   useTask$(() => {
@@ -213,11 +218,16 @@ export const ProductCard = component$((props: ProductCardProps) => {
               In Stock
             </p>
             <p class={`text-sm text-gray-500 font-semibold lg:text-base`}>
-              {product.priceType === "single" && (
-                <span class=" text-gray-600">{finalRegularPrice.value}</span>
-              )}
-              {product.priceType === "range" && (
-                <span class=" text-gray-600">{finalRegularPrice.value}</span>
+              {product.priceType === "single" &&
+              verifiedSalePrice.value !== "" ? (
+                <>
+                  <span class="text-black line-through">
+                    {finalRegularPrice.value}
+                  </span>{" "}
+                  <span class="text-red-500">{verifiedSalePrice.value}</span>
+                </>
+              ) : (
+                <span class="text-black">{finalRegularPrice.value}</span>
               )}
             </p>
           </>

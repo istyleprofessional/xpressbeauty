@@ -139,7 +139,12 @@ export default component$(() => {
         id: product._id,
         product_name: product.product_name,
         product_img: (product?.imgs ?? [])[0] ?? "",
-        price: parseFloat(product?.price?.regular?.toString()).toFixed(2),
+
+        price:
+          product?.sale_price?.sale &&
+          product?.sale_price?.sale !== product.price.regular
+            ? parseFloat(product?.sale_price?.sale?.toString()).toFixed(2)
+            : parseFloat(product?.price?.regular?.toString()).toFixed(2),
         quantity: value,
         currency: currencyObject === "1" ? "USD" : "CAD",
       };
