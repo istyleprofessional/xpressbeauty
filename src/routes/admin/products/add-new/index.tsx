@@ -1,6 +1,8 @@
 import { component$, $, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { Form, routeAction$, routeLoader$ } from "@builder.io/qwik-city";
+import { Image } from "@unpic/qwik";
 import { Toast } from "~/components/admin/toast/toast";
+import { ExtraImgs } from "~/components/shared/extraImgs";
 import { get_all_brands } from "~/express/services/brand.service";
 import { get_all_categories } from "~/express/services/category.service";
 import { addProductServer } from "~/express/services/product.service";
@@ -48,6 +50,18 @@ export const useFormAction = routeAction$(async function (data, event) {
     } else {
       formData["updateQuickBooks"] = false;
     }
+    // regex to detect if the key contains "s + a number + Img"
+    const regex = /s\d+Img/i.test(key);
+    if (regex) {
+      console.log("here");
+      if (formData[key].includes("http")) {
+        if (formData.imgs) {
+          formData.imgs.push(formData[key]);
+        } else {
+          formData.imgs = [formData[key]];
+        }
+      }
+    }
     formData["perfix"] = encodeURIComponent(
       formData["product_name"]
         ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
@@ -77,8 +91,10 @@ export const useFormAction = routeAction$(async function (data, event) {
 });
 
 export default component$(() => {
-  const categories = JSON.parse(useEditProductData()?.value ?? "[]").categories;
-  const brands = JSON.parse(useEditProductData()?.value ?? "[]").brands;
+  const categoriesss = useEditProductData().value;
+  const categories = JSON.parse(categoriesss).categories;
+  const brandsss = useEditProductData().value;
+  const brands = JSON.parse(brandsss).brands;
   const action = useFormAction();
   const imageSignal = useSignal<string>("");
   const descriptionSignal = useSignal<string>("");
@@ -120,12 +136,14 @@ export default component$(() => {
     }
     const formData = new FormData();
     formData.append("image", file);
-    const uuid = Math.random().toString(36).substring(2, 15);
+    // const uuid = Math.random().toString(36).substring(2, 15);
     formData.append(
       "name",
-      `${productName.value.replace(/ /g, "-")}/${
-        file.name.split(".")[0]
-      }${uuid}.webp`
+      `${productName.value
+        .replace(/ /g, "-")
+        .replace(/[^a-zA-Z0-9\s]/g, "")}/${file.name
+        .split(".")[0]
+        .replace(/[^a-zA-Z0-9\s]/g, "")}.webp`
     );
     const uploadReq = await fetch("/api/admin/product/upload", {
       method: "POST",
@@ -136,31 +154,24 @@ export default component$(() => {
       return;
     }
     if (track === "main") {
-      imageSignal.value = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${productName.value.replace(
-        / /g,
-        "-"
-      )}/${file.name.split(".")[0]}${uuid}.webp`;
+      imageSignal.value = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${productName.value
+        .replace(/ /g, "-")
+        .replace(/[^a-zA-Z0-9\s]/g, "")}/${file.name
+        .split(".")[0]
+        .replace(/[^a-zA-Z0-9\s]/g, "")}.webp`;
     }
     if (track === "variant") {
       document
         .querySelector(`#variantImage-${variantSignal.value}`)
         ?.setAttribute(
           "src",
-          `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${productName.value.replace(
-            / /g,
-            "-"
-          )}/${file.name.split(".")[0]}${uuid}.webp`
+          `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${productName.value
+            .replace(/ /g, "-")
+            .replace(/[^a-zA-Z0-9\s]/g, "")}/${file.name
+            .split(".")[0]
+            .replace(/[^a-zA-Z0-9\s]/g, "")}.webp`
         );
-
-      // return `https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/${productName.value.replace(
-      //   / /g,
-      //   "-"
-      // )}/${file.name.split(".")[0]}${uuid}.webp`;
     }
-    // imageSignal.value = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/${productName.value.replace(
-    //   / /g,
-    //   "-"
-    // )}/${file.name.split(".")[0]}${uuid}.webp`;
   });
 
   const handleAlertClose = $(() => {
@@ -168,15 +179,15 @@ export default component$(() => {
   });
 
   return (
-    <div class="flex flex-col w-full h-full bg-[#F9FAFB]">
+    <div class="flex h-full w-full flex-col bg-[#F9FAFB]">
       <script
         src="https://cdn.tiny.cloud/1/7d7c50ku3fuvbrrbjft38fdtt26o51zx0iwuab7hlwexhgr9/tinymce/5/tinymce.min.js"
         referrerPolicy="origin"
       ></script>
       {action.isRunning && (
         <>
-          <div class="w-full backdrop-blur-lg backdrop-brightness-75 drop-shadow-lg fixed z-20 m-auto inset-x-0 inset-y-0 ">
-            <progress class="progress progress-secondary bg-black w-56 fixed z-20 m-auto inset-x-0 inset-y-0"></progress>
+          <div class="fixed inset-x-0 inset-y-0 z-20 m-auto w-full drop-shadow-lg backdrop-blur-lg backdrop-brightness-75 ">
+            <progress class="progress progress-secondary fixed inset-x-0 inset-y-0 z-20 m-auto w-56 bg-black"></progress>
           </div>
         </>
       )}
@@ -191,27 +202,27 @@ export default component$(() => {
       )}
 
       <Form action={action}>
-        <div class="flex flex-row justify-between w-full">
+        <div class="flex w-full flex-row justify-between">
           {/* <input type="hidden" name="_id" value={product?._id} /> */}
           {/* <input type="hidden" name="priceType" value={product?.priceType} /> */}
-          <h1 class="text-2xl font-bold p-2 text-[#6B7280]">Add Product</h1>
-          <div class="flex flex-row gap-2 items-center">
+          <h1 class="p-2 text-2xl font-bold text-[#6B7280]">Add Product</h1>
+          <div class="flex flex-row items-center gap-2">
             <button
               type="submit"
-              class="btn bg-[#7C3AED] btn-sm text-white w-40"
+              class="btn btn-sm w-40 bg-[#7C3AED] text-white"
             >
               Save
             </button>
           </div>
         </div>
 
-        <div class="flex flex-col bg-[#FFF] h-full w-full p-6 gap-10">
+        <div class="flex h-full w-full flex-col gap-10 bg-[#FFF] p-6">
           <div class="grid grid-cols-4">
             <p class="col-span-1">Product Name</p>
             <input
               type="text"
               name="product_name"
-              class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+              class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
               onInput$={(e: any) => (productName.value = e.target.value)}
             />
           </div>
@@ -220,10 +231,10 @@ export default component$(() => {
               <div class="grid grid-cols-4">
                 <p class="col-span-1">Image</p>
                 <div class="col-span-3 flex flex-col gap-2">
-                  <img src={imageSignal.value} class="w-24 h-24" alt="" />
+                  <Image src={imageSignal.value} class="h-24 w-24" alt="" />
                   <input
                     type="file"
-                    class="file-input file-input-xs file-input-bordered w-full max-w-xs"
+                    class="file-input file-input-bordered file-input-xs w-full max-w-xs"
                     onChange$={(event: any) => handleFileChange(event, "main")}
                   />
                   <input
@@ -233,15 +244,18 @@ export default component$(() => {
                   />
                 </div>
               </div>
+              <div class="grid grid-cols-9">
+                <div class="col-span-9 ml-[139px]  ">
+                  <ExtraImgs product_name={productName.value} />
+                </div>
+              </div>
 
               <div class="grid grid-cols-4">
                 <p class="col-span-1">Price Type</p>
                 <select
                   class="select w-full max-w-xs"
                   name="priceType"
-                  onChange$={(_: Event, elem: HTMLSelectElement) =>
-                    (typeOfPrice.value = elem.value)
-                  }
+                  onChange$={(e: any) => (typeOfPrice.value = e.target.value)}
                 >
                   <option disabled>Pick product price type</option>
                   <option value="single">Single</option>
@@ -252,7 +266,7 @@ export default component$(() => {
                 {typeOfPrice.value === "range" && (
                   <>
                     <p class="col-span-1">Price Range</p>
-                    <div class="flex flex-row gap-2 col-span-3 items-center">
+                    <div class="col-span-3 flex flex-row items-center gap-2">
                       <input
                         type="text"
                         name="price.min"
@@ -273,7 +287,7 @@ export default component$(() => {
                     <input
                       type="text"
                       name="price.regular"
-                      class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                      class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
                     />
                   </>
                 )}
@@ -282,7 +296,7 @@ export default component$(() => {
                 {typeOfPrice.value === "range" && (
                   <>
                     <p class="col-span-1">Sale Price Range</p>
-                    <div class="flex flex-row gap-2 col-span-3 items-center">
+                    <div class="col-span-3 flex flex-row items-center gap-2">
                       <input
                         type="text"
                         name="sale_price.min"
@@ -303,7 +317,7 @@ export default component$(() => {
                     <input
                       type="text"
                       name="sale_price.sale"
-                      class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                      class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
                     />
                   </>
                 )}
@@ -342,7 +356,7 @@ export default component$(() => {
                       if (!other) resArr.push(currentArr);
                       return resArr;
                     }, [])
-                    .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                    .sort((a: any, b: any) => a.name?.localeCompare(b.name))
                     .map((category: any, index: number) => (
                       <option key={index} value={category.name}>
                         {category.name}
@@ -364,7 +378,7 @@ export default component$(() => {
                       if (!other) resArr.push(currentArr);
                       return resArr;
                     }, [])
-                    .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                    .sort((a: any, b: any) => a.name?.localeCompare(b.name))
                     .map((brand: any, index: number) => (
                       <option key={index} value={brand.name}>
                         {brand.name}
@@ -386,7 +400,7 @@ export default component$(() => {
                 <input
                   type="text"
                   name="item_no"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                  class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
                 />
               </div>
               <div class="grid grid-cols-4">
@@ -394,7 +408,7 @@ export default component$(() => {
                 <input
                   type="text"
                   name="sku"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                  class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
                 />
               </div>
               <div class="grid grid-cols-4">
@@ -402,7 +416,7 @@ export default component$(() => {
                 <input
                   type="text"
                   name="quantity_on_hand"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                  class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
                 />
               </div>
               <div class="grid grid-cols-4">
@@ -410,7 +424,7 @@ export default component$(() => {
                 <input
                   type="text"
                   name="bar_code_value"
-                  class="input input-md w-full border-[1px] border-[#D1D5DB] col-span-3"
+                  class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
                 />
               </div>
               <div class="grid grid-cols-4">
@@ -431,7 +445,7 @@ export default component$(() => {
               {isVariantOpen.value && (
                 <div class="grid grid-cols-4">
                   <p class="col-span-1">Add Variation</p>
-                  <div class="flex flex-col gap-2 p-2 variantArray">
+                  <div class="variantArray flex flex-col gap-2 p-2">
                     <p>Variation Name</p>
                     <input
                       type="text"
@@ -439,9 +453,9 @@ export default component$(() => {
                       name="variations.1.variation_name"
                     />
                     <p>Variation Image</p>
-                    <img
+                    <Image
                       src=""
-                      class="w-24 h-24"
+                      class="h-24 w-24"
                       alt=""
                       id={`variantImage-${variantSignal.value}`}
                     />
@@ -465,9 +479,9 @@ export default component$(() => {
                       class="input input-md w-full border-[1px] border-[#D1D5DB]"
                       name="variations.1.quantity_on_hand"
                     />
-                    <hr class="border-[#D1D5DB] mt-5 pb-5" />
+                    <hr class="mt-5 border-[#D1D5DB] pb-5" />
                   </div>
-                  <div class="flex flex-row justify-end items-center p-2">
+                  <div class="flex flex-row items-center justify-end p-2">
                     <button
                       type="button"
                       class="btn btn-primary"
@@ -530,7 +544,7 @@ export default component$(() => {
         <div class="flex flex-row justify-between gap-2 p-2">
           <dialog id="my_modal_1" class="modal">
             <div class="modal-box">
-              <h3 class="font-bold text-lg">Change Product Visibility!</h3>
+              <h3 class="text-lg font-bold">Change Product Visibility!</h3>
               <p class="py-4">Are you sure you want change </p>
               <div class="modal-action">
                 <form method="dialog" class="flex gap-2">

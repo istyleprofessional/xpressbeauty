@@ -196,9 +196,9 @@ export default component$(() => {
                   <th>
                     <Image
                       src={
-                        (product?.imgs as any[])[0].includes("http")
+                        (product?.imgs as any[])[0]?.includes("http")
                           ? (product?.imgs as any[])[0]
-                          : (product?.imgs as any[])[0].replace(".", "")
+                          : (product?.imgs as any[])[0]?.replace(".", "")
                       }
                       class="w-12 h-12 object-contain"
                       onError$={(_: any, element: HTMLImageElement) => {

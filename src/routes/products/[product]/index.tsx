@@ -421,7 +421,6 @@ export default component$(() => {
           </div>
         </div>
       )}
-
       <div class="flex flex-col gap-5 lg:gap-20">
         <div class="flex flex-col justify-start items-start w-full gap-5 lg:grid lg:grid-cols-3 lg:gap-10 p-3 lg:p-10">
           <Gallery
@@ -612,15 +611,15 @@ export const head: DocumentHead = ({ resolveValue }) => {
 
   return {
     title: `${jsonData?.product_name ?? ""} | ${
-      jsonData.companyName.name && jsonData.companyName.name !== ""
-        ? `${jsonData.companyName.name} |`
+      jsonData.companyName?.name && jsonData.companyName?.name !== ""
+        ? `${jsonData.companyName?.name} |`
         : ""
     } ${`${jsonData.categories[0].main ?? ""}`}`,
     meta: [
       {
         name: "description",
         content: `Discover ${jsonData?.product_name ?? ""}${
-          jsonData.companyName.name && jsonData.companyName.name !== ""
+          jsonData.companyName?.name && jsonData.companyName?.name !== ""
             ? ` by ${jsonData.companyName.name}`
             : " "
         }${

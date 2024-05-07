@@ -192,8 +192,6 @@ def get_last_prices_and_upc():
                                     variant['id'] = variantId 
                                     break
                         # data-attr = "color"
-                        
-
                     url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['cosmoprof_id']}'''
                     try: 
                         driver.get(url)

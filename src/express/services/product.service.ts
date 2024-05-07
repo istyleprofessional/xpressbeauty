@@ -38,6 +38,40 @@ export const updateVarations = async (id: string, variations: any) => {
   }
 };
 
+export const addMainImg = async (product: any, imgUrl: string) => {
+  try {
+    //console.log(product);
+
+    const result = await Product.findById(product?._id);
+
+    if (result) result.imgs[0] = imgUrl;
+    result?.save();
+
+    return result;
+  } catch (err) {
+    console.log(err);
+
+    return { err: err };
+  }
+};
+
+export const removeImgFromDb = async (product: any, imgUrl: string) => {
+  try {
+    //console.log(product);
+    const result = await Product.findById(product?._id);
+    if (result) {
+      result.imgs = result.imgs.filter((i: any) => i != imgUrl);
+      result.save();
+    }
+
+    return result;
+  } catch (err) {
+    console.log(err);
+
+    return { err: err };
+  }
+};
+
 export const addNewVarient = async (data: any) => {
   try {
     //console.log(product);
@@ -90,7 +124,7 @@ export const addProductServer = async (product: any) => {
       { _id: result._id },
       {
         $set: {
-          perfix: `${result.perfix}-${result._id}`,
+          perfix: `/products/${product.perfix}-pid-${result._id}`,
         },
       },
       {
@@ -249,9 +283,14 @@ export const get_new_arrivals_products = async (filter?: string) => {
 };
 
 export const get_product_by_name = async (name: string) => {
+  console.log(name);
   try {
     const result = await Product.findOne({
-      $or: [{ perfix: name }, { oldPerfix: name }],
+      $or: [
+        { perfix: name },
+        { oldPerfix: name },
+        { _id: name.split("-pid-")[1] },
+      ],
     });
     return result;
   } catch (err) {
@@ -532,6 +571,30 @@ export const get_random_products = async (inStock?: boolean) => {
     return JSON.stringify({ status: "success", result: result, total: total });
   } catch (err) {
     return JSON.stringify({ status: "failed", err: err });
+  }
+};
+
+export const addExtraImg = async (product: any, imgUrl: string) => {
+  try {
+    //console.log(product);
+
+    const result = await Product.findById(product?._id);
+    const arrLength = result?.imgs.length;
+
+    if (arrLength) {
+      if (arrLength >= 5) {
+        result.imgs[4] = imgUrl;
+      } else {
+        result.imgs[arrLength] = imgUrl;
+      }
+    }
+
+    await Product.findByIdAndUpdate(product?._id, { ...result }, { new: true });
+    return result;
+  } catch (err) {
+    console.log(err);
+
+    return { err: err };
   }
 };
 

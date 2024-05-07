@@ -163,9 +163,9 @@ export const ProductCard = component$((props: ProductCardProps) => {
         layout="constrained"
         key={i}
         src={
-          (product.imgs ?? [])[0].includes("http")
+          (product.imgs ?? [])[0]?.includes("http")
             ? (product.imgs ?? [])[0]
-            : (product.imgs ?? [])[0].replace(".", "")
+            : (product.imgs ?? [])[0]?.replace(".", "")
         }
         onError$={(e: any) => {
           e.target.src = "/placeholder.webp";
@@ -192,19 +192,13 @@ export const ProductCard = component$((props: ProductCardProps) => {
                     type="radio"
                     name="rating-10"
                     class="bg-yellow-500 mask mask-star-2 mask-half-1"
-                    checked={
-                      // first half star
-                      index + 0.5 === averageRating.value
-                    }
+                    checked={index + 0.5 === averageRating.value}
                   />
                   <input
                     type="radio"
                     name="rating-10"
                     class="bg-yellow-500 mask mask-star-2 mask-half-2"
-                    checked={
-                      // second half star
-                      index + 1 === averageRating.value
-                    }
+                    checked={index + 1 === averageRating.value}
                   />
                 </>
               ))}

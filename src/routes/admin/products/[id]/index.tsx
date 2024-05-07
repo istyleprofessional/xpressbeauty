@@ -5,16 +5,26 @@ import {
   routeLoader$,
   server$,
 } from "@builder.io/qwik-city";
-import { Image } from "@unpic/qwik";
 import { Toast } from "~/components/admin/toast/toast";
+import { ExtraImgs } from "~/components/shared/extraImgs";
 import { get_all_brands } from "~/express/services/brand.service";
 import { get_all_categories } from "~/express/services/category.service";
 import {
+  addMainImg,
   addNewVarient,
   getProductByIdForAdmin,
   updateVarations,
   update_product_service,
+  removeImgFromDb,
 } from "~/express/services/product.service";
+
+const goAddMainImg = server$(async (product: any, imgUrl: string) => {
+  await addMainImg(product, imgUrl);
+});
+
+const goRemoveImgFromDb = server$(async (product: any, imgUrl: string) => {
+  await removeImgFromDb(product, imgUrl);
+});
 
 export const useEditProductData = routeLoader$(async ({ params }) => {
   const product = await getProductByIdForAdmin(params.id);
@@ -57,15 +67,15 @@ export const useFormAction = routeAction$(async function (data, event) {
       if (formData[key].max) formData[key].max = parseFloat(formData[key].max);
     }
     if (key === "sale_price") {
-      if (formData[key]?.sale)
-        formData[key].sale = parseFloat(formData[key]?.sale);
+      if (formData[key].sale)
+        formData[key].sale = parseFloat(formData[key].sale);
       if (formData[key].min) formData[key].min = parseFloat(formData[key].min);
       if (formData[key].max) formData[key].max = parseFloat(formData[key].max);
     }
 
     if (key === "product_image") {
-      formData.imgs = [formData[key]];
-      delete formData[key];
+      // formData.imgs = [formData[key]];
+      // delete formData[key];
     }
     if (key === "isHidden") {
       formData[key] = formData[key] === "true" ? true : false;
@@ -76,17 +86,6 @@ export const useFormAction = routeAction$(async function (data, event) {
       formData["updateQuickBooks"] = false;
     }
   });
-
-  if (formData["priceType"] === "single" && formData["proDiscPercent"]) {
-    formData["proDiscPercent"] =
-      ((formData["proDiscPercent"] - formData["price"].regular) /
-        formData["price"].regular) *
-      -1;
-
-    formData["proDiscPercent"] = parseFloat(
-      formData["proDiscPercent"].toFixed(2)
-    );
-  }
 
   await update_product_service(formData);
   return { status: "success" };
@@ -141,13 +140,6 @@ export default component$(() => {
   const showToastVarients = useSignal(0);
   const showAddToastVarients = useSignal(0);
 
-  if (product.priceType == "single" && product?.proDiscPercent != null) {
-    product.proDiscPercent = (
-      product.price.regular -
-      product.price.regular * product.proDiscPercent
-    ).toFixed(2);
-  }
-
   useVisibleTask$(() => {
     (window as any)?.tinymce?.init({
       selector: "#mytextarea",
@@ -184,7 +176,7 @@ export default component$(() => {
       "name",
       `${product.product_name
         ?.replace(/ /g, "-")
-        .replace(/[^a-zA-Z0-9\s]/g, "")}/${file.name
+        .replace(/[^a-zA-Z0-9\s]/g, "")}/${file?.name
         .split(".")[0]
         .replace(/[^a-zA-Z0-9\s]/g, "")}.webp`
     );
@@ -198,9 +190,11 @@ export default component$(() => {
     }
     imageSignal.value = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${product.product_name
       .replace(/ /g, "-")
-      .replace(/[^a-zA-Z0-9\s]/g, "")}/${file.name
+      .replace(/[^a-zA-Z0-9\s]/g, "")}/${file?.name
       .split(".")[0]
       .replace(/[^a-zA-Z0-9\s]/g, "")}.webp`;
+
+    await goAddMainImg(product, imageSignal.value);
   });
 
   const handleFileChangeOfVarient = $(async (event: any) => {
@@ -219,7 +213,7 @@ export default component$(() => {
           ""
         )}/variations/${NameSignalOfNewVarient.value
         .replace(/ /g, "-")
-        .replace(/[^a-zA-Z0-9\s]/g, "")}-${file.name.split(".")[0]}.webp`
+        .replace(/[^a-zA-Z0-9\s]/g, "")}-${file?.name.split(".")[0]}.webp`
     );
     const uploadReq = await fetch("/api/admin/product/upload", {
       method: "POST",
@@ -233,7 +227,7 @@ export default component$(() => {
       ?.replace(/ /g, "-")
       .replace(/[^a-zA-Z0-9\s]/g, "")}/variations/${NameSignalOfNewVarient.value
       .replace(/ /g, "-")
-      .replace(/[^a-zA-Z0-9\s]/g, "")}-${file.name.split(".")[0]}.webp`;
+      .replace(/[^a-zA-Z0-9\s]/g, "")}-${file?.name.split(".")[0]}.webp`;
   });
 
   const handleAlertClose = $(() => {
@@ -265,7 +259,7 @@ export default component$(() => {
     formData.append(
       "name",
       `${item.variation_name.replace(/ /g, "-")}/${
-        file.name.split(".")[0]
+        file?.name.split(".")[0]
       }.webp`
     );
     const uploadReq = await fetch("/api/admin/product/upload", {
@@ -279,11 +273,17 @@ export default component$(() => {
     item.variation_image = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${item.variation_name.replace(
       / /g,
       "-"
-    )}/${file.name.split(".")[0]}.webp`;
+    )}/${file?.name.split(".")[0]}.webp`;
 
     (
       document.getElementById(item.variation_id + "img") as HTMLImageElement
     ).src = item.variation_image;
+  });
+
+  const handleRemoveImg = $(async (imgUrl: string) => {
+    //console.log(imgUrl);
+    document.getElementById(imgUrl)?.remove();
+    await goRemoveImgFromDb(product, imgUrl);
   });
 
   return (
@@ -350,10 +350,10 @@ export default component$(() => {
         </div>
 
         <div class="flex h-full w-full flex-col gap-10 bg-[#FFF] p-6">
-          <div class="grid grid-cols-4">
+          <div class="grid grid-cols-9">
             <p class="col-span-1">Image</p>
             <div class="col-span-3 flex flex-col gap-2">
-              <Image src={imageSignal.value} class="h-24 w-24" alt="" />
+              <img src={imageSignal.value} class="h-24 w-24" alt="" />
               <input
                 type="file"
                 class="file-input file-input-bordered file-input-sm  w-full max-w-xs"
@@ -365,13 +365,50 @@ export default component$(() => {
                 value={imageSignal.value}
               />
             </div>
+            <p class="col-span-1">Preview</p>
+            <div class="col-span-4 flex flex-wrap gap-2">
+              {(product.imgs?.length ?? 0) > 1 &&
+                product.imgs?.map((img: string, index: number) => (
+                  <div class="flex flex-col" key={index} id={img}>
+                    <svg
+                      class="mx-1 my-1 h-6 w-6 cursor-pointer self-center rounded-sm bg-gray-100 text-gray-800 shadow dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      onClick$={() => handleRemoveImg(img)}
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 12h14"
+                      />
+                    </svg>
+                    <img
+                      width={24}
+                      height={24}
+                      src={img}
+                      class={`h-24 w-24 max-w-full rounded-lg border-2 border-gray-300 object-contain object-center p-3`}
+                      alt="Product Image"
+                    />
+                  </div>
+                ))}
+            </div>
           </div>
+          <div class="grid grid-cols-9">
+            <div class="col-span-9 ml-[139px]  ">
+              <ExtraImgs product_name={product.product_name} />
+            </div>
+          </div>
+
           <div class="grid grid-cols-4">
             <p class="col-span-1">Product Name</p>
             <input
               type="text"
               name="product_name"
-              class="input input-md col-span-3 w-full border-[1px] text-black border-[#D1D5DB]"
+              class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
               value={product.product_name}
             />
           </div>
@@ -384,14 +421,14 @@ export default component$(() => {
                     type="text"
                     name="price.min"
                     class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                    value={product.price?.min}
+                    value={product.price.min}
                   />
                   <p class="col-span-1">-</p>
                   <input
                     type="text"
                     name="price.max"
                     class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                    value={product.price?.max}
+                    value={product.price.max}
                   />
                 </div>
               </>
@@ -403,23 +440,11 @@ export default component$(() => {
                   type="text"
                   name="price.regular"
                   class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
-                  value={product.price.regular}
+                  value={product.price?.regular}
                 />
               </>
             )}
           </div>
-
-          {product.priceType === "single" && (
-            <div class="grid grid-cols-4">
-              <p class="col-span-1">Professional Price</p>
-              <input
-                type="text"
-                name="proDiscPercent"
-                class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
-                value={product.proDiscPercent}
-              />
-            </div>
-          )}
 
           <div class="grid grid-cols-4">
             {product.priceType === "range" && (
@@ -430,14 +455,14 @@ export default component$(() => {
                     type="text"
                     name="sale_price.min"
                     class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                    value={product?.sale_price?.min}
+                    value={product.sale_price.min}
                   />
                   <p class="col-span-1">-</p>
                   <input
                     type="text"
                     name="sale_price.max"
                     class="input input-md w-full border-[1px] border-[#D1D5DB]"
-                    value={product?.sale_price?.max}
+                    value={product.sale_price.max}
                   />
                 </div>
               </>
@@ -449,7 +474,7 @@ export default component$(() => {
                   type="text"
                   name="sale_price.sale"
                   class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
-                  value={product?.sale_price?.sale}
+                  value={product.sale_price.sale}
                 />
               </>
             )}
@@ -493,21 +518,21 @@ export default component$(() => {
               {categories.result
                 ?.reduce((resArr: any, currentArr: any) => {
                   const other = resArr.some(
-                    (ele: any) => currentArr.name === ele.name
+                    (ele: any) => currentArr?.name === ele?.name
                   );
                   if (!other) resArr.push(currentArr);
                   return resArr;
                 }, [])
-                .sort((a: any, b: any) => a.name?.localeCompare(b?.name))
+                .sort((a: any, b: any) => a?.name?.localeCompare(b?.name))
                 .map((category: any, index: number) => (
                   <option
                     key={index}
-                    value={category.name}
+                    value={category?.name}
                     selected={product.categories.some(
-                      (cate: any) => cate.name === category.name
+                      (cate: any) => cate?.name === category?.name
                     )}
                   >
-                    {category.name}
+                    {category?.name}
                   </option>
                 ))}
             </select>
@@ -515,26 +540,27 @@ export default component$(() => {
           <div class="grid grid-cols-4">
             <p class="col-span-1">Brand</p>
             <select class="select w-full max-w-xs" name="companyName.name">
-              <option disabled selected={!product.companyName.name}>
+              <option disabled selected={!product.companyName?.name}>
                 Pick product brand
               </option>
               {brands.result
                 ?.reduce((resArr: any, currentArr: any) => {
                   const other = resArr.some(
                     (ele: any) =>
-                      currentArr.name.toLowerCase() === ele.name.toLowerCase()
+                      currentArr?.name?.toLowerCase() ===
+                      ele?.name?.toLowerCase()
                   );
                   if (!other) resArr.push(currentArr);
                   return resArr;
                 }, [])
-                .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                .sort((a: any, b: any) => a?.name.localeCompare(b?.name))
                 .map((brand: any, index: number) => (
                   <option
                     key={index}
-                    value={brand.name}
-                    selected={product.companyName.name === brand.name}
+                    value={brand?.name}
+                    selected={product.companyName?.name === brand?.name}
                   >
-                    {brand.name}
+                    {brand?.name}
                   </option>
                 ))}
             </select>
@@ -721,7 +747,7 @@ export default component$(() => {
                   Price
                 </th>
                 <th scope="col" class="px-2 py-1">
-                  Quantity on hand
+                  Pro Price
                 </th>
               </tr>
             </thead>
@@ -737,7 +763,7 @@ export default component$(() => {
                   >
                     <input
                       type="text"
-                      class="input input-md col-span-3 w-full border-[1px] text-black border-[#D1D5DB]"
+                      class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
                       value={item.variation_name}
                       onChange$={(e: any) => {
                         item.variation_name = e.target?.value;
@@ -747,7 +773,7 @@ export default component$(() => {
                   <td class="px-2 py-1">
                     <input
                       type="number"
-                      class="input input-md col-span-3 w-full border-[1px] text-black border-[#D1D5DB]"
+                      class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
                       value={item.price}
                       onChange$={(e: any) => {
                         item.price = parseFloat(e.target?.value);
@@ -757,10 +783,10 @@ export default component$(() => {
                   <td class="px-2 py-1">
                     <input
                       type="number"
-                      class="input input-md col-span-3 w-full border-[1px] text-black border-[#D1D5DB]"
-                      value={item.quantity_on_hand}
+                      class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
+                      value={item.proprice}
                       onChange$={(e: any) => {
-                        item.quantity_on_hand = parseInt(e.target?.value);
+                        item.proprice = parseFloat(e.target?.value);
                       }}
                     />
                   </td>
@@ -903,7 +929,7 @@ export default component$(() => {
                 <p class="col-span-1">Pro Price</p>
                 <input
                   type="number"
-                  name="proprice"
+                  name="wholesale_price"
                   class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
                 />
               </div>

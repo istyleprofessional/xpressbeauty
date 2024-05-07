@@ -59,7 +59,6 @@ export default component$(() => {
           window.location.href = `/api/stripe?session_id=${sessionId}&userId=${cartData.cart.userId}&currency=${currencyObject}&shipping=${shipping.value}&isGuest=${userObject.isDummy}`;
         },
       });
-
       // Mount Checkout
       checkout.mount("#checkout");
 
