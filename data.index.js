@@ -503,9 +503,10 @@ async function addCanradProductsFromGoogleSheet() {
 
 async function addFakeReviews() {
   await connect(mongoUrl);
-  const orders = await Order.find({});
+  const products = await Product.find({});
+  // const orders = await Order.find({});
   // find all products in the orders
-  const products = [];
+  // const products = [];
   // for (const order of orders) {
   //   for (const item of order.products) {
   //     const productFromDb = await Product.findOne({
