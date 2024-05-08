@@ -1,4 +1,5 @@
 import { component$, useContext } from "@builder.io/qwik";
+import { Image } from "@unpic/qwik";
 import { CurContext } from "~/context/cur.context";
 
 export interface VariationsProps {
@@ -9,6 +10,7 @@ export interface VariationsProps {
   variationCheckerLoading?: boolean;
   finalVariationToAdd?: any;
   productId?: string;
+  product_name?: string;
   // variation_type?: string;
 }
 
@@ -20,6 +22,7 @@ export const Variations = component$((props: VariationsProps) => {
     productId,
     variationQuantity,
     finalVariationToAdd,
+    product_name,
     // variation_type,
   } = props;
   const currency: any = useContext(CurContext);
@@ -84,8 +87,13 @@ export const Variations = component$((props: VariationsProps) => {
 
         <div class="flex flex-row gap-5 w-full items-center">
           {/* {variation_type === "Color" && ( */}
-          <img
-            src={variation.variation_image ?? "/images/placeholder.png"}
+          <Image
+            src={variation.variation_image}
+            onError$={(e: any) => {
+              const src = product_name?.replace(/[^A-Za-z0-9]+/g, "");
+              const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;
+              e.target.src = folder;
+            }}
             class="rounded-full"
             alt={variation.variation_name}
             width="60"

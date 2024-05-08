@@ -757,7 +757,7 @@ export default component$(() => {
                   Price
                 </th>
                 <th scope="col" class="px-2 py-1">
-                  Pro Price
+                  Quantity
                 </th>
               </tr>
             </thead>
@@ -773,7 +773,7 @@ export default component$(() => {
                   >
                     <input
                       type="text"
-                      class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
+                      class="input input-md col-span-3 w-full border-[1px] text-black border-[#D1D5DB]"
                       value={item.variation_name}
                       onChange$={(e: any) => {
                         item.variation_name = e.target?.value;
@@ -783,7 +783,7 @@ export default component$(() => {
                   <td class="px-2 py-1">
                     <input
                       type="number"
-                      class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
+                      class="input input-md col-span-3 w-full border-[1px] text-black border-[#D1D5DB]"
                       value={item.price}
                       onChange$={(e: any) => {
                         item.price = parseFloat(e.target?.value);
@@ -793,10 +793,10 @@ export default component$(() => {
                   <td class="px-2 py-1">
                     <input
                       type="number"
-                      class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
-                      value={item.proprice}
+                      class="input input-md col-span-3 w-full border-[1px] text-black border-[#D1D5DB]"
+                      value={item.quantity_on_hand}
                       onChange$={(e: any) => {
-                        item.proprice = parseFloat(e.target?.value);
+                        item.quantity_on_hand = parseInt(e.target?.value);
                       }}
                     />
                   </td>

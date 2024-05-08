@@ -146,7 +146,7 @@ export default component$(() => {
           type="text"
           class="input input-bordered w-[20rem] m-2"
           placeholder="Search For Products"
-          onInput$={handleSearchProducts}
+          onChange$={handleSearchProducts}
           value={searchValue}
         />
         <a class="btn btn-primary ml-auto" href={`/admin/products/add-new`}>

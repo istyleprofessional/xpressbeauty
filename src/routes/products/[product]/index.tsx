@@ -576,6 +576,7 @@ export default component$(() => {
                           index={index}
                           variationQuantity={variation?.quantity_on_hand ?? 0}
                           finalVariationToAdd={finalVariationToAdd}
+                          product_name={product.product_name ?? ""}
                         />
                       </div>
                     );
