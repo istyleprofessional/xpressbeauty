@@ -506,22 +506,23 @@ async function addFakeReviews() {
   const orders = await Order.find({});
   // find all products in the orders
   const products = [];
-  for (const order of orders) {
-    for (const item of order.products) {
-      const productFromDb = await Product.findOne({
-        _id: item.id.includes(".") ? item.id.split(".")[0] : item.id,
-      });
-      if (productFromDb) {
-        // check if the product is already in the products array
-        if (
-          !products.find((p) => p.product_name === productFromDb.product_name)
-        ) {
-          products.push(productFromDb);
-        }
-      }
-    }
-  }
+  // for (const order of orders) {
+  //   for (const item of order.products) {
+  //     const productFromDb = await Product.findOne({
+  //       _id: item.id.includes(".") ? item.id.split(".")[0] : item.id,
+  //     });
+  //     if (productFromDb) {
+  //       // check if the product is already in the products array
+  //       if (
+  //         !products.find((p) => p.product_name === productFromDb.product_name)
+  //       ) {
+  //         products.push(productFromDb);
+  //       }
+  //     }
+  //   }
+  // }
   for (const product of products) {
+    if (product.companyName.name !== "GK Hair") continue;
     // pick a random number of reviews between 1 and 20
     const numberOfReviews = Math.floor(Math.random() * 6) + 1;
     const openai = new OpenAI();
@@ -600,7 +601,7 @@ async function addFakeReviews() {
   console.log(products.length);
 }
 
-// addFakeReviews();
+addFakeReviews();
 
 async function addAngelProductsFromJsonFile() {
   const json = require("./angel.json");
@@ -990,4 +991,4 @@ async function addProductsToGoogleSheet() {
 
 // addLatestCosmoProducts();
 // adjustData();
-addProductsToGoogleSheet();
+// addProductsToGoogleSheet();
