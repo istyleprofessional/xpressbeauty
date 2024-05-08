@@ -188,7 +188,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
         </h2>
 
         {ratings.value.length > 0 && (
-          <div class="rating rating-sm rating-half">
+          <div class="rating rasting-lg rating-half">
             {Array(5)
               .fill("")
               .map((_, index) => (
@@ -196,15 +196,26 @@ export const ProductCard = component$((props: ProductCardProps) => {
                   <input
                     type="radio"
                     name="rating-10"
-                    class="bg-yellow-500 mask mask-star-2 mask-half-1"
-                    checked={index + 0.5 === averageRating.value}
+                    class={`
+                    ${
+                      averageRating.value >= index + 0.5
+                        ? "bg-yellow-500"
+                        : "bg-gray-300"
+                    }
+                    mask mask-star-2 mask-half-1`}
                   />
                   <input
                     type="radio"
                     name="rating-10"
-                    class="bg-yellow-500 mask mask-star-2 mask-half-2"
-                    checked={index + 1 === averageRating.value}
+                    class={`
+                    ${
+                      averageRating.value >= index + 1
+                        ? "bg-yellow-500"
+                        : "bg-gray-300"
+                    }
+                    mask mask-star-2 mask-half-2`}
                   />
+                  <label for={`star${index + 1}`}></label>
                 </>
               ))}
           </div>

@@ -73,7 +73,6 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
     );
     averageRating.value =
       Math.round((sumOfRatings / ratingsCount.length) * 2) / 2;
-
     totalRatings.value = ratingsCount.length;
   });
 
@@ -99,20 +98,24 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
                   <input
                     type="radio"
                     name="rating-10"
-                    class="bg-yellow-500 mask mask-star-2 mask-half-1"
-                    checked={
-                      // first half star
-                      index + 0.5 === averageRating.value
+                    class={`
+                    ${
+                      averageRating.value >= index + 0.5
+                        ? "bg-yellow-500"
+                        : "bg-gray-300"
                     }
+                    mask mask-star-2 mask-half-1`}
                   />
                   <input
                     type="radio"
                     name="rating-10"
-                    class="bg-yellow-500 mask mask-star-2 mask-half-2"
-                    checked={
-                      // second half star
-                      index + 1 === averageRating.value
+                    class={`
+                    ${
+                      averageRating.value >= index + 1
+                        ? "bg-yellow-500"
+                        : "bg-gray-300"
                     }
+                    mask mask-star-2 mask-half-2`}
                   />
                   <label for={`star${index + 1}`}></label>
                 </>
