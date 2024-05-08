@@ -523,7 +523,7 @@ async function addFakeReviews() {
   //   }
   // }
   for (const product of products) {
-    if (product.companyName.name !== "GK Hair") continue;
+    if (product.companyName?.name !== "GK Hair") continue;
     // pick a random number of reviews between 1 and 20
     const numberOfReviews = Math.floor(Math.random() * 6) + 1;
     const openai = new OpenAI();
