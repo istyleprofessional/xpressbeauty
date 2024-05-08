@@ -188,7 +188,7 @@ export const ProductCard = component$((props: ProductCardProps) => {
         </h2>
 
         {ratings.value.length > 0 && (
-          <div class="rating rasting-lg rating-half">
+          <div class="rating rasting-sm rating-half">
             {Array(5)
               .fill("")
               .map((_, index) => (
