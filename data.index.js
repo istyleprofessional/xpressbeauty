@@ -313,7 +313,7 @@ async function getProductsFromCanradWebPage() {
   await connection.close();
 }
 
-getProductsFromCanradWebPage();
+// getProductsFromCanradWebPage();
 
 async function getProductsFromModernBeauty() {
   const request = await axios.get("https://www.modernbeauty.com/hair.html");
@@ -990,4 +990,4 @@ async function addProductsToGoogleSheet() {
 
 // addLatestCosmoProducts();
 // adjustData();
-// addProductsToGoogleSheet();
+addProductsToGoogleSheet();
