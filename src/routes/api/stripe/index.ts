@@ -119,25 +119,6 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
       data.user.isDummy
     }`,
   };
-  if (data.user) {
-    if (data.user.cobone) {
-      for (const copone of data.user.cobone) {
-        if (copone.code === "xpressbeauty30" && copone.status === false) {
-          const coupon = await stripe.coupons.create({
-            amount_off: 3000,
-            duration: "once",
-            currency: data.currencyObject === "1" ? "usd" : "cad",
-          });
-          sessionObject.discounts = [
-            {
-              coupon: coupon.id,
-            },
-          ];
-          break;
-        }
-      }
-    }
-  }
   const session = await stripe.checkout.sessions.create(sessionObject);
   json(200, { clientSecret: session.client_secret, sessionId: session.id });
   return;
