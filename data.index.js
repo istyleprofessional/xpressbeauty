@@ -602,7 +602,7 @@ async function addFakeReviews() {
   console.log(products.length);
 }
 
-addFakeReviews();
+// addFakeReviews();
 
 async function addAngelProductsFromJsonFile() {
   const json = require("./angel.json");
@@ -633,10 +633,11 @@ async function updateCanardProducts() {
   );
   await doc.loadInfo();
   const sheet = doc.sheetsByIndex[0];
-  await connect(mongoUrl);
+
   const rows = await sheet.getRows();
   for (const row of rows) {
     try {
+      await connect(mongoUrl);
       const rowObject = row.toObject();
       const id = rowObject["Item ID"];
       const quantityReq = await axios.get(
@@ -651,13 +652,14 @@ async function updateCanardProducts() {
       if (updateReq) {
         console.log(updateReq.product_name);
       }
+      await connection.close();
     } catch (error) {
+      await connection.close();
       console.log(error.message);
       continue;
     }
   }
   console.log("done");
-  await connection.close();
 }
 
 // updateCanardProducts();
@@ -791,9 +793,10 @@ async function aiCategorization() {
 // aiCategorization();
 
 async function addLatestCosmoProducts() {
-  await connect(mongoUrl);
   const products = require("./updated_cosmo_products.json");
+
   for (const product of products) {
+    await connect(mongoUrl);
     if (product.variation_type === "Color") {
       product.variations = product.variations.map((variation) => {
         return {
@@ -829,18 +832,19 @@ async function addLatestCosmoProducts() {
       { upsert: true }
     );
   }
+  await connection.close();
   console.log("done");
-  // await connection.close();
 }
 
 async function adjustData() {
   await connect(mongoUrl);
   const products = await Product.find({});
   const regex = /[^a-zA-Z0-9\s]/g;
+
   for (const product of products) {
-    if (regex.test(product.companyName.name)) {
-      product.companyName.name = product.companyName.name.replace(regex, "");
-      product.companyName.name = product.companyName.name.trim();
+    if (regex.test(product.companyName?.name)) {
+      product.companyName.name = product.companyName?.name.replace(regex, "");
+      product.companyName.name = product.companyName?.name.trim();
       await Product.findByIdAndUpdate(product._id, product, { new: true });
     }
   }
@@ -852,7 +856,7 @@ async function adjustData() {
       await Brand.findByIdAndUpdate(brand._id, brand, { new: true });
     }
   }
-
+  await connection.close();
   console.log("done");
 }
 
@@ -990,6 +994,11 @@ async function addProductsToGoogleSheet() {
   await connection.close();
 }
 
-// addLatestCosmoProducts();
-// adjustData();
-// addProductsToGoogleSheet();
+async function main() {
+  await updateCanardProducts();
+  await addLatestCosmoProducts();
+  await adjustData();
+  await addProductsToGoogleSheet();
+}
+
+main();
