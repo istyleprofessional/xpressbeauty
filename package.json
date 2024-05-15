@@ -24,9 +24,9 @@
   },
   "devDependencies": {
     "@auth/core": "^0.13.0",
-    "@builder.io/qwik": "1.4.5",
+    "@builder.io/qwik": "1.5.4",
     "@builder.io/qwik-auth": "0.1.1",
-    "@builder.io/qwik-city": "1.4.5",
+    "@builder.io/qwik-city": "1.5.4",
     "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.3",
     "@types/eslint": "8.21.3",
