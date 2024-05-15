@@ -5,23 +5,12 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(() => {
   return {
-    plugins: [
-      qwikCity(),
-      qwikVite(),
-      tsconfigPaths(),
-    ],
-    dev: {
-      headers: {
-        'Cache-Control': 'public, max-age=0',
+    plugins: [qwikCity(), qwikVite({
+      debug: true,
+      optimizerOptions: {
+        // Add your optimizer options here.
+        sourcemap: true,
       },
-    },
-    preview: {
-      headers: {
-        'Cache-Control': 'public, max-age=600',
-      },
-    },
-    optimizeDeps: {
-      include: ["@auth/core"]
-    }
+    }), tsconfigPaths()],
   };
 });
