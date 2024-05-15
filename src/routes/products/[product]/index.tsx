@@ -357,9 +357,12 @@ export default component$(() => {
       img?.setAttribute(
         "src",
         `${
-          (product?.variations ?? [])[0].variation_image.includes("+")
-            ? (product?.variations ?? [])[0].variation_image.replace("+", "%2B")
-            : (product?.variations ?? [])[0].variation_image ??
+          (product?.variations ?? [])[0]?.variation_image?.includes("+")
+            ? (product?.variations ?? [])[0]?.variation_image.replace(
+                "+",
+                "%2B"
+              )
+            : (product?.variations ?? [])[0]?.variation_image ??
               (product?.imgs ?? [])[0]
         }`
       );
@@ -462,6 +465,7 @@ export default component$(() => {
                             }`}
                             onClick$={() => {
                               // debugger;
+                              console.log(variation);
                               finalVariationToAdd.value = {};
                               finalVariationToAdd.value[index] = {
                                 variation_id: variation._id,
@@ -476,7 +480,7 @@ export default component$(() => {
                                 quantity_on_hand: variation.quantity_on_hand,
                               };
                               const imgSrcs = `${
-                                variation.variation_image.includes("+")
+                                variation.variation_image?.includes("+")
                                   ? variation.variation_image.replace(
                                       "+",
                                       "%2B"
@@ -491,7 +495,7 @@ export default component$(() => {
                               img?.setAttribute(
                                 "src",
                                 `${
-                                  variation.variation_image.includes("+")
+                                  variation.variation_image?.includes("+")
                                     ? variation.variation_image.replace(
                                         "+",
                                         "%2B"
