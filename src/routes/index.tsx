@@ -88,64 +88,66 @@ export default component$(() => {
     })
   );
 
+  console.log("env", status);
+
   return (
     <>
-      {status === "1" && (
-        <div class="flex flex-col gap-3 md:gap-6 lg:gap-10">
-          <Hero />
+      {/* {status === "1" && ( */}
+      <div class="flex flex-col gap-3 md:gap-6 lg:gap-10">
+        <Hero />
 
-          <Categories />
-          <FeatureProducts
-            bestSellerProducts={bestSellerProducts2}
-            type="Top Selling Products"
-            userObj={userObj}
-            currencyObject={currencyObject}
-          />
-          <div class="flex justify-center items-center">
-            <a
-              class="btn bg-black text-white font-['Inter'] w-fit rounded-sm mt-8"
-              aria-label="See More Products"
-              href="/products/"
-            >
-              See More Products
-            </a>
-          </div>
-          <FeatureProducts
-            bestSellerProducts={newArrivalProducts}
-            type="Hair Products"
-            userObj={userObj}
-            currencyObject={currencyObject}
-          />
-          <div class="flex justify-center items-center">
-            <a
-              class="btn bg-black text-white font-['Inter'] w-fit rounded-sm mt-8"
-              aria-label="See More Products"
-              href="/products/"
-            >
-              See More Products
-            </a>
-          </div>
-          <FeatureProducts
-            bestSellerProducts={bestSellerProducts}
-            type="Clippers & Trimmers"
-            userObj={userObj}
-            currencyObject={currencyObject}
-          />
-
-          <div class="flex justify-center items-center">
-            <a
-              class="btn bg-black text-white font-['Inter'] w-fit  rounded-sm mt-8"
-              aria-label="See More Products"
-              href="/products/"
-            >
-              See More Products
-            </a>
-          </div>
-          <div class="p-20 flex flex-col gap-20 items-center justify-center">
-            <WhyChooseUs />
-          </div>
+        <Categories />
+        <FeatureProducts
+          bestSellerProducts={bestSellerProducts2}
+          type="Top Selling Products"
+          userObj={userObj}
+          currencyObject={currencyObject}
+        />
+        <div class="flex justify-center items-center">
+          <a
+            class="btn bg-black text-white font-['Inter'] w-fit rounded-sm mt-8"
+            aria-label="See More Products"
+            href="/products/"
+          >
+            See More Products
+          </a>
         </div>
-      )}
+        <FeatureProducts
+          bestSellerProducts={newArrivalProducts}
+          type="Hair Products"
+          userObj={userObj}
+          currencyObject={currencyObject}
+        />
+        <div class="flex justify-center items-center">
+          <a
+            class="btn bg-black text-white font-['Inter'] w-fit rounded-sm mt-8"
+            aria-label="See More Products"
+            href="/products/"
+          >
+            See More Products
+          </a>
+        </div>
+        <FeatureProducts
+          bestSellerProducts={bestSellerProducts}
+          type="Clippers & Trimmers"
+          userObj={userObj}
+          currencyObject={currencyObject}
+        />
+
+        <div class="flex justify-center items-center">
+          <a
+            class="btn bg-black text-white font-['Inter'] w-fit  rounded-sm mt-8"
+            aria-label="See More Products"
+            href="/products/"
+          >
+            See More Products
+          </a>
+        </div>
+        <div class="p-20 flex flex-col gap-20 items-center justify-center">
+          <WhyChooseUs />
+        </div>
+      </div>
+      {/* )} */}
     </>
   );
 });
