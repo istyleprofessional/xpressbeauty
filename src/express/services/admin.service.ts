@@ -3,7 +3,7 @@ import Admin from "../schemas/admin.schema";
 import jwt from "jsonwebtoken";
 
 export const login_service = async (userObject: any) => {
-  const cryptr = new Cryptr(import.meta.env.VITE_SECRET ?? "");
+  const cryptr = new Cryptr(import.meta.env.VITE_SECRET ?? "1234");
   try {
     const result = await Admin.findOne({ email: userObject.email });
     if (!result) {
