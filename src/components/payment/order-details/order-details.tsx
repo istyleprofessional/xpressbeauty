@@ -6,7 +6,8 @@ import {
 } from "@builder.io/qwik";
 import { server$ } from "@builder.io/qwik-city";
 // import axios from "axios";
-import { verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+// import { verify } from "jsonwebtoken";
 import productSchema from "~/express/schemas/product.schema";
 
 interface OrderDetailsProps {
@@ -29,7 +30,7 @@ export const checker = server$(function () {
   if (!token) {
     return true;
   } else {
-    const verifyToken: any = verify(
+    const verifyToken: any = jwt.verify(
       token,
       this.env.get("VITE_JWTSECRET") ?? ""
     );

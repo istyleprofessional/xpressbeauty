@@ -14,7 +14,7 @@ import type { ProductModel } from "~/models/product.model";
 import { uuid } from "~/utils/uuid";
 import { server$ } from "@builder.io/qwik-city";
 import { WishListContext } from "~/context/wishList.context";
-import { verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { Image } from "@unpic/qwik";
 
 interface ToolBarProps {
@@ -29,7 +29,7 @@ export const checker = server$(function () {
   if (!token) {
     return true;
   } else {
-    const verifyToken: any = verify(
+    const verifyToken: any = jwt.verify(
       token,
       this.env.get("VITE_JWTSECRET") ?? ""
     );
