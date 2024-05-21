@@ -874,7 +874,7 @@ async function addProductsToGoogleSheet() {
   });
 
   const doc = new GoogleSpreadsheet(
-    "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
+    "1-gVe8XDYbKNZizvXyZCp6GUpwIbDNqMUdGsJgY_FmjI",
     auth
   );
   await doc.loadInfo();
@@ -981,7 +981,7 @@ async function addProductsToGoogleSheet() {
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
     const doc1 = new GoogleSpreadsheet(
-      "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
+      "1-gVe8XDYbKNZizvXyZCp6GUpwIbDNqMUdGsJgY_FmjI",
       auth1
     );
     await doc1.loadInfo();
