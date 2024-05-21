@@ -38,15 +38,15 @@ connect(mongoUrl, {
       // );
       // await connection.db.dropCollection("carts");
       // await connection.db.dropCollection("users");
-      await Brand.deleteMany({});
-      await Brand.insertMany(
-        brand_data.map((item) => {
-          return {
-            name: item.name,
-            image: item.image,
-          };
-        })
-      );
+      // await Brand.deleteMany({});
+      // await Brand.insertMany(
+      //   brand_data.map((item) => {
+      //     return {
+      //       name: item.name,
+      //       image: item.image,
+      //     };
+      //   })
+      // );
       // await Category.deleteMany({});
       // await Category.insertMany(
       //   categories.map((item) => {
