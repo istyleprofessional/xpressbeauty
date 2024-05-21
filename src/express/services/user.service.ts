@@ -2,7 +2,7 @@ import { User } from "../schemas/users.schema";
 import Cryptr from "cryptr";
 import { generateUniqueInteger } from "~/utils/generateOTP";
 
-export const cryptr = new Cryptr(import.meta.env.VITE_SECRET ?? "");
+export const cryptr = new Cryptr(import.meta.env.VITE_SECRET ?? "1234");
 
 export const userRegistration = async (userObject: any) => {
   const phoneVerifyToken = generateUniqueInteger();
