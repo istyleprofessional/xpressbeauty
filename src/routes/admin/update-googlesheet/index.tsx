@@ -177,10 +177,15 @@ export default component$(() => {
         onClick$={async () => {
           isLoading.value = true;
           const update = await updateGoogleSheet();
-          if (update) {
+          const updateJson = JSON.parse(update);
+          if (updateJson.status === "success") {
             alert("Google Sheet Updated Successfully");
           } else {
-            alert("Google Sheet Update Failed");
+            alert(
+              `Google Sheet Update Failed ${
+                updateJson.message ?? "Unknown Error"
+              }`
+            );
           }
           isLoading.value = false;
         }}
