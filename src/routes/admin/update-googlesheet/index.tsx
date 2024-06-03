@@ -133,10 +133,15 @@ export const updateGoogleSheet = server$(async function () {
     const sheet1 = doc.sheetsByIndex[0]; // loads document properties and worksheets
     await sheet1.clear("A2:Z");
     await sheet1.addRows(newArray);
-    return true;
-  } catch (error) {
-    console.log(error);
-    return false;
+    return JSON.stringify({
+      status: "success",
+      message: "Google Sheet Updated Successfully",
+    });
+  } catch (error: any) {
+    return JSON.stringify({
+      status: "error",
+      message: `Google Sheet Update Failed ${error.message}`,
+    });
   }
 });
 
