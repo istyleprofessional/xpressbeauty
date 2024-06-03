@@ -5,7 +5,7 @@ import { JWT } from "google-auth-library";
 import Product from "~/express/schemas/product.schema";
 import { connect } from "~/express/db.connection";
 
-export const updateGoogleSheet = server$(async () => {
+export const updateGoogleSheet = server$(async function () {
   await connect();
 
   const productsDb = await Product.find({
@@ -13,8 +13,8 @@ export const updateGoogleSheet = server$(async () => {
   });
   const newArray = [];
   const auth = new JWT({
-    email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
-    key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+    email: this.env.get("VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL") ?? "",
+    key: this.env.get("VITE_GOOGLE_PRIVATE_KEY")?.replace(/\\n/g, "\n") ?? "",
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
 
@@ -121,8 +121,8 @@ export const updateGoogleSheet = server$(async () => {
   try {
     // loads document properties and worksheets
     const auth1 = new JWT({
-      email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
-      key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+      email: this.env.get("VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL") ?? "",
+      key: this.env.get("VITE_GOOGLE_PRIVATE_KEY")?.replace(/\\n/g, "\n") ?? "",
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
     const doc1 = new GoogleSpreadsheet(
