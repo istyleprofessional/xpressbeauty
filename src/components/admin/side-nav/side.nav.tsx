@@ -180,6 +180,12 @@ export const SideNav = component$(() => {
           Campaigns
         </p>
       </a>
+      <a
+        href="/admin/update-googlesheet"
+        class="flex flex-row gap-1 cursor-pointer bg-base-100 normal-case"
+      >
+        <p class={`text-lg text-[#6B7280]`}>Update Google sheet</p>
+      </a>
       <button
         class="flex flex-row gap-1 cursor-pointer bg-base-100 normal-case mt-auto"
         onClick$={handleLogOutAdmin}

@@ -6,7 +6,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig(() => {
   return {
     plugins: [qwikCity(), qwikVite({
-      debug: true,
       optimizerOptions: {
         // Add your optimizer options here.
         sourcemap: true,
