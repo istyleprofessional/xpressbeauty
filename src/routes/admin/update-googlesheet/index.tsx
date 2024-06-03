@@ -7,7 +7,6 @@ import { connect } from "~/express/db.connection";
 
 export const updateGoogleSheet = server$(async function () {
   await connect();
-
   const productsDb = await Product.find({
     isHidden: { $ne: true },
   });
@@ -19,7 +18,7 @@ export const updateGoogleSheet = server$(async function () {
   });
 
   const doc = new GoogleSpreadsheet(
-    "1-gVe8XDYbKNZizvXyZCp6GUpwIbDNqMUdGsJgY_FmjI",
+    "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
     auth
   );
   await doc.loadInfo();
@@ -126,7 +125,7 @@ export const updateGoogleSheet = server$(async function () {
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
     const doc1 = new GoogleSpreadsheet(
-      "1-gVe8XDYbKNZizvXyZCp6GUpwIbDNqMUdGsJgY_FmjI",
+      "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
       auth1
     );
     await doc1.loadInfo();
@@ -175,6 +174,7 @@ export default component$(() => {
         disabled={isLoading.value}
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         onClick$={async () => {
+          debugger;
           isLoading.value = true;
           const update = await updateGoogleSheet();
           const updateJson = JSON.parse(update);
