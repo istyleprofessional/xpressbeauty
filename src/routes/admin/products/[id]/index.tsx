@@ -653,7 +653,7 @@ export default component$(() => {
             </select>
           </div>
           <div class="grid grid-cols-4">
-            <p class="col-span-1">Discount Percent</p>
+            <p class="col-span-1">Gtin</p>
             <input
               type="text"
               name="gtin"
