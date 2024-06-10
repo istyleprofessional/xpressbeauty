@@ -954,10 +954,10 @@ export default component$(() => {
               </div>
 
               <div class="grid grid-cols-4">
-                <p class="col-span-1">UPC</p>
+                <p class="col-span-1">GTIN</p>
                 <input
                   type="text"
-                  name="upc"
+                  name="gtin"
                   class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
                 />
               </div>

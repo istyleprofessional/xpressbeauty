@@ -203,7 +203,7 @@ def get_last_prices_and_upc():
                         updated_datas.append(d)
                         print(f'''{i}/{len(datas)}''')
                     except Exception as e:
-                        time.sleep(40)
+                                          
                         driver.get(url)
                         soup = BeautifulSoup(driver.page_source, 'html.parser')
                         json_element = soup.find('pre')
