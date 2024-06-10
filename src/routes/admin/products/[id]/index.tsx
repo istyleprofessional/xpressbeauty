@@ -653,6 +653,15 @@ export default component$(() => {
             </select>
           </div>
           <div class="grid grid-cols-4">
+            <p class="col-span-1">Discount Percent</p>
+            <input
+              type="text"
+              name="gtin"
+              class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
+              value={product.gtin}
+            />
+          </div>
+          <div class="grid grid-cols-4">
             <p class="col-span-1">Update Using QuickBooks</p>
             <input
               class="form-checkbox h-5 w-5 text-[#7C3AED]"
