@@ -1,0 +1,780 @@
+[
+    {
+        "_id": {
+            "$oid": "655fc98090f62efb9caee88e"
+        },
+        "product_name": " Schwarzkopf Goodbye Yellow Neutralizing Wash Shampoo",
+        "description": "<p>This is a highly pigmented neutralising wash, which provides a gentle sulphate free cleansing. Quickly neutralises stubborn yellow undertones on lightened hair at the backwash for cool blonde results. This wash provides a gentle cleansing action and instant tonal deposits to neutralise underlying warm tones.</p>",
+        "item_no": "",
+        "sale_price": {
+            "sale": 29.95
+        },
+        "price": {
+            "regular": 29.95
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Shampoo"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/-Schwarzkopf-Goodbye-Yellow-Neutralizing-Wash-Shampoo/Gb-yellow-1l-400x400ustra6zzvva.webp"
+        ],
+        "quantity_on_hand": 15,
+        "sku": "4045787404807",
+        "bar_code_value": "",
+        "status": "Normal",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [
+            {
+                "variation_name": "1000 ML",
+                "variation_image": "",
+                "price": "24.95",
+                "quantity_on_hand": 15
+            }
+        ],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "-schwarzkopf-goodbye-yellow-neutralizing-wash-shampoo-pid-655fc98090f62efb9caee88e",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-23T21:52:00.819Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.464Z"
+        },
+        "__v": 0,
+        "isHidden": false,
+        "oldPerfix": "-schwarzkopf-goodbye-yellow-neutralizing-wash-shampoo",
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "6560c70baf5ba0eb120c9bc0"
+        },
+        "product_name": "SCHWARZKOPF BLONDME DEVELOPER PREMIUM 7 VOL - 1000ML",
+        "description": "<p><strong>1000 ml</strong></p>\r\n<p><strong>Information:</strong>&nbsp;Schwarzkopf's BlondMe range offers the performance needed to create personalized blonde looks. It is specially formulated to be combined with BlondMe bleaches and different shades. Premium Developer offers up to 9 levels of lightening while ready-to-use toners and shades give endless creative potential for blonde hair. Its oil-based formula maintains the hair's natural hydration to ensure a shiny blonde and soft to the touch.<br />The 7 volume developer is perfect for toning already lightened hair or for gently bleaching it.</p>\r\n<p><strong>Usage tips:</strong></p>\r\n<ul>\r\n<li>Mix developer with BlondMe Bond Enforcing bleach powder using the appropriate ratio.</li>\r\n<li>Part hair into sections.</li>\r\n<li>Apply to small sections of hair, avoiding the roots.</li>\r\n<li>Use a large amount of product to ensure complete saturation.</li>\r\n<li>Rinse thoroughly.</li>\r\n<li>Wash hair with BlondMe Keratin Restore Bonding Shampoo.</li>\r\n<li>Apply the desired shade.</li>\r\n</ul>",
+        "item_no": "",
+        "sale_price": {
+            "sale": 10
+        },
+        "price": {
+            "regular": 10
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Developers"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/SCHWARZKOPF.-BLONDME-DEVELOPER-PREMIUM-7-VOL---1000ML/schwarzkopf-blondme-revelateur-premium-7-vol-1000ml-267974ht9k9lcudzj.webp"
+        ],
+        "quantity_on_hand": 14,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "Normal",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-blondme-developer-premium-7-vol--1000ml-pid-6560c70baf5ba0eb120c9bc0",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-24T15:53:47.942Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-26T14:31:58.63Z"
+        },
+        "__v": 0,
+        "oldPerfix": "schwarzkopf-blondme-developer-premium-7-vol--1000ml",
+        "isHidden": false,
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "6560caecaf5ba0eb120c9ce6"
+        },
+        "product_name": "SCHWARZKOPF BLONDME COMPACT BLEACHING POWDER 9+ - 450G",
+        "description": "<p><strong>450 g</strong></p>\r\n<p><strong>Information:</strong>Compact Bleaching Powder Premium Performance 9 +, a high-performance powder for maximum lightening.<br />Achieve perfect efficiency and performance and up to 9 tones of lightening, with theAdvanced Bonding System Reinforcing Technology. Your hair will be protected from breakage.</p>\r\n<p><strong>Use:&nbsp;</strong>Mixture:</p>\r\n<ul>\r\n<li>Always use in combination with BlondMe premium energizers.</li>\r\n<li>Mix 1 : 1.5 to 1 : 2.5 according to the required consistency (Ex: 30 g BlondMe Bond Enforcing Premium Lightener 9 + and 45-75 ml BlondMe Premium developer). For a root application, use the Energizer 7 volume (2%) or 20 volume (6%). For an application in lengths only, use the energizer 30 volume (9%).</li>\r\n</ul>\r\n<p>Application:</p>\r\n<ul>\r\n<li>Apply to dry hair</li>\r\n<li>Development time of 20 to 45 minutes (it is not recommended to apply heat)</li>\r\n<li>Check visually every 5 minutes until the desired result is obtained.</li>\r\n</ul>",
+        "item_no": "",
+        "sale_price": {
+            "sale": 32.95
+        },
+        "price": {
+            "regular": 32.95
+        },
+        "categories": [
+            {
+                "main": "Hair Colour",
+                "name": "Bleach & Lighteners"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/SCHWARZKOPF-BLONDME-COMPACT-BLEACHING-POWDER-9-450G/productsf1uht3c5p8v.webp"
+        ],
+        "quantity_on_hand": 15,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "Normal",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-blondme-compact-bleaching-powder-9--450g-pid-6560caecaf5ba0eb120c9ce6",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-24T16:10:20.417Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.466Z"
+        },
+        "__v": 0,
+        "isHidden": false,
+        "oldPerfix": "schwarzkopf-blondme-compact-bleaching-powder-9--450g",
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "6560cb74af5ba0eb120c9d20"
+        },
+        "product_name": "SCHWARZKOPF BLONDME PREMIUM DEVELOPER 20 VOL - 1000ML",
+        "description": "<p><strong>1000 ml</strong></p>\r\n<p><strong>Information:</strong>&nbsp;Schwarzkopf's BlondMe range offers the performance needed to create personalized blonde looks. It is specially formulated to be combined with BlondMe bleaches and different shades. Premium Developer offers up to 9 levels of lightening while ready-to-use toners and shades give endless creative potential for blonde hair. Its oil-based formula maintains the hair's natural hydration to ensure a shiny blonde and soft to the touch.<br />The 20 volume developer holds the perfect strength for a conventional bleaching or to tone naturally clear blond hair (level 8 or higher).</p>\r\n<p><strong>Usage tips:</strong></p>\r\n<ul>\r\n<li>Mix developer with BlondMe Bond Enforcing bleach powder using the appropriate ratio.</li>\r\n<li>Part hair into sections.</li>\r\n<li>Apply to small sections of hair, avoiding the roots.</li>\r\n<li>Use a large amount of product to ensure complete saturation.</li>\r\n<li>Rinse thoroughly.</li>\r\n<li>Wash hair with BlondMe Keratin Restore Bonding Shampoo.</li>\r\n<li>Apply the desired shade.</li>\r\n</ul>",
+        "item_no": "",
+        "sale_price": {
+            "sale": 10
+        },
+        "price": {
+            "regular": 10
+        },
+        "categories": [
+            {
+                "main": "Hair Colour",
+                "name": "Developers"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/SCHWARZKOPF-BLONDME-PREMIUM-DEVELOPER-20-VOL---1000ML/schwarzkopf-blondme-revelateur-premium-20-vol-1000ml-486450 (1)g9g6qoacc7k.webp"
+        ],
+        "quantity_on_hand": 14,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "Normal",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-blondme-premium-developer-20-vol--1000ml-pid-6560cb74af5ba0eb120c9d20",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-24T16:12:36.949Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-26T14:31:58.625Z"
+        },
+        "__v": 0,
+        "oldPerfix": "schwarzkopf-blondme-premium-developer-20-vol--1000ml",
+        "isHidden": false,
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "6560cbf8af5ba0eb120c9d2a"
+        },
+        "product_name": "Schwarzkopf BlondMe 9% (30 Volume) Premium Developer",
+        "description": "",
+        "item_no": "",
+        "sale_price": {
+            "sale": 9.95
+        },
+        "price": {
+            "regular": 9.95
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Developers"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/Schwarzkopf-BlondMe-9-30-Volume-Premium-Developer/schwarzkopf-blondme-blondme-9-30-volume-premium-developer-1l-33-8oz-cosmetic-world-14243628220468_1280xq6pri2b9s1c.webp"
+        ],
+        "quantity_on_hand": 15,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "NORMAL",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-blondme-9-30-volume-premium-developer-pid-6560cbf8af5ba0eb120c9d2a",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-24T16:14:48.165Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.469Z"
+        },
+        "__v": 0,
+        "oldPerfix": "schwarzkopf-blondme-9-30-volume-premium-developer",
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "6560cc6caf5ba0eb120c9d6f"
+        },
+        "product_name": "SCHWARZKOPF BLONDME PREMIUM DEVELOPER 40 VOL - 1000ML",
+        "description": "",
+        "item_no": "",
+        "sale_price": {
+            "sale": 9.95
+        },
+        "price": {
+            "regular": 9.95
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Developers"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/SCHWARZKOPF-BLONDME-PREMIUM-DEVELOPER-40-VOL---1000ML/schwarzkopf-blondme-revelateur-premium-40-vol-1000ml-636333pbgbjlqoykm.webp"
+        ],
+        "quantity_on_hand": 15,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "Normal",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-blondme-premium-developer-40-vol--1000ml-pid-6560cc6caf5ba0eb120c9d6f",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-24T16:16:44.015Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.47Z"
+        },
+        "__v": 0,
+        "oldPerfix": "schwarzkopf-blondme-premium-developer-40-vol--1000ml",
+        "isHidden": false,
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "6560cd7caf5ba0eb120c9dd6"
+        },
+        "product_name": "Schwarzkopf IGORA Royal Oil Developer / Peroxide - 3%/10 vol.",
+        "description": "<p>Schwarzkopf IGORA Royal Oil Developer is a specially developed high performing peroxide, developed by colourists for colourists.&nbsp;Its innovative Lipid Carrier System and increased oil content enables colour pigments to penetrate faster into the hair, giving more intense, longer lasting colour results. It provides a sealing effect on the hair, giving more shine and lustre, perfect equalisation of colour from the roots to the tips and an improved overall performance.</p>",
+        "item_no": "",
+        "sale_price": {
+            "sale": 9.95
+        },
+        "price": {
+            "regular": 9.95
+        },
+        "categories": [
+            {
+                "main": "Hair Colour",
+                "name": "Developers"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/Cream-Developer-Peroxide---3-10-vol./d5ac4f_d1a379e0171b488b82fce57ae9d1e5f3~mv23yapczvt0eb.webp"
+        ],
+        "quantity_on_hand": 15,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "Normal",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-igora-royal-oil-developer--peroxide--310-vol-pid-6560cd7caf5ba0eb120c9dd6",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-24T16:21:16.832Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.471Z"
+        },
+        "__v": 0,
+        "isHidden": false,
+        "oldPerfix": "schwarzkopf-igora-royal-oil-developer--peroxide--310-vol",
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "6560cf5faf5ba0eb120c9e95"
+        },
+        "product_name": "Schwarzkopf IGORA Royal Oil Developer / Peroxide - 9%/30 vol.",
+        "description": "<p>Schwarzkopf IGORA Royal Oil Developer is a specially developed high performing peroxide, developed by colourists for colourists.&nbsp;Its innovative Lipid Carrier System and increased oil content enables colour pigments to penetrate faster into the hair, giving more intense, longer lasting colour results. It provides a sealing effect on the hair, giving more shine and lustre, perfect equalisation of colour from the roots to the tips and an improved overall performance.</p>",
+        "item_no": "",
+        "sale_price": {
+            "sale": 9.95
+        },
+        "price": {
+            "regular": 9.95
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Developers"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/Cream-Developer-Peroxide---9-30-vol./d5ac4f_12155227047e431084c7d0344e4b1997~mv2 (1)m2l04sxl3k.webp"
+        ],
+        "quantity_on_hand": 15,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "Normal",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-igora-royal-oil-developer--peroxide--930-vol-pid-6560cf5faf5ba0eb120c9e95",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-24T16:29:19.995Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.473Z"
+        },
+        "__v": 0,
+        "isHidden": false,
+        "oldPerfix": "schwarzkopf-igora-royal-oil-developer--peroxide--930-vol",
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "6560ceb3af5ba0eb120c9e28"
+        },
+        "product_name": "Schwarzkopf IGORA Royal Oil Developer / Peroxide - 6%/20 vol.",
+        "description": "<p>Schwarzkopf IGORA Royal Oil Developer is a specially developed high performing peroxide, developed by colourists for colourists.&nbsp;Its innovative Lipid Carrier System and increased oil content enables colour pigments to penetrate faster into the hair, giving more intense, longer lasting colour results. It provides a sealing effect on the hair, giving more shine and lustre, perfect equalisation of colour from the roots to the tips and an improved overall performance.</p>",
+        "item_no": "",
+        "sale_price": {
+            "sale": 9.95
+        },
+        "price": {
+            "regular": 9.95
+        },
+        "categories": [
+            {
+                "main": "Hair Colour",
+                "name": "Developers"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/Cream-Developer-Peroxide---6-20-vol./d5ac4f_d6f1e35f84cb4fa4876aa49b05ae2191~mv2mne574ntln9.webp"
+        ],
+        "quantity_on_hand": 15,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "Normal",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-igora-royal-oil-developer--peroxide--620-vol-pid-6560ceb3af5ba0eb120c9e28",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-24T16:26:27.021Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.472Z"
+        },
+        "__v": 0,
+        "isHidden": false,
+        "oldPerfix": "schwarzkopf-igora-royal-oil-developer--peroxide--620-vol",
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "6560cfa7af5ba0eb120c9ea2"
+        },
+        "product_name": "Schwarzkopf IGORA Royal Oil Developer / Peroxide - 12%/40 vol.",
+        "description": "<p>Schwarzkopf IGORA Royal Oil Developer is a specially developed high performing peroxide, developed by colourists for colourists.&nbsp;Its innovative Lipid Carrier System and increased oil content enables colour pigments to penetrate faster into the hair, giving more intense, longer lasting colour results. It provides a sealing effect on the hair, giving more shine and lustre, perfect equalisation of colour from the roots to the tips and an improved overall performance.</p>",
+        "item_no": "",
+        "sale_price": {
+            "sale": 9.95
+        },
+        "price": {
+            "regular": 9.95
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Developers"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/Cream-Developer-Peroxide---12-40-vol./d5ac4f_952b5d4682da49c187301bc67410d631~mv2nxybxzrdtp.webp"
+        ],
+        "quantity_on_hand": 15,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "Normal",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-igora-royal-oil-developer--peroxide--1240-vol-pid-6560cfa7af5ba0eb120c9ea2",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-24T16:30:31.686Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.475Z"
+        },
+        "__v": 0,
+        "isHidden": false,
+        "oldPerfix": "schwarzkopf-igora-royal-oil-developer--peroxide--1240-vol",
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "6560d2e8af5ba0eb120c9f3e"
+        },
+        "product_name": " Fibre Clinix Tri-Bond Mask for Fine Hair - 500ml",
+        "description": "<p><strong>Fibre Clinix Tri-Bond Mask for Fine Hair - 500ml</strong></p>\r\n<p>With Triple Bonding and C21 Technology. Reconnects the inner hair structure for improved resilience and strength*. Seals the outer hair structure for better manageability and shine.</p>\r\n<ul>\r\n<li>Intensively replenishes damaged hair structures</li>\r\n<li>Builds three-dimensional bonds within the hair structure</li>\r\n<li>Hair is up to 10x stronger when used in combination with the Tribond Shampoo</li>\r\n</ul>\r\n<p><strong>Results</strong></p>\r\n<ul>\r\n<li>Up to 10x stronger hair</li>\r\n<li>Complete sealing of hair porosity</li>\r\n<li>Restores inner &amp; outer hair structure for up to 60 days</li>\r\n</ul>",
+        "item_no": "",
+        "sale_price": {
+            "sale": 32.95
+        },
+        "price": {
+            "regular": 32.95
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Masks"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/-Fibre-Clinix-Tri-Bond-Mask-for-Fine-Hair---500ml/fibre-clinix-tri-bond-mask-for-fine-hair-500ml4he9h5zzfca.webp"
+        ],
+        "quantity_on_hand": 15,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "NORMAL",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "-fibre-clinix-tribond-mask-for-fine-hair--500ml-pid-6560d2e8af5ba0eb120c9f3e",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "createdAt": {
+            "$date": "2023-11-24T16:44:24.537Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.476Z"
+        },
+        "__v": 0,
+        "oldPerfix": "-fibre-clinix-tribond-mask-for-fine-hair--500ml",
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "65a023e7b2171939bf9dc0cc"
+        },
+        "product_name": "Schwarzkopf Osis Dust It",
+        "description": "<p>Mattifying power that is lightweight with a soft matte effect. Control and separation, long lasting hold and texture. Versatile control effect, the more you apply the more control you get. Incredible volume and natural feel.</p>",
+        "item_no": "OSiS+ Dust It",
+        "sale_price": {
+            "sale": 16.99
+        },
+        "price": {
+            "regular": 16.99
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Hair Styling"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/Schwarzkopf-Osis-Dust-It/osis_dust_it_product_1_800x8008pvi13jw9pn.webp"
+        ],
+        "quantity_on_hand": 25,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "NORMAL",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-osis-dust-it-pid-65a023e7b2171939bf9dc0cc",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "oldPerfix": "schwarzkopf-osis-dust-it",
+        "currency": null,
+        "gtin": null,
+        "createdAt": {
+            "$date": "2024-01-11T17:22:47.457Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.537Z"
+        },
+        "__v": 0,
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "65a02db6b2171939bf9deafc"
+        },
+        "product_name": "Schwarzkopf Osis Flex Wax",
+        "description": "<p class=\"\">Create texture and definition for edgy, modern and trendy styles with OSiS+ Flexwax. This cream wax&nbsp;delivers strong texture, separation and definition for a long-lasting style. You can experiment and restyle your hair throughout the day with the re-moldable strong hold and enhance your natural shine for healthy-looking, perfectly styled hair.</p>",
+        "item_no": "OSiS+ FlexWax",
+        "sale_price": {
+            "sale": 17.99
+        },
+        "price": {
+            "regular": 17.99
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Hair Styling"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/Schwarzkopf-Osis-Flex-Wax/51WqY1Ro8KLq89jcseohvd.webp"
+        ],
+        "quantity_on_hand": 3,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "NORMAL",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-osis-flex-wax-pid-65a02db6b2171939bf9deafc",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "oldPerfix": "schwarzkopf-osis-flex-wax",
+        "currency": null,
+        "gtin": null,
+        "createdAt": {
+            "$date": "2024-01-11T18:04:38.21Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.538Z"
+        },
+        "__v": 0,
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "65a02eedb2171939bf9debae"
+        },
+        "product_name": "Schwarzkopf Osis Thrill Fibre Gum",
+        "description": "<p>OSiS+ Thrill Fibre Gum&nbsp;provides texture and definition to the hair. The formula offers medium hold and high shine while being flexible.</p>\r\n<p>Featuring Mega Elastic Fibre technology, Thrill Fibre Gum adds fun and creativity to your styling regime and delivers strong texture control with exceptional shine. Perfect for creating mesmerising separation, texture and definition, this professional styling gum has a super strong hold and allows your styling creativity to run wild.</p>\r\n<p>Creating ultimate definition and texture, Thrill Fibre Gum doesn&rsquo;t over burden the hair and allows for natural movement with a natural glossy shine.</p>",
+        "item_no": "OSiS+ Thrill",
+        "sale_price": {
+            "sale": 18.99
+        },
+        "price": {
+            "regular": 18.99
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Hair Styling"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/Schwarzkopf-Osis-Thrill/schwarzkopf-osis-thrill-3-3oz-600h09pru8lu1t.webp"
+        ],
+        "quantity_on_hand": 8,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "NORMAL",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-osis-thrill-fibre-gum-pid-65a02eedb2171939bf9debae",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "oldPerfix": "schwarzkopf-osis-thrill-fibre-gum",
+        "currency": null,
+        "gtin": null,
+        "createdAt": {
+            "$date": "2024-01-11T18:09:49.243Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.54Z"
+        },
+        "__v": 0,
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "65a03247b2171939bf9decd0"
+        },
+        "product_name": "Schwarzkopf Osis Mess Up Matte Paste",
+        "description": "<p>The ultimate mess up and matte finish option OSiS+ Mess Up Matte Gum kills the styling routine! With a dry texture effect, Mess Up gives a choppy and rough style definition for great out-of-bed, messed up looks.</p>\r\n<p>Ideal for short layered hair cuts, OSiS+ Mess Up Matt Gum is popular on men and women looking for an incredible ultra matte finish. With pigments and carnauba wax Mess Up gives long lasting medium control with a pleasant and fresh fragrance.</p>",
+        "item_no": "OSiS+ Mess Up",
+        "sale_price": {
+            "sale": 17.99
+        },
+        "price": {
+            "regular": 17.99
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Hair Styling"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/Schwarzkopf-Osis-Mess-Up/716-lI-lVpLimhxt9gdy1.webp"
+        ],
+        "quantity_on_hand": 25,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "NORMAL",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-osis-mess-up-matte-paste-pid-65a03247b2171939bf9decd0",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "oldPerfix": "schwarzkopf-osis-mess-up-matte-paste",
+        "currency": null,
+        "gtin": null,
+        "createdAt": {
+            "$date": "2024-01-11T18:24:07.782Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.541Z"
+        },
+        "__v": 0,
+        "directions": null,
+        "ingredients": null
+    },
+    {
+        "_id": {
+            "$oid": "65a15998b2171939bf9e7eb8"
+        },
+        "product_name": "Schwarzkopf Osis Upload ",
+        "description": "<p>Doing exactly what it says on the label, OSiS+ Upload Lifting Volume Cream delivers smooth, instant lightweight volume. Conditioning as it adds body Upload is your tool to kill routine, hoisting you out of a styling rut.</p>\r\n<p>OSiS+ Upload Lifting Volume Cream is the moisturizer of the hair world boasting glycerine and panthenol to add moisture, condition and smooth the hair. Light film formers provide medium style control whilst smooth energy adds a velvety shine and feel.</p>\r\n<p>**packaging may vary**</p>",
+        "item_no": "OSiS+ Upload",
+        "sale_price": {
+            "sale": 17.99
+        },
+        "price": {
+            "regular": 17.99
+        },
+        "categories": [
+            {
+                "main": "Hair Care",
+                "name": "Hair Styling"
+            }
+        ],
+        "imgs": [
+            "https://xpressbeauty.s3.ca-central-1.amazonaws.com/testimages/Schwarzkopf-Osis-Upload-/upload3dqnfanzsn6b.webp"
+        ],
+        "quantity_on_hand": 12,
+        "sku": "",
+        "bar_code_value": "",
+        "status": "NORMAL",
+        "rating": 0,
+        "variation_type": null,
+        "variations": [],
+        "lineName": null,
+        "companyName": {
+            "name": "Schwarzkopf Professional"
+        },
+        "perfix": "schwarzkopf-osis-upload--pid-65a15998b2171939bf9e7eb8",
+        "priceType": "single",
+        "updateQuickBooks": false,
+        "oldPerfix": "schwarzkopf-osis-upload-",
+        "currency": null,
+        "gtin": null,
+        "createdAt": {
+            "$date": "2024-01-12T15:24:08.927Z"
+        },
+        "updatedAt": {
+            "$date": "2024-02-12T21:01:17.542Z"
+        },
+        "__v": 0,
+        "directions": null,
+        "ingredients": null
+    }
+]

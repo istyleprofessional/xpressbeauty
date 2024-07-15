@@ -16,6 +16,7 @@ const User = models.User;
 const RatingReviews = models.RatingReviews;
 const OpenAI = require("openai");
 const DummyUser = models.DummyUser;
+const fs = require("fs");
 
 set("strictQuery", false);
 const mongoUrl = NEXT_APP_MONGO_URL || "";
@@ -994,11 +995,24 @@ async function addProductsToGoogleSheet() {
   await connection.close();
 }
 
+const getSchwarzkopfProducts = async () => {
+  const products = require("./productsFinal6.json");
+  const finalProducts = [];
+  for (const product of products) {
+    if (product?.companyName?.name?.includes("Schwarzkopf")) {
+      finalProducts.push(product);
+    }
+  }
+  console.log(finalProducts.length);
+  fs.writeFileSync("schwarzkopf.json", JSON.stringify(finalProducts));
+};
+
 async function main() {
-  await updateCanardProducts();
+  // await updateCanardProducts();
   await addLatestCosmoProducts();
-  await adjustData();
-  await addProductsToGoogleSheet();
+  // await adjustData();
+  // await addProductsToGoogleSheet();
+  // getSchwarzkopfProducts();
 }
 
 main();
