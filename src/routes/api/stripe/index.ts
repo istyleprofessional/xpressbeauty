@@ -193,9 +193,13 @@ export const onGet: RequestHandler = async ({ query, env, url, redirect }) => {
       orderData.order_number
     );
     await sendConfirmationOrderForAdmin(
+      session.customer_details?.email ?? "",
       session.customer_details?.name ?? "",
+      session.customer_details?.phone ?? "",
       orderData.shippingAddress,
-      productsData ?? []
+      productsData ?? [],
+      orderData.totalInfo,
+      orderData.order_number
     );
     if (isDummy) {
       await update_dummy_user(
