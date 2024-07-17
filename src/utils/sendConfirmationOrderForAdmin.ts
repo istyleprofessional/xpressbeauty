@@ -33,8 +33,8 @@ export const sendConfirmationOrderForAdmin = async (
   console.log("email", totalInfo);
   const mailOptions = {
     from: `XpressBeauty Order Confirmed <${import.meta.env.VITE_EMAIL ?? ""}>`,
-    to: email.trim(),
-    subject: `New order no. ${orderNumber}`,
+    to: "isbeautysupply@gmail.com",
+    subject: `New order no. ${orderNumber}`,git
     html: `<body>
     <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
         <img src="cid:img2" alt="Logo" style="max-width: 100px; display: block; margin: 0 auto;">
