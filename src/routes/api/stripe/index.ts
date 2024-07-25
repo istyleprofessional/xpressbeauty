@@ -34,10 +34,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
       },
     });
   });
-  const paymentMethodTypes: any[] = [
-    "card",
-    data.currencyObject !== "1" ? "afterpay_clearpay" : "",
-  ];
+  const paymentMethodTypes: any[] = ["card"];
   const sessionObject: any = {
     ui_mode: "embedded",
     currency: data.currencyObject === "1" ? "usd" : "cad",
