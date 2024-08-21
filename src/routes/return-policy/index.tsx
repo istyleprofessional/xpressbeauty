@@ -167,7 +167,7 @@ export default component$(() => {
                 <b> 7. Cancellations: </b>
               </span>
               <span>
-                Orders cannot be canceled once they have been shipped. If you
+                Orders cannot be canceled once they have been processed. If you
                 wish to cancel an order, please contact us as soon as possible,
                 and we will do our best to assist you.
               </span>

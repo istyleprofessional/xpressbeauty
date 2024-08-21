@@ -68,7 +68,6 @@ def return_product_if_range(parsed_json, d, url, driver):
             #         )
             
         except:
-            time.sleep(40)
             driver.get(url)
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             json_element = soup.find('pre')
@@ -442,7 +441,6 @@ def get_all_products_ids_for_each_cat_cosmoprof():
                     })
             except Exception as e:
                 driver.get(f'''https://www.cosmoprofbeauty.ca{category['url']}''')
-                time.sleep(5)
                 last_height = driver.execute_script("return document.body.scrollHeight")
                 while True:
                     # Scroll down to bottom
@@ -585,7 +583,6 @@ def get_all_details_for_each_product_from_cosmoprof_api():
                 productJson['upc'] = parsed_json['product']['upc']
             except Exception as e:
                 print(e)
-                time.sleep(10)
                 driver.get(f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={d['id']}''')
                 soup = BeautifulSoup(driver.page_source, 'html.parser')
                 json_element = soup.find('pre')
@@ -687,7 +684,6 @@ def get_variant_details_from_json_file():
                     print(f'''{i}/{len(totalNumberOfProducts)}''')
             except Exception as e:
                 print(e)
-                time.sleep(10)
                 if d['variations'] and len(d['variations']) > 0:
                     checker = [v for v in d['variations'] if 'id' in v]
                     if len(checker) == 0:
