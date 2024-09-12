@@ -49,7 +49,7 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     custom_text: {
       shipping_address: {
         message:
-          "Please Note: We are not shipping to Puerto Rico, Virgin Islands and Hawaii.",
+          "Please Note: P.O. box addresses are not accepted. We do not ship to Puerto Rico, Virgin Islands & Hawaii.",
       },
       terms_of_service_acceptance: {
         message:
@@ -110,11 +110,9 @@ export const onPost: RequestHandler = async ({ json, parseBody, env }) => {
     mode: "payment",
     return_url: `${env.get(
       "VITE_APPURL"
-    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${
-      data.userId
-    }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${
-      data.user.isDummy
-    }`,
+    )}/api/stripe?session_id={CHECKOUT_SESSION_ID}&userId=${data.userId
+      }&currency=${data.currencyObject}&shipping=${data.shipping}&isGuest=${data.user.isDummy
+      }`,
   };
   const session = await stripe.checkout.sessions.create(sessionObject);
   json(200, { clientSecret: session.client_secret, sessionId: session.id });
