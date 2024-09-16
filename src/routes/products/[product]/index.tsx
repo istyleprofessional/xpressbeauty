@@ -87,6 +87,7 @@ export default component$(() => {
   });
 
   useTask$(() => {
+    debugger;
     if (currencyObject === "1") {
       if (product.priceType === "range") {
         product.price.min = product.price.min * 0.9;

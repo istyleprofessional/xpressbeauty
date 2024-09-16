@@ -811,6 +811,7 @@ async function addLatestCosmoProducts() {
         };
       });
     }
+
     if (product.priceType === "range") {
       product.price = {
         min: product.price.min,
@@ -843,6 +844,7 @@ async function adjustData() {
       await Product.findByIdAndUpdate(product._id, product, { new: true });
     }
   }
+
   const brands = await Brand.find({});
   for (const brand of brands) {
     if (regex.test(brand.name)) {
@@ -853,6 +855,16 @@ async function adjustData() {
   }
   await connection.close();
   console.log("done");
+}
+
+async function deleteProductPriceZero() {
+  await connect(mongoUrl);
+  const products = await Product.find({});
+  for (const product of products) {
+    if (!(product.price.regular || product.price.min || product.price.max)) {
+      await Product.findByIdAndDelete(product._id);
+    }
+  }
 }
 
 async function addProductsToGoogleSheet() {
@@ -1116,7 +1128,7 @@ async function adjustImages() {
 }
 
 async function main() {
-  await addLatestCosmoProducts();
+  await deleteProductPriceZero();
 }
 
 main();
