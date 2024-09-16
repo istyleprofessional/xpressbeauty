@@ -818,9 +818,18 @@ async function addLatestCosmoProducts() {
         max: product.price.max,
       };
     } else {
-      product.price = {
-        regular: product.price.regular,
-      };
+      if (
+        // check if product price is a number
+        parseFloat(product.price) !== NaN
+      ) {
+        product.price = {
+          regular: product.price,
+        };
+      } else {
+        product.price = {
+          regular: product.price.regular,
+        };
+      }
     }
     await Product.findOneAndUpdate(
       { product_name: product.product_name },
@@ -1128,7 +1137,7 @@ async function adjustImages() {
 }
 
 async function main() {
-  await deleteProductPriceZero();
+  await addLatestCosmoProducts();
 }
 
 main();
