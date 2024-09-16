@@ -372,14 +372,7 @@ export default component$(() => {
       };
     } else {
       const img = document?.getElementById("product-image");
-      img?.setAttribute(
-        "src",
-        `${
-          (product?.imgs ?? [])[0].includes("http")
-            ? (product?.imgs ?? [])[0]
-            : (product?.imgs ?? [])[0].replace(".", "")
-        }`
-      );
+      img?.setAttribute("src", `${(product?.imgs ?? [])[0]}`);
       currentProduct.value = product;
     }
   });

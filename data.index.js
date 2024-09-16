@@ -14,9 +14,10 @@ const Brand = models.Brand;
 const Order = models.Order;
 const User = models.User;
 const RatingReviews = models.RatingReviews;
-const OpenAI = require("openai");
+// const OpenAI = require("openai");
 const DummyUser = models.DummyUser;
 const fs = require("fs");
+const { S3 } = require("@aws-sdk/client-s3");
 
 set("strictQuery", false);
 const mongoUrl = NEXT_APP_MONGO_URL || "";
@@ -741,11 +742,10 @@ async function aiCategorization() {
               content: `
             All the categories and main categories that I have in my database are:
             ${dbCategories
-              .map((category) => `${category.name} - ${category.main}`)
-              .join("\n")}
-            The product name is ${
-              product.product_name
-            } and the description is ${product.description}`,
+                  .map((category) => `${category.name} - ${category.main}`)
+                  .join("\n")}
+            The product name is ${product.product_name
+                } and the description is ${product.description}`,
             },
           ],
           model: "gpt-3.5-turbo-0125",
@@ -794,7 +794,7 @@ async function aiCategorization() {
 // aiCategorization();
 
 async function addLatestCosmoProducts() {
-  const products = require("./updated_cosmo_products.json");
+  const products = require("./finalCosmoProf.json");
 
   for (const product of products) {
     await connect(mongoUrl);
@@ -802,10 +802,7 @@ async function addLatestCosmoProducts() {
       product.variations = product.variations.map((variation) => {
         return {
           variation_name: variation.variation_name,
-          variation_image: variation.variation_image[0].includes("+")
-            ? // replace all + with %2B
-              variation.variation_image[0].replace(/\+/g, "%2B")
-            : variation.variation_image[0],
+          variation_image: variation.variation_image,
           quantity_on_hand: variation.quantity_on_hand,
           price: variation.price,
           sale_price: variation.sale_price,
@@ -814,9 +811,6 @@ async function addLatestCosmoProducts() {
         };
       });
     }
-    product.imgs = product.imgs.map((img) => {
-      return img.includes("+") ? img.replace(/\+/g, "%2B") : img;
-    });
     if (product.priceType === "range") {
       product.price = {
         min: product.price.min,
@@ -824,7 +818,7 @@ async function addLatestCosmoProducts() {
       };
     } else {
       product.price = {
-        regular: product.price,
+        regular: product.price.regular,
       };
     }
     await Product.findOneAndUpdate(
@@ -888,11 +882,10 @@ async function addProductsToGoogleSheet() {
         for (const variant of product.variations) {
           const newRow = {
             id: `${product._id.toString()}-${variant?.variation_id}`,
-            title: `${
-              product.product_name?.includes("CR")
-                ? product.product_name?.replace(/CR.*/, "")
-                : product.product_name ?? ""
-            } - ${variant?.variation_name}`,
+            title: `${product.product_name?.includes("CR")
+              ? product.product_name?.replace(/CR.*/, "")
+              : product.product_name ?? ""
+              } - ${variant?.variation_name}`,
             description: product?.description ?? "",
             link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0].includes("http")
@@ -915,7 +908,7 @@ async function addProductsToGoogleSheet() {
               const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${
                 // index of the variation
                 product?.variations?.indexOf(variant)
-              }.webp`;
+                }.webp`;
               newRow["additional image link"] = folder;
             } else {
               newRow["additional image link"] = variant?.variation_image;
@@ -1007,12 +1000,123 @@ const getSchwarzkopfProducts = async () => {
   fs.writeFileSync("schwarzkopf.json", JSON.stringify(finalProducts));
 };
 
+const downloadImagesAndUploadToS3 = async (imageUrl, imageName, bucketName) => {
+  const s3 = new S3({
+    region: "ca-central-1",
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
+      secretAccessKey: process.env.AWS_SECRET_KEY ?? "",
+    },
+  });
+
+  try {
+    await s3.headBucket({ Bucket: bucketName });
+  } catch (error) {
+    if (error.name === 'NotFound') {
+      await s3.createBucket({
+        Bucket: bucketName,
+        CreateBucketConfiguration: {
+          LocationConstraint: "ca-central-1",
+        },
+      });
+      // Set bucket policy to make it public
+      const bucketPolicyParams = {
+        Bucket: bucketName,
+        Policy: JSON.stringify({
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Sid: "PublicReadGetObject",
+              Effect: "Allow",
+              Principal: "*",
+              Action:
+                // get and upload
+                "s3:GetObject, s3:PutObject",
+              Resource: `arn:aws:s3:::${bucketName}/*`,
+            },
+          ],
+        }),
+      };
+
+      await s3.putBucketPolicy(bucketPolicyParams);
+
+      // make bucket public
+      const publicAccessBlockParams = {
+        Bucket: bucketName,
+        PublicAccessBlockConfiguration: {
+          BlockPublicAcls: false,
+          IgnorePublicAcls: false,
+          BlockPublicPolicy: false,
+          RestrictPublicBuckets: false,
+        },
+      };
+
+      await s3.putPublicAccessBlock(publicAccessBlockParams);
+
+    } else {
+      console.error("Error accessing bucket: ", error);
+      return;
+    }
+  }
+  // Upload image to S3
+  try {
+    const data = await axios.get(imageUrl, {
+      responseType: "arraybuffer",
+      responseEncoding: "binary",
+    });
+    const arrayOfBuffer = data.data;
+    if (!arrayOfBuffer) {
+      return;
+    }
+
+    const params = {
+      Bucket: bucketName,
+      Key: `${bucketName}/${imageName.replace(/ /g, '-')}.webp`,
+      Body: arrayOfBuffer,
+      ContentType: "image/webp",
+    };
+    await s3.putObject(params);
+    const newImg = `https://${bucketName}.s3.amazonaws.com/${bucketName}/${imageName.replace(/ /g, '-')}.webp`;
+    return newImg;
+  } catch (error) {
+    console.error("Error downloading image: ", error);
+  }
+}
+
+async function adjustImages() {
+  const products = require("./cosmoprof_products_details_with_variation_updated.json");
+  const newProducts = [];
+  for (const product of products) {
+    const imageUrl = await downloadImagesAndUploadToS3(product.product_image,
+      // unique name for each product and clean the name from special characters to be image url friendly
+      product.product_name.replace(/[^a-zA-Z0-9]/g, '')
+        .replace(/\s+/g, ' ')
+        .replace(/ /g, '-')
+      , 'xpressbeauty');
+    // delete image from product img array and replace it with the new url
+    product.img = []
+    product.img.push(imageUrl);
+    delete product.product_image;
+    if (product.variations && product.variations.length > 0) {
+      for (let variant of product.variations) {
+        const imageUrl = await downloadImagesAndUploadToS3(variant.variation_image,
+          `${product.product_name.replace(/[^a-zA-Z0-9]/g, '')
+            .replace(/\s+/g, ' ')
+            .replace(/ /g, '-')}-${variant.variation_name.replace(/[^a-zA-Z0-9]/g, '')
+              .replace(/\s+/g, ' ')
+              .replace(/ /g, '-')}`
+          , 'xpressbeauty');
+        variant.variation_image = imageUrl;
+      }
+    }
+    newProducts.push(product);
+    fs.writeFileSync('finalCosmoProf.json', JSON.stringify(newProducts, null, 2));
+    console.log(`Product ${product.product_name} saved successfully`);
+  }
+}
+
 async function main() {
-  // await updateCanardProducts();
   await addLatestCosmoProducts();
-  // await adjustData();
-  // await addProductsToGoogleSheet();
-  // getSchwarzkopfProducts();
 }
 
 main();
