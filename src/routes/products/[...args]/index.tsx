@@ -337,10 +337,10 @@ export default component$(() => {
 
   useTask$(() => {
     filterServerData?.cat?.result?.forEach((category: any) => {
-      if (!categoriesSetObject.value[category.main]) {
-        categoriesSetObject.value[category.main] = [];
+      if (!categoriesSetObject.value[category?.main]) {
+        categoriesSetObject.value[category?.main] = [];
       }
-      categoriesSetObject.value[category.main].push(category.name);
+      categoriesSetObject.value[category?.main].push(category.name);
     });
   });
 

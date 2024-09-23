@@ -1,0 +1,1 @@
+import{r as s,c as r}from"./q-97996d90.js";import{n as t,k as o,q as a}from"./q-cea67d7a.js";const n=s(o("s_7YlhsASoor8")),i=r(o("s_EqpU2WvQyxI")),d=t(a(()=>import("./q-b549d8c7.js"),"s_fCxW3BUl8dg"));export{d as default,n as useEditProductData,i as useFormAction};

@@ -1,0 +1,1 @@
+import{c as o}from"./q-97996d90.js";import{n as s,k as r,q as t}from"./q-cea67d7a.js";const c=o(r("s_0FrmrYgA8BM")),m=s(t(()=>import("./q-5843475a.js"),"s_SGCWA9cH3Aw"));export{m as default,c as useAdminLoginAction};

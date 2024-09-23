@@ -1,0 +1,1 @@
+import{P as l,M as n}from"./q-cea67d7a.js";const r=o=>l("button",{onClick$:o.callBack},{class:"btn w-80 h-11 bg-[#20DF7F] rounded-2xl font-light",style:{boxShadow:"0px 4px 4px rgba(0, 0, 0, 0.3)"}},n(t=>t.placeHolder,[o]),2,"IQ_0");export{r as s_AbHQ9BTBLBE};

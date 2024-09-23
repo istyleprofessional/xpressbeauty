@@ -1,0 +1,1 @@
+import{r as e}from"./q-97996d90.js";import{n as s,k as t,q as r}from"./q-cea67d7a.js";const i=e(t("s_F0VyJ3EzVJc")),n=s(r(()=>import("./q-0e526049.js"),"s_vXMsjE8yEoc")),c={title:"Xpress Beauty | Check Order in Detail",meta:[{name:"description",content:"Orders Details - XpressBeauty"}]};export{n as default,c as head,i as useGetMyOrderDetails};

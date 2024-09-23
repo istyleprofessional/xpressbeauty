@@ -1,0 +1,1 @@
+import{r as s}from"./q-97996d90.js";import{n as o,k as r,q as t}from"./q-cea67d7a.js";const m=s(r("s_41qmjYU3A78")),d=o(t(()=>import("./q-249888c8.js"),"s_ts4AlWNymqQ")),i={title:"Admin dashboard for xpress beauty"};export{d as default,i as head,m as useProfileLoader};

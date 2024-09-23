@@ -1,0 +1,1 @@
+import{n as t,q as e}from"./q-cea67d7a.js";const n=t(e(()=>import("./q-15502cae.js"),"s_cUgYtzHs42I")),r={title:"Xpress Beauty | Return Policy",links:[{rel:"canonical",href:"https://xpressbeauty.ca/return-policy/"}],meta:[{name:"description",content:"Return Policy - XpressBeauty"}]};export{n as default,r as head};
