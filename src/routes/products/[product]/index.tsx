@@ -87,6 +87,7 @@ export default component$(() => {
   });
 
   useTask$(() => {
+    debugger;
     if (currencyObject === "1") {
       if (product.priceType === "range") {
         product.price.min = product.price.min * 0.9;
@@ -372,14 +373,7 @@ export default component$(() => {
       };
     } else {
       const img = document?.getElementById("product-image");
-      img?.setAttribute(
-        "src",
-        `${
-          (product?.imgs ?? [])[0].includes("http")
-            ? (product?.imgs ?? [])[0]
-            : (product?.imgs ?? [])[0].replace(".", "")
-        }`
-      );
+      img?.setAttribute("src", `${(product?.imgs ?? [])[0]}`);
       currentProduct.value = product;
     }
   });

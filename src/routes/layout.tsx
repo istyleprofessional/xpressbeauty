@@ -98,7 +98,7 @@ export const useUserData = routeLoader$(
         date: new Date().toISOString().slice(0, 19).replace("T", " "),
       },
     };
-    console.log(data);
+    // console.log(data);
     let curr: any = cookie.get("cur")?.value;
     if (userAgent?.includes("bot")) {
       cookie.delete("token", { path: "/" });
