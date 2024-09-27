@@ -1105,7 +1105,8 @@ const downloadImagesAndUploadToS3 = async (imageUrl, imageName, bucketName) => {
 }
 
 async function adjustImages() {
-  const products = require("./cosmoprof_products_details_with_variation_updated.json");
+  // const products = require("./cosmoprof_products_details_with_variation_updated.json");
+  const products = await Product.find({});
   const newProducts = [];
   for (const product of products) {
     const imageUrl = await downloadImagesAndUploadToS3(product.product_image,
@@ -1126,12 +1127,12 @@ async function adjustImages() {
             .replace(/ /g, '-')}-${variant.variation_name.replace(/[^a-zA-Z0-9]/g, '')
               .replace(/\s+/g, ' ')
               .replace(/ /g, '-')}`
-          , 'xpressbeauty');
+          , 'salonbrandz');
         variant.variation_image = imageUrl;
       }
     }
-    newProducts.push(product);
-    fs.writeFileSync('finalCosmoProf.json', JSON.stringify(newProducts, null, 2));
+    await Product.findByIdAndUpdate
+      (product._id, product, { new: true });
     console.log(`Product ${product.product_name} saved successfully`);
   }
 }

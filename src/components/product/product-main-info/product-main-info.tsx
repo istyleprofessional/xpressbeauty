@@ -43,6 +43,9 @@ export const ProductMainInfo = component$((props: ProductMainInfoProps) => {
         })}`;
       }
     } else {
+      if (price?.regular && price?.regular?.regular) {
+        price.regular = price.regular.regular;
+      }
       finalRegularPrice.value = parseFloat(price?.regular)?.toLocaleString(
         "en-US",
         {

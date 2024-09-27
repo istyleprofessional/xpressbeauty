@@ -283,7 +283,6 @@ export const get_new_arrivals_products = async (filter?: string) => {
 };
 
 export const get_product_by_name = async (name: string) => {
-  console.log(name);
   try {
     const result = await Product.findOne({
       $or: [
@@ -500,8 +499,8 @@ export const get_products_data = async (
       buildQuery,
       query && query !== ""
         ? {
-            score: { $meta: "textScore" },
-          }
+          score: { $meta: "textScore" },
+        }
         : {}
     )
       .sort(sortObj)

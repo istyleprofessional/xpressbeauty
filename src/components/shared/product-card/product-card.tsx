@@ -90,6 +90,9 @@ export const ProductCard = component$((props: ProductCardProps) => {
         })}`;
       }
     } else {
+      if (product.price?.regular && product.price?.regular?.regular) {
+        product.price.regular = product.price.regular.regular;
+      }
       finalRegularPrice.value = parseFloat(
         product.price?.regular
       )?.toLocaleString("en-US", {

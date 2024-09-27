@@ -207,6 +207,8 @@ def get_products_ids():
                 json_data = json_element.get_text()
                 parsed_json = json.loads(json_data)
                 product['product_name'] = parsed_json['product']['productName']
+                if product['product_name'] == 'Rising Star Volumizing Finishing Spray':
+                    print(product['product_name'])
                 product['category'] = productId['category']
                 product['companyName'] = productId['companyName']
                 imageUrl = parsed_json['product']['images']['pdpLarge'][0]['url']
