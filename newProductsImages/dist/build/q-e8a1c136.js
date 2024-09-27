@@ -1,0 +1,1 @@
+import{n as s,q as n}from"./q-cea67d7a.js";const e=s(n(()=>import("./q-f7fbc677.js"),"s_ogg7SFUNoEU")),o={title:"Xpress Beauty | Terms and Conditions",links:[{rel:"canonical",href:"https://xpressbeauty.ca/terms-and-conditions/"}],meta:[{name:"description",content:"Terms and Conditions - XpressBeauty"}]};export{e as default,o as head};

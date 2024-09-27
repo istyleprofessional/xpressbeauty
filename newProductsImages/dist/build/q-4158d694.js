@@ -1,0 +1,1 @@
+import{P as t}from"./q-cea67d7a.js";const l=()=>t("div",null,{class:"bg-[url('/sales.webp')] h-96 md:h-[10%] w-full bg-contain bg-no-repeat bg-center flex justify-center"},t("button",null,{"aria-label":"Shop now",class:"btn bg-black w-[30%] h-fit text-white font-[Inter] font-bold text-sm md:text-2xl normal-case self-end "},"Shop Now",3,null),3,"9g_0");export{l as s_nO0oULoIw0M};

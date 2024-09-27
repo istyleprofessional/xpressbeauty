@@ -209,7 +209,7 @@ export default component$(() => {
                   <th>{product.product_name}</th>
                   <th>
                     {product.categories
-                      .map((cat: any) => `${cat.main} - ${cat.name}`)
+                      .map((cat: any) => `${cat?.main} - ${cat?.name}`)
                       .join(" & ")}
                   </th>
                   <th>{product.item_no}</th>

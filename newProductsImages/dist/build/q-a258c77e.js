@@ -1,0 +1,1 @@
+import{n as s,q as t}from"./q-cea67d7a.js";const a=s(t(()=>import("./q-945bf77b.js"),"s_kbvsRNvMNJc")),n={title:"Xpress Beauty | About Us",links:[{rel:"canonical",href:"https://xpressbeauty.ca/about-us/"}],meta:[{name:"description",content:"About us - XpressBeauty"}]};export{a as default,n as head};

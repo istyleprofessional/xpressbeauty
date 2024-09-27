@@ -1,0 +1,1 @@
+const n=o=>{const s=o.target;console.log(s.checked);const t=document.querySelector(".js-password"),e=document.querySelector(".js-password-label");!t||!e||(s.checked?(t.setAttribute("type","text"),e.textContent="hide"):(t.setAttribute("type","password"),e.textContent="show"))};export{n as s_E0MNOYx04sA};

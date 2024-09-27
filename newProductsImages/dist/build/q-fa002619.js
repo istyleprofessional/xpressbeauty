@@ -1,0 +1,1 @@
+import{r as o,c as r}from"./q-97996d90.js";import{n as t,k as s,q as e}from"./q-cea67d7a.js";const d=o(s("s_YW0RQXundLI")),c=r(s("s_0J30VsiPrdM")),i=t(e(()=>import("./q-0e526049.js"),"s_Bed470W5B48"));export{i as default,d as useGetBrandById,c as useUpdateAction};

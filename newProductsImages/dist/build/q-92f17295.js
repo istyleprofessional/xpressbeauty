@@ -1,0 +1,1 @@
+import{P as l}from"./q-cea67d7a.js";const e=()=>l("div",null,{class:"flex flex-col items-center justify-center h-96"},[l("h1",null,{class:"text-3xl font-bold text-error"},"404",3,null),l("p",null,{class:"text-xl font-semibold text-error"},"Page not found",3,null)],3,"zA_0");export{e as s_o0zyKXMYwnw};

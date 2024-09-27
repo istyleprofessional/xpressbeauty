@@ -1,0 +1,1 @@
+import{r as s}from"./q-97996d90.js";import{n as r,k as a,q as o}from"./q-cea67d7a.js";const n=s(a("s_TQ04JalYa1I")),m=r(o(()=>import("./q-6e033da7.js"),"s_TZrQkWQOaPc"));export{m as default,n as useBrands};

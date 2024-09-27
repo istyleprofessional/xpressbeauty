@@ -1,0 +1,1 @@
+import{_auto_getTheToken as o}from"./q-b8cbee36.js";import"./q-97996d90.js";import"./q-cea67d7a.js";const s=async()=>{const t=await o();if((t==null?void 0:t.status)==="success"){location.href=`/emailVerify/?token=${t.token}`;return}};export{s as s_caJnJth0Zgk};

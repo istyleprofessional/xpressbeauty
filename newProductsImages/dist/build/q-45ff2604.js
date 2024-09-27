@@ -1,0 +1,1 @@
+import{n as i,q as e}from"./q-cea67d7a.js";const t=i(e(()=>import("./q-5af122b5.js"),"s_dpYyliil7yw")),p={title:"Xpress Beauty | Shipping Policy",links:[{rel:"canonical",href:"https://xpressbeauty.ca/shipping-policy/"}],meta:[{name:"description",content:"Shipping Policy - XpressBeauty"}]};export{t as default,p as head};

@@ -613,7 +613,7 @@ export const head: DocumentHead = ({ resolveValue }) => {
       jsonData.companyName?.name && jsonData.companyName?.name !== ""
         ? `${jsonData.companyName?.name} |`
         : ""
-    } ${`${jsonData.categories[0].main ?? ""}`}`,
+    } ${`${jsonData.categories[0]?.main ?? ""}`}`,
     meta: [
       {
         name: "description",
@@ -631,7 +631,7 @@ export const head: DocumentHead = ({ resolveValue }) => {
             : `$${jsonData.price.regular}`
         } in our ${
           jsonData.categories
-            .map((cat: any) => `${cat.main}, ${cat.name}`)
+            .map((cat: any) => `${cat?.main}, ${cat.name}`)
             .join(", ") ?? ""
         } category.`,
       },

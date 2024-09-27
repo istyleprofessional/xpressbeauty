@@ -1,0 +1,1 @@
+import{n as o,q as t}from"./q-cea67d7a.js";function r(n){return gtag("event","conversion",{send_to:"AW-11167601664/ApSoCLPu2IwZEICokM0p",transaction_id:n}),!1}const s=o(t(()=>import("./q-492ac39b.js"),"s_6FbPJqb8C5g"));export{s as default,r as gtag_report_conversion};
