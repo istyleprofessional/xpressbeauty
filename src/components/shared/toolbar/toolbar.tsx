@@ -416,7 +416,12 @@ export const ToolBar = component$((props: ToolBarProps) => {
                         <li key={index} class="text-black h-fit w-full ">
                           <a
                             class="w-full flex flex-row md:w-full md:grid grid-cols-3 gap-3 items-center md:h-full"
-                            href={`/products/${item.perfix ?? ""}`}
+                            href={`/products/${encodeURIComponent(
+                              product.product_name
+                                ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
+                                .replace(/ /g, "-")
+                                .toLowerCase() ?? ""
+                            )}-pid-${product._id}/`}
                           >
                             <span class="w-full break-all text-sm md:col-span-2">
                               {item.product_name}
