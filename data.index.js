@@ -1139,8 +1139,9 @@ async function adjustImages() {
 }
 
 async function main() {
-  await addLatestCosmoProducts();
+  // await addLatestCosmoProducts();
   // await adjustImages();
+  await adjustData();
 }
 
 main();
