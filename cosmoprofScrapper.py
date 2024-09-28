@@ -158,32 +158,51 @@ def get_last_prices_and_upc(products):
 # get_last_prices_and_upc()
 
 
-def upload_image(url, name):
-    AWS_ACCESS_KEY_ID = os.environ.get('VITE_AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('VITE_AWS_SECRET_KEY')
-    AWS_BUCKET_NAME = 'xpressbeauty'
+def upload_image(file_path):
+    with open(file_path, 'rb') as f:
+        data = f.read()
 
-    s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
-                      aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
-    # download the image from the url and save it in a folder called skin_care
-    image_path = f'''./newProductsImages/{name}.webp'''
-    with open(image_path, 'wb') as handle:
-        response = requests.get(url, stream=True)
-        if not response.ok:
-            print(response)
-        for block in response.iter_content(1024):
-            if not block:
-                break
-            handle.write(block)
-    s3.upload_file(image_path, AWS_BUCKET_NAME,
-                   f'''products-images-2/{name}.webp''', ExtraArgs={'ACL': 'public-read'})
-    os.remove(image_path)
-    urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/{name}.webp'''
-    return urlToBeReturned
+    for product in data:
+        try:
+            for imgUrl in product['imgs']:
+                name = product['product_name'].replace(' ', '_').replace('/', '_').replace(
+                    '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')
+
+                AWS_ACCESS_KEY_ID = os.environ.get('VITE_AWS_ACCESS_KEY_ID')
+                AWS_SECRET_ACCESS_KEY = os.environ.get('VITE_AWS_SECRET_KEY')
+                AWS_BUCKET_NAME = 'xpressbeauty'
+
+                s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                  aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+                # download the image from the url and save it in a folder called skin_care
+                image_path = f'''./newProductsImages/{name}.webp'''
+                with open(image_path, 'wb') as handle:
+                    response = requests.get(imgUrl, stream=True)
+                    if not response.ok:
+                        print(response)
+                    for block in response.iter_content(1024):
+                        if not block:
+                            break
+                        handle.write(block)
+                s3.upload_file(image_path, AWS_BUCKET_NAME,
+                               f'''products-images-2/{name}.webp''', ExtraArgs={'ACL': 'public-read'})
+                os.remove(image_path)
+                urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/{name}.webp'''
+                newImgUrl = urlToBeReturned
+                # delete the old image
+                product['imgs'].remove(imgUrl)
+                product['imgs'].append(newImgUrl)
+        except:
+            continue
 
 
 def get_products_ids():
-    products = []
+    # connect to mongodb
+
+    productsIds = []
+    with open('cosmoprof_products_ids_not_in_details.json') as f:
+        productsIds = json.load(f)
+
     try:
         with open('cosmoprof_products_ids.json') as f:
             productsIds = json.load(f)
@@ -195,6 +214,8 @@ def get_products_ids():
             try:
                 product = {}
                 product['cosmoprof_id'] = productId['cosmoprof_id']
+                if driver == None:
+                    driver = uc.Chrome()
                 driver.get(
                     f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ productId['cosmoprof_id']}''')
 
@@ -274,8 +295,11 @@ def get_products_ids():
                             if 'upc' in parsed_json['product']:
                                 variation['upc'] = parsed_json['product']['upc']
                             if 'price' in parsed_json['product']:
+                                if driver == None:
+                                    driver = uc.Chrome()
                                 if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] == None and 'sales' in parsed_json['product']['price'] and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] == None:
                                     # login again and then get the url
+
                                     login_to_cosmoprof(driver)
                                     driver.get(
                                         f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={
@@ -312,6 +336,8 @@ def get_products_ids():
 
                 else:
                     if 'price' in parsed_json['product']:
+                        if driver == None:
+                            driver = uc.Chrome()
                         if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] == None and 'sales' in parsed_json['product']['price'] and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] == None:
                             # login again and then get the url
                             login_to_cosmoprof(driver)
@@ -344,19 +370,87 @@ def get_products_ids():
 
                 products.append(product)
                 # write each product to the file after getting the details inside the loop
-                with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
+                with open('cosmoprof_products_details_with_variation_updated-2.json', 'w') as f:
                     json.dump(products, f)
                 print(f'''{productId['cosmoprof_id']}''')
             except Exception as e:
                 print(e)
                 continue
-
-        with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
-            json.dump(products, f)
     except Exception as e:
         print(e)
         with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
             json.dump(products, f)
 
 
+def getPriceZeroFrom():
+    driver = uc.Chrome()
+    with open('cosmoprof_products_details_with_variation_updated.json') as f:
+        products = json.load(f)
+        for product in products:
+            if product['price'] == 0:
+                driver.get(
+                    f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product['cosmoprof_id']}''')
+                while has_captcha(driver):
+                    handle_captcha(
+                        driver, f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product['cosmoprof_id']}''')
+                soup = BeautifulSoup(driver.page_source, 'html.parser')
+                json_element = soup.find('pre')
+                json_data = json_element.get_text()
+                parsed_json = json.loads(json_data)
+
+                if 'price' in parsed_json['product']:
+                    if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] == None and 'sales' in parsed_json['product']['price'] and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] == None:
+                        # login again and then get the url
+                        login_to_cosmoprof(driver)
+                        driver.get(
+                            f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product['cosmoprof_id']}''')
+                        while has_captcha(driver):
+                            handle_captcha(
+                                driver, f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product['cosmoprof_id']}''')
+                        soup = BeautifulSoup(
+                            driver.page_source, 'html.parser')
+                        json_element = soup.find('pre')
+                        json_data = json_element.get_text()
+                        parsed_json = json.loads(json_data)
+                    if 'tiered' in parsed_json['product']['price']['type']:
+                        product['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
+                    else:
+                        if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
+                            product['price'] = parsed_json['product']['price']['list']['value'] + 5
+                        elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+                            product['price'] = parsed_json['product']['price']['sales']['value'] + 5
+                        else:
+                            product['price'] = 0
+
+                if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+                    product['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+
+                else:
+                    product['quantity_on_hand'] = 0
+
+        with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
+            json.dump(products, f)
+
+        print('Done')
+
+
+def getDiffBtwnTwoFiles():
+    # open details file and ids file
+    with open('cosmoprof_products_details_with_variation_updated.json') as f:
+        products_details = json.load(f)
+    with open('cosmoprof_products_ids.json') as f:
+        products_ids = json.load(f)
+
+        # get the ids that is not in the details file
+        ids = []
+        for product in products_ids:
+            if not any(d['cosmoprof_id'] == product['cosmoprof_id'] for d in products_details):
+                ids.append(product)
+        with open('cosmoprof_products_ids_not_in_details.json', 'w') as f:
+            json.dump(ids, f)
+        print('Done')
+
+
+# getDiffBtwnTwoFiles()
+# getPriceZeroFrom()
 get_products_ids()
