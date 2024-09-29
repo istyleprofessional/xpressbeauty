@@ -244,8 +244,14 @@ export default component$(() => {
           price:
             product.priceType === "range"
               ? product.price.min
+              : product.price?.regular && product.price?.regular?.regular
+              ? product.price.regular.regular
               : product.price.regular,
-          priceValidUntil: "2022-11-05",
+          priceValidUntil:
+            // next year same day
+            new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+              .toISOString()
+              .split("T")[0],
           itemCondition: "https://schema.org/NewCondition",
           availability:
             (product.variations?.length ?? 0) > 0
