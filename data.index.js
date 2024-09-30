@@ -850,10 +850,10 @@ async function adjustData() {
     if (regex.test(product.companyName?.name)) {
       product.companyName.name = product.companyName?.name.replace(regex, "");
       // capatalise the first letter always
-      product.companyName.name = product.companyName?.name.charAt(0).toUpperCase() + product.companyName?.name.slice(1);
       product.companyName.name = product.companyName?.name.trim();
-      await Product.findByIdAndUpdate(product._id, product, { new: true });
     }
+    product.companyName.name = product.companyName?.name.charAt(0).toUpperCase() + product.companyName?.name.slice(1);
+    await Product.findByIdAndUpdate(product
   }
 
   const brands = await Brand.find({});
@@ -861,10 +861,11 @@ async function adjustData() {
     if (regex.test(brand.name)) {
       brand.name = brand.name.replace(regex, "");
       // capatalise the first letter always
-      brand.name = brand.name.charAt(0).toUpperCase() + brand.name.slice(1);
       brand.name = brand.name.trim();
-      await Brand.findByIdAndUpdate(brand._id, brand, { new: true });
     }
+    brand.name = brand.name.charAt(0).toUpperCase() + brand.name.slice(1);
+    await Brand.findByIdAndUpdate(brand._id, brand, { new: true });
+
   }
   await connection.close();
   console.log("done");
