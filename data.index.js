@@ -852,8 +852,10 @@ async function adjustData() {
       // capatalise the first letter always
       product.companyName.name = product.companyName?.name.trim();
     }
-    product.companyName.name = product.companyName?.name.charAt(0).toUpperCase() + product.companyName?.name.slice(1);
-    await Product.findByIdAndUpdate(product._id, product, { new: true });
+    if (product.companyName?.name) {
+      product.companyName.name = product.companyName?.name.charAt(0).toUpperCase() + product.companyName?.name.slice(1);
+      await Product.findByIdAndUpdate(product._id, product, { new: true });
+    }
   }
 
   const brands = await Brand.find({});
