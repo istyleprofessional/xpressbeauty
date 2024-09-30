@@ -853,7 +853,7 @@ async function adjustData() {
       product.companyName.name = product.companyName?.name.trim();
     }
     product.companyName.name = product.companyName?.name.charAt(0).toUpperCase() + product.companyName?.name.slice(1);
-    await Product.findByIdAndUpdate(product
+    await Product.findByIdAndUpdate(product._id, product, { new: true });
   }
 
   const brands = await Brand.find({});
