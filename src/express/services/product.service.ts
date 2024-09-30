@@ -647,7 +647,7 @@ export const getSearchResults = async (search: string) => {
         isHidden: { $ne: true },
         isDeleted: { $ne: true },
       },
-      { product_name: 1, perfix: 1, _id: 0, imgs: 1 }
+      { product_name: 1, perfix: 1, _id: 1, imgs: 1 }
     ).limit(20);
     return result;
   } catch (err) {

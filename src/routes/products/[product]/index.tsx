@@ -616,8 +616,8 @@ export const head: DocumentHead = ({ resolveValue }) => {
 
   return {
     title: `${jsonData?.product_name ?? ""} | ${
-      jsonData.companyName?.name && jsonData.companyName?.name !== ""
-        ? `${jsonData.companyName?.name} |`
+      jsonData?.companyName?.name && jsonData.companyName?.name !== ""
+        ? `${jsonData?.companyName?.name} |`
         : ""
     } ${`${jsonData.categories[0]?.main ?? ""}`}`,
     meta: [

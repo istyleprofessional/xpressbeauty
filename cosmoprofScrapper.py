@@ -28,14 +28,14 @@ def handle_captcha(sb, url):
     try:
         btnContainer = driver.find_element(By.ID, 'px-captcha')
         if btnContainer:
-            time.sleep(5)
+            time.sleep(2)
             ActionChains(driver).key_down(Keys.TAB).perform()
-            time.sleep(5)
+            time.sleep(2)
             ActionChains(driver).key_down(Keys.ENTER).pause(10).perform()
             ActionChains(driver).key_up(Keys.ENTER).perform()
             time.sleep(5)
             try:
-                WebDriverWait(driver, 50).until(
+                WebDriverWait(driver, 25).until(
                     EC.url_contains(url)
                 )
             except:
@@ -43,13 +43,13 @@ def handle_captcha(sb, url):
                 driver.delete_all_cookies()
                 # refresh the page
                 driver.refresh()
-                time.sleep(5)
+                time.sleep(2)
                 while has_captcha(driver):
                     handle_captcha(driver, url)
                 login_to_cosmoprof(driver)
-                time.sleep(5)
+                time.sleep(2)
                 driver.get(url)
-                time.sleep(5)
+                time.sleep(2)
                 while has_captcha(driver):
                     handle_captcha(driver, url)
     except:
@@ -82,21 +82,52 @@ def login_to_cosmoprof(sb):
     return cookies
 
 
+def open_browser():
+    driver = uc.Chrome()
+    return driver
+
+
 def upload_image():
     with open('cosmoprof_products_details_with_variation_updated.json') as f:
         data = f.read()
         data = json.loads(data)
 
+    conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
+    collection = db['products']
     for product in data:
         try:
+            # check if the product is already in the db
+            dbProduct = collection.find_one(
+                {'product_name': product['product_name']})
+            if dbProduct != None:
+                # check if the product has an image and containes xpressbeauty in the url
+                if 'imgs' in dbProduct and len(dbProduct['imgs']) > 0 and 'xpressbeauty' in dbProduct['imgs'][0]:
+                    product['imgs'] = dbProduct['imgs']
+                    varChecker = []
+                    if 'variations' in dbProduct and len(dbProduct['variations']) > 0:
+                        for variation in dbProduct['variations']:
+                            if 'variation_image' in variation and 'xpressbeauty' in variation['variation_image']:
+                                # find the variation in the product and update the image
+                                for productVariation in product['variations']:
+                                    if productVariation['variation_name'] == variation['variation_name']:
+                                        productVariation['variation_image'] = variation['variation_image']
+                                varChecker.append(True)
+                            else:
+                                varChecker.append(False)
+
+                        if not False in varChecker:
+                            continue
+            if product['product_name'] == 'Big Hit Volumizing Shampoo':
+                print('Big Hit Volumizing Shampoo')
+            if dbProduct and 'imgs' in dbProduct and len(dbProduct['imgs']) > 0 and 'xpressbeauty' in dbProduct['imgs'][0]:
+                continue
             imgUrl = product['product_image']
             name = product['product_name'].replace(' ', '_').replace('/', '_').replace(
                 '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')
-
             AWS_ACCESS_KEY_ID = os.environ.get('VITE_AWS_ACCESS_KEY_ID')
             AWS_SECRET_ACCESS_KEY = os.environ.get('VITE_AWS_SECRET_KEY')
             AWS_BUCKET_NAME = 'xpressbeauty'
-
             s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
                               aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
             # download the image from the url and save it in a folder called skin_care
@@ -117,12 +148,15 @@ def upload_image():
             # add the new image url to the product
             product['imgs'] = []
             product['imgs'].append(newImgUrl)
+
         except Exception as e:
             e = e
 
         if 'variations' in product and len(product['variations']) > 0:
             for variation in product['variations']:
                 try:
+                    if 'variation_image' in variation and 'xpressbeauty' in variation['variation_image']:
+                        continue
                     imgUrl = variation['variation_image']
                     name = f'''{product['product_name']}_{variation['variation_name']}'''.replace(' ', '_').replace('/', '_').replace(
                         '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')
@@ -143,8 +177,10 @@ def upload_image():
                     variation['variation_image'] = newImgUrl
                 except:
                     continue
-        with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
-            json.dump(data, f)
+        print(
+            f'''product no {data.index(product)} out of {len(data)} image done''')
+    with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
+        json.dump(data, f)
 
 
 def get_products_ids_details():
@@ -155,7 +191,7 @@ def get_products_ids_details():
     products = []
     with open('cosmoprof_products_ids.json') as f:
         productsIds = json.load(f)
-        driver = uc.Chrome()
+        driver = open_browser()
         for productId in productsIds:
             if productId['cosmoprof_id'] == 'CAN-M-046094':
                 print('Big Hit Volumizing Conditioner')
@@ -163,7 +199,7 @@ def get_products_ids_details():
                 product = {}
                 product['cosmoprof_id'] = productId['cosmoprof_id']
                 if driver == None:
-                    driver = uc.Chrome()
+                    driver = open_browser()
                 driver.get(
                     f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ productId['cosmoprof_id']}''')
 
@@ -210,6 +246,8 @@ def get_products_ids_details():
                     elif 'tiered' in parsed_json['product']['price']['type']:
                         product['price']['regular'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
                         product['priceType'] = 'single'
+                        if product['price']['regular'] == 0:
+                            continue
                     else:
                         if parsed_json['product']['price']['list'] != None and parsed_json['product']['price']['list']['value'] != None:
                             product['price']['regular'] = parsed_json['product']['price']['list']['value'] + 5
@@ -218,6 +256,8 @@ def get_products_ids_details():
                         else:
                             product['price']['regular'] = 0
                         # d['price'] = parsed_json['product']['price']['list']['value'] + 5
+                        if product['price']['regular'] == 0:
+                            continue
                         product['priceType'] = 'single'
                     product['variations'] = []
                     product['variation_type'] = parsed_json['product']['variationAttributes'][0]['displayName']
@@ -246,7 +286,7 @@ def get_products_ids_details():
                                 variation['upc'] = parsed_json['product']['upc']
                             if 'price' in parsed_json['product']:
                                 if driver == None:
-                                    driver = uc.Chrome()
+                                    driver = open_browser()
                                 if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] == None and 'sales' in parsed_json['product']['price'] and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] == None:
                                     # login again and then get the url
 
@@ -272,6 +312,8 @@ def get_products_ids_details():
                                         variation['price'] = parsed_json['product']['price']['sales']['value'] + 5
                                     else:
                                         variation['price'] = 0
+                                if variation['price'] == 0:
+                                    continue
                             if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                                 variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
                             else:
@@ -281,12 +323,12 @@ def get_products_ids_details():
                         except WebDriverException as e:
                             driver.quit()
                             driver = None
-                            driver = uc.Chrome()
+                            driver = open_browser()
                             continue
                         except TimeoutException as e:
                             driver.quit()
                             driver = None
-                            driver = uc.Chrome()
+                            driver = open_browser()
                             continue
                         except:
                             while has_captcha(driver):
@@ -296,7 +338,7 @@ def get_products_ids_details():
                 else:
                     if 'price' in parsed_json['product']:
                         if driver == None:
-                            driver = uc.Chrome()
+                            driver = open_browser()
                         if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] == None and 'sales' in parsed_json['product']['price'] and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] == None:
                             # login again and then get the url
                             login_to_cosmoprof(driver)
@@ -311,14 +353,16 @@ def get_products_ids_details():
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
                         if 'tiered' in parsed_json['product']['price']['type']:
-                            product['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
+                            product['price']['regular'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
                         else:
                             if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
-                                product['price'] = parsed_json['product']['price']['list']['value'] + 5
+                                product['price']['regular'] = parsed_json['product']['price']['list']['value'] + 5
                             elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
-                                product['price'] = parsed_json['product']['price']['sales']['value'] + 5
+                                product['price']['regular'] = parsed_json['product']['price']['sales']['value'] + 5
                             else:
-                                product['price'] = 0
+                                product['price']['regular'] = 0
+                        if product['price']['regular'] == 0:
+                            continue
                     product['priceType'] = 'single'
                     if 'estimatedQty' in parsed_json['productAvailability']['availability']:
                         product['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
@@ -331,39 +375,20 @@ def get_products_ids_details():
                 # write each product to the file after getting the details inside the loop
                 with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
                     json.dump(products, f)
+                print(
+                    f'''product no {products.index(product)} out of {len(productsIds)} ''')
             except WebDriverException as e:
                 driver.quit()
                 driver = None
-                driver = uc.Chrome()
+                driver = open_browser()
                 continue
             except TimeoutException as e:
                 driver.quit()
                 driver = None
-                driver = uc.Chrome()
+                driver = open_browser()
                 continue
             except Exception as e:
                 continue
-
-
-def getDiffBtwnTwoFiles():
-    # open details file and ids file
-    with open('cosmoprof_products_details_with_variation_updated.json') as f:
-        products_details_1 = json.load(f)
-    with open('cosmoprof_products_details_with_variation_updated-2.json') as f:
-        products_details_2 = json.load(f)
-    products_details = products_details_1 + products_details_2
-
-    with open('cosmoprof_products_ids.json') as f:
-        products_ids = json.load(f)
-
-    # get the ids that is not in the details file
-    ids = []
-    for product in products_ids:
-        if not any(d['cosmoprof_id'] == product['cosmoprof_id'] for d in products_details):
-            ids.append(product)
-    with open('cosmoprof_products_ids_not_in_details.json', 'w') as f:
-        json.dump(ids, f)
-    print('Done')
 
 
 def get_products_ids():
@@ -388,8 +413,12 @@ def get_products_ids():
             'name': 'Skin and Body',
             'href': 'skin-and-body'
         },
+        {
+            'name': 'Salon Essentials',
+            'href': 'salon-essentials'
+        }
     ]
-    driver = uc.Chrome()
+    driver = open_browser()
 
     products_ids = []
     for category in categories:
@@ -437,24 +466,6 @@ def add_products_to_db():
         products = json.load(f)
     # check if product is duplicated by product_name if so update the categories array and remove the duplicated product
     for product in products:
-        isDuplicate = False
-        duplicateProduct = {}
-        for product2 in products:
-            if product['product_name'] == product2['product_name'] and product['category']['main'] != product2['category']['main']:
-                isDuplicate = True
-                duplicateProduct = product2
-                break
-        if isDuplicate:
-            product['categories'] = []
-            product['categories'].append(product['category'])
-            product['categories'].append(duplicateProduct['category'])
-            products.remove(duplicateProduct)
-            del product['category']
-        else:
-            product['categories'] = []
-            product['categories'].append(product['category'])
-            del product['category']
-
         # check if price is a number not a object
         if type(product['price']) != dict:
             product['price'] = {
@@ -473,7 +484,7 @@ def add_products_to_db():
             products.remove(product)
 
     conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressBeauty']
+    db = conn['xpressbeauty']
     collection = db['products']
     for product in products:
         collection.find_one_and_update(
@@ -484,9 +495,52 @@ def add_products_to_db():
     print('Done')
 
 
+def check_duplicates():
+    with open('cosmoprof_products_details_with_variation_updated.json') as f:
+        products = json.load(f)
+    seen = set()
+    duplicates = []
+    for product in products:
+        if product['product_name'] in seen:
+            duplicates.append(product)
+        else:
+            seen.add(product['product_name'])
+
+        if 'category' in product:
+            product['categories'] = []
+            product['categories'].append(product['category'])
+            del product['category']
+
+    # merge the duplicates into one product and append the categories to the categories array
+    for duplicate in duplicates:
+        for product in products:
+            if product['product_name'] == duplicate['product_name']:
+                product['categories'].append(duplicate['categories'][0])
+        products.remove(duplicate)
+    with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
+        json.dump(products, f)
+
+
 if __name__ == '__main__':
+    print('=============== Starting the process ===============')
+    # print('=============== Getting the products ids ===============')
     # get_products_ids()
-    get_products_ids_details()
+    # print('=============== Got the products ids ===============')
+    # time.sleep(2)
+    # print('=============== Getting the products details ===============')
+    # get_products_ids_details()
+    # print('=============== Got the products details ===============')
+    # time.sleep(2)
+    print('=============== Checking duplicates ===============')
+    check_duplicates()
+    print('=============== Checked duplicates ===============')
+    time.sleep(2)
+    print('=============== Uploading the images to s3 ===============')
     upload_image()
+    print('=============== Uploaded the images ===============')
+    time.sleep(2)
+    print('=============== Adding the products to the db ===============')
     add_products_to_db()
-    print('Done')
+    print('=============== Added the products to the db ===============')
+    time.sleep(1)
+    print('=============== Done ===============')

@@ -148,7 +148,12 @@ export const ToolBar = component$((props: ToolBarProps) => {
                               <li key={index} class="text-black h-fit w-full ">
                                 <a
                                   class="w-full flex flex-row md:w-full md:grid grid-cols-3 gap-3 items-center md:h-full"
-                                  href={`/products/${item.perfix ?? ""}`}
+                                  href={`/products/${encodeURIComponent(
+                                    item.product_name
+                                      ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
+                                      .replace(/ /g, "-")
+                                      .toLowerCase() ?? ""
+                                  )}-pid-${item._id}/`}
                                 >
                                   <span class="w-full break-all text-sm md:col-span-2">
                                     {item.product_name}
@@ -156,9 +161,9 @@ export const ToolBar = component$((props: ToolBarProps) => {
 
                                   <Image
                                     src={
-                                      (item as any).imgs[0].includes("http")
+                                      (item as any).imgs[0]?.includes("http")
                                         ? (item as any).imgs[0]
-                                        : `${(item as any).imgs[0].replace(
+                                        : `${(item as any).imgs[0]?.replace(
                                             ".",
                                             ""
                                           )}`
@@ -429,9 +434,9 @@ export const ToolBar = component$((props: ToolBarProps) => {
 
                             <Image
                               src={
-                                (item as any).imgs[0].includes("http")
+                                (item as any).imgs[0]?.includes("http")
                                   ? (item as any).imgs[0]
-                                  : `${(item as any).imgs[0].replace(".", "")}`
+                                  : `${(item as any).imgs[0]?.replace(".", "")}`
                               }
                               alt={item.product_name}
                               class="w-20 h-20 md:w-52 md:h-52 object-contain"
