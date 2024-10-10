@@ -183,22 +183,12 @@ async function getProductsFromCanradWebPage() {
   const categoriesToCheck = brands.map((a) => a.name);
 
   await connect(mongoUrl);
-  const auth = new JWT({
-    email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
-    key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-  });
-
-  const doc = new GoogleSpreadsheet(
-    "1FLHOdsDGIH_gnXUjZ0SBYfc1dXYqpgxmfTnH4FEFMeg",
-    auth
-  );
   await doc.loadInfo();
   const productsToSave = [];
   for (const category of categories) {
     try {
       if (
-        !categoriesToCheck.includes(
+        !categoriesToCheck.toLowerCase().includes(
           // regex of the category name
           category.Name.toLowerCase()
             .replace(/[^a-zA-Z0-9\s]/g, "")
@@ -317,107 +307,6 @@ async function getProductsFromCanradWebPage() {
 
 // getProductsFromCanradWebPage();
 
-async function getProductsFromModernBeauty() {
-  const request = await axios.get("https://www.modernbeauty.com/hair.html");
-  const html = request.data;
-  const $ = cheerio.load(html);
-  // get all products from .product-layout
-  const products = $(".product-layout");
-  const productsToSave = [];
-  for (const product of products) {
-    // find the closest a tag
-    const aTag = $(product).find("a");
-    console.log(aTag.text());
-  }
-}
-// getProductsFromModernBeauty();
-
-async function addCosmoOfferToGoogleSheet() {
-  const json = require("./cosmo-offers-final-2.json");
-  const auth = new JWT({
-    email: process.env.VITE_GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "",
-    key: process.env.VITE_GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-  });
-
-  const doc = new GoogleSpreadsheet(
-    "1m6vciiNYUJoGaDAlxJqsAF_IMjqMftjWa838dbhrmJc",
-    auth
-  );
-  await doc.loadInfo();
-  const sheet = doc.sheetsByIndex[0];
-  const rows = [];
-  for (const offer of json) {
-    for (const product of offer.products) {
-      const row = {};
-      if (product.variation_type === "Single") {
-        row["Product Name"] = product.name;
-        row["Brand"] = product.brand;
-        row["Product Price"] = product.price;
-        row["Product Sale Price"] = product.sale_price;
-        row["Product Quantity"] = product.quantity_on_hand;
-        row["UPC"] = product.upc;
-        row["Item ID"] = product.id;
-        row["Image"] = `=image("${product.image}", 1)`;
-        row["offer name"] = offer.name;
-        rows.push(row);
-      } else {
-        for (const variation of product.variations) {
-          // download image and save it in a folder
-
-          row[
-            "Product Name"
-          ] = `${variation.name} - ${variation.variation_name}`;
-          row["Brand"] = product.brand;
-          row["Product Price"] = variation.price;
-          row["Product Sale Price"] = variation.sale_price;
-          row["Product Quantity"] = variation.quantity_on_hand;
-          row["UPC"] = variation.upc;
-          row["Item ID"] = variation.variation_id;
-          row["Image"] = `=image("${variation.variation_image}", 1)`;
-          row["offer name"] = offer.name;
-          rows.push(row);
-        }
-      }
-    }
-  }
-
-  // check if there is a duplicate product in the rows by product name
-  const unique = [];
-  const uniqueRows = [];
-  for (const row of rows) {
-    if (!unique.includes(row["Product Name"])) {
-      if (row["Product Quantity"] < 10) continue;
-      unique.push(row["Product Name"]);
-      uniqueRows.push(row);
-    }
-  }
-  for (const row of uniqueRows) {
-    // replace =image() with the image url
-    try {
-      const imageName = row["Product Name"]
-        .replace(/[^a-zA-Z0-9\s]/g, "")
-        .replace(/ /g, "+");
-      const fileName = `https://salonbrandz.s3.ca-central-1.amazonaws.com/imageFolder/${imageName}.jpg`;
-      row["Image"] = `=image("${fileName}", 1)`;
-      row["Image Link"] = fileName;
-    } catch (error) {
-      continue;
-    }
-  }
-  // increase row height to 100
-  console.log(rows.length, uniqueRows.length);
-  // delete all data from the sheet
-  await sheet.clear();
-  // add Headers to the sheet
-  const headers = Object.keys(uniqueRows[0]);
-  await sheet.setHeaderRow(headers);
-
-  // add products to the sheet
-  await sheet.addRows(uniqueRows);
-  console.log("done");
-}
-
 async function addCanradProductsFromGoogleSheet() {
   await connect(mongoUrl);
   const auth = new JWT({
@@ -506,26 +395,7 @@ async function addCanradProductsFromGoogleSheet() {
 async function addFakeReviews() {
   await connect(mongoUrl);
   const products = await Product.find({});
-  // const orders = await Order.find({});
-  // find all products in the orders
-  // const products = [];
-  // for (const order of orders) {
-  //   for (const item of order.products) {
-  //     const productFromDb = await Product.findOne({
-  //       _id: item.id.includes(".") ? item.id.split(".")[0] : item.id,
-  //     });
-  //     if (productFromDb) {
-  //       // check if the product is already in the products array
-  //       if (
-  //         !products.find((p) => p.product_name === productFromDb.product_name)
-  //       ) {
-  //         products.push(productFromDb);
-  //       }
-  //     }
-  //   }
-  // }
   for (const product of products) {
-    if (product.companyName?.name !== "GK Hair") continue;
     // pick a random number of reviews between 1 and 20
     const numberOfReviews = Math.floor(Math.random() * 6) + 1;
     const openai = new OpenAI();

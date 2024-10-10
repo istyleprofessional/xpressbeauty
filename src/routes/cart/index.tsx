@@ -75,7 +75,7 @@ export default component$(() => {
     const productChecker = context?.cart?.products;
     const req = await serverQuantityChecker(productChecker);
     const res = JSON.parse(req ?? "{}");
-    console.log(res);
+    
     if (res.msg !== "ok") {
       alert(res.msg);
     } else {

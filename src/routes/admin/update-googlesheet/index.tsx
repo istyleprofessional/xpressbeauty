@@ -36,7 +36,11 @@ export const updateGoogleSheet = server$(async function () {
                 ? product.product_name?.replace(/CR.*/, "")
                 : product.product_name ?? ""
             } - ${variant?.variation_name}`,
-            description: product?.description ?? "",
+            description: product?.description
+              ?.replace(/<img .*?>/g, "")
+              ?.replace(/Cosmo Prof/g, "Xpress Beauty")
+              ?.replace(/cosmoprofbeauty/g, "xpressbeauty")
+              ?.replace(/Canrad/g, "Xpress Beauty"),
             link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0].includes("http")
               ? product?.imgs[0]
@@ -46,7 +50,7 @@ export const updateGoogleSheet = server$(async function () {
               parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
                 ? "in_stock"
                 : "out_of_stock",
-            price: `${variant?.price} CAD` ?? "0",
+            price: `${variant?.price} CAD`,
             brand: product?.companyName?.name ?? "Qwik City",
             condition: "new",
             gtin: variant?.upc ?? "",
@@ -75,7 +79,7 @@ export const updateGoogleSheet = server$(async function () {
           oldRow.title = oldRow.title?.includes("CR")
             ? oldRow.title?.replace(/CR.*/, "")
             : oldRow.title ?? "";
-          oldRow.price = `${product?.price?.regular} CAD` ?? "0";
+          oldRow.price = `${product?.price?.regular ?? "0"} CAD`;
           oldRow.shipping_label = "";
           oldRow.gtin =
             product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
@@ -93,7 +97,11 @@ export const updateGoogleSheet = server$(async function () {
             title: product.product_name?.includes("CR")
               ? product.product_name?.replace(/CR.*/, "")
               : product.product_name ?? "",
-            description: product?.description ?? "",
+            description: product?.description
+              ?.replace(/<img .*?>/g, "")
+              ?.replace(/Cosmo Prof/g, "Xpress Beauty")
+              ?.replace(/cosmoprofbeauty/g, "xpressbeauty")
+              ?.replace(/Canrad/g, "Xpress Beauty"),
             link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0].includes("http")
               ? product?.imgs[0]
@@ -102,7 +110,7 @@ export const updateGoogleSheet = server$(async function () {
               parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
                 ? "in_stock"
                 : "out_of_stock",
-            price: `${product?.price?.regular} CAD` ?? "0",
+            price: `${product?.price?.regular ?? "0"} CAD`,
             brand: product?.companyName?.name ?? "Qwik City",
             condition: "new",
             shipping_label: "",
