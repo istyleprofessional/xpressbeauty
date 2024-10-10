@@ -38,6 +38,7 @@ export const updateGoogleSheet = server$(async function () {
             } - ${variant?.variation_name}`,
             description: product?.description
               ?.replace(/<img .*?>/g, "")
+              ?.replace(/<a .*?>/g, "")
               ?.replace(/Cosmo Prof/g, "Xpress Beauty")
               ?.replace(/cosmoprofbeauty/g, "xpressbeauty")
               ?.replace(/Canrad/g, "Xpress Beauty"),
@@ -80,6 +81,12 @@ export const updateGoogleSheet = server$(async function () {
             ? oldRow.title?.replace(/CR.*/, "")
             : oldRow.title ?? "";
           oldRow.price = `${product?.price?.regular ?? "0"} CAD`;
+          oldRow.description = product?.description
+            ?.replace(/<a .*?>/g, "")
+            ?.replace(/<img .*?>/g, "")
+            ?.replace(/Cosmo Prof/g, "Xpress Beauty")
+            ?.replace(/cosmoprofbeauty/g, "xpressbeauty")
+            ?.replace(/Canrad/g, "Xpress Beauty");
           oldRow.shipping_label = "";
           oldRow.gtin =
             product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
@@ -98,6 +105,7 @@ export const updateGoogleSheet = server$(async function () {
               ? product.product_name?.replace(/CR.*/, "")
               : product.product_name ?? "",
             description: product?.description
+              ?.replace(/<a .*?>/g, "")
               ?.replace(/<img .*?>/g, "")
               ?.replace(/Cosmo Prof/g, "Xpress Beauty")
               ?.replace(/cosmoprofbeauty/g, "xpressbeauty")
