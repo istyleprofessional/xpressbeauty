@@ -612,10 +612,11 @@ async function aiCategorization() {
               content: `
             All the categories and main categories that I have in my database are:
             ${dbCategories
-                  .map((category) => `${category.name} - ${category.main}`)
-                  .join("\n")}
-            The product name is ${product.product_name
-                } and the description is ${product.description}`,
+              .map((category) => `${category.name} - ${category.main}`)
+              .join("\n")}
+            The product name is ${
+              product.product_name
+            } and the description is ${product.description}`,
             },
           ],
           model: "gpt-3.5-turbo-0125",
@@ -664,7 +665,7 @@ async function aiCategorization() {
 // aiCategorization();
 
 async function addLatestCosmoProducts() {
-  const products = require("./cosmoprof_products_details_with_variation_updated-3.json")
+  const products = require("./cosmoprof_products_details_with_variation_updated-3.json");
 
   for (const product of products) {
     await connect(mongoUrl);
@@ -723,7 +724,9 @@ async function adjustData() {
       product.companyName.name = product.companyName?.name.trim();
     }
     if (product.companyName?.name) {
-      product.companyName.name = product.companyName?.name.charAt(0).toUpperCase() + product.companyName?.name.slice(1);
+      product.companyName.name =
+        product.companyName?.name.charAt(0).toUpperCase() +
+        product.companyName?.name.slice(1);
       await Product.findByIdAndUpdate(product._id, product, { new: true });
     }
   }
@@ -737,7 +740,6 @@ async function adjustData() {
     }
     brand.name = brand.name.charAt(0).toUpperCase() + brand.name.slice(1);
     await Brand.findByIdAndUpdate(brand._id, brand, { new: true });
-
   }
   await connection.close();
   console.log("done");
@@ -780,10 +782,11 @@ async function addProductsToGoogleSheet() {
         for (const variant of product.variations) {
           const newRow = {
             id: `${product._id.toString()}-${variant?.variation_id}`,
-            title: `${product.product_name?.includes("CR")
-              ? product.product_name?.replace(/CR.*/, "")
-              : product.product_name ?? ""
-              } - ${variant?.variation_name}`,
+            title: `${
+              product.product_name?.includes("CR")
+                ? product.product_name?.replace(/CR.*/, "")
+                : product.product_name ?? ""
+            } - ${variant?.variation_name}`,
             description: product?.description ?? "",
             link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0].includes("http")
@@ -806,7 +809,7 @@ async function addProductsToGoogleSheet() {
               const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${
                 // index of the variation
                 product?.variations?.indexOf(variant)
-                }.webp`;
+              }.webp`;
               newRow["additional image link"] = folder;
             } else {
               newRow["additional image link"] = variant?.variation_image;
@@ -910,7 +913,7 @@ const downloadImagesAndUploadToS3 = async (imageUrl, imageName, bucketName) => {
   try {
     await s3.headBucket({ Bucket: bucketName });
   } catch (error) {
-    if (error.name === 'NotFound') {
+    if (error.name === "NotFound") {
       await s3.createBucket({
         Bucket: bucketName,
         CreateBucketConfiguration: {
@@ -950,7 +953,6 @@ const downloadImagesAndUploadToS3 = async (imageUrl, imageName, bucketName) => {
       };
 
       await s3.putPublicAccessBlock(publicAccessBlockParams);
-
     } else {
       console.error("Error accessing bucket: ", error);
       return;
@@ -969,41 +971,51 @@ const downloadImagesAndUploadToS3 = async (imageUrl, imageName, bucketName) => {
 
     const params = {
       Bucket: bucketName,
-      Key: `${bucketName}/${imageName.replace(/ /g, '-')}.webp`,
+      Key: `${bucketName}/${imageName.replace(/ /g, "-")}.webp`,
       Body: arrayOfBuffer,
       ContentType: "image/webp",
     };
     await s3.putObject(params);
-    const newImg = `https://${bucketName}.s3.amazonaws.com/${bucketName}/${imageName.replace(/ /g, '-')}.webp`;
+    const newImg = `https://${bucketName}.s3.amazonaws.com/${bucketName}/${imageName.replace(
+      / /g,
+      "-"
+    )}.webp`;
     return newImg;
   } catch (error) {
     console.error("Error downloading image: ", error);
   }
-}
+};
 
 async function adjustImages() {
-  const products = require("./cosmoprof_products_details_with_variation_updated-2.json");
+  const products = require("./cosmoprof_products_details_with_variation_updated.json");
   // const products = await Product.find({});
   for (const product of products) {
-    const imageUrl = await downloadImagesAndUploadToS3(product.product_image,
+    const imageUrl = await downloadImagesAndUploadToS3(
+      product.product_image,
       // unique name for each product and clean the name from special characters to be image url friendly
-      product.product_name.replace(/[^a-zA-Z0-9]/g, '')
-        .replace(/\s+/g, ' ')
-        .replace(/ /g, '-')
-      , 'xpressbeauty');
+      product.product_name
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .replace(/\s+/g, " ")
+        .replace(/ /g, "-"),
+      "xpressbeauty"
+    );
     // delete image from product img array and replace it with the new url
-    product.img = []
+    product.img = [];
     product.img.push(imageUrl);
     delete product.product_image;
     if (product.variations && product.variations.length > 0) {
       for (let variant of product.variations) {
-        const imageUrl = await downloadImagesAndUploadToS3(variant.variation_image,
-          `${product.product_name.replace(/[^a-zA-Z0-9]/g, '')
-            .replace(/\s+/g, ' ')
-            .replace(/ /g, '-')}-${variant.variation_name.replace(/[^a-zA-Z0-9]/g, '')
-              .replace(/\s+/g, ' ')
-              .replace(/ /g, '-')}`
-          , 'xpressbeauty');
+        const imageUrl = await downloadImagesAndUploadToS3(
+          variant.variation_image,
+          `${product.product_name
+            .replace(/[^a-zA-Z0-9]/g, "")
+            .replace(/\s+/g, " ")
+            .replace(/ /g, "-")}-${variant.variation_name
+            .replace(/[^a-zA-Z0-9]/g, "")
+            .replace(/\s+/g, " ")
+            .replace(/ /g, "-")}`,
+          "xpressbeauty"
+        );
         variant.variation_image = imageUrl;
       }
     }
@@ -1011,14 +1023,16 @@ async function adjustImages() {
     //   (product._id, product, { new: true });
     console.log(`Product ${product.product_name} saved successfully`);
   }
-  fs.appendFileSync('cosmoprof_products_details_with_variation_updated-3.json', JSON.stringify(products) + ',\n');
-
+  fs.appendFileSync(
+    "cosmoprof_products_details_with_variation_updated-3.json",
+    JSON.stringify(products) + ",\n"
+  );
 }
 
 async function main() {
-  // await addLatestCosmoProducts();
+  await addLatestCosmoProducts();
   // await adjustImages();
-  await adjustData();
+  // await adjustData();
 }
 
 main();
