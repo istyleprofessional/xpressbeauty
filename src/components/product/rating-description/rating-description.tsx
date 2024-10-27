@@ -247,6 +247,7 @@ export const RatingAndDescription = component$(
                   .replace(/Cosmo Prof/g, "Xpress Beauty")
                   .replace(/CanRad /g, "Xpress Beauty")
                   .replace(/CR.*/, "")
+                  .replace(/<a .*?>/g, "")
                   .trim()}
               ></div>
             </div>

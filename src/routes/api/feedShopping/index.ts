@@ -44,7 +44,7 @@ export const onGet: RequestHandler = async ({ json }) => {
               parseInt(variant?.quantity_on_hand?.toString() ?? "0") > 0
                 ? "in_stock"
                 : "out_of_stock",
-            price: `${variant?.price} CAD` ?? "0",
+            price: `${variant?.price ?? "0"} CAD`,
             brand: product?.companyName?.name ?? "Qwik City",
             condition: "new",
             gtin: variant?.upc ?? "",
@@ -58,7 +58,7 @@ export const onGet: RequestHandler = async ({ json }) => {
           oldRow.availability = parseInt(
             product?.quantity_on_hand?.toString() ?? "0"
           );
-          oldRow.price = `${product?.price?.regular} CAD` ?? "0";
+          oldRow.price = `${product?.price?.regular} CAD`;
           oldRow.shipping_label = checkIfCat ? "free shipping" : "";
           oldRow.gtin =
             product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
@@ -83,7 +83,7 @@ export const onGet: RequestHandler = async ({ json }) => {
               parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
                 ? "in_stock"
                 : "out_of_stock",
-            price: `${product?.price?.regular} CAD` ?? "0",
+            price: `${product?.price?.regular} CAD`,
             brand: product?.companyName?.name ?? "Qwik City",
             condition: "new",
             shipping_label: checkIfCat ? "free shipping" : "",

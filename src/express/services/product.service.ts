@@ -496,7 +496,21 @@ export const get_products_data = async (
       });
     }
     const request = await Product.find(
-      buildQuery,
+      {
+        ...buildQuery,
+        $and: [
+          {
+            $or: [
+              {
+                quantity_on_hand: { $gt: 0 },
+              },
+              {
+                "variations.quantity_on_hand": { $gt: 0 },
+              },
+            ],
+          },
+        ],
+      },
       query && query !== ""
         ? {
           score: { $meta: "textScore" },
@@ -506,7 +520,22 @@ export const get_products_data = async (
       .sort(sortObj)
       .skip(skip)
       .limit(perPage);
-    const total = await Product.count(buildQuery);
+
+    const total = await Product.count({
+      ...buildQuery,
+      $and: [
+        {
+          $or: [
+            {
+              quantity_on_hand: { $gt: 0 },
+            },
+            {
+              "variations.quantity_on_hand": { $gt: 0 },
+            },
+          ],
+        },
+      ],
+    });
     return JSON.stringify({ status: "success", result: request, total: total });
   } catch (err) {
     console.log(err);

@@ -171,8 +171,6 @@ def upload_image():
 def get_products_ids_details():
     # connect to mongodb
     productsIds = []
-    with open('cosmoprof_products_ids.json') as f:
-        productsIds = json.load(f)
     products = []
     with open('cosmoprof_products_ids.json') as f:
         productsIds = json.load(f)
@@ -406,39 +404,62 @@ def get_products_ids():
     products_ids = []
     for category in categories:
         page = 0
-        while True:
-            # https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Search-UpdateGrid?cgid=hair-color&start=54&sz=18&isFromPLPFlow=true&selectedUrl=https%3A%2F%2Fwww.cosmoprofbeauty.ca%2Fon%2Fdemandware.store%2FSites-CosmoProf-CA-Site%2Fdefault%2FSearch-UpdateGrid%3Fcgid%3Dhair-color%26start%3D54%26sz%3D18%26isFromPLPFlow%3Dtrue
-
-            catUrl = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Search-UpdateGrid?cgid={category['href']}&start={page * 18}&sz=18&isFromPLPFlow=true&selectedUrl=https%3A%2F%2Fwww.cosmoprofbeauty.ca%2Fon%2Fdemandware.store%2FSites-CosmoProf-CA-Site%2Fdefault%2FSearch-UpdateGrid%3Fcgid%3D{category['href']}%26start%3D{page * 18}%26sz%3D18%26isFromPLPFlow%3Dtrue'''
-            driver.get(catUrl)
-            while has_captcha(driver):
-                handle_captcha(driver, catUrl)
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
-            products = soup.find_all('div', class_='product-tile')
-            if len(products) == 0:
-                break
-            for product in products:
+        driver.get(f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
+        while has_captcha(driver):
+            handle_captcha(
+                driver, f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
+        menu_div = driver.find_elements(By.XPATH,
+                                        f'''//a[contains(@href, '/{category['href']}/')]''')
+        sub_categories = []
+        if len(menu_div) > 0:
+            for menu in menu_div:
                 try:
-                    json_data = product['data-ga4tile']
-                    # "{'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':0,'affiliation':'Cosmoprof','item_category':'Bleach & Lighteners','item_sub_brand':'Blondor','item_id':'CAN-M-813010','item_name':'Blondor Multi Blonde Powder','item_brand':'Wella','item_list_name':'plp','item_variant':'CAN-M-813010'}]}}"
-                    cleaned_json_data = json_data.replace("'", '"')
-                    parsed_json = json.loads(cleaned_json_data)
-                    product_id = {}
-                    # {'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':8.78,'affiliation':'Cosmoprof','item_category':'Permanent','item_id':'CAN-M-635020','item_name':'CHI Ionic Permanent Shine Crème Hair Color','item_brand':'CHI','item_list_name':'plp','item_variant':'CAN-M-635020'}]}}
-                    product_id['cosmoprof_id'] = parsed_json['ecommerce']['items'][0]['item_id']
-                    product_id['category'] = {
-                        'main': category['name'],
-                        'name': parsed_json['ecommerce']['items'][0]['item_category']
-                    }
-                    product_id['companyName'] = {
-                        'name': parsed_json['ecommerce']['items'][0]['item_brand']
-                    }
-                    products_ids.append(product_id)
-                    with open('cosmoprof_products_ids.json', 'w') as f:
-                        json.dump(products_ids, f)
+                    sub_category = {}
+                    sub_category['name'] = menu.get_attribute('data-name')
+                    if sub_category['name'] == None:
+                        continue
+                    sub_category['href'] = menu.get_attribute(
+                        'href').split('/')[-1]
+                    sub_categories.append(sub_category)
                 except:
                     continue
-            page += 1
+        if len(sub_categories) > 0:
+            for sub_category in sub_categories:
+
+                while True:
+                    catUrl = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Search-UpdateGrid?cgid={sub_category['href']}&start={page * 18}&sz=18&isFromPLPFlow=true&selectedUrl=https%3A%2F%2Fwww.cosmoprofbeauty.ca%2Fon%2Fdemandware.store%2FSites-CosmoProf-CA-Site%2Fdefault%2FSearch-UpdateGrid%3Fcgid%3D{sub_category['href']}%26start%3D{page * 18}%26sz%3D18%26isFromPLPFlow%3Dtrue'''
+                    driver.get(catUrl)
+                    while has_captcha(driver):
+                        handle_captcha(driver, catUrl)
+                    soup = BeautifulSoup(driver.page_source, 'html.parser')
+                    products = soup.find_all('div', class_='product-tile')
+                    if len(products) == 0:
+                        break
+                    for product in products:
+                        try:
+                            json_data = product['data-ga4tile']
+                            # "{'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':0,'affiliation':'Cosmoprof','item_category':'Bleach & Lighteners','item_sub_brand':'Blondor','item_id':'CAN-M-813010','item_name':'Blondor Multi Blonde Powder','item_brand':'Wella','item_list_name':'plp','item_variant':'CAN-M-813010'}]}}"
+                            cleaned_json_data = json_data.replace("'", '"')
+                            parsed_json = json.loads(cleaned_json_data)
+                            product_id = {}
+                            # {'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':8.78,'affiliation':'Cosmoprof','item_category':'Permanent','item_id':'CAN-M-635020','item_name':'CHI Ionic Permanent Shine Crème Hair Color','item_brand':'CHI','item_list_name':'plp','item_variant':'CAN-M-635020'}]}}
+                            product_id['cosmoprof_id'] = parsed_json['ecommerce']['items'][0]['item_id']
+                            product_id['category'] = {
+                                'main': category['name'],
+                                'name': sub_category['name']
+                            }
+                            product_id['companyName'] = {
+                                'name':
+                                # First letter to uppercase
+                                parsed_json['ecommerce']['items'][0]['item_brand'][0].upper(
+                                ) + parsed_json['ecommerce']['items'][0]['item_brand'][1:].lower()
+                            }
+                            products_ids.append(product_id)
+                            with open('cosmoprof_products_ids.json', 'w') as f:
+                                json.dump(products_ids, f)
+                        except:
+                            continue
+                    page += 1
     print('Done')
     driver.quit()
 
