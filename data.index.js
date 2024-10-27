@@ -612,11 +612,10 @@ async function aiCategorization() {
               content: `
             All the categories and main categories that I have in my database are:
             ${dbCategories
-              .map((category) => `${category.name} - ${category.main}`)
-              .join("\n")}
-            The product name is ${
-              product.product_name
-            } and the description is ${product.description}`,
+                  .map((category) => `${category.name} - ${category.main}`)
+                  .join("\n")}
+            The product name is ${product.product_name
+                } and the description is ${product.description}`,
             },
           ],
           model: "gpt-3.5-turbo-0125",
@@ -725,21 +724,9 @@ async function adjustData() {
         // first letter is capitalized and the rest is lower case
         product.companyName.name.charAt(0).toUpperCase() +
         product.companyName.name.slice(1).toLowerCase();
+      await Product.findByIdAndUpdate(product._id, product, { new: true });
     } else {
       await Product.findByIdAndDelete(product._id);
-    }
-
-    if (product.categories) {
-      for (const category of product.categories) {
-        if (category.name) {
-          category.name =
-            // first letter is capitalized and the rest is lower case
-            category.name.charAt(0).toUpperCase() +
-            category.name.slice(1).toLowerCase();
-        } else {
-          await Product.findByIdAndDelete(product._id);
-        }
-      }
     }
   }
   console.log("done");
@@ -783,11 +770,10 @@ async function addProductsToGoogleSheet() {
         for (const variant of product.variations) {
           const newRow = {
             id: `${product._id.toString()}-${variant?.variation_id}`,
-            title: `${
-              product.product_name?.includes("CR")
-                ? product.product_name?.replace(/CR.*/, "")
-                : product.product_name ?? ""
-            } - ${variant?.variation_name}`,
+            title: `${product.product_name?.includes("CR")
+              ? product.product_name?.replace(/CR.*/, "")
+              : product.product_name ?? ""
+              } - ${variant?.variation_name}`,
             description: product?.description ?? "",
             link: `https://xpressbeauty.ca/products/${product.perfix}`,
             "image link": product?.imgs[0].includes("http")
@@ -810,7 +796,7 @@ async function addProductsToGoogleSheet() {
               const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${
                 // index of the variation
                 product?.variations?.indexOf(variant)
-              }.webp`;
+                }.webp`;
               newRow["additional image link"] = folder;
             } else {
               newRow["additional image link"] = variant?.variation_image;
@@ -1012,9 +998,9 @@ async function adjustImages() {
             .replace(/[^a-zA-Z0-9]/g, "")
             .replace(/\s+/g, " ")
             .replace(/ /g, "-")}-${variant.variation_name
-            .replace(/[^a-zA-Z0-9]/g, "")
-            .replace(/\s+/g, " ")
-            .replace(/ /g, "-")}`,
+              .replace(/[^a-zA-Z0-9]/g, "")
+              .replace(/\s+/g, " ")
+              .replace(/ /g, "-")}`,
           "xpressbeauty"
         );
         variant.variation_image = imageUrl;
@@ -1035,21 +1021,21 @@ async function updateCategoryAndBrands() {
 
   const products = await Product.find({});
 
-  await Category.deleteMany({});
+  // await Category.deleteMany({});
   await Brand.deleteMany({});
   for (const product of products) {
-    if (product.categories.length > 0) {
-      for (const category of product.categories) {
-        const categoryFound = await Category.findOne({ name: category.name });
-        if (!categoryFound) {
-          await Category.findOneAndUpdate(
-            { name: category.name },
-            { name: category.name, main: category.main },
-            { upsert: true }
-          );
-        }
-      }
-    }
+    //   if (product.categories.length > 0) {
+    //     for (const category of product.categories) {
+    //       const categoryFound = await Category.findOne({ name: category.name });
+    //       if (!categoryFound) {
+    //         await Category.findOneAndUpdate(
+    //           { name: category.name },
+    //           { name: category.name, main: category.main },
+    //           { upsert: true }
+    //         );
+    //       }
+    //     }
+    //   }
     if (product.companyName.name) {
       const brandFound = await Brand.findOne({
         name: product.companyName.name,
@@ -1082,7 +1068,7 @@ async function updateCategoryAndBrands() {
 
 async function main() {
   // await adjustImages();
-  await addLatestCosmoProducts();
+  // await addLatestCosmoProducts();
   await adjustData();
   await updateCategoryAndBrands();
 }
