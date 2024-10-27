@@ -715,34 +715,35 @@ async function addLatestCosmoProducts() {
 async function adjustData() {
   await connect(mongoUrl);
   const products = await Product.find({});
-  const regex = /[^a-zA-Z0-9\s]/g;
 
   for (const product of products) {
-    if (regex.test(product.companyName?.name)) {
-      product.companyName.name = product.companyName?.name.replace(regex, "");
-      // capatalise the first letter always
-      product.companyName.name = product.companyName?.name.trim();
+    if (product.product_name.includes("CR")) {
+      product.product_name = product.product_name.replace(/CR.*/, "");
     }
     if (product.companyName?.name) {
       product.companyName.name =
-        product.companyName?.name.charAt(0).toUpperCase() +
-        product.companyName?.name.slice(1);
-      await Product.findByIdAndUpdate(product._id, product, { new: true });
+        // first letter is capitalized and the rest is lower case
+        product.companyName.name.charAt(0).toUpperCase() +
+        product.companyName.name.slice(1).toLowerCase();
+    } else {
+      await Product.findByIdAndDelete(product._id);
     }
-  }
 
-  const brands = await Brand.find({});
-  for (const brand of brands) {
-    if (regex.test(brand.name)) {
-      brand.name = brand.name.replace(regex, "");
-      // capatalise the first letter always
-      brand.name = brand.name.trim();
+    if (product.categories) {
+      for (const category of product.categories) {
+        if (category.name) {
+          category.name =
+            // first letter is capitalized and the rest is lower case
+            category.name.charAt(0).toUpperCase() +
+            category.name.slice(1).toLowerCase();
+        } else {
+          await Product.findByIdAndDelete(product._id);
+        }
+      }
     }
-    brand.name = brand.name.charAt(0).toUpperCase() + brand.name.slice(1);
-    await Brand.findByIdAndUpdate(brand._id, brand, { new: true });
   }
-  await connection.close();
   console.log("done");
+  await connection.close();
 }
 
 async function deleteProductPriceZero() {
@@ -1029,10 +1030,61 @@ async function adjustImages() {
   );
 }
 
+async function updateCategoryAndBrands() {
+  await connect(mongoUrl);
+
+  const products = await Product.find({});
+
+  await Category.deleteMany({});
+  await Brand.deleteMany({});
+  for (const product of products) {
+    if (product.categories.length > 0) {
+      for (const category of product.categories) {
+        const categoryFound = await Category.findOne({ name: category.name });
+        if (!categoryFound) {
+          await Category.findOneAndUpdate(
+            { name: category.name },
+            { name: category.name, main: category.main },
+            { upsert: true }
+          );
+        }
+      }
+    }
+    if (product.companyName.name) {
+      const brandFound = await Brand.findOne({
+        name: product.companyName.name,
+      });
+      if (!brandFound) {
+        await Brand.findOneAndUpdate(
+          { name: product.companyName.name },
+          { name: product.companyName.name },
+          { upsert: true }
+        );
+      }
+    }
+  }
+
+  // check categories names against the  brand names
+  const categories = await Category.find({});
+  const brands = await Brand.find({});
+  for (const category of categories) {
+    if (
+      brands.find(
+        (brand) => brand.name.toLowerCase() === category.name.toLowerCase()
+      )
+    ) {
+      await Category.findByIdAndDelete(category._id);
+    }
+  }
+  console.log("done");
+  await connection.close();
+}
+
 async function main() {
-  await addLatestCosmoProducts();
   // await adjustImages();
-  // await adjustData();
+  await addLatestCosmoProducts();
+  await adjustData();
+  await updateCategoryAndBrands();
 }
 
 main();
