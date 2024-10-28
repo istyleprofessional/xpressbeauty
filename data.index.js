@@ -1071,7 +1071,8 @@ async function updateCategoryAndBrands() {
 
 async function main() {
   // await adjustImages();
-  await addLatestCosmoProducts();
+  // await addLatestCosmoProducts();
+  await deleteProductPriceZero();
 }
 
 main();
