@@ -664,8 +664,11 @@ async function aiCategorization() {
 // aiCategorization();
 
 async function addLatestCosmoProducts() {
+  const Brand = models.Brand;
   const products = require("./cosmoprof_products_details_with_variation_updated-3.json");
-
+  await connect(mongoUrl);
+  const brands = await Brand.find({});
+  const standardBrands = brands.map((brand) => brand.name);
   for (const product of products) {
     await connect(mongoUrl);
     if (product.variation_type === "Color") {
@@ -681,7 +684,12 @@ async function addLatestCosmoProducts() {
         };
       });
     }
-
+    // Standardize brand name dynamically
+    if (product.companyName?.name) {
+      const originalBrandName = product.companyName.name;
+      const foundBrand = standardBrands.find(brand => originalBrandName.toLocaleLowerCase().includes(brand.toLocaleLowerCase()));
+      product.companyName.name = foundBrand ? foundBrand.charAt(0).toUpperCase() + foundBrand.slice(1).toLowerCase() : originalBrandName.charAt(0).toUpperCase() + originalBrandName.slice(1).toLowerCase();
+    }
     if (product.priceType === "range") {
       product.price = {
         min: product.price.min,
@@ -1024,18 +1032,13 @@ async function updateCategoryAndBrands() {
   // await Category.deleteMany({});
   await Brand.deleteMany({});
   for (const product of products) {
-    //   if (product.categories.length > 0) {
-    //     for (const category of product.categories) {
-    //       const categoryFound = await Category.findOne({ name: category.name });
-    //       if (!categoryFound) {
-    //         await Category.findOneAndUpdate(
-    //           { name: category.name },
-    //           { name: category.name, main: category.main },
-    //           { upsert: true }
-    //         );
-    //       }
-    //     }
-    //   }
+    if (!product.companyName) continue;
+    products.forEach(async (p) => {
+      if (product.companyName.name.toLowerCase(p.companyName.name.toLowerCase())) {
+        p.companyName.name = product.companyName.name;
+        await Product.findByIdAndUpdate(p._id, p, { new: true });
+      }
+    });
     if (product.companyName.name) {
       const brandFound = await Brand.findOne({
         name: product.companyName.name,
@@ -1056,7 +1059,7 @@ async function updateCategoryAndBrands() {
   for (const category of categories) {
     if (
       brands.find(
-        (brand) => brand.name.toLowerCase() === category.name.toLowerCase()
+        (brand) => brand.name.toLowerCase().includes(category.name.toLowerCase())
       )
     ) {
       await Category.findByIdAndDelete(category._id);
@@ -1068,9 +1071,7 @@ async function updateCategoryAndBrands() {
 
 async function main() {
   // await adjustImages();
-  // await addLatestCosmoProducts();
-  await adjustData();
-  await updateCategoryAndBrands();
+  await addLatestCosmoProducts();
 }
 
 main();
