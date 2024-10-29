@@ -117,7 +117,6 @@ def upload_image(imgUrl, name):
 
 def get_products_ids_details():
     # connect to mongodb
-    productsIds = []
     products = []
     with open('cosmoprof_products_ids.json') as f:
         productsIds = json.load(f)
@@ -395,18 +394,20 @@ def get_products_ids():
         while has_captcha(driver):
             handle_captcha(
                 driver, f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
-        menu_div = driver.find_elements(By.XPATH,
-                                        f'''//a[contains(@href, '/{category['href']}/')]''')
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+        menu_div = soup.select(f'a[href*="/{category["href"]}/"]')
+
         sub_categories = []
         if len(menu_div) > 0:
             for menu in menu_div:
                 try:
                     sub_category = {}
-                    sub_category['name'] = menu.get_attribute('data-name')
+                    sub_category['name'] = menu['data-name']
                     if sub_category['name'] == None:
                         continue
-                    sub_category['href'] = menu.get_attribute(
-                        'href').split('/')[-1]
+                    sub_category['href'] = menu['href']
+                    sub_category['href'] = sub_category['href'].split('/')[-1]
                     sub_categories.append(sub_category)
                 except:
                     continue
@@ -477,31 +478,6 @@ def check_duplicates():
         json.dump(products, f)
 
 
-def run_cosmoprof():
-    print('=============== Starting the process ===============')
-    print('=============== Getting the products ids ===============')
-    get_products_ids()
-    print('=============== Got the products ids ===============')
-    time.sleep(2)
-    print('=============== Getting the products details ===============')
-    get_products_ids_details()
-    print('=============== Got the products details ===============')
-    time.sleep(2)
-    print('=============== Checking duplicates ===============')
-    check_duplicates()
-    print('=============== Checked duplicates ===============')
-    time.sleep(2)
-    print('=============== Uploading the images to s3 ===============')
-    upload_image()
-    print('=============== Uploaded the images ===============')
-    time.sleep(2)
-    print('=============== Adding the products to the db ===============')
-    add_products_to_db()
-    print('=============== Added the products to the db ===============')
-    time.sleep(1)
-    print('=============== Done ===============')
-
-
 def get_canard_products():
     mainCatUrl = "https://canrad.com/categories"
     response = requests.get(mainCatUrl, headers={
@@ -551,8 +527,7 @@ def get_canard_products():
                         }
                         if 'ImageURL' in canradProduct:
                             product["imgs"] = []
-                            product["imgs"].append(upload_image(canradProduct['ImageURL'], product['product_name'].replace(' ', '_').replace('/', '_').replace(
-                                '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')))
+                            product["imgs"].append(canradProduct['ImageURL'])
                         productsToSave.append(product)
                     time.sleep(2)
             print(len(productsToSave))
@@ -628,11 +603,15 @@ def ai_model_to_well_categories():
             canardProduct['categories'].append(finalCategory)
             # clean the product name
             canardProduct['product_name'] = canardProduct['product_name'].replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
-                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').split('-')[0].strip()
+                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('*', '').split('-')[0].strip()
 
+            for img in canardProduct['imgs']:
+                canardProduct['imgs'].remove(img)
+                canardProduct['imgs'].append(upload_image(img, canardProduct['product_name'].replace(' ', '_').replace('/', '_').replace(
+                    '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')))
             # clean the description
             canardProduct['description'] = canardProduct['description'].replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
-                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').strip()
+                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('*', '').replace('!', '').strip()
             # add the product to the db
 
             # print number of products done
