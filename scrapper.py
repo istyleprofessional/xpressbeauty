@@ -94,78 +94,25 @@ def open_browser():
     return driver
 
 
-def upload_image():
-    conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressbeauty']
-    collection = db['products']
-    data = collection.find()
-    for dbProduct in data:
-        if 'imgs' in dbProduct and len(dbProduct['imgs']) > 0 and 'xpressbeauty' in dbProduct['imgs'][0]:
-            continue
-        imgUrl = product['product_image']
-        name = product['product_name'].replace(' ', '_').replace('/', '_').replace(
-            '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')
-        AWS_ACCESS_KEY_ID = os.environ.get('VITE_AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = os.environ.get('VITE_AWS_SECRET_KEY')
-        AWS_BUCKET_NAME = 'xpressbeauty'
-        s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
-                          aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
-        # download the image from the url and save it in a folder called skin_care
-        image_path = f'''./newProductsImages/{name}.webp'''
-        with open(image_path, 'wb') as handle:
-            response = requests.get(imgUrl, stream=True)
-            for block in response.iter_content(1024):
-                if not block:
-                    break
-                handle.write(block)
-        s3.upload_file(image_path, AWS_BUCKET_NAME,
-                       f'''products-images-2/{name}.webp''', ExtraArgs={'ACL': 'public-read'})
-        os.remove(image_path)
-        urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/{name}.webp'''
-        newImgUrl = urlToBeReturned
-        # delete product['product_image']
-        del product['product_image']
-        # add the new image url to the product
-        product['imgs'] = []
-        product['imgs'].append(newImgUrl)
-
-        if 'variations' in product and len(product['variations']) > 0:
-            for variation in product['variations']:
-                try:
-                    if 'variation_image' in variation and 'xpressbeauty' in variation['variation_image']:
-                        continue
-                    imgUrl = variation['variation_image']
-                    name = f'''{product['product_name']}_{variation['variation_name']}'''.replace(' ', '_').replace('/', '_').replace(
-                        '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')
-
-                    image_path = f'''./newProductsImages/{name}.webp'''
-                    with open(image_path, 'wb') as handle:
-                        response = requests.get(imgUrl, stream=True)
-
-                        for block in response.iter_content(1024):
-                            if not block:
-                                break
-                            handle.write(block)
-                    s3.upload_file(image_path, AWS_BUCKET_NAME,
-                                   f'''products-images-2/{name}.webp''', ExtraArgs={'ACL': 'public-read'})
-                    os.remove(image_path)
-                    urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/{name}.webp'''
-                    newImgUrl = urlToBeReturned
-                    variation['variation_image'] = newImgUrl
-                except:
-                    continue
-        print(
-            f'''product no {data.index(product)} out of {len(data)} image done''')
-        collection.find_one_and_update(
-            {'product_name': product['product_name']},
-            {'$set': product},
-            upsert=True
-        )
-    # with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
-    #     json.dump(data, f)
-    with open('products_to_be_seed.json', 'w') as f:
-        json.dump(data, f)
-    conn.close()
+def upload_image(imgUrl, name):
+    AWS_ACCESS_KEY_ID = os.environ.get('VITE_AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('VITE_AWS_SECRET_KEY')
+    AWS_BUCKET_NAME = 'xpressbeauty'
+    s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                      aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    # download the image from the url and save it in a folder called skin_care
+    image_path = f'''./newProductsImages/{name}.webp'''
+    with open(image_path, 'wb') as handle:
+        response = requests.get(imgUrl, stream=True)
+        for block in response.iter_content(1024):
+            if not block:
+                break
+            handle.write(block)
+    s3.upload_file(image_path, AWS_BUCKET_NAME,
+                   f'''products-images-2/{name}.webp''', ExtraArgs={'ACL': 'public-read'})
+    os.remove(image_path)
+    urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/{name}.webp'''
+    return urlToBeReturned
 
 
 def get_products_ids_details():
@@ -197,7 +144,10 @@ def get_products_ids_details():
                 product['category'] = productId['category']
                 product['companyName'] = productId['companyName']
                 imageUrl = parsed_json['product']['images']['pdpLarge'][0]['url']
-                product['product_image'] = imageUrl
+                product['imgs'] = []
+                product_img = upload_image(imageUrl, product['product_name'].replace(' ', '_').replace('/', '_').replace(
+                    '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
+                product['imgs'].append(product_img)
                 if 'longDescription' in parsed_json['product']:
                     product['description'] = parsed_json['product']['longDescription']
 
@@ -245,7 +195,10 @@ def get_products_ids_details():
                     for variationCosmo in parsed_json['product']['variationAttributes'][0]['values']:
                         # image = variationCosmo['images']['swatch'][0]['url']
                         if 'images' in variationCosmo:
-                            image = variationCosmo['images']['swatch'][0]['url']
+                            image = upload_image(variationCosmo['images']['swatch'][0]['url'],
+                                                 f'''{product['product_name']}_{variation['variation_name']}'''.replace(' ', '_').replace('/', '_').replace(
+                                '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
+
                         else:
                             image = ''
                         variation = {}
@@ -351,6 +304,37 @@ def get_products_ids_details():
                         product['quantity_on_hand'] = 0
                     if parsed_json['product']['productType'] == 'master':
                         product['quantity_on_hand'] = 0
+
+                if 'categories' in product:
+                    product['categories'] = []
+                    product['categories'].append(product['category'])
+                    del product['category']
+                if 'companyName' in product:
+                    product['companyName'] = {
+                        'name': product['companyName']
+                    }
+                if 'price' in product:
+                    if type(product['price']) != dict:
+                        product['price'] = {
+                            'regular': product['price']
+                        }
+                    if 'regular' in product['price'] and product['price']['regular'] == 0:
+                        # remove the product if the price is 0
+                        continue
+
+                    if 'max' in product['price'] and product['price']['max'] == 0:
+                        # remove the product if the price is 0
+                        continue
+
+                    if 'min' in product['price'] and product['price']['min'] == 0:
+                        # remove the product if the price is 0
+                        continue
+
+                if 'variations' in product and len(product['variations']) > 0:
+                    for variation in product['variations']:
+                        if 'price' in variation:
+                            if variation['price'] == 0:
+                                product['variations'].remove(variation)
 
                 products.append(product)
                 # write each product to the file after getting the details inside the loop
@@ -464,41 +448,6 @@ def get_products_ids():
     driver.quit()
 
 
-def add_products_to_db():
-    # connect to mongodb
-    with open('cosmoprof_products_details_with_variation_updated.json') as f:
-        products = json.load(f)
-    # check if product is duplicated by product_name if so update the categories array and remove the duplicated product
-    for product in products:
-        # check if price is a number not a object
-        if type(product['price']) != dict:
-            product['price'] = {
-                'regular': product['price']
-            }
-        if 'regular' in product['price'] and product['price']['regular'] == 0:
-            # remove the product if the price is 0
-            products.remove(product)
-
-        if 'max' in product['price'] and product['price']['max'] == 0:
-            # remove the product if the price is 0
-            products.remove(product)
-
-        if 'min' in product['price'] and product['price']['min'] == 0:
-            # remove the product if the price is 0
-            products.remove(product)
-
-    conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressbeauty']
-    collection = db['products']
-    for product in products:
-        collection.find_one_and_update(
-            {'product_name': product['product_name']},
-            {'$set': product},
-            upsert=True
-        )
-    print('Done')
-
-
 def check_duplicates():
     with open('cosmoprof_products_details_with_variation_updated.json') as f:
         products = json.load(f)
@@ -552,74 +501,86 @@ def run_cosmoprof():
 
 def get_canard_products():
     mainCatUrl = "https://canrad.com/categories"
-    headers = {
-        'accept': 'application/json',
-        'accept-encoding': 'gzip, deflate, br',
-    }
-    req = requests.get(mainCatUrl, headers=headers)
-    res = req.json()
-    products = []
-    for category in res['Categories']:
-        if 'SubCategories' in category and len(category['SubCategories']) > 0:
-            for subCategory in category['SubCategories']:
-                if 'deal' in subCategory['Name'].lower():
-                    continue
-                subUrl = f'''https://canrad.com/categories/{subCategory['CategoryID']}/ccrd/products'''
-                req = requests.get(subUrl, headers=headers)
-                canradProducts = req.json()
-                if 'Products' in canradProducts and len(canradProducts['Products']) > 0:
-                    canradProducts = canradProducts['Products']
-                else:
-                    continue
-                if not canradProducts or len(canradProducts) == 0:
-                    continue
-                for canradProduct in canradProducts:
-                    product = {}
-                    product['product_name'] = canradProduct['ItemName']
-                    product['categories'] = []
-                    cat = {
-                        'main': '',
-                        'name': subCategory['Name']
-                    }
-                    product['categories'].append(cat)
-                    product['companyName'] = category['Name']
-                    product['price'] = {
-                        'regular': canradProduct['Price'] + 8
-                    }
-                    product['priceType'] = 'single'
-                    product['quantity_on_hand'] = canradProduct['OnHandQuantity']
-                    product['upc'] = canradProduct['UPC']
-                    product['description'] = canradProduct['Description'].replace(
-                        '<[^>]*>', '')
-                    product['imgs'] = []
-                    product['imgs'].append(canradProduct['ImageURL'])
-                    products.append(product)
-                    with open('canrad_products.json', 'w') as f:
-                        json.dump(products, f)
-                    print(
-                        f'''product no {products.index(product)} out of {len(canradProducts)} ''')
+    response = requests.get(mainCatUrl, headers={
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    })
+    categories = response.json()['Categories']
+    brands = json.load(open('brands.json'))
+    categoriesToCheck = [brand['name'] for brand in brands]
+    productsToSave = []
+
+    for category in categories:
+        if category['Name'].lower().replace(' ', '').replace('-', '').replace('_', '').replace('.', '') not in categoriesToCheck:
+            if 'SubCategories' in category and len(category['SubCategories']) > 0:
+                subCategories = category['SubCategories']
+                for subCategory in subCategories:
+                    if 'Deal' in subCategory['Name']:
+                        continue
+                    subUrl = f'''https://canrad.com/categories/{subCategory['CategoryID']}/ccrd/products'''
+                    response = requests.get(subUrl, headers={
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    })
+                    canradProducts = response.json()
+                    canradProducts = canradProducts['Products'] if 'Products' in canradProducts else [
+                    ]
+                    if not canradProducts or len(canradProducts) == 0:
+                        continue
+                    for canradProduct in canradProducts:
+                        product = {
+                            'product_name': canradProduct['ItemName'],
+                            'description': canradProduct['Description'].replace('<[^>]*>', ''),
+                            'categories': subCategory['Name'],
+                            'companyName': {
+                                'name': category['Name']
+                            },
+                            'price': {
+                                'regular': canradProduct['Price']
+                            },
+                            'sale_price': {
+                                'sale': canradProduct['SpecialPriceDiscount']
+                            },
+                            'quantity_on_hand': int(canradProduct['OnHandQuantity']),
+                            'upc': canradProduct['UPC'],
+                            'item_id': canradProduct['ItemID'],
+
+                        }
+                        if 'ImageURL' in canradProduct:
+                            product["imgs"] = []
+                            product["imgs"].append(upload_image(canradProduct['ImageURL'], product['product_name'].replace(' ', '_').replace('/', '_').replace(
+                                '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')))
+                        productsToSave.append(product)
+                    time.sleep(2)
+            print(len(productsToSave))
+    with open('canrad_products.json', 'w') as f:
+        json.dump(productsToSave, f)
 
 
 def ai_model_to_well_categories():
-    with open('cosmoprof_products_details_with_variation_updated.json') as f:
+    with open('cosmoprof_products_details_with_variation_updated-3.json', 'r', encoding='utf-8') as f:
         cosmo_products = json.load(f)
-    cleanCategories = []
-    for product in cosmo_products:
-        for category in product['categories']:
-            if category['name'] not in cleanCategories:
-                cleanCategories.append(category)
     conn = pymongo.MongoClient('mongodb://localhost:27017')
     db = conn['xpressbeauty']
-    collection = db['categories']
+    categories_collection = db['categories']
+    categories_collection.delete_many({})
+    cleanCategories = {}
 
-    # delete the categories in the db and add the new ones
-    collection.delete_many({})
-    for category in cleanCategories:
-        collection.find_one_and_update(
-            {'name': category['name']},
-            {'$set': category},
-            upsert=True
-        )
+    for product in cosmo_products:
+        if 'categories' in product:
+            cleanCategories[product['categories'][0]
+                            ['name']] = product['categories'][0]['main']
+    finalCategories = []
+    for key in cleanCategories:
+        finalCategories.append({
+            'main': cleanCategories[key],
+            'name': key
+        })
+
+    categories_collection.insert_many(finalCategories)
+
+    conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
 
     with open('canrad_products.json') as f:
         products = json.load(f)
@@ -627,30 +588,26 @@ def ai_model_to_well_categories():
         # using the openai api to get the compare the categories and get the best match for each product
         openai = OpenAI()
 
-        #  get unqiue from the categories depending on the category name
-        categories = []
-        dbCategories = collection.find()
-        for cat in dbCategories:
-            if cat['name'] not in categories:
-                categories.append({
-                    'name': cat['name'],
-                    'main': cat['main']
-                })
         for canardProduct in products:
             # get the best match for the product category from the categories in the db using the openai api
-            completion = openai.beta.chat.completions.parse(
-                model="gpt-4o-2024-08-06",
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": f'''
-                    **** from those categories {categories} which one is the best match for the product {canardProduct}?
+            db_categories = categories_collection.find()
+            # convert it to string json format
+            db_categories = db_categories.to_list()
+            message = [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": f'''
+                    **** from those categories {db_categories} which one is the best match for the product {canardProduct}?
                     **** The category main can't be same as category name.
-                    **** Please don't create a new category.
+                    **** Only if you don't find a match in the db, you can generate a new name but not the main category.
                     **** Just choose the best match from the categories in the db. 
                     '''},
-                    {"role": "assistant",
-                        "content": "I think the best match for this product is:"}
-                ],
+                {"role": "assistant",
+                 "content": "I think the best match for this product is:"}
+            ]
+
+            completion = openai.beta.chat.completions.parse(
+                model="gpt-4o-2024-08-06",
+                messages=message,
                 response_format=CategoryModel,
 
             )
@@ -659,6 +616,11 @@ def ai_model_to_well_categories():
                 'main': category.main,
                 'name': category.name
             }
+            categories_collection.find_one_and_update(
+                {'name': finalCategory['name']},
+                {'$set': finalCategory},
+                upsert=True
+            )
             canardProduct['categories'] = []
             canardProduct['categories'].append(finalCategory)
             # clean the product name
@@ -669,14 +631,68 @@ def ai_model_to_well_categories():
             canardProduct['description'] = canardProduct['description'].replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
                 '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').strip()
             # add the product to the db
-            collection = db['products']
-            collection.find_one_and_update(
-                {'product_name': canardProduct['product_name']},
-                {'$set': canardProduct},
+
+            # print number of products done
+            print(
+                f'''product no {products.index(canardProduct)} out of {len(products)}''')
+
+        with open('canrad_products.json', 'w') as f:
+            json.dump(products, f)
+
+
+def update_db():
+    cosmo_products = json.load(
+        open('cosmoprof_products_details_with_variation_updated-3.json',
+             'r', encoding='utf-8')
+    )
+    canrad_products = json.load(open('canrad_products.json'))
+    conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
+    product_collection = db['products']
+    categories_collection = db['categories']
+
+    product_collection.delete_many({})
+
+    for product in cosmo_products:
+        product_collection.insert_one(product)
+    for product in canrad_products:
+        product_collection.insert_one(product)
+
+    categories_collection.delete_many({})
+    for product in cosmo_products:
+        if 'categories' in product:
+            categories_collection.find_one_and_update(
+                {'name': product['categories'][0]['name']},
+                {'$set': product['categories'][0]},
                 upsert=True
             )
+    for product in canrad_products:
+        if 'categories' in product:
+            categories_collection.find_one_and_update(
+                {'name': product['categories'][0]['name']},
+                {'$set': product['categories'][0]},
+                upsert=True
+            )
+
     conn.close()
+    print('Done')
 
 
 if __name__ == '__main__':
-    run_cosmoprof()
+    print('Starting the process')
+    print('============ Getting cosmoprof products ids =============')
+    get_products_ids()
+    print('============ Got cosmoprof products ids =============')
+    print('============ Getting Cosmo Products Details =============')
+    get_products_ids_details()
+    print('============ Got Cosmo Products Details =============')
+    print('============ Checking duplicates =============')
+    check_duplicates()
+    print('============ Checked duplicates =============')
+    print('============ Getting the Canard Products =============')
+    get_canard_products()
+    print('============ Got Canrad products =============')
+    print('============ Adding the products to the db =============')
+    update_db()
+    print('============ Added the products to the db =============')
+    print('============ Done ============')
