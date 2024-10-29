@@ -311,7 +311,10 @@ def get_products_ids_details():
                     del product['category']
                 if 'companyName' in product:
                     product['companyName'] = {
-                        'name': product['companyName']
+                        'name':
+                        # First letter to uppercase
+                        product['companyName']['name'][0].upper(
+                        ) + product['companyName']['name'][1:].lower()
                     }
                 if 'price' in product:
                     if type(product['price']) != dict:
