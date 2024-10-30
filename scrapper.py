@@ -623,7 +623,7 @@ def ai_model_to_well_categories():
                 continue
             for img in canardProduct['imgs']:
                 canardProduct['imgs'].remove(img)
-                canardProduct['imgs'].append()
+                canardProduct['imgs'].append(image_uploaded_url)
 
             # clean the description
             canardProduct['description'] = canardProduct['description'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
