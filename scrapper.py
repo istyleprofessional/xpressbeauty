@@ -608,7 +608,10 @@ def ai_model_to_well_categories():
             # clean the product name
             canardProduct['product_name'] = canardProduct['product_name'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
                 '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"', '').replace('*', '').split('-')[0].strip()
-
+            if 'product_image' in canardProduct:
+                canardProduct['imgs'] = []
+                canardProduct['imgs'].append(canardProduct['product_image'])
+                del canardProduct['product_image']
             if not ('imgs' in canardProduct and len(canardProduct['imgs']) > 0):
                 products.remove(canardProduct)
                 continue
