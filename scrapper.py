@@ -95,24 +95,27 @@ def open_browser():
 
 
 def upload_image(imgUrl, name):
-    AWS_ACCESS_KEY_ID = os.environ.get('VITE_AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('VITE_AWS_SECRET_KEY')
-    AWS_BUCKET_NAME = 'xpressbeauty'
-    s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
-                      aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
-    # download the image from the url and save it in a folder called skin_care
-    image_path = f'''./newProductsImages/{name}.webp'''
-    with open(image_path, 'wb') as handle:
-        response = requests.get(imgUrl, stream=True)
-        for block in response.iter_content(1024):
-            if not block:
-                break
-            handle.write(block)
-    s3.upload_file(image_path, AWS_BUCKET_NAME,
-                   f'''products-images-2/{name}.webp''', ExtraArgs={'ACL': 'public-read'})
-    os.remove(image_path)
-    urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/{name}.webp'''
-    return urlToBeReturned
+    try:
+        AWS_SECRET_ACCESS_KEY = os.environ.get('VITE_AWS_SECRET_KEY')
+        AWS_BUCKET_NAME = 'xpressbeauty'
+        s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+        # download the image from the url and save it in a folder called skin_care
+        image_path = f'''./newProductsImages/{name}.webp'''
+        with open(image_path, 'wb') as handle:
+            response = requests.get(imgUrl, stream=True)
+            for block in response.iter_content(1024):
+                if not block:
+                    break
+                handle.write(block)
+        s3.upload_file(image_path, AWS_BUCKET_NAME,
+                       f'''products-images-2/{name}.webp''', ExtraArgs={'ACL': 'public-read'})
+        os.remove(image_path)
+        urlToBeReturned = f'''https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/{name}.webp'''
+        return urlToBeReturned
+    except Exception as e:
+        print(e)
+        return ''
 
 
 def get_products_ids_details():
@@ -602,15 +605,15 @@ def ai_model_to_well_categories():
             canardProduct['categories'] = []
             canardProduct['categories'].append(finalCategory)
             # clean the product name
-            canardProduct['product_name'] = canardProduct['product_name'].replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
-                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('*', '').split('-')[0].strip()
+            canardProduct['product_name'] = canardProduct['product_name'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
+                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"').replace('*', '').split('-')[0].strip()
 
             for img in canardProduct['imgs']:
                 canardProduct['imgs'].remove(img)
-                canardProduct['imgs'].append(upload_image(img, canardProduct['product_name'].replace(' ', '_').replace('/', '_').replace(
+                canardProduct['imgs'].append(upload_image(img, canardProduct['product_name'].replace('@', '').replace(' ', '_').replace('"').replace('/', '_').replace(
                     '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')))
             # clean the description
-            canardProduct['description'] = canardProduct['description'].replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
+            canardProduct['description'] = canardProduct['description'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
                 '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('*', '').replace('!', '').strip()
             # add the product to the db
 
