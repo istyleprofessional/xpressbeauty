@@ -606,15 +606,15 @@ def ai_model_to_well_categories():
             canardProduct['categories'].append(finalCategory)
             # clean the product name
             canardProduct['product_name'] = canardProduct['product_name'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
-                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"').replace('*', '').split('-')[0].strip()
+                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"', '').replace('*', '').split('-')[0].strip()
 
             for img in canardProduct['imgs']:
                 canardProduct['imgs'].remove(img)
-                canardProduct['imgs'].append(upload_image(img, canardProduct['product_name'].replace('@', '').replace(' ', '_').replace('"').replace('/', '_').replace(
+                canardProduct['imgs'].append(upload_image(img, canardProduct['product_name'].replace('@', '').replace(' ', '_').replace('"', '').replace('/', '_').replace(
                     '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')))
             # clean the description
             canardProduct['description'] = canardProduct['description'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
-                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('*', '').replace('!', '').strip()
+                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('*', '').replace('"', '').replace('!', '').strip()
             # add the product to the db
 
             # print number of products done
