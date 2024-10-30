@@ -608,11 +608,15 @@ def ai_model_to_well_categories():
             # clean the product name
             canardProduct['product_name'] = canardProduct['product_name'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
                 '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"', '').replace('*', '').split('-')[0].strip()
-
+            image_uploaded_url = upload_image(img, canardProduct['product_name'].replace('@', '').replace(' ', '_').replace('"', '').replace('/', '_').replace(
+                '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
+            if (image_uploaded_url == ''):
+                products.remove(canardProduct)
+                continue
             for img in canardProduct['imgs']:
                 canardProduct['imgs'].remove(img)
-                canardProduct['imgs'].append(upload_image(img, canardProduct['product_name'].replace('@', '').replace(' ', '_').replace('"', '').replace('/', '_').replace(
-                    '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_')))
+                canardProduct['imgs'].append()
+
             # clean the description
             canardProduct['description'] = canardProduct['description'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
                 '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('*', '').replace('"', '').replace('!', '').strip()
