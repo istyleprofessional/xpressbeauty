@@ -608,7 +608,12 @@ def ai_model_to_well_categories():
             # clean the product name
             canardProduct['product_name'] = canardProduct['product_name'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
                 '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"', '').replace('*', '').split('-')[0].strip()
-            image_uploaded_url = upload_image(img, canardProduct['product_name'].replace('@', '').replace(' ', '_').replace('"', '').replace('/', '_').replace(
+
+            if not ('imgs' in canardProduct and len(canardProduct['imgs']) > 0):
+                products.remove(canardProduct)
+                continue
+
+            image_uploaded_url = upload_image(canardProduct['imgs'][0], canardProduct['product_name'].replace('@', '').replace(' ', '_').replace('"', '').replace('/', '_').replace(
                 '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
             if (image_uploaded_url == ''):
                 products.remove(canardProduct)
