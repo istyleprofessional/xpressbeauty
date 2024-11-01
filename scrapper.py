@@ -21,6 +21,13 @@ class CategoryModel(BaseModel):
     name: str
 
 
+class BrandModel(BaseModel):
+    name: str
+
+
+# BaseModel for the brand a
+
+
 def has_captcha(sb):
     try:
         sb.find_element(By.ID, 'px-captcha')
@@ -342,6 +349,9 @@ def get_products_ids_details():
                             if variation['price'] == 0:
                                 product['variations'].remove(variation)
 
+                product = ai_model_to_well_categories(product)
+                product = ai_model_to_check_brand(product)
+
                 products.append(product)
                 # write each product to the file after getting the details inside the loop
                 with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
@@ -365,6 +375,10 @@ def get_products_ids_details():
 def get_products_ids():
     categories = [
         {
+            'name': 'Holiday',
+            'href': 'holiday'
+        },
+        {
             'name': 'Hair Color',
             'href': 'hair-color'
         },
@@ -387,13 +401,14 @@ def get_products_ids():
         {
             'name': 'Salon Essentials',
             'href': 'salon-essentials'
-        }
+        },
+
     ]
     driver = open_browser()
 
     products_ids = []
     for category in categories:
-        page = 0
+
         driver.get(f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
         while has_captcha(driver):
             handle_captcha(
@@ -415,9 +430,11 @@ def get_products_ids():
                     sub_categories.append(sub_category)
                 except:
                     continue
-        if len(sub_categories) > 0:
+        if len(sub_categories) > 0 or category['name'] == 'Holiday':
+            if category['name'] == 'Holiday':
+                sub_categories = [{'name': 'Holiday', 'href': 'holiday'}]
             for sub_category in sub_categories:
-
+                page = 0
                 while True:
                     catUrl = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Search-UpdateGrid?cgid={sub_category['href']}&start={page * 18}&sz=18&isFromPLPFlow=true&selectedUrl=https%3A%2F%2Fwww.cosmoprofbeauty.ca%2Fon%2Fdemandware.store%2FSites-CosmoProf-CA-Site%2Fdefault%2FSearch-UpdateGrid%3Fcgid%3D{sub_category['href']}%26start%3D{page * 18}%26sz%3D18%26isFromPLPFlow%3Dtrue'''
                     driver.get(catUrl)
@@ -514,7 +531,6 @@ def get_canard_products():
                         product = {
                             'product_name': canradProduct['ItemName'],
                             'description': canradProduct['Description'].replace('<[^>]*>', ''),
-                            'categories': subCategory['Name'],
                             'companyName': {
                                 'name': category['Name']
                             },
@@ -532,6 +548,7 @@ def get_canard_products():
                         if 'ImageURL' in canradProduct:
                             product["imgs"] = []
                             product["imgs"].append(canradProduct['ImageURL'])
+                        product = ai_model_to_well_categories(product)
                         productsToSave.append(product)
                     time.sleep(2)
             print(len(productsToSave))
@@ -539,103 +556,97 @@ def get_canard_products():
         json.dump(productsToSave, f)
 
 
-def ai_model_to_well_categories():
-    with open('cosmoprof_products_details_with_variation_updated-3.json', 'r', encoding='utf-8') as f:
-        cosmo_products = json.load(f)
+def ai_model_to_check_brand(product):
+    openai = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+    conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
+    brands_collection = db['brands']
+    message = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": f'''
+            **** from those brands {brands_collection.find().to_list()} which one is the best match for the product {product}?
+            **** Just choose the best match from the brands in the db.
+            **** Only if you don't find a match in the db, you can generate a new name.
+            '''},
+        {"role": "assistant",
+            "content": "I think the best match for this product is:"}
+    ]
+
+    completion = openai.beta.chat.completions.parse(
+        model="gpt-4o-2024-08-06",
+        messages=message,
+        response_format=BrandModel
+
+    )
+    brand = completion.choices[0].message.parsed
+    finalBrand = {
+        'name': brand.name
+    }
+    brands_collection.find_one_and_update(
+        {'name': finalBrand['name']},
+        {'$set': finalBrand},
+        upsert=True
+    )
+    product['companyName'] = []
+    product['companyName'].append(finalBrand)
+    return product
+
+
+def ai_model_to_well_categories(product):
+    openai = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
     conn = pymongo.MongoClient('mongodb://localhost:27017')
     db = conn['xpressbeauty']
     categories_collection = db['categories']
-    categories_collection.delete_many({})
-    cleanCategories = {}
+    message = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": f'''
+            **** from those categories {categories_collection.find().to_list()} which one is the best match for the product {product}?
+            **** The category main can't be same as category name.
+            **** Only if you don't find a match in the db, you can generate a new name but not the main category.
+            **** Just choose the best match from the categories in the db. 
+            '''},
+        {"role": "assistant",
+            "content": "I think the best match for this product is:"}
+    ]
 
-    for product in cosmo_products:
-        if 'categories' in product:
-            cleanCategories[product['categories'][0]
-                            ['name']] = product['categories'][0]['main']
-    finalCategories = []
-    for key in cleanCategories:
-        finalCategories.append({
-            'main': cleanCategories[key],
-            'name': key
-        })
+    completion = openai.beta.chat.completions.parse(
+        model="gpt-4o-2024-08-06",
+        messages=message,
+        response_format=CategoryModel,
 
-    categories_collection.insert_many(finalCategories)
+    )
+    category = completion.choices[0].message.parsed
+    finalCategory = {
+        'main': category.main,
+        'name': category.name
+    }
+    categories_collection.find_one_and_update(
+        {'name': finalCategory['name']},
+        {'$set': finalCategory},
+        upsert=True
+    )
+    product['categories'] = []
+    product['categories'].append(finalCategory)
+    # clean the product name
+    product['product_name'] = product['product_name'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
+        '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"', '').replace('*', '').split('-')[0].strip()
+    if 'product_image' in product:
+        product['imgs'] = []
+        product['imgs'].append(product['product_image'])
+        del product['product_image']
 
-    conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressbeauty']
+    image_uploaded_url = upload_image(product['imgs'][0], product['product_name'].replace('@', '').replace(' ', '_').replace('"', '').replace('/', '_').replace(
+        '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
+    for img in product['imgs']:
+        product['imgs'].remove(img)
+        product['imgs'].append(image_uploaded_url)
 
-    with open('canrad_products.json') as f:
-        products = json.load(f)
+    # clean the description
+    product['description'] = product['description'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
+        '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('*', '').replace('"', '').replace('!', '').strip()
+    # add the product to the db
 
-        # using the openai api to get the compare the categories and get the best match for each product
-        openai = OpenAI()
-
-        for canardProduct in products:
-            # get the best match for the product category from the categories in the db using the openai api
-            db_categories = categories_collection.find()
-            # convert it to string json format
-            db_categories = db_categories.to_list()
-            message = [
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": f'''
-                    **** from those categories {db_categories} which one is the best match for the product {canardProduct}?
-                    **** The category main can't be same as category name.
-                    **** Only if you don't find a match in the db, you can generate a new name but not the main category.
-                    **** Just choose the best match from the categories in the db. 
-                    '''},
-                {"role": "assistant",
-                 "content": "I think the best match for this product is:"}
-            ]
-
-            completion = openai.beta.chat.completions.parse(
-                model="gpt-4o-2024-08-06",
-                messages=message,
-                response_format=CategoryModel,
-
-            )
-            category = completion.choices[0].message.parsed
-            finalCategory = {
-                'main': category.main,
-                'name': category.name
-            }
-            categories_collection.find_one_and_update(
-                {'name': finalCategory['name']},
-                {'$set': finalCategory},
-                upsert=True
-            )
-            canardProduct['categories'] = []
-            canardProduct['categories'].append(finalCategory)
-            # clean the product name
-            canardProduct['product_name'] = canardProduct['product_name'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
-                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"', '').replace('*', '').split('-')[0].strip()
-            if 'product_image' in canardProduct:
-                canardProduct['imgs'] = []
-                canardProduct['imgs'].append(canardProduct['product_image'])
-                del canardProduct['product_image']
-            if not ('imgs' in canardProduct and len(canardProduct['imgs']) > 0):
-                products.remove(canardProduct)
-                continue
-
-            image_uploaded_url = upload_image(canardProduct['imgs'][0], canardProduct['product_name'].replace('@', '').replace(' ', '_').replace('"', '').replace('/', '_').replace(
-                '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
-            if (image_uploaded_url == ''):
-                products.remove(canardProduct)
-                continue
-            for img in canardProduct['imgs']:
-                canardProduct['imgs'].remove(img)
-                canardProduct['imgs'].append(image_uploaded_url)
-
-            # clean the description
-            canardProduct['description'] = canardProduct['description'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
-                '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('*', '').replace('"', '').replace('!', '').strip()
-            # add the product to the db
-
-            # print number of products done
-            print(
-                f'''product no {products.index(canardProduct)} out of {len(products)}''')
-
-        with open('canrad_products.json', 'w') as f:
-            json.dump(products, f)
+    return product
 
 
 def update_db():
@@ -677,23 +688,26 @@ def update_db():
 
 
 if __name__ == '__main__':
-    # print('Starting the process')
-    # print('============ Getting cosmoprof products ids =============')
-    # get_products_ids()
-    # print('============ Got cosmoprof products ids =============')
-    # print('============ Getting Cosmo Products Details =============')
-    # get_products_ids_details()
-    # print('============ Got Cosmo Products Details =============')
-    # print('============ Checking duplicates =============')
-    # check_duplicates()
-    # print('============ Checked duplicates =============')
-    # print('============ Getting the Canard Products =============')
-    # get_canard_products()
-    # print('============ Got Canrad products =============')
-    print('============ Ai Getting the categories =============')
-    ai_model_to_well_categories()
-    print('============ Ai Got the categories =============')
+    print('============ Starting =============')
+
+    print('============ Getting cosmoprof products ids =============')
+    get_products_ids()
+    print('============ Got cosmoprof products ids =============')
+
+    print('============ Getting Cosmo Products Details =============')
+    get_products_ids_details()
+    print('============ Got Cosmo Products Details =============')
+
+    print('============ Checking duplicates =============')
+    check_duplicates()
+    print('============ Checked duplicates =============')
+
+    print('============ Getting the Canard Products =============')
+    get_canard_products()
+    print('============ Got Canrad products =============')
+
     print('============ Adding the products to the db =============')
     update_db()
     print('============ Added the products to the db =============')
+
     print('============ Done ============')
