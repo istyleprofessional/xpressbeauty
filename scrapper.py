@@ -110,7 +110,7 @@ def open_browser():
 def upload_image(imgUrl, name):
     try:
         AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = os.environ.get('VITE_AWS_SECRET_KEY')
+        AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY')
         AWS_BUCKET_NAME = 'xpressbeauty'
         s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID,
                           aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
