@@ -493,11 +493,7 @@ def get_cosmoprof_products():
                     sub_category['href'] = menu['href']
                     sub_category['href'] = sub_category['href'].split('/')[-1]
                     sub_categories.append(sub_category)
-                    categories_collection.find_one_and_update(
-                        {'name': sub_category['name']},
-                        {'$set': sub_category},
-                        upsert=True
-                    )
+
                 except:
                     continue
         if len(sub_categories) > 0 or category['name'] == 'Holiday':
@@ -529,6 +525,11 @@ def get_cosmoprof_products():
                                     'main': category['name'],
                                     'name': sub_category['name']
                                 }
+                                categories_collection.find_one_and_update(
+                                    {'name': sub_category['name']},
+                                    {'$set': product_id['category']},
+                                    upsert=True
+                                )
                                 product_id['companyName'] = {
                                     'name':
                                     parsed_json['ecommerce']['items'][0]['item_brand'][0].replace('#', '').upper(
