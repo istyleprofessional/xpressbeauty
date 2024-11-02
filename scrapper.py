@@ -14,7 +14,6 @@ import boto3
 import pymongo
 from openai import OpenAI
 from pydantic import BaseModel
-import pyautogui
 
 
 class CategoryModel(BaseModel):
@@ -54,30 +53,24 @@ def handle_captcha(sb, url):
                     EC.url_contains(url)
                 )
             except:
-                try:
-                    cancel_button_location = pyautogui.locateOnScreen('cancel_button.png', confidence=0.9)
-                    if cancel_button_location:
-                        pyautogui.click(cancel_button_location)
-                        print("External app prompt detected and canceled.")
-                    else:
-                        print("External app prompt did not appear.")
-                except Exception as e:
-                    print(e)
-
+                driver.quit()  # Close current driver
+                driver = open_browser()  # Reopen browser
+                driver.get(url)
                 driver.delete_all_cookies()
-                # refresh the page
                 driver.refresh()
                 time.sleep(2)
-                while has_captcha(driver):
-                    handle_captcha(driver, url)
-                login_to_cosmoprof(driver)
-                time.sleep(2)
-                driver.get(url)
-                time.sleep(2)
-                while has_captcha(driver):
-                    handle_captcha(driver, url)
-    except:
-        handle_captcha(driver)
+
+            while has_captcha(driver):
+                handle_captcha(driver, url)
+
+            login_to_cosmoprof(driver)
+            time.sleep(2)
+            driver.get(url)
+            time.sleep(2)
+            while has_captcha(driver):
+                handle_captcha(driver, url)
+    except Exception as e:
+        print(f"Error in handle_captcha: {e}")
 
 
 def login_to_cosmoprof(sb):
@@ -284,11 +277,13 @@ def get_product_id_details(product_id, driver=None, conn=None):
                     driver.quit()
                     driver = None
                     driver = open_browser()
+                    time.sleep(2)
                     continue
                 except TimeoutException as e:
                     driver.quit()
                     driver = None
                     driver = open_browser()
+                    time.sleep(2)
                     continue
                 except:
                     while has_captcha(driver):
@@ -381,11 +376,13 @@ def get_product_id_details(product_id, driver=None, conn=None):
         driver.quit()
         driver = None
         driver = open_browser()
+        time.sleep(2)
         return None
     except TimeoutException as e:
         driver.quit()
         driver = None
         driver = open_browser()
+        time.sleep(2)
         return None
     except Exception as e:
         print(e)
@@ -422,7 +419,6 @@ def get_cosmoprof_products():
             'name': 'Salon Essentials',
             'href': 'salon-essentials'
         },
-
     ]
     driver = open_browser()
 
@@ -430,14 +426,45 @@ def get_cosmoprof_products():
     db = conn['xpressbeauty']
     products_ids_collection = db['cosmoprof_products_ids']
     products_ids_collection.delete_many({})
+    categories_collection = db['cleaned_categories']
+    categories_collection.delete_many({})
+    brands_collection = db['cleaned_brands']
+    brands_collection.delete_many({})
     for category in categories:
 
         driver.get(f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
         while has_captcha(driver):
             handle_captcha(
                 driver, f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-
+        try:
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+        except WebDriverException as e:
+            driver.quit()
+            driver = None
+            driver = open_browser()
+            time.sleep(2)
+            driver.get(
+                f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
+            time.sleep(2)
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+        except TimeoutException as e:
+            driver.quit()
+            driver = None
+            driver = open_browser()
+            time.sleep(2)
+            driver.get(
+                f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
+            time.sleep(2)
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+        except:
+            driver.quit()
+            driver = None
+            driver = open_browser()
+            time.sleep(2)
+            driver.get(
+                f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
+            time.sleep(2)
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
         menu_div = soup.select(f'a[href*="/{category["href"]}/"]')
 
         sub_categories = []
@@ -451,6 +478,11 @@ def get_cosmoprof_products():
                     sub_category['href'] = menu['href']
                     sub_category['href'] = sub_category['href'].split('/')[-1]
                     sub_categories.append(sub_category)
+                    categories_collection.find_one_and_update(
+                        {'name': sub_category['name']},
+                        {'$set': sub_category},
+                        upsert=True
+                    )
                 except:
                     continue
         if len(sub_categories) > 0 or category['name'] == 'Holiday':
@@ -461,37 +493,56 @@ def get_cosmoprof_products():
                 products_ids = []
                 while True:
                     catUrl = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Search-UpdateGrid?cgid={sub_category['href']}&start={page * 18}&sz=18&isFromPLPFlow=true&selectedUrl=https%3A%2F%2Fwww.cosmoprofbeauty.ca%2Fon%2Fdemandware.store%2FSites-CosmoProf-CA-Site%2Fdefault%2FSearch-UpdateGrid%3Fcgid%3D{sub_category['href']}%26start%3D{page * 18}%26sz%3D18%26isFromPLPFlow%3Dtrue'''
-                    driver.get(catUrl)
-                    while has_captcha(driver):
-                        handle_captcha(driver, catUrl)
-                    soup = BeautifulSoup(driver.page_source, 'html.parser')
-                    products = soup.find_all('div', class_='product-tile')
-                    if len(products) == 0:
-                        break
-                    for product in products:
-                        try:
-                            json_data = product['data-ga4tile']
-                            # "{'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':0,'affiliation':'Cosmoprof','item_category':'Bleach & Lighteners','item_sub_brand':'Blondor','item_id':'CAN-M-813010','item_name':'Blondor Multi Blonde Powder','item_brand':'Wella','item_list_name':'plp','item_variant':'CAN-M-813010'}]}}"
-                            cleaned_json_data = json_data.replace("'", '"')
-                            parsed_json = json.loads(cleaned_json_data)
-                            product_id = {}
-                            # {'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':8.78,'affiliation':'Cosmoprof','item_category':'Permanent','item_id':'CAN-M-635020','item_name':'CHI Ionic Permanent Shine Crème Hair Color','item_brand':'CHI','item_list_name':'plp','item_variant':'CAN-M-635020'}]}}
-                            product_id['cosmoprof_id'] = parsed_json['ecommerce']['items'][0]['item_id']
-                            product_id['category'] = {
-                                'main': category['name'],
-                                'name': sub_category['name']
-                            }
-                            product_id['companyName'] = {
-                                'name':
-                                # First letter to uppercase
-                                parsed_json['ecommerce']['items'][0]['item_brand'][0].upper(
-                                ) + parsed_json['ecommerce']['items'][0]['item_brand'][1:].lower()
-                            }
-                            products_ids.append(product_id)
-                            with open('cosmoprof_products_ids.json', 'w') as f:
-                                json.dump(products_ids, f)
-                        except:
-                            continue
+                    try:
+                        driver.get(catUrl)
+                        while has_captcha(driver):
+                            handle_captcha(driver, catUrl)
+                        soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        products = soup.find_all('div', class_='product-tile')
+                        if len(products) == 0:
+                            break
+                        for product in products:
+                            try:
+                                json_data = product['data-ga4tile']
+                                # "{'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':0,'affiliation':'Cosmoprof','item_category':'Bleach & Lighteners','item_sub_brand':'Blondor','item_id':'CAN-M-813010','item_name':'Blondor Multi Blonde Powder','item_brand':'Wella','item_list_name':'plp','item_variant':'CAN-M-813010'}]}}"
+                                cleaned_json_data = json_data.replace("'", '"')
+                                parsed_json = json.loads(cleaned_json_data)
+                                product_id = {}
+                                # {'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':8.78,'affiliation':'Cosmoprof','item_category':'Permanent','item_id':'CAN-M-635020','item_name':'CHI Ionic Permanent Shine Crème Hair Color','item_brand':'CHI','item_list_name':'plp','item_variant':'CAN-M-635020'}]}}
+                                product_id['cosmoprof_id'] = parsed_json['ecommerce']['items'][0]['item_id']
+                                product_id['category'] = {
+                                    'main': category['name'],
+                                    'name': sub_category['name']
+                                }
+                                product_id['companyName'] = {
+                                    'name':
+                                    parsed_json['ecommerce']['items'][0]['item_brand'][0].upper(
+                                    ) + parsed_json['ecommerce']['items'][0]['item_brand'][1:].lower()
+                                }
+                                brands_collection.find_one_and_update(
+                                    {'name': product_id['companyName']['name']},
+                                    {'$set': product_id['companyName']},
+                                    upsert=True
+                                )
+                                products_ids.append(product_id)
+                            except:
+                                continue
+                    except WebDriverException as e:
+
+                        driver.quit()
+                        driver = None
+                        driver = open_browser()
+                        time.sleep(2)
+                        driver.get(catUrl)
+                        continue
+                    except TimeoutException as e:
+                        driver.quit()
+                        driver = None
+                        driver = open_browser()
+                        time.sleep(2)
+                        driver.get(catUrl)
+                        continue
+
                     page += 1
 
                 try:
@@ -511,6 +562,7 @@ def check_duplicates():
     db = conn['xpressbeauty']
     products_collection = db['cosmoprof_products_details']
     products = products_collection.find({}).to_list()
+
     seen = set()
     duplicates = []
     for product in products:
