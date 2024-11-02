@@ -359,8 +359,6 @@ def get_product_id_details(product_id, driver=None, conn=None):
                     if variation['price'] == 0:
                         product['variations'].remove(variation)
 
-        product = ai_model_to_well_categories(product)
-        product = ai_model_to_check_brand(product)
         exisiting_product = products_collection.find_one(
             {'product_name': product['product_name']})
         if exisiting_product:
@@ -533,10 +531,10 @@ def get_cosmoprof_products():
                                 }
                                 product_id['companyName'] = {
                                     'name':
-                                    parsed_json['ecommerce']['items'][0]['item_brand'][0].upper(
-                                    ) + parsed_json['ecommerce']['items'][0]['item_brand'][1:].lower()
+                                    parsed_json['ecommerce']['items'][0]['item_brand'][0].replace('#', '').upper(
+                                    ) + parsed_json['ecommerce']['items'][0]['item_brand'][1:].replace('#', '').lower()
                                 }
-                                product_id = check_brand_name(product_id)
+                                # product_id = check_brand_name(product_id)
 
                                 products_ids.append(product_id)
                             except:
@@ -661,49 +659,6 @@ def get_canard_products():
 
                 canard_collection.insert_many(productsToSave)
                 time.sleep(2)
-
-
-def ai_model_to_check_brand(product):
-    openai = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
-    conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressbeauty']
-    brands_collection = db['cleaned_brands']
-    message = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": f'''
-            **** from those brands {brands_collection.find().to_list()} which one is the best match for the product {product}?
-            **** Just choose the best match from the brands in the db.
-            **** Only if you don't find a match in the db, you can generate a new name.
-            '''},
-        {"role": "assistant",
-            "content": "I think the best match for this product is:"}
-    ]
-
-    completion = openai.beta.chat.completions.parse(
-        model="gpt-4o-2024-08-06",
-        messages=message,
-        response_format=BrandModel
-
-    )
-    brand = completion.choices[0].message.parsed
-    finalBrand = {
-        'name':
-            # First letter to uppercase
-            brand.name[0].upper(
-            ) + brand.name[1:].lower()
-    }
-    brands_collection.find_one_and_update(
-        {'name': finalBrand['name']},
-        {'$set': finalBrand},
-        upsert=True
-    )
-    product['companyName'] = {
-        'name':
-            # first letter to uppercase
-            finalBrand['name'][0].upper(
-            ) + finalBrand['name'][1:].lower()
-    }
-    return product
 
 
 def ai_model_to_well_categories(product):
