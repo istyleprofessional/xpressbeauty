@@ -412,7 +412,10 @@ def check_brand_name(product):
     )
     brand = completion.choices[0].message.parsed
     finalBrand = {
-        'name': brand.name
+        'name':
+            # First letter to uppercase
+            brand.name[0].upper(
+            ) + brand.name[1:].lower()
     }
     brands_collection.find_one_and_update(
         {'name': finalBrand['name']},
@@ -420,7 +423,10 @@ def check_brand_name(product):
         upsert=True
     )
     product['companyName'] = {
-        'name': finalBrand['name']
+        'name':
+        # first letter to uppercase
+        finalBrand['name'][0].upper(
+        ) + finalBrand['name'][1:].lower()
     }
     return product
 
@@ -681,7 +687,10 @@ def ai_model_to_check_brand(product):
     )
     brand = completion.choices[0].message.parsed
     finalBrand = {
-        'name': brand.name
+        'name':
+            # First letter to uppercase
+            brand.name[0].upper(
+            ) + brand.name[1:].lower()
     }
     brands_collection.find_one_and_update(
         {'name': finalBrand['name']},
@@ -689,7 +698,10 @@ def ai_model_to_check_brand(product):
         upsert=True
     )
     product['companyName'] = {
-        'name': finalBrand['name']
+        'name':
+            # first letter to uppercase
+            finalBrand['name'][0].upper(
+            ) + finalBrand['name'][1:].lower()
     }
     return product
 
