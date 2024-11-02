@@ -39,6 +39,7 @@ def has_captcha(sb):
 
 def handle_captcha(sb, url):
     driver = sb
+    main_window = driver.current_window_handle
     try:
         btnContainer = driver.find_element(By.ID, 'px-captcha')
         if btnContainer:
@@ -53,7 +54,14 @@ def handle_captcha(sb, url):
                     EC.url_contains(url)
                 )
             except:
-                # delete the cookies
+                for handle in driver.window_handles:
+                    if handle != main_window:
+                        # Switch to the new window/tab
+                        driver.switch_to.window(handle)
+                        # Close the new window
+                        driver.close()
+                        print("Popup window closed.")
+
                 driver.delete_all_cookies()
                 # refresh the page
                 driver.refresh()
@@ -97,7 +105,10 @@ def login_to_cosmoprof(sb):
 
 
 def open_browser():
-    driver = uc.Chrome()
+    chrome_options = uc.ChromeOptions()
+    chrome_options.add_argument("--disable-notifications")
+    chrome_options.add_argument("--disable-popup-blocking")
+    driver = uc.Chrome(options=chrome_options)
     return driver
 
 
@@ -126,253 +137,260 @@ def upload_image(imgUrl, name):
         return ''
 
 
-def get_products_ids_details():
+def get_product_id_details(product_id, driver=None, conn=None):
     # connect to mongodb
-    products = []
-    with open('cosmoprof_products_ids.json') as f:
-        productsIds = json.load(f)
-        driver = open_browser()
-        for productId in productsIds:
-            try:
-                product = {}
-                product['cosmoprof_id'] = productId['cosmoprof_id']
-                if driver == None:
-                    driver = open_browser()
-                driver.get(
-                    f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ productId['cosmoprof_id']}''')
 
+    # check if exist connect to the db
+    if conn == None:
+        conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
+    products_collection = db['cosmoprof_products_details']
+    if driver == None:
+        driver = open_browser()
+    try:
+        product = {}
+        product['cosmoprof_id'] = product_id['cosmoprof_id']
+        if driver == None:
+            driver = open_browser()
+        driver.get(
+            f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product_id['cosmoprof_id']}''')
+
+        while has_captcha(driver):
+            handle_captcha(
+                driver, f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product_id['cosmoprof_id']}''')
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        json_element = soup.find('pre')
+        json_data = json_element.get_text()
+        parsed_json = json.loads(json_data)
+        product['product_name'] = parsed_json['product']['productName']
+        if product['product_name'] == 'Rising Star Volumizing Finishing Spray':
+            print(product['product_name'])
+        product['category'] = product_id['category']
+        product['companyName'] = product_id['companyName']
+        imageUrl = parsed_json['product']['images']['pdpLarge'][0]['url']
+        product['imgs'] = []
+        product_img = upload_image(imageUrl, product['product_name'].replace(' ', '_').replace('/', '_').replace(
+            '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
+        product['imgs'].append(product_img)
+        if 'longDescription' in parsed_json['product']:
+            product['description'] = parsed_json['product']['longDescription']
+
+        if 'upc' in parsed_json['product']:
+            product['upc'] = parsed_json['product']['upc']
+        product['price'] = {}
+        if parsed_json['product']['productType'] == 'master':
+            if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] == None and 'sales' in parsed_json['product']['price'] and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] == None:
+                # login again and then get the url
+                login_to_cosmoprof(driver)
+                driver.get(
+                    f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product_id['cosmoprof_id']}''')
                 while has_captcha(driver):
                     handle_captcha(
-                        driver, f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ productId['cosmoprof_id']}''')
-                soup = BeautifulSoup(driver.page_source, 'html.parser')
+                        driver, f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product_id['cosmoprof_id']}''')
+                soup = BeautifulSoup(
+                    driver.page_source, 'html.parser')
                 json_element = soup.find('pre')
                 json_data = json_element.get_text()
                 parsed_json = json.loads(json_data)
-                product['product_name'] = parsed_json['product']['productName']
-                if product['product_name'] == 'Rising Star Volumizing Finishing Spray':
-                    print(product['product_name'])
-                product['category'] = productId['category']
-                product['companyName'] = productId['companyName']
-                imageUrl = parsed_json['product']['images']['pdpLarge'][0]['url']
-                product['imgs'] = []
-                product_img = upload_image(imageUrl, product['product_name'].replace(' ', '_').replace('/', '_').replace(
-                    '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
-                product['imgs'].append(product_img)
-                if 'longDescription' in parsed_json['product']:
-                    product['description'] = parsed_json['product']['longDescription']
 
-                if 'upc' in parsed_json['product']:
-                    product['upc'] = parsed_json['product']['upc']
+            if 'range' in parsed_json['product']['price']['type']:
                 product['price'] = {}
-                if parsed_json['product']['productType'] == 'master':
-                    if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] == None and 'sales' in parsed_json['product']['price'] and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] == None:
-                        # login again and then get the url
-                        login_to_cosmoprof(driver)
-                        driver.get(
-                            f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ productId['cosmoprof_id']}''')
-                        while has_captcha(driver):
-                            handle_captcha(
-                                driver, f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ productId['cosmoprof_id']}''')
-                        soup = BeautifulSoup(
-                            driver.page_source, 'html.parser')
-                        json_element = soup.find('pre')
-                        json_data = json_element.get_text()
-                        parsed_json = json.loads(json_data)
-
-                    if 'range' in parsed_json['product']['price']['type']:
-                        product['price'] = {}
-                        product['price']['min'] = parsed_json['product']['price']['min']['sales']['value'] + 5
-                        product['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 5
-                        product['priceType'] = 'range'
-                    elif 'tiered' in parsed_json['product']['price']['type']:
-                        product['price']['regular'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
-                        product['priceType'] = 'single'
-                        if product['price']['regular'] == 0:
-                            continue
-                    else:
-                        if parsed_json['product']['price']['list'] != None and parsed_json['product']['price']['list']['value'] != None:
-                            product['price']['regular'] = parsed_json['product']['price']['list']['value'] + 5
-                        elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
-                            product['price']['regular'] = parsed_json['product']['price']['sales']['value'] + 5
-                        else:
-                            product['price']['regular'] = 0
-                        # d['price'] = parsed_json['product']['price']['list']['value'] + 5
-                        if product['price']['regular'] == 0:
-                            continue
-                        product['priceType'] = 'single'
-                    product['variations'] = []
-                    product['variation_type'] = parsed_json['product']['variationAttributes'][0]['displayName']
-                    for variationCosmo in parsed_json['product']['variationAttributes'][0]['values']:
-                        # image = variationCosmo['images']['swatch'][0]['url']
-                        if 'images' in variationCosmo:
-                            image = upload_image(variationCosmo['images']['swatch'][0]['url'],
-                                                 f'''{product['product_name']}_{variation['variation_name']}'''.replace(' ', '_').replace('/', '_').replace(
-                                '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
-
-                        else:
-                            image = ''
-                        variation = {}
-                        variation['variation_name'] = variationCosmo['displayValue']
-                        variation['variation_image'] = image
-                        url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variationCosmo['skuID']}&quantity=undefined'''
-                        try:
-                            driver.get(url)
-                            while has_captcha(driver):
-                                handle_captcha(driver, url)
-                            soup = BeautifulSoup(
-                                driver.page_source, 'html.parser')
-                            json_element = soup.find('pre')
-                            json_data = json_element.get_text()
-                            parsed_json = json.loads(json_data)
-
-                            variation['variation_id'] = variationCosmo['skuID']
-                            if 'upc' in parsed_json['product']:
-                                variation['upc'] = parsed_json['product']['upc']
-                            if 'price' in parsed_json['product']:
-                                if driver == None:
-                                    driver = open_browser()
-                                if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] == None and 'sales' in parsed_json['product']['price'] and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] == None:
-                                    # login again and then get the url
-
-                                    login_to_cosmoprof(driver)
-                                    driver.get(
-                                        f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={
-                                            variationCosmo['skuID']
-                                        }''')
-                                    while has_captcha(driver):
-                                        handle_captcha(
-                                            driver, f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ productId['cosmoprof_id']}''')
-                                    soup = BeautifulSoup(
-                                        driver.page_source, 'html.parser')
-                                    json_element = soup.find('pre')
-                                    json_data = json_element.get_text()
-                                    parsed_json = json.loads(json_data)
-                                if 'tiered' in parsed_json['product']['price']['type']:
-                                    variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
-                                else:
-                                    if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
-                                        variation['price'] = parsed_json['product']['price']['list']['value'] + 5
-                                    elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
-                                        variation['price'] = parsed_json['product']['price']['sales']['value'] + 5
-                                    else:
-                                        variation['price'] = 0
-                                if variation['price'] == 0:
-                                    continue
-                            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                                variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
-                            else:
-                                variation['quantity_on_hand'] = 0
-
-                            product['variations'].append(variation)
-                        except WebDriverException as e:
-                            driver.quit()
-                            driver = None
-                            driver = open_browser()
-                            continue
-                        except TimeoutException as e:
-                            driver.quit()
-                            driver = None
-                            driver = open_browser()
-                            continue
-                        except:
-                            while has_captcha(driver):
-                                handle_captcha(driver, url)
-                            continue
+                product['price']['min'] = parsed_json['product']['price']['min']['sales']['value'] + 5
+                product['price']['max'] = parsed_json['product']['price']['max']['sales']['value'] + 5
+                product['priceType'] = 'range'
+            elif 'tiered' in parsed_json['product']['price']['type']:
+                product['price']['regular'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
+                product['priceType'] = 'single'
+                if product['price']['regular'] == 0:
+                    return None
+            else:
+                if parsed_json['product']['price']['list'] != None and parsed_json['product']['price']['list']['value'] != None:
+                    product['price']['regular'] = parsed_json['product']['price']['list']['value'] + 5
+                elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+                    product['price']['regular'] = parsed_json['product']['price']['sales']['value'] + 5
+                else:
+                    product['price']['regular'] = 0
+                # d['price'] = parsed_json['product']['price']['list']['value'] + 5
+                if product['price']['regular'] == 0:
+                    return None
+                product['priceType'] = 'single'
+            product['variations'] = []
+            product['variation_type'] = parsed_json['product']['variationAttributes'][0]['displayName']
+            for variationCosmo in parsed_json['product']['variationAttributes'][0]['values']:
+                # image = variationCosmo['images']['swatch'][0]['url']
+                if 'images' in variationCosmo:
+                    image = upload_image(variationCosmo['images']['swatch'][0]['url'],
+                                         f'''{product['product_name']}_{variation['variation_name']}'''.replace(' ', '_').replace('/', '_').replace(
+                        '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
 
                 else:
+                    image = ''
+                variation = {}
+                variation['variation_name'] = variationCosmo['displayValue']
+                variation['variation_image'] = image
+                url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variationCosmo['skuID']}&quantity=undefined'''
+                try:
+                    driver.get(url)
+                    while has_captcha(driver):
+                        handle_captcha(driver, url)
+                    soup = BeautifulSoup(
+                        driver.page_source, 'html.parser')
+                    json_element = soup.find('pre')
+                    json_data = json_element.get_text()
+                    parsed_json = json.loads(json_data)
+
+                    variation['variation_id'] = variationCosmo['skuID']
+                    if 'upc' in parsed_json['product']:
+                        variation['upc'] = parsed_json['product']['upc']
                     if 'price' in parsed_json['product']:
                         if driver == None:
                             driver = open_browser()
                         if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] == None and 'sales' in parsed_json['product']['price'] and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] == None:
                             # login again and then get the url
+
                             login_to_cosmoprof(driver)
                             driver.get(
-                                f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ productId['cosmoprof_id']}''')
+                                f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={
+                                    variationCosmo['skuID']
+                                }''')
                             while has_captcha(driver):
                                 handle_captcha(
-                                    driver, f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ productId['cosmoprof_id']}''')
+                                    driver, f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product_id['cosmoprof_id']}''')
                             soup = BeautifulSoup(
                                 driver.page_source, 'html.parser')
                             json_element = soup.find('pre')
                             json_data = json_element.get_text()
                             parsed_json = json.loads(json_data)
                         if 'tiered' in parsed_json['product']['price']['type']:
-                            product['price']['regular'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
+                            variation['price'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
                         else:
                             if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
-                                product['price']['regular'] = parsed_json['product']['price']['list']['value'] + 5
+                                variation['price'] = parsed_json['product']['price']['list']['value'] + 5
                             elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
-                                product['price']['regular'] = parsed_json['product']['price']['sales']['value'] + 5
+                                variation['price'] = parsed_json['product']['price']['sales']['value'] + 5
                             else:
-                                product['price']['regular'] = 0
-                        if product['price']['regular'] == 0:
+                                variation['price'] = 0
+                        if variation['price'] == 0:
                             continue
-                    product['priceType'] = 'single'
                     if 'estimatedQty' in parsed_json['productAvailability']['availability']:
-                        product['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+                        variation['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
                     else:
-                        product['quantity_on_hand'] = 0
-                    if parsed_json['product']['productType'] == 'master':
-                        product['quantity_on_hand'] = 0
+                        variation['quantity_on_hand'] = 0
 
-                if 'categories' in product:
-                    product['categories'] = []
-                    product['categories'].append(product['category'])
-                    del product['category']
-                if 'companyName' in product:
-                    product['companyName'] = {
-                        'name':
-                        # First letter to uppercase
-                        product['companyName']['name'][0].upper(
-                        ) + product['companyName']['name'][1:].lower()
-                    }
-                if 'price' in product:
-                    if type(product['price']) != dict:
-                        product['price'] = {
-                            'regular': product['price']
-                        }
-                    if 'regular' in product['price'] and product['price']['regular'] == 0:
-                        # remove the product if the price is 0
-                        continue
+                    product['variations'].append(variation)
+                except WebDriverException as e:
+                    driver.quit()
+                    driver = None
+                    driver = open_browser()
+                    continue
+                except TimeoutException as e:
+                    driver.quit()
+                    driver = None
+                    driver = open_browser()
+                    continue
+                except:
+                    while has_captcha(driver):
+                        handle_captcha(driver, url)
+                    continue
 
-                    if 'max' in product['price'] and product['price']['max'] == 0:
-                        # remove the product if the price is 0
-                        continue
+        else:
+            if 'price' in parsed_json['product']:
+                if driver == None:
+                    driver = open_browser()
+                if 'list' in parsed_json['product']['price'] and parsed_json['product']['price']['list'] == None and 'sales' in parsed_json['product']['price'] and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] == None:
+                    # login again and then get the url
+                    login_to_cosmoprof(driver)
+                    driver.get(
+                        f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product_id['cosmoprof_id']}''')
+                    while has_captcha(driver):
+                        handle_captcha(
+                            driver, f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={ product_id['cosmoprof_id']}''')
+                    soup = BeautifulSoup(
+                        driver.page_source, 'html.parser')
+                    json_element = soup.find('pre')
+                    json_data = json_element.get_text()
+                    parsed_json = json.loads(json_data)
+                if 'tiered' in parsed_json['product']['price']['type']:
+                    product['price']['regular'] = parsed_json['product']['price']['tiers'][0]['price']['sales']['value'] + 5
+                else:
+                    if parsed_json['product']['price']['list'] != None and 'value' in parsed_json['product']['price']['list'] and parsed_json['product']['price']['list']['value'] != None:
+                        product['price']['regular'] = parsed_json['product']['price']['list']['value'] + 5
+                    elif parsed_json['product']['price']['sales'] != None and 'value' in parsed_json['product']['price']['sales'] and parsed_json['product']['price']['sales']['value'] != None:
+                        product['price']['regular'] = parsed_json['product']['price']['sales']['value'] + 5
+                    else:
+                        product['price']['regular'] = 0
+                if product['price']['regular'] == 0:
+                    return None
+            product['priceType'] = 'single'
+            if 'estimatedQty' in parsed_json['productAvailability']['availability']:
+                product['quantity_on_hand'] = parsed_json['productAvailability']['availability']['estimatedQty']
+            else:
+                product['quantity_on_hand'] = 0
+            if parsed_json['product']['productType'] == 'master':
+                product['quantity_on_hand'] = 0
 
-                    if 'min' in product['price'] and product['price']['min'] == 0:
-                        # remove the product if the price is 0
-                        continue
+        if 'categories' in product:
+            product['categories'] = []
+            product['categories'].append(product['category'])
+            del product['category']
+        if 'companyName' in product:
+            product['companyName'] = {
+                'name':
+                # First letter to uppercase
+                product['companyName']['name'][0].upper(
+                ) + product['companyName']['name'][1:].lower()
+            }
+        if 'price' in product:
+            if type(product['price']) != dict:
+                product['price'] = {
+                    'regular': product['price']
+                }
+            if 'regular' in product['price'] and product['price']['regular'] == 0:
+                # remove the product if the price is 0
+                return None
 
-                if 'variations' in product and len(product['variations']) > 0:
-                    for variation in product['variations']:
-                        if 'price' in variation:
-                            if variation['price'] == 0:
-                                product['variations'].remove(variation)
+            if 'max' in product['price'] and product['price']['max'] == 0:
+                # remove the product if the price is 0
+                return None
 
-                product = ai_model_to_well_categories(product)
-                product = ai_model_to_check_brand(product)
+            if 'min' in product['price'] and product['price']['min'] == 0:
+                # remove the product if the price is 0
+                return None
 
-                products.append(product)
-                # write each product to the file after getting the details inside the loop
-                with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
-                    json.dump(products, f)
-                print(
-                    f'''product no {products.index(product)} out of {len(productsIds)} ''')
-            except WebDriverException as e:
-                driver.quit()
-                driver = None
-                driver = open_browser()
-                continue
-            except TimeoutException as e:
-                driver.quit()
-                driver = None
-                driver = open_browser()
-                continue
-            except Exception as e:
-                continue
+        if 'variations' in product and len(product['variations']) > 0:
+            for variation in product['variations']:
+                if 'price' in variation:
+                    if variation['price'] == 0:
+                        product['variations'].remove(variation)
+
+        product = ai_model_to_well_categories(product)
+        product = ai_model_to_check_brand(product)
+        exisiting_product = products_collection.find_one(
+            {'product_name': product['product_name']})
+        if exisiting_product:
+            product['categories'].append(exisiting_product['categories'][0])
+        products_collection.find_one_and_update(
+            {'product_name': product['product_name']},
+            {'$set': product},
+            upsert=True
+        )
+        return product
+    except WebDriverException as e:
+        driver.quit()
+        driver = None
+        driver = open_browser()
+        return None
+    except TimeoutException as e:
+        driver.quit()
+        driver = None
+        driver = open_browser()
+        return None
+    except Exception as e:
+        print(e)
+        return None
 
 
-def get_products_ids():
+def get_cosmoprof_products():
     categories = [
         {
             'name': 'Holiday',
@@ -406,7 +424,10 @@ def get_products_ids():
     ]
     driver = open_browser()
 
-    products_ids = []
+    conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
+    products_ids_collection = db['cosmoprof_products_ids']
+    products_ids_collection.delete_many({})
     for category in categories:
 
         driver.get(f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
@@ -435,6 +456,7 @@ def get_products_ids():
                 sub_categories = [{'name': 'Holiday', 'href': 'holiday'}]
             for sub_category in sub_categories:
                 page = 0
+                products_ids = []
                 while True:
                     catUrl = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Search-UpdateGrid?cgid={sub_category['href']}&start={page * 18}&sz=18&isFromPLPFlow=true&selectedUrl=https%3A%2F%2Fwww.cosmoprofbeauty.ca%2Fon%2Fdemandware.store%2FSites-CosmoProf-CA-Site%2Fdefault%2FSearch-UpdateGrid%3Fcgid%3D{sub_category['href']}%26start%3D{page * 18}%26sz%3D18%26isFromPLPFlow%3Dtrue'''
                     driver.get(catUrl)
@@ -469,13 +491,24 @@ def get_products_ids():
                         except:
                             continue
                     page += 1
+
+                try:
+                    products_ids_collection.insert_many(products_ids)
+                    for product_id in products_ids:
+                        get_product_id_details(product_id, driver, conn)
+                except Exception as e:
+                    print(e)
+                    continue
     print('Done')
     driver.quit()
+    conn.close()
 
 
 def check_duplicates():
-    with open('cosmoprof_products_details_with_variation_updated.json') as f:
-        products = json.load(f)
+    conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
+    products_collection = db['cosmoprof_products_details']
+    products = products_collection.find({}).to_list()
     seen = set()
     duplicates = []
     for product in products:
@@ -495,8 +528,13 @@ def check_duplicates():
             if product['product_name'] == duplicate['product_name']:
                 product['categories'].append(duplicate['categories'][0])
         products.remove(duplicate)
-    with open('cosmoprof_products_details_with_variation_updated.json', 'w') as f:
-        json.dump(products, f)
+    for product in products:
+        products_collection.find_one_and_update(
+            {'product_name': product['product_name']},
+            {'$set': product},
+            upsert=True
+        )
+    conn.close()
 
 
 def get_canard_products():
@@ -508,13 +546,17 @@ def get_canard_products():
     categories = response.json()['Categories']
     brands = json.load(open('brands.json'))
     categoriesToCheck = [brand['name'] for brand in brands]
-    productsToSave = []
+    conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
+    canard_collection = db['canrad_products']
 
+    canard_collection.delete_many({})
     for category in categories:
         if category['Name'].lower().replace(' ', '').replace('-', '').replace('_', '').replace('.', '') not in categoriesToCheck:
             if 'SubCategories' in category and len(category['SubCategories']) > 0:
                 subCategories = category['SubCategories']
                 for subCategory in subCategories:
+                    productsToSave = []
                     if 'Deal' in subCategory['Name']:
                         continue
                     subUrl = f'''https://canrad.com/categories/{subCategory['CategoryID']}/ccrd/products'''
@@ -550,10 +592,9 @@ def get_canard_products():
                             product["imgs"].append(canradProduct['ImageURL'])
                         product = ai_model_to_well_categories(product)
                         productsToSave.append(product)
+
+                    canard_collection.insert_many(productsToSave)
                     time.sleep(2)
-            print(len(productsToSave))
-    with open('canrad_products.json', 'w') as f:
-        json.dump(productsToSave, f)
 
 
 def ai_model_to_check_brand(product):
@@ -587,8 +628,9 @@ def ai_model_to_check_brand(product):
         {'$set': finalBrand},
         upsert=True
     )
-    product['companyName'] = []
-    product['companyName'].append(finalBrand)
+    product['companyName'] = {
+        'name': finalBrand['name']
+    }
     return product
 
 
@@ -625,8 +667,16 @@ def ai_model_to_well_categories(product):
         {'$set': finalCategory},
         upsert=True
     )
-    product['categories'] = []
-    product['categories'].append(finalCategory)
+    # check if the categories has holiday or no
+    if 'category' in product and 'name' in product['category'] and 'Holiday' in product['category']['name']:
+        product['categories'] = []
+        product['categories'].append(product['category'])
+        product['categories'].append(finalCategory)
+    else:
+        product['categories'] = []
+        product['categories'].append(finalCategory)
+    if 'category' in product:
+        del product['category']
     # clean the product name
     product['product_name'] = product['product_name'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
         '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"', '').replace('*', '').split('-')[0].strip()
@@ -650,15 +700,12 @@ def ai_model_to_well_categories(product):
 
 
 def update_db():
-    cosmo_products = json.load(
-        open('cosmoprof_products_details_with_variation_updated-3.json',
-             'r', encoding='utf-8')
-    )
-    canrad_products = json.load(open('canrad_products.json'))
     conn = pymongo.MongoClient('mongodb://localhost:27017')
     db = conn['xpressbeauty']
     product_collection = db['products']
     categories_collection = db['categories']
+    cosmo_products = db['cosmoprof_products_details'].find({})
+    canrad_products = db['canrad_products'].find({})
 
     product_collection.delete_many({})
 
@@ -690,17 +737,13 @@ def update_db():
 if __name__ == '__main__':
     print('============ Starting =============')
 
-    print('============ Getting cosmoprof products ids =============')
-    get_products_ids()
-    print('============ Got cosmoprof products ids =============')
+    # print('============ Getting cosmoprof products ids =============')
+    # get_cosmoprof_products()
+    # print('============ Got cosmoprof products ids =============')
 
-    print('============ Getting Cosmo Products Details =============')
-    get_products_ids_details()
-    print('============ Got Cosmo Products Details =============')
-
-    print('============ Checking duplicates =============')
-    check_duplicates()
-    print('============ Checked duplicates =============')
+    # print('============ Checking duplicates =============')
+    # check_duplicates()
+    # print('============ Checked duplicates =============')
 
     print('============ Getting the Canard Products =============')
     get_canard_products()
