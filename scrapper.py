@@ -53,9 +53,6 @@ def handle_captcha(sb, url):
                     EC.url_contains(url)
                 )
             except:
-                driver.quit()  # Close current driver
-                driver = open_browser()  # Reopen browser
-                driver.get(url)
                 driver.delete_all_cookies()
                 driver.refresh()
                 time.sleep(2)
@@ -391,6 +388,43 @@ def get_product_id_details(product_id, driver=None, conn=None):
         return None
 
 
+def check_brand_name(product):
+    openai = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+    conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
+    brands_collection = db['cleaned_brands']
+    message = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": f'''
+            **** if the brand name {product['companyName']['name']} is not in the {brands_collection.find().to_list()} generate a new name otherwise choose the best match.
+            **** Just choose the best match from the brands in the db.
+            **** Only if you don't find a match in the db, you can generate a new name.
+            '''},
+        {"role": "assistant",
+            "content": "I think the best match for this product is:"}
+    ]
+
+    completion = openai.beta.chat.completions.parse(
+        model="gpt-4o-2024-08-06",
+        messages=message,
+        response_format=BrandModel
+
+    )
+    brand = completion.choices[0].message.parsed
+    finalBrand = {
+        'name': brand.name
+    }
+    brands_collection.find_one_and_update(
+        {'name': finalBrand['name']},
+        {'$set': finalBrand},
+        upsert=True
+    )
+    product['companyName'] = {
+        'name': finalBrand['name']
+    }
+    return product
+
+
 def get_cosmoprof_products():
     categories = [
 
@@ -439,35 +473,9 @@ def get_cosmoprof_products():
         while has_captcha(driver):
             handle_captcha(
                 driver, f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
-        try:
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
-        except WebDriverException as e:
-            driver.quit()
-            driver = None
-            driver = open_browser()
-            time.sleep(2)
-            driver.get(
-                f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
-            time.sleep(2)
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
-        except TimeoutException as e:
-            driver.quit()
-            driver = None
-            driver = open_browser()
-            time.sleep(2)
-            driver.get(
-                f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
-            time.sleep(2)
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
-        except:
-            driver.quit()
-            driver = None
-            driver = open_browser()
-            time.sleep(2)
-            driver.get(
-                f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
-            time.sleep(2)
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+
         menu_div = soup.select(f'a[href*="/{category["href"]}/"]')
 
         sub_categories = []
@@ -522,11 +530,8 @@ def get_cosmoprof_products():
                                     parsed_json['ecommerce']['items'][0]['item_brand'][0].upper(
                                     ) + parsed_json['ecommerce']['items'][0]['item_brand'][1:].lower()
                                 }
-                                brands_collection.find_one_and_update(
-                                    {'name': product_id['companyName']['name']},
-                                    {'$set': product_id['companyName']},
-                                    upsert=True
-                                )
+                                product_id = check_brand_name(product_id)
+
                                 products_ids.append(product_id)
                             except:
                                 continue
@@ -601,64 +606,62 @@ def get_canard_products():
         'Accept': 'application/json'
     })
     categories = response.json()['Categories']
-    brands = json.load(open('brands.json'))
-    categoriesToCheck = [brand['name'] for brand in brands]
     conn = pymongo.MongoClient('mongodb://localhost:27017')
     db = conn['xpressbeauty']
     canard_collection = db['canrad_products']
 
     canard_collection.delete_many({})
     for category in categories:
-        if category['Name'].lower().replace(' ', '').replace('-', '').replace('_', '').replace('.', '') not in categoriesToCheck:
-            if 'SubCategories' in category and len(category['SubCategories']) > 0:
-                subCategories = category['SubCategories']
-                for subCategory in subCategories:
-                    productsToSave = []
-                    if 'Deal' in subCategory['Name']:
-                        continue
-                    subUrl = f'''https://canrad.com/categories/{subCategory['CategoryID']}/ccrd/products'''
-                    response = requests.get(subUrl, headers={
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    })
-                    canradProducts = response.json()
-                    canradProducts = canradProducts['Products'] if 'Products' in canradProducts else [
-                    ]
-                    if not canradProducts or len(canradProducts) == 0:
-                        continue
-                    for canradProduct in canradProducts:
-                        product = {
-                            'product_name': canradProduct['ItemName'],
-                            'description': canradProduct['Description'].replace('<[^>]*>', ''),
-                            'companyName': {
-                                'name': category['Name']
-                            },
-                            'price': {
-                                'regular': canradProduct['Price']
-                            },
-                            'sale_price': {
-                                'sale': canradProduct['SpecialPriceDiscount']
-                            },
-                            'quantity_on_hand': int(canradProduct['OnHandQuantity']),
-                            'upc': canradProduct['UPC'],
-                            'item_id': canradProduct['ItemID'],
+        if 'SubCategories' in category and len(category['SubCategories']) > 0:
+            subCategories = category['SubCategories']
+            for subCategory in subCategories:
+                productsToSave = []
+                if 'Deal' in subCategory['Name']:
+                    continue
+                subUrl = f'''https://canrad.com/categories/{subCategory['CategoryID']}/ccrd/products'''
+                response = requests.get(subUrl, headers={
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                })
+                canradProducts = response.json()
+                canradProducts = canradProducts['Products'] if 'Products' in canradProducts else [
+                ]
+                if not canradProducts or len(canradProducts) == 0:
+                    continue
+                for canradProduct in canradProducts:
+                    product = {
+                        'product_name': canradProduct['ItemName'],
+                        'description': canradProduct['Description'].replace('<[^>]*>', ''),
+                        'companyName': {
+                            'name': category['Name']
+                        },
+                        'price': {
+                            'regular': canradProduct['Price']
+                        },
+                        'sale_price': {
+                            'sale': canradProduct['SpecialPriceDiscount']
+                        },
+                        'quantity_on_hand': int(canradProduct['OnHandQuantity']),
+                        'upc': canradProduct['UPC'],
+                        'item_id': canradProduct['ItemID'],
 
-                        }
-                        if 'ImageURL' in canradProduct:
-                            product["imgs"] = []
-                            product["imgs"].append(canradProduct['ImageURL'])
-                        product = ai_model_to_well_categories(product)
-                        productsToSave.append(product)
+                    }
+                    product = check_brand_name(product)
+                    if 'ImageURL' in canradProduct:
+                        product["imgs"] = []
+                        product["imgs"].append(canradProduct['ImageURL'])
+                    product = ai_model_to_well_categories(product)
+                    productsToSave.append(product)
 
-                    canard_collection.insert_many(productsToSave)
-                    time.sleep(2)
+                canard_collection.insert_many(productsToSave)
+                time.sleep(2)
 
 
 def ai_model_to_check_brand(product):
     openai = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
     conn = pymongo.MongoClient('mongodb://localhost:27017')
     db = conn['xpressbeauty']
-    brands_collection = db['brands']
+    brands_collection = db['cleaned_brands']
     message = [
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": f'''
