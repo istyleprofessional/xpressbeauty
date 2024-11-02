@@ -211,7 +211,10 @@ def get_product_id_details(product_id, driver=None, conn=None):
                 product['priceType'] = 'single'
             product['variations'] = []
             product['variation_type'] = parsed_json['product']['variationAttributes'][0]['displayName']
+
             for variationCosmo in parsed_json['product']['variationAttributes'][0]['values']:
+                variation = {}
+                variation['variation_name'] = variationCosmo['displayValue']
                 # image = variationCosmo['images']['swatch'][0]['url']
                 if 'images' in variationCosmo:
                     image = upload_image(variationCosmo['images']['swatch'][0]['url'],
@@ -220,8 +223,7 @@ def get_product_id_details(product_id, driver=None, conn=None):
 
                 else:
                     image = ''
-                variation = {}
-                variation['variation_name'] = variationCosmo['displayValue']
+
                 variation['variation_image'] = image
                 url = f'''https://www.cosmoprofbeauty.ca/on/demandware.store/Sites-CosmoProf-CA-Site/default/Product-Variation?pid={variationCosmo['skuID']}&quantity=undefined'''
                 try:
@@ -391,10 +393,7 @@ def get_product_id_details(product_id, driver=None, conn=None):
 
 def get_cosmoprof_products():
     categories = [
-        {
-            'name': 'Holiday',
-            'href': 'holiday'
-        },
+
         {
             'name': 'Hair Color',
             'href': 'hair-color'
@@ -418,6 +417,10 @@ def get_cosmoprof_products():
         {
             'name': 'Salon Essentials',
             'href': 'salon-essentials'
+        },
+        {
+            'name': 'Holiday',
+            'href': 'holiday'
         },
     ]
     driver = open_browser()
