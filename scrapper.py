@@ -14,6 +14,7 @@ import boto3
 import pymongo
 from openai import OpenAI
 from pydantic import BaseModel
+import pyautogui
 
 
 class CategoryModel(BaseModel):
@@ -39,7 +40,6 @@ def has_captcha(sb):
 
 def handle_captcha(sb, url):
     driver = sb
-    main_window = driver.current_window_handle
     try:
         btnContainer = driver.find_element(By.ID, 'px-captcha')
         if btnContainer:
@@ -54,13 +54,15 @@ def handle_captcha(sb, url):
                     EC.url_contains(url)
                 )
             except:
-                for handle in driver.window_handles:
-                    if handle != main_window:
-                        # Switch to the new window/tab
-                        driver.switch_to.window(handle)
-                        # Close the new window
-                        driver.close()
-                        print("Popup window closed.")
+                try:
+                    cancel_button_location = pyautogui.locateOnScreen('cancel_button.png', confidence=0.9)
+                    if cancel_button_location:
+                        pyautogui.click(cancel_button_location)
+                        print("External app prompt detected and canceled.")
+                    else:
+                        print("External app prompt did not appear.")
+                except Exception as e:
+                    print(e)
 
                 driver.delete_all_cookies()
                 # refresh the page
@@ -737,13 +739,13 @@ def update_db():
 if __name__ == '__main__':
     print('============ Starting =============')
 
-    # print('============ Getting cosmoprof products ids =============')
-    # get_cosmoprof_products()
-    # print('============ Got cosmoprof products ids =============')
+    print('============ Getting cosmoprof products ids =============')
+    get_cosmoprof_products()
+    print('============ Got cosmoprof products ids =============')
 
-    # print('============ Checking duplicates =============')
-    # check_duplicates()
-    # print('============ Checked duplicates =============')
+    print('============ Checking duplicates =============')
+    check_duplicates()
+    print('============ Checked duplicates =============')
 
     print('============ Getting the Canard Products =============')
     get_canard_products()
