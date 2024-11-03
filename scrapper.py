@@ -182,7 +182,7 @@ def get_product_id_details(product_id, driver=None, conn=None):
         product['product_name'] = parsed_json['product']['productName']
         if product['product_name'] == 'Rising Star Volumizing Finishing Spray':
             print(product['product_name'])
-        product['category'] = product_id['category']
+        product['categories'] = product_id['categories']
         product['companyName'] = product_id['companyName']
         imageUrl = parsed_json['product']['images']['pdpLarge'][0]['url']
         product['imgs'] = []
@@ -546,10 +546,12 @@ def get_cosmoprof_products():
                                 product_id = {}
                                 # {'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':8.78,'affiliation':'Cosmoprof','item_category':'Permanent','item_id':'CAN-M-635020','item_name':'CHI Ionic Permanent Shine Crème Hair Color','item_brand':'CHI','item_list_name':'plp','item_variant':'CAN-M-635020'}]}}
                                 product_id['cosmoprof_id'] = parsed_json['ecommerce']['items'][0]['item_id']
-                                product_id['category'] = {
-                                    'main': category['name'],
-                                    'name': sub_category['name']
-                                }
+                                product_id['categories'] = [
+                                    {
+                                        'main': category['name'],
+                                        'name': sub_category['name']
+                                    }
+                                ]
                                 categories_collection.find_one_and_update(
                                     {'name': sub_category['name']},
                                     {'$set': product_id['category']},
@@ -575,7 +577,6 @@ def get_cosmoprof_products():
                             except:
                                 continue
                     except WebDriverException as e:
-
                         driver.quit()
                         driver = None
                         driver = open_browser()
