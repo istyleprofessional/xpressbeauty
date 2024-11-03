@@ -388,7 +388,7 @@ def get_product_id_details(product_id, driver=None, conn=None):
 
         exisiting_product = products_collection.find_one(
             {'product_name': product['product_name']})
-        if exisiting_product:
+        if exisiting_product != None and 'imgs' in exisiting_product and 'xpressbeauty' in exisiting_product['imgs'][0]:
             product['categories'].append(exisiting_product['categories'][0])
         products_collection.find_one_and_update(
             {'product_name': product['product_name']},
