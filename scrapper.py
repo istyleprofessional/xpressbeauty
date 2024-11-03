@@ -44,10 +44,18 @@ def handle_captcha(sb, url):
         if btnContainer:
             time.sleep(2)
             ActionChains(driver).key_down(Keys.TAB).perform()
-            time.sleep(2)
-            ActionChains(driver).key_down(Keys.ENTER).pause(10).perform()
-            ActionChains(driver).key_up(Keys.ENTER).perform()
-            time.sleep(5)
+            # get element that is focused
+            focused = driver.switch_to.active_element
+            # check if the focused element is the captcha
+            if focused.get_attribute('id') == 'px-captcha':
+                time.sleep(2)
+                ActionChains(driver).key_down(Keys.ENTER).pause(10).perform()
+                ActionChains(driver).key_up(Keys.ENTER).perform()
+                time.sleep(5)
+            else:
+                driver.delete_all_cookies()
+                driver.refresh()
+                time.sleep(2)
             try:
                 WebDriverWait(driver, 25).until(
                     EC.url_contains(url)
@@ -56,16 +64,6 @@ def handle_captcha(sb, url):
                 driver.delete_all_cookies()
                 driver.refresh()
                 time.sleep(2)
-
-            while has_captcha(driver):
-                handle_captcha(driver, url)
-
-            login_to_cosmoprof(driver)
-            time.sleep(2)
-            driver.get(url)
-            time.sleep(2)
-            while has_captcha(driver):
-                handle_captcha(driver, url)
     except Exception as e:
         print(f"Error in handle_captcha: {e}")
 
