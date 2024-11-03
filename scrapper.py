@@ -554,7 +554,7 @@ def get_cosmoprof_products():
                                 ]
                                 categories_collection.find_one_and_update(
                                     {'name': sub_category['name']},
-                                    {'$set': product_id['category']},
+                                    {'$set': product_id['categories'][0]},
                                     upsert=True
                                 )
                                 product_id['companyName'] = {
