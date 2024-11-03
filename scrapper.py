@@ -560,9 +560,18 @@ def get_cosmoprof_products():
                                     parsed_json['ecommerce']['items'][0]['item_brand'][0].replace('#', '').upper(
                                     ) + parsed_json['ecommerce']['items'][0]['item_brand'][1:].replace('#', '').lower()
                                 }
+                                brands_collection.find_one_and_update(
+                                    {'name': product_id['companyName']['name']},
+                                    {'$set': product_id['companyName']},
+                                    upsert=True
+                                )
                                 # product_id = check_brand_name(product_id)
-
                                 products_ids.append(product_id)
+                                products_ids_collection.find_one_and_update(
+                                    {'cosmoprof_id': product_id['cosmoprof_id']},
+                                    {'$set': product_id},
+                                    upsert=True
+                                )
                             except:
                                 continue
                     except WebDriverException as e:
@@ -580,16 +589,9 @@ def get_cosmoprof_products():
                         time.sleep(2)
                         driver.get(catUrl)
                         continue
-
+                for product_id in products_ids:
+                    get_product_id_details(product_id, driver, conn)
                     page += 1
-
-                try:
-                    products_ids_collection.insert_many(products_ids)
-                    for product_id in products_ids:
-                        get_product_id_details(product_id, driver, conn)
-                except Exception as e:
-                    print(e)
-                    continue
     print('Done')
     driver.quit()
     conn.close()
