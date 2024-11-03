@@ -350,10 +350,6 @@ def get_product_id_details(product_id, driver=None, conn=None):
             if parsed_json['product']['productType'] == 'master':
                 product['quantity_on_hand'] = 0
 
-        if 'categories' in product:
-            product['categories'] = []
-            product['categories'].append(product['category'])
-            del product['category']
         if 'companyName' in product:
             product['companyName'] = {
                 'name':
