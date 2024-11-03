@@ -589,9 +589,10 @@ def get_cosmoprof_products():
                         time.sleep(2)
                         driver.get(catUrl)
                         continue
+                    page += 1
                 for product_id in products_ids:
                     get_product_id_details(product_id, driver, conn)
-                    page += 1
+
     print('Done')
     driver.quit()
     conn.close()
