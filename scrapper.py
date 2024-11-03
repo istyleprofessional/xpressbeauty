@@ -104,7 +104,34 @@ def open_browser():
     return driver
 
 
-def upload_image(imgUrl, name):
+def upload_image(imgUrl, name, product_name):
+    conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
+    products_collection = db['cosmoprof_products_details']
+
+    if '_' in product_name:
+        product_name = product_name.split('_')[0]
+        variation_name = product_name.split('_')[1]
+        product = products_collection.find_one(
+            {'product_name': product_name, 'variations.variation_name': variation_name})
+        if product:
+            for variation in product['variations']:
+                if variation['variation_name'] == variation_name:
+                    if 'imgs' in variation:
+                        if imgUrl in variation['imgs']:
+                            if 'xpressbeauty' in imgUrl:
+                                return imgUrl
+            if 'imgs' in product:
+                if imgUrl in product['imgs'][0]:
+                    if 'xpressbeauty' in imgUrl:
+                        return imgUrl
+    else:
+        product = products_collection.find_one({'product_name': product_name})
+        if product:
+            if 'imgs' in product:
+                if imgUrl in product['imgs'][0]:
+                    if 'xpressbeauty' in imgUrl:
+                        return imgUrl
     try:
         AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY')
@@ -162,7 +189,7 @@ def get_product_id_details(product_id, driver=None, conn=None):
         imageUrl = parsed_json['product']['images']['pdpLarge'][0]['url']
         product['imgs'] = []
         product_img = upload_image(imageUrl, product['product_name'].replace(' ', '_').replace('/', '_').replace(
-            '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
+            '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'), product['product_name'])
         product['imgs'].append(product_img)
         if 'longDescription' in parsed_json['product']:
             product['description'] = parsed_json['product']['longDescription']
@@ -216,7 +243,7 @@ def get_product_id_details(product_id, driver=None, conn=None):
                 if 'images' in variationCosmo:
                     image = upload_image(variationCosmo['images']['swatch'][0]['url'],
                                          f'''{product['product_name']}_{variation['variation_name']}'''.replace(' ', '_').replace('/', '_').replace(
-                        '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
+                        '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'), product['product_name'] + '_' + variation['variation_name'])
 
                 else:
                     image = ''
@@ -714,7 +741,7 @@ def ai_model_to_well_categories(product):
         del product['product_image']
 
     image_uploaded_url = upload_image(product['imgs'][0], product['product_name'].replace('@', '').replace(' ', '_').replace('"', '').replace('/', '_').replace(
-        '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'))
+        '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'), product['product_name'])
     for img in product['imgs']:
         product['imgs'].remove(img)
         product['imgs'].append(image_uploaded_url)
