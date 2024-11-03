@@ -110,10 +110,10 @@ def upload_image(imgUrl, name, product_name):
     products_collection = db['cosmoprof_products_details']
 
     if '_' in product_name:
-        product_name = product_name.split('_')[0]
+        productName = product_name.split('_')[0]
         variation_name = product_name.split('_')[1]
         product = products_collection.find_one(
-            {'product_name': product_name, 'variations.variation_name': variation_name})
+            {'product_name': productName, 'variations.variation_name': variation_name})
         if product:
             for variation in product['variations']:
                 if variation['variation_name'] == variation_name:
