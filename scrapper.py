@@ -106,8 +106,9 @@ def upload_image(imgUrl, name, product_name):
     conn = pymongo.MongoClient('mongodb://localhost:27017')
     db = conn['xpressbeauty']
     products_collection = db['cosmoprof_products_details']
-
-    if '_' in product_name:
+    if 'xpressbeauty' in imgUrl:
+        return imgUrl
+    if '_' in product_name: 
         productName = product_name.split('_')[0]
         variation_name = product_name.split('_')[1]
         product = products_collection.find_one(
@@ -382,9 +383,8 @@ def get_product_id_details(product_id, driver=None, conn=None):
 
         exisiting_product = products_collection.find_one(
             {'product_name': product['product_name']})
-        if exisiting_product != None and 'imgs' in exisiting_product and 'xpressbeauty' in exisiting_product['imgs'][0]:
+        if exisiting_product != None:
             product['categories'].append(exisiting_product['categories'][0])
-        product['last_scraped'] = time.time()
         products_collection.find_one_and_update(
             {'product_name': product['product_name']},
             {'$set': product},
@@ -489,10 +489,10 @@ def get_cosmoprof_products():
     db = conn['xpressbeauty']
     products_ids_collection = db['cosmoprof_products_ids']
     products_ids_collection.delete_many({})
-    categories_collection = db['cleaned_categories']
-    categories_collection.delete_many({})
-    brands_collection = db['cleaned_brands']
-    brands_collection.delete_many({})
+    # categories_collection = db['cleaned_categories']
+    # categories_collection.delete_many({})
+    # brands_collection = db['cleaned_brands']
+    # brands_collection.delete_many({})
     for category in categories:
 
         driver.get(f'''https://www.cosmoprofbeauty.ca/{category['href']}''')
@@ -549,21 +549,21 @@ def get_cosmoprof_products():
                                         'name': sub_category['name']
                                     }
                                 ]
-                                categories_collection.find_one_and_update(
-                                    {'name': sub_category['name']},
-                                    {'$set': product_id['categories'][0]},
-                                    upsert=True
-                                )
+                                # categories_collection.find_one_and_update(
+                                #     {'name': sub_category['name']},
+                                #     {'$set': product_id['categories'][0]},
+                                #     upsert=True
+                                # )
                                 product_id['companyName'] = {
                                     'name':
                                     parsed_json['ecommerce']['items'][0]['item_brand'][0].replace('#', '').upper(
                                     ) + parsed_json['ecommerce']['items'][0]['item_brand'][1:].replace('#', '').lower()
                                 }
-                                brands_collection.find_one_and_update(
-                                    {'name': product_id['companyName']['name']},
-                                    {'$set': product_id['companyName']},
-                                    upsert=True
-                                )
+                                # brands_collection.find_one_and_update(
+                                #     {'name': product_id['companyName']['name']},
+                                #     {'$set': product_id['companyName']},
+                                #     upsert=True
+                                # )
                                 # product_id = check_brand_name(product_id)
                                 products_ids.append(product_id)
                                 products_ids_collection.find_one_and_update(
@@ -588,8 +588,8 @@ def get_cosmoprof_products():
                         driver.get(catUrl)
                         continue
                     page += 1
-                for product_id in products_ids:
-                    get_product_id_details(product_id, driver, conn)
+                # for product_id in products_ids:
+                #     get_product_id_details(product_id, driver, conn)
 
     print('Done')
     driver.quit()
@@ -640,12 +640,15 @@ def get_canard_products():
     conn = pymongo.MongoClient('mongodb://localhost:27017')
     db = conn['xpressbeauty']
     canard_collection = db['canrad_products']
+    brand_collection = db['cleaned_brands']
 
     canard_collection.delete_many({})
+    total = 0
     for category in categories:
         if 'SubCategories' in category and len(category['SubCategories']) > 0:
             subCategories = category['SubCategories']
             for subCategory in subCategories:
+                
                 productsToSave = []
                 if 'Deal' in subCategory['Name']:
                     continue
@@ -664,7 +667,10 @@ def get_canard_products():
                         'product_name': canradProduct['ItemName'],
                         'description': canradProduct['Description'].replace('<[^>]*>', ''),
                         'companyName': {
-                            'name': category['Name']
+                            'name': 
+                            # first letter to uppercase
+                            category['Name'][0].upper(
+                            ) + category['Name'][1:].lower()
                         },
                         'price': {
                             'regular': canradProduct['Price']
@@ -677,13 +683,20 @@ def get_canard_products():
                         'item_id': canradProduct['ItemID'],
 
                     }
-                    product = check_brand_name(product)
+                    brand_collection.find_one_and_update(
+                        {'name': product['companyName']['name']},
+                        {'$set': product['companyName']},
+                        upsert=True
+                    )
+                    # product = check_brand_name(product)
                     if 'ImageURL' in canradProduct:
                         product["imgs"] = []
                         product["imgs"].append(canradProduct['ImageURL'])
                     product = ai_model_to_well_categories(product)
                     productsToSave.append(product)
-
+                    #  print number of products scraped out of the total
+                    print(f'''{len(productsToSave) + total} Saved''')
+                total += 15
                 canard_collection.insert_many(productsToSave)
                 time.sleep(2)
 
@@ -692,7 +705,7 @@ def ai_model_to_well_categories(product):
     openai = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
     conn = pymongo.MongoClient('mongodb://localhost:27017')
     db = conn['xpressbeauty']
-    categories_collection = db['categories']
+    categories_collection = db['cleaned_categories']
     message = [
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": f'''
@@ -753,20 +766,37 @@ def ai_model_to_well_categories(product):
     return product
 
 
+def map_cosmoprof_categories():
+    conn = pymongo.MongoClient('mongodb://localhost:27017')
+    db = conn['xpressbeauty']
+    products_ids = db['cosmoprof_products_ids'].find({}).to_list()
+    products_details = db['cosmoprof_products_details']
+    products_details.update_many({}, {'$unset': {'categories': []}})
+    products_details.update_many({}, {'$set': {'categories': []}})
+    for product_id in products_ids:
+
+        exist_prod_details = db['cosmoprof_products_details'].find_one(
+            {'cosmoprof_id': product_id['cosmoprof_id']})
+      
+        if exist_prod_details:
+            exist_prod_details['categories'].append(product_id['categories'][0])
+            products_details.find_one_and_update(
+                {'cosmoprof_id': product_id['cosmoprof_id']},
+                {'$set': exist_prod_details}
+            )
+            
 def update_db():
     conn = pymongo.MongoClient('mongodb://localhost:27017')
     db = conn['xpressbeauty']
     product_collection = db['products']
     categories_collection = db['categories']
-    cosmo_products = db['cosmoprof_products_details'].find({})
-    canrad_products = db['canrad_products'].find({})
+    cosmo_products = db['cosmoprof_products_details'].find({}).to_list()
+    canrad_products = db['canrad_products'].find({}).to_list()
 
     product_collection.delete_many({})
 
-    for product in cosmo_products:
-        product_collection.insert_one(product)
-    for product in canrad_products:
-        product_collection.insert_one(product)
+    product_collection.insert_many(cosmo_products)
+    product_collection.insert_many(canrad_products)
 
     categories_collection.delete_many({})
     for product in cosmo_products:
@@ -791,20 +821,24 @@ def update_db():
 if __name__ == '__main__':
     print('============ Starting =============')
 
-    print('============ Getting cosmoprof products ids =============')
-    get_cosmoprof_products()
-    print('============ Got cosmoprof products ids =============')
+    # print('============ Getting cosmoprof products ids =============')
+    # get_cosmoprof_products()
+    # print('============ Got cosmoprof products ids =============')
 
-    print('============ Checking duplicates =============')
-    check_duplicates()
-    print('============ Checked duplicates =============')
+    # print('============ Checking duplicates =============')
+    # check_duplicates()
+    # print('============ Checked duplicates =============')
 
-    print('============ Getting the Canard Products =============')
-    get_canard_products()
-    print('============ Got Canrad products =============')
+    # print('============ Getting the Canard Products =============')
+    # get_canard_products()
+    # print('============ Got Canrad products =============')
 
+
+
+    print('============ Mapping the cosmoprof categories =============')
+    map_cosmoprof_categories()
+    print('============ Mapped the cosmoprof categories =============')
     print('============ Adding the products to the db =============')
     update_db()
     print('============ Added the products to the db =============')
-
     print('============ Done ============')
