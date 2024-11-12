@@ -540,13 +540,13 @@ async function dumpAllUnkownCartAndUsers() {
   await connect(mongoUrl);
   const users = await User.find({});
   const dummyUsers = await DummyUser.find({});
-  if (users.length > 0) {
-    for (const user of users) {
-      if (!(user.firstName && user.lastName && user.phoneNumber)) {
-        await User.findByIdAndDelete(user._id);
-      }
-    }
-  }
+  // if (users.length > 0) {
+  //   for (const user of users) {
+  //     if (!(user.firstName && user.lastName && user.phoneNumber)) {
+  //       await User.findByIdAndDelete(user._id);
+  //     }
+  //   }
+  // }
   if (dummyUsers.length > 0) {
     for (const dummyUser of dummyUsers) {
       if (
@@ -557,7 +557,7 @@ async function dumpAllUnkownCartAndUsers() {
           dummyUser.email
         )
       ) {
-        await User.findByIdAndDelete(dummyUser._id);
+        await DummyUser.findByIdAndDelete(dummyUser._id);
       }
     }
   }
