@@ -1,0 +1,1162 @@
+[{
+  "_id": {
+    "$oid": "6727601bb1ff27b252d41f6d"
+  },
+  "name": "Permanent Hair Colour",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "6727684db1ff27b252d452a4"
+  },
+  "name": "Demi & Semi Permanent",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "67276c92b1ff27b252d46d8c"
+  },
+  "name": "Temporary Colour",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "67276cf0b1ff27b252d470c0"
+  },
+  "name": "Express Colour",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "67276d7bb1ff27b252d474ff"
+  },
+  "name": "Direct Dyes",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "6727b5e6b1ff27b252d66bdc"
+  },
+  "name": "Blonding",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "6727b8d8b1ff27b252d67e42"
+  },
+  "name": "Bonding Systems",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "6727b912b1ff27b252d6802c"
+  },
+  "name": "Hair Bleach & Lighteners",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "6727b9cbb1ff27b252d685f0"
+  },
+  "name": "Developers",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "6727ba6bb1ff27b252d68bb7"
+  },
+  "name": "Toners",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "6727bb1eb1ff27b252d690fa"
+  },
+  "name": "Foil",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6727bba6b1ff27b252d6943d"
+  },
+  "name": "Colour Depositing",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "672803f9b1ff27b252d861d2"
+  },
+  "name": "Additives & Boosters",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "6728041bb1ff27b252d862dc"
+  },
+  "name": "Hair Colour Removers & Correctors",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "67284be6b1ff27b252da308c"
+  },
+  "name": "Men's Hair Colour",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "67284bf2b1ff27b252da30e3"
+  },
+  "name": "Colouring Tools",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "67284cc6b1ff27b252da3816"
+  },
+  "name": "Shampoo",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "67284d40b1ff27b252da3943"
+  },
+  "name": "Dry Shampoo",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728935db1ff27b252dc05ed"
+  },
+  "name": "Conditioner",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672896c9b1ff27b252dc1ca1"
+  },
+  "name": "Cleansing Conditioner",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728baa2b1ff27b252dd0365"
+  },
+  "name": "Hair Styling",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728beabb1ff27b252dd250f"
+  },
+  "name": "Hairspray",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728bfc8b1ff27b252dd2ced"
+  },
+  "name": "Gel & Glaze",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c024b1ff27b252dd3062"
+  },
+  "name": "Mousse",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c080b1ff27b252dd3383"
+  },
+  "name": "Heat Protection Styling",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c0e8b1ff27b252dd37bb"
+  },
+  "name": "Root Lift",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c0fcb1ff27b252dd387c"
+  },
+  "name": "Hair Wax & Pomade",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c16eb1ff27b252dd3c42"
+  },
+  "name": "Hair Bonding & Repairing",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c20eb1ff27b252dd419d"
+  },
+  "name": "Textured Hair",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c37db1ff27b252dd4d4f"
+  },
+  "name": "Hair Care",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c430b1ff27b252dd53a1"
+  },
+  "name": "Treatments",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c469b1ff27b252dd559b"
+  },
+  "name": "Hair Relaxers",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c46cb1ff27b252dd55b5"
+  },
+  "name": "Waves & Perms",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c47eb1ff27b252dd5653"
+  },
+  "name": "Smoothing Systems",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6728c494b1ff27b252dd5695"
+  },
+  "name": "Tools & Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729164bb1ff27b252df2a8d"
+  },
+  "name": "Blonding Hair Care",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672916ebb1ff27b252df2f9b"
+  },
+  "name": "Hair Thinning & Hair Loss",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "6729178eb1ff27b252df3532"
+  },
+  "name": "Masks, Serums & Treatments",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672919f8b1ff27b252df4a54"
+  },
+  "name": "Men's Hair Care",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "67291b3eb1ff27b252df5549"
+  },
+  "name": "Kid's Hair Care",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "67291b52b1ff27b252df5592"
+  },
+  "name": "Nail Polish",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "67291d0bb1ff27b252df6089"
+  },
+  "name": "Gel Colour",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "67291f6db1ff27b252df6dd5"
+  },
+  "name": "Dip Powders",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "67291fe9b1ff27b252df71bb"
+  },
+  "name": "Top & Base Coats",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "67292027b1ff27b252df73dd"
+  },
+  "name": "Nail Extensions",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "67292088b1ff27b252df773c"
+  },
+  "name": "Acrylic Powders",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "672920a5b1ff27b252df7844"
+  },
+  "name": "Nail Tips & Glue",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "672920dbb1ff27b252df79e4"
+  },
+  "name": "Nail Care",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "672959bdb1ff27b252e0f7fe"
+  },
+  "name": "Cuticle Oils",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "672959cbb1ff27b252e0f88b"
+  },
+  "name": "Nail Tools",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "67295a33b1ff27b252e0fc29"
+  },
+  "name": "Nail & Cuticle Clippers",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "67295a39b1ff27b252e0fc73"
+  },
+  "name": "Nail Files",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "67295a5cb1ff27b252e0fd6f"
+  },
+  "name": "Buffers & Brushes",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "67295a60b1ff27b252e0fd9b"
+  },
+  "name": "Mani & Pedi Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "67295a66b1ff27b252e0fddb"
+  },
+  "name": "Nail Appliances",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "67295a7bb1ff27b252e0fed1"
+  },
+  "name": "Lamps",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "67295a85b1ff27b252e0ff3c"
+  },
+  "name": "Drills & Bits",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "67295a91b1ff27b252e0ffc5"
+  },
+  "name": "Pedicure",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "67295a9ab1ff27b252e10008"
+  },
+  "name": "Displays & Kits",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "67295b07b1ff27b252e103df"
+  },
+  "name": "Curling Irons & Wands",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "67295b37b1ff27b252e105cd"
+  },
+  "name": "Flat Irons",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "67295b8fb1ff27b252e108e9"
+  },
+  "name": "Hair Dryers",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "67295bd9b1ff27b252e10b6d"
+  },
+  "name": "Diffusers",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "67295bddb1ff27b252e10b90"
+  },
+  "name": "Heat Styling",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "67295bf1b1ff27b252e10c65"
+  },
+  "name": "Clippers & Trimmers",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "67295c3db1ff27b252e10f9f"
+  },
+  "name": "Razors & Blades",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "67295c41b1ff27b252e10fc0"
+  },
+  "name": "Comb Attachments",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "67295c49b1ff27b252e1100d"
+  },
+  "name": "Shears",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "67295c67b1ff27b252e1119c"
+  },
+  "name": "Wax Warmers",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "67295c74b1ff27b252e111d5"
+  },
+  "name": "Equipment",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "67299f7cb1ff27b252e2dca9"
+  },
+  "name": "Facial Skin Care",
+  "main": "Skin and Body"
+},
+{
+  "_id": {
+    "$oid": "67299fe8b1ff27b252e2e089"
+  },
+  "name": "Masks",
+  "main": "Skin and Body"
+},
+{
+  "_id": {
+    "$oid": "67299fecb1ff27b252e2e0a9"
+  },
+  "name": "Body Care",
+  "main": "Skin and Body"
+},
+{
+  "_id": {
+    "$oid": "6729a0d9b1ff27b252e2e869"
+  },
+  "name": "Waxing & Tanning",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729a114b1ff27b252e2eafa"
+  },
+  "name": "Tanning",
+  "main": "Skin and Body"
+},
+{
+  "_id": {
+    "$oid": "6729a11ab1ff27b252e2eb2f"
+  },
+  "name": "Waxing",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729a15eb1ff27b252e2ee00"
+  },
+  "name": "Eyelashes & Brows",
+  "main": "Skin and Body"
+},
+{
+  "_id": {
+    "$oid": "6729a207b1ff27b252e2f45e"
+  },
+  "name": "Strip Lashes",
+  "main": "Skin and Body"
+},
+{
+  "_id": {
+    "$oid": "6729a279b1ff27b252e2f766"
+  },
+  "name": "Individual Lashes",
+  "main": "Skin and Body"
+},
+{
+  "_id": {
+    "$oid": "6729a28cb1ff27b252e2f826"
+  },
+  "name": "Magnetic Lashes",
+  "main": "Skin and Body"
+},
+{
+  "_id": {
+    "$oid": "6729a294b1ff27b252e2f873"
+  },
+  "name": "Dyes & Tints",
+  "main": "Skin and Body"
+},
+{
+  "_id": {
+    "$oid": "6729a2a2b1ff27b252e2f913"
+  },
+  "name": "Tools & Adhesives",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729a2b9b1ff27b252e2f9d7"
+  },
+  "name": "Salon Sanitation",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729a396b1ff27b252e2fff5"
+  },
+  "name": "Capes & Bibs",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729e59db1ff27b252e4ca25"
+  },
+  "name": "Tool Sanitizers & Cleaners",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729e5a9b1ff27b252e4caa4"
+  },
+  "name": "Face Masks",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729e5adb1ff27b252e4cabb"
+  },
+  "name": "Gloves",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729e622b1ff27b252e4ccc8"
+  },
+  "name": "Combs & Brushes",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "6729e72fb1ff27b252e4d5fa"
+  },
+  "name": "Hair Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729e734b1ff27b252e4d626"
+  },
+  "name": "Rollers & Hairsetters",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729e84eb1ff27b252e4e16b"
+  },
+  "name": "Cotton & Paper",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729e858b1ff27b252e4e1e0"
+  },
+  "name": "Bowls & Colour Brushes",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729e900b1ff27b252e4e3be"
+  },
+  "name": "Station Essentials",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729e96db1ff27b252e4e78a"
+  },
+  "name": "Station Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "6729e97db1ff27b252e4e822"
+  },
+  "name": "Holiday",
+  "main": "Skin and Body"
+},
+{
+  "_id": {
+    "$oid": "672a141db1ff27b252e58861"
+  },
+  "name": "Volume Boosting Shampoo",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a1452b1ff27b252e589df"
+  },
+  "name": "Shampoo and Conditioner",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a155ab1ff27b252e5917d"
+  },
+  "name": "Foot Care Tools",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "672a15b5b1ff27b252e59403"
+  },
+  "name": "Hair Styler Tools",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "672a177db1ff27b252e5a11c"
+  },
+  "name": "Neck Strips & Dispensers",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a17e7b1ff27b252e5a3fd"
+  },
+  "name": "Paraffin Strips",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a1823b1ff27b252e5a593"
+  },
+  "name": "Thermal Film & Wraps",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a1874b1ff27b252e5a7a9"
+  },
+  "name": "Nail Art",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "672a1a05b1ff27b252e5b3fc"
+  },
+  "name": "Towels & Linens",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a1ab1b1ff27b252e5b901"
+  },
+  "name": "Curl Shampoo",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a1ac5b1ff27b252e5b9aa"
+  },
+  "name": "Hydrating Conditioner",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a1cabb1ff27b252e5c78a"
+  },
+  "name": "Textures Hair",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a1cb3b1ff27b252e5c7d0"
+  },
+  "name": "Shampoo for Colored Hair",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a1cf7b1ff27b252e5c9ae"
+  },
+  "name": "Rain Bonnets & Hair Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a1e01b1ff27b252e5d1c5"
+  },
+  "name": "Hair Extensions & Wigs",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a1e48b1ff27b252e5d407"
+  },
+  "name": "Tape Tabs & Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a1e6cb1ff27b252e5d50b"
+  },
+  "name": "Jewelry & Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a1eeeb1ff27b252e5d988"
+  },
+  "name": "Leave In Conditioners",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a1f11b1ff27b252e5da89"
+  },
+  "name": "Tools Sanitizers & Cleaners",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a1f50b1ff27b252e5dc97"
+  },
+  "name": "Salon Equipment",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a1fabb1ff27b252e5decd"
+  },
+  "name": "Curl Conditioner",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2084b1ff27b252e5e496"
+  },
+  "name": "Semi & Demi Permanent",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "672a20dcb1ff27b252e5e6f0"
+  },
+  "name": "Colour Care Conditioners",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "672a2145b1ff27b252e5e980"
+  },
+  "name": "Scalp Care",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a215ab1ff27b252e5ea04"
+  },
+  "name": "Perms & Waves",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a218eb1ff27b252e5eb7f"
+  },
+  "name": "Classic Hair Cream",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "672a2358b1ff27b252e5f8d1"
+  },
+  "name": "Treatment Packages & Kits",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "672a239bb1ff27b252e5fac2"
+  },
+  "name": "Hand Wash and Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a2409b1ff27b252e5fe32"
+  },
+  "name": "Mending & Repair Treatments",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2489b1ff27b252e601ec"
+  },
+  "name": "Hydrating Shampoo",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a24fcb1ff27b252e60504"
+  },
+  "name": "Combs & Brushes ",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a25c6b1ff27b252e60ace"
+  },
+  "name": "Care & Styling",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a261ab1ff27b252e60d41"
+  },
+  "name": "Timers & Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a2627b1ff27b252e60da6"
+  },
+  "name": "Repairing Conditioner",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a26ceb1ff27b252e612a4"
+  },
+  "name": "Gloss Hair Color",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "672a2798b1ff27b252e617ba"
+  },
+  "name": "Mirror Tools & Equipment",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a27eeb1ff27b252e619ec"
+  },
+  "name": "Bath & Body Products",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a2801b1ff27b252e61a53"
+  },
+  "name": "Colours & Tints",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "672a2832b1ff27b252e61bb6"
+  },
+  "name": "Nail Polishes",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "672a2915b1ff27b252e62215"
+  },
+  "name": "Nail Powders",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "672a292cb1ff27b252e622b4"
+  },
+  "name": "Brushes & Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a2931b1ff27b252e622e0"
+  },
+  "name": "Nail Brushes & Accessories",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "672a2a84b1ff27b252e62cf7"
+  },
+  "name": "Nail Displays",
+  "main": "Nails"
+},
+{
+  "_id": {
+    "$oid": "672a2aa8b1ff27b252e62e1e"
+  },
+  "name": "Blades & Attachments",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "672a2b37b1ff27b252e6324d"
+  },
+  "name": "Dispenser and Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a2b9fb1ff27b252e635a8"
+  },
+  "name": "Repairing Shampoo",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2bb0b1ff27b252e6361b"
+  },
+  "name": "Styling Tools & Accessories",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "672a2bbdb1ff27b252e63680"
+  },
+  "name": "Color Protect Shampoo",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2d84b1ff27b252e64423"
+  },
+  "name": "Red Hair Dyes",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "672a2df1b1ff27b252e64781"
+  },
+  "name": "Curly Hair Care",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2e08b1ff27b252e64831"
+  },
+  "name": "Extra Body Shampoo",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2e10b1ff27b252e64875"
+  },
+  "name": "Extra Body Conditioner",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2e15b1ff27b252e648ae"
+  },
+  "name": "Extra Body Finishing",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2eddb1ff27b252e64e95"
+  },
+  "name": "Serums & Treatments",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2ee5b1ff27b252e64edc"
+  },
+  "name": "Straightening & Smoothing Treatments",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2f5cb1ff27b252e651f3"
+  },
+  "name": "Shave Cream & Accessories",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2f60b1ff27b252e65210"
+  },
+  "name": "Grooming Materials",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2f91b1ff27b252e65353"
+  },
+  "name": "Replenishing Conditioner",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a2fefb1ff27b252e655e6"
+  },
+  "name": "Hair Oil & Serums",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a3004b1ff27b252e6566b"
+  },
+  "name": "Thickening Treatments",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a3018b1ff27b252e65707"
+  },
+  "name": "Tea Tree Conditioners",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a30d8b1ff27b252e65c0f"
+  },
+  "name": "Volumizing Conditioner",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a3149b1ff27b252e65efe"
+  },
+  "name": "Moisture Treatments",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a319eb1ff27b252e66155"
+  },
+  "name": "Frizz Control & Shine",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a31eab1ff27b252e66378"
+  },
+  "name": "Dispensers & Accessories",
+  "main": "Salon Essentials"
+},
+{
+  "_id": {
+    "$oid": "672a344fb1ff27b252e673c8"
+  },
+  "name": "Tonners",
+  "main": "Hair Color"
+},
+{
+  "_id": {
+    "$oid": "672a34c5b1ff27b252e676c7"
+  },
+  "name": "Purple Hair Care",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a352eb1ff27b252e67989"
+  },
+  "name": "Whipped Conditioner",
+  "main": "Hair Care"
+},
+{
+  "_id": {
+    "$oid": "672a3591b1ff27b252e67c18"
+  },
+  "name": "Scissors & Thinners",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "672a35a4b1ff27b252e67c80"
+  },
+  "name": "Shaving & Grooming Accessories",
+  "main": "Professional Tools"
+},
+{
+  "_id": {
+    "$oid": "672a361eb1ff27b252e67fcd"
+  },
+  "name": "Replacement Parts",
+  "main": "Professional Tools"
+}]

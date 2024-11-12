@@ -108,7 +108,7 @@ def upload_image(imgUrl, name, product_name):
     products_collection = db['cosmoprof_products_details']
     if 'xpressbeauty' in imgUrl:
         return imgUrl
-    if '_' in product_name: 
+    if '_' in product_name:
         productName = product_name.split('_')[0]
         variation_name = product_name.split('_')[1]
         product = products_collection.find_one(
@@ -648,7 +648,7 @@ def get_canard_products():
         if 'SubCategories' in category and len(category['SubCategories']) > 0:
             subCategories = category['SubCategories']
             for subCategory in subCategories:
-                
+
                 productsToSave = []
                 if 'Deal' in subCategory['Name']:
                     continue
@@ -667,7 +667,7 @@ def get_canard_products():
                         'product_name': canradProduct['ItemName'],
                         'description': canradProduct['Description'].replace('<[^>]*>', ''),
                         'companyName': {
-                            'name': 
+                            'name':
                             # first letter to uppercase
                             category['Name'][0].upper(
                             ) + category['Name'][1:].lower()
@@ -777,14 +777,16 @@ def map_cosmoprof_categories():
 
         exist_prod_details = db['cosmoprof_products_details'].find_one(
             {'cosmoprof_id': product_id['cosmoprof_id']})
-      
+
         if exist_prod_details:
-            exist_prod_details['categories'].append(product_id['categories'][0])
+            exist_prod_details['categories'].append(
+                product_id['categories'][0])
             products_details.find_one_and_update(
                 {'cosmoprof_id': product_id['cosmoprof_id']},
                 {'$set': exist_prod_details}
             )
-            
+
+
 def update_db():
     conn = pymongo.MongoClient('mongodb://localhost:27017')
     db = conn['xpressbeauty']
@@ -792,27 +794,44 @@ def update_db():
     categories_collection = db['categories']
     cosmo_products = db['cosmoprof_products_details'].find({}).to_list()
     canrad_products = db['canrad_products'].find({}).to_list()
+    clean_brands_collection = db['cleaned_brands']
+    brands_collection = db['brands']
+    brands_collection.delete_many({})
+    for brand in clean_brands_collection.find({}):
+        brands_collection.find_one_and_update(
+            {'name': brand['name']},
+            {'$set': brand},
+            upsert=True
+        )
 
     product_collection.delete_many({})
 
-    product_collection.insert_many(cosmo_products)
-    product_collection.insert_many(canrad_products)
+    for product in cosmo_products:
+        # delete the product _id
+        del product['_id']
+        product_collection.find_one_and_update(
+            {'product_name': product['product_name']},
+            {'$set': product},
+            upsert=True
+        )
+
+    for product in canrad_products:
+        # delete the product _id
+        del product['_id']
+        product_collection.find_one_and_update(
+            {'product_name': product['product_name']},
+            {'$set': product},
+            upsert=True
+        )
 
     categories_collection.delete_many({})
-    for product in cosmo_products:
-        if 'categories' in product:
-            categories_collection.find_one_and_update(
-                {'name': product['categories'][0]['name']},
-                {'$set': product['categories'][0]},
-                upsert=True
-            )
-    for product in canrad_products:
-        if 'categories' in product:
-            categories_collection.find_one_and_update(
-                {'name': product['categories'][0]['name']},
-                {'$set': product['categories'][0]},
-                upsert=True
-            )
+    clean_categories = db['cleaned_categories']
+    for category in clean_categories.find({}):
+        categories_collection.find_one_and_update(
+            {'name': category['name']},
+            {'$set': category},
+            upsert=True
+        )
 
     conn.close()
     print('Done')
@@ -833,12 +852,12 @@ if __name__ == '__main__':
     # get_canard_products()
     # print('============ Got Canrad products =============')
 
+    # print('============ Mapping the cosmoprof categories =============')
+    # map_cosmoprof_categories()
+    # print('============ Mapped the cosmoprof categories =============')
 
-
-    print('============ Mapping the cosmoprof categories =============')
-    map_cosmoprof_categories()
-    print('============ Mapped the cosmoprof categories =============')
     print('============ Adding the products to the db =============')
     update_db()
     print('============ Added the products to the db =============')
+
     print('============ Done ============')

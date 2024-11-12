@@ -50,14 +50,20 @@ export const ProductCard = component$((props: ProductCardProps) => {
 
         product.price.max = parseFloat(product.price?.max?.toString()) * 0.9;
       } else {
-        product.price.regular =
-          parseFloat(product.price?.regular?.toString()) * 0.9;
-        if (
-          product.sale_price?.sale &&
-          parseFloat(product.sale_price?.sale.toString() ?? "0") > 0
-        ) {
-          product.sale_price.sale =
-            parseFloat(product?.sale_price?.sale?.toString()) * 0.9;
+        // console.log(product.price);
+        // if price is not an object, then it is a integer or float
+        if (typeof product.price === "number") {
+          product.price = parseFloat(product.price.toString()) * 0.9;
+        } else {
+          product.price.regular =
+            parseFloat(product.price?.regular?.toString()) * 0.9;
+          if (
+            product.sale_price?.sale &&
+            parseFloat(product.sale_price?.sale.toString() ?? "0") > 0
+          ) {
+            product.sale_price.sale =
+              parseFloat(product?.sale_price?.sale?.toString()) * 0.9;
+          }
         }
       }
     }
