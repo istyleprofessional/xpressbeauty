@@ -765,7 +765,7 @@ async function addProductsToGoogleSheet() {
   });
 
   const doc = new GoogleSpreadsheet(
-    "1-gVe8XDYbKNZizvXyZCp6GUpwIbDNqMUdGsJgY_FmjI",
+    "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
     auth
   );
   await doc.loadInfo();
@@ -783,7 +783,12 @@ async function addProductsToGoogleSheet() {
               : product.product_name ?? ""
               } - ${variant?.variation_name}`,
             description: product?.description ?? "",
-            link: `https://xpressbeauty.ca/products/${product.perfix}`,
+            link: `https://xpressbeauty.ca/products/${encodeURIComponent(
+              product.product_name
+                ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
+                .replace(/ /g, "-")
+                .toLowerCase() ?? ""
+            )}-pid-${product._id}/`,
             "image link": product?.imgs[0].includes("http")
               ? product?.imgs[0]
               : `https://xpressbeauty.ca${product?.imgs[0].replace(".", "")}`,
@@ -821,8 +826,8 @@ async function addProductsToGoogleSheet() {
           oldRow.title = oldRow.title?.includes("CR")
             ? oldRow.title?.replace(/CR.*/, "")
             : oldRow.title ?? "";
-          oldRow.price = `${product?.price?.regular} CAD` ?? "0";
-          oldRow.shipping_label = "";
+          oldRow.price = `${typeof (product?.price) === 'number' ? parseFloat(product?.price?.toString()).toFixed(2) : parseFloat(product?.price?.regular?.toString()).toFixed(2)} CAD` ?? "0",
+            oldRow.shipping_label = "";
           oldRow.gtin =
             product?.gtin !== "" ? product?.gtin : oldRow?.gtin ?? "";
           oldRow["identifier exists"] =
@@ -831,7 +836,12 @@ async function addProductsToGoogleSheet() {
             parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
               ? "in_stock"
               : "out_of_stock";
-          oldRow.link = `https://xpressbeauty.ca/products/${product.perfix}`;
+          oldRow.link = `https://xpressbeauty.ca/products/${encodeURIComponent(
+            product.product_name
+              ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
+              .replace(/ /g, "-")
+              .toLowerCase() ?? ""
+          )}-pid-${product._id}/`;
           newArray.push(oldRow);
         } else {
           const newRow = {
@@ -840,7 +850,12 @@ async function addProductsToGoogleSheet() {
               ? product.product_name?.replace(/CR.*/, "")
               : product.product_name ?? "",
             description: product?.description ?? "",
-            link: `https://xpressbeauty.ca/products/${product.perfix}`,
+            link: `https://xpressbeauty.ca/products/${encodeURIComponent(
+              product.product_name
+                ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
+                .replace(/ /g, "-")
+                .toLowerCase() ?? ""
+            )}-pid-${product._id}/`,
             "image link": product?.imgs[0].includes("http")
               ? product?.imgs[0]
               : `https://xpressbeauty.ca${product?.imgs[0].replace(".", "")}`,
@@ -848,7 +863,7 @@ async function addProductsToGoogleSheet() {
               parseInt(product?.quantity_on_hand?.toString() ?? "0") > 0
                 ? "in_stock"
                 : "out_of_stock",
-            price: `${product?.price?.regular} CAD` ?? "0",
+            price: `${typeof (product?.price) === 'number' ? parseFloat(product?.price?.toString()).toFixed(2) : parseFloat(product?.price?.regular?.toString()).toFixed(2)} CAD` ?? "0",
             brand: product?.companyName?.name ?? "Qwik City",
             condition: "new",
             shipping_label: "",
@@ -871,7 +886,7 @@ async function addProductsToGoogleSheet() {
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
     const doc1 = new GoogleSpreadsheet(
-      "1-gVe8XDYbKNZizvXyZCp6GUpwIbDNqMUdGsJgY_FmjI",
+      "1S77P2yiRzHa6ThSOW-TWOG33MhU8w_I9cQZJ-iYC7to",
       auth1
     );
     await doc1.loadInfo();
@@ -1070,6 +1085,7 @@ async function updateCategoryAndBrands() {
 }
 
 async function main() {
+  // await addProductsToGoogleSheet();
   await dumpAllUnkownCartAndUsers();
 }
 
