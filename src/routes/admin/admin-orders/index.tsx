@@ -1,4 +1,4 @@
-import { component$, $, useSignal } from "@builder.io/qwik";
+import { component$, $, useSignal, QwikChangeEvent } from "@builder.io/qwik";
 import {
   routeLoader$,
   server$,
@@ -238,12 +238,14 @@ export default component$(() => {
   const selectedProducts = useSignal<any>([]);
   const nav = useNavigate();
 
-  const handleSearchOrders = $(async (_: Event, elem: HTMLInputElement) => {
-    const url = new URL(window.location.href);
-    url.searchParams.set("page", "1");
-    url.searchParams.set("search", elem.value.trim());
-    nav(url.toString());
-  });
+  const handleSearchOrders = $(
+    async (_: QwikChangeEvent<HTMLInputElement>, elem: HTMLInputElement) => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("page", "1");
+      url.searchParams.set("search", elem.value.trim());
+      nav(url.toString());
+    }
+  );
 
   const handleStatusChanged = $(
     async (

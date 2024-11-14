@@ -1,4 +1,4 @@
-import { component$, $, useSignal } from "@builder.io/qwik";
+import { component$, $, useSignal, QwikChangeEvent } from "@builder.io/qwik";
 import { routeLoader$, server$, useLocation } from "@builder.io/qwik-city";
 import {
   CheckOrderIcon,
@@ -262,9 +262,10 @@ export default component$(() => {
               <input
                 type="text"
                 class="input input-bordered w-full"
-                onChange$={(_: Event, elem: HTMLInputElement) =>
-                  (brandNameSignal.value = elem.value)
-                }
+                onChange$={(
+                  _: QwikChangeEvent<HTMLInputElement>,
+                  elem: HTMLInputElement
+                ) => (brandNameSignal.value = elem.value)}
               />
               <div class="modal-action">
                 <form method="dialog" class="flex gap-2">

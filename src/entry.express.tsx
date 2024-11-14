@@ -80,7 +80,9 @@ app.get("/sitemap.xml", async (req, res) => {
       return {
         url: `products/${project.perfix}/`,
         changefreq: "hourly" as EnumChangefreq,
-        lastmod: new Date(project.updatedAt).toISOString(),
+        lastmod: project?.updatedAt
+          ? new Date(project.updatedAt).toISOString()
+          : new Date().toISOString(),
         priority: 1.0,
       };
     });

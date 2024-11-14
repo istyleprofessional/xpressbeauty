@@ -1,4 +1,4 @@
-import type { PropFunction } from "@builder.io/qwik";
+import type { PropFunction, QwikChangeEvent } from "@builder.io/qwik";
 import { component$, useTask$ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { uuid } from "~/utils/uuid";
@@ -63,9 +63,10 @@ export const CategoryFilter = component$((props: CategoryFilterProps) => {
                   filterCategoriessArray.value.includes(category) ? true : false
                 }
                 class="checkbox checkbox-sm"
-                onChange$={(_: Event, elem: HTMLInputElement) =>
-                  handleCategoryCheckBoxChange(elem, category)
-                }
+                onChange$={(
+                  _: QwikChangeEvent<HTMLInputElement>,
+                  elem: HTMLInputElement
+                ) => handleCategoryCheckBoxChange(elem, category)}
                 name={category}
                 id={category}
               />
