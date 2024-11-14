@@ -94,7 +94,7 @@ export default component$(() => {
     <>
       {/* {status === "1" && ( */}
       <div class="flex flex-col gap-3 md:gap-6 lg:gap-10">
-        <HeroImage class="w-full h-[200px] md:h-[500px] lg:h-[600px] object-contain lg:object-cover" />
+        <HeroImage class="w-full h-[200px] md:h-[500px] lg:h-[650px] object-contain p-2" />
 
         <Categories />
         <FeatureProducts
