@@ -10,7 +10,10 @@ import { NavBar } from "~/components/shared/navbar/navbar";
 import { ToolBar } from "~/components/shared/toolbar/toolbar";
 import { CartContext } from "~/context/cart.context";
 import { connect } from "~/express/db.connection";
-import { getCartByUserId } from "~/express/services/cart.service";
+import {
+  getCartByUserId,
+  updateCartCurrencyService,
+} from "~/express/services/cart.service";
 import {
   addDummyCustomer,
   getDummyCustomer,
@@ -281,6 +284,14 @@ export const useGetMainCategories = routeLoader$(async () => {
   );
 });
 
+export const updateCartCurrency = server$(async function (
+  userId: string,
+  cur: string
+) {
+  const cart = await updateCartCurrencyService(userId, cur);
+  return JSON.stringify(cart);
+});
+
 export default component$(() => {
   const user = useUserData().value;
   const userData = JSON.parse(user ?? "{}");
@@ -315,9 +326,11 @@ export default component$(() => {
         let totalPrice = 0;
         let shipping = 15;
         if (
-          cartContextObject.cart.currency === "USD" &&
-          curContextObject.cur === "2"
+          curContextObject.cur === "2" &&
+          cartContextObject.cart.currency === "USD"
         ) {
+          cartContextObject.cart.currency = "CAD";
+          await updateCartCurrency(userContextObject?._id, "CAD");
           cartContextObject.cart.products.forEach((element: any) => {
             const price = element.price / 0.9;
             element.price = Math.round(price * 100) / 100;
@@ -325,12 +338,18 @@ export default component$(() => {
           });
           cartContextObject.cart.products.forEach((element: any) => {
             totalPrice += element.price * element.quantity;
-            shipping = 15;
+            if (totalPrice > 50) {
+              shipping = 0;
+            } else {
+              shipping = 15;
+            }
           });
         } else if (
-          cartContextObject.cart.currency === "CAD" &&
-          curContextObject.cur === "1"
+          curContextObject.cur === "1" &&
+          cartContextObject.cart.currency === "CAD"
         ) {
+          cartContextObject.cart.currency = "USD";
+          await updateCartCurrency(userContextObject?._id, "USD");
           cartContextObject.cart.products.forEach((element: any) => {
             const price = element.price * 0.9;
             element.price = Math.round(price * 100) / 100;
@@ -339,14 +358,26 @@ export default component$(() => {
           cartContextObject.cart.products.forEach((element: any) => {
             element.price = Math.round(element.price * 100) / 100;
             totalPrice += element.price * element.quantity;
-            shipping = 15;
+            if (totalPrice > 50) {
+              shipping = 0;
+            } else {
+              shipping = 15;
+            }
           });
         } else {
+          await updateCartCurrency(
+            userContextObject?._id,
+            curContextObject.cur === "1" ? "USD" : "CAD"
+          );
           cartContextObject.cart.products.forEach((element: any) => {
             // make sure the price is 2 decimal using math
             element.price = Math.round(element.price * 100) / 100;
             totalPrice += element.price * element.quantity;
-            shipping = 15;
+            if (totalPrice > 50) {
+              shipping = 0;
+            } else {
+              shipping = 15;
+            }
           });
         }
 

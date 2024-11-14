@@ -50,6 +50,29 @@ export const getCartByUserId = async (userId: string) => {
   }
 };
 
+export const updateCartCurrencyService = async (userId: string, currency: string) => {
+  // change currency of cart and of each product in the cart
+  try {
+    const carts = await cart.findOne({ userId: userId });
+    if (carts) {
+      carts.currency = currency;
+      carts.products.forEach((product: any) => {
+        product.price = currency === "CAD" && product.currency === "USD" ? product.price / 0.9 :
+          currency === "USD" && product.currency === "CAD" ? product.price * 0.9 : product.price;
+        product.currency = currency;
+
+      });
+      await cart.findOneAndUpdate({ userId: userId }, carts);
+      return { status: "success", data: carts };
+    }
+
+    return { status: "failed", message: "Cart not found" };
+  }
+  catch (error: any) {
+    return { status: "error", message: error.message };
+  }
+}
+
 export const deleteProductCart = async (product: any) => {
   try {
     const result = await cart.findOneAndUpdate(

@@ -29,7 +29,7 @@ export const Header = component$((props: HeaderProps) => {
 
   return (
     <div class="flex flex-col">
-      <div class="bg-[#ff8200] navbar flex flex-col lg:flex-row justify-center gap-3 items-center lg:h-6">
+      <div class=" bg-black navbar flex flex-col lg:flex-row justify-center gap-3 items-center lg:h-6">
         <div class="flex w-full justify-center lg:justify-end flex-1 px-2">
           <div class="flex items-stretch">
             <button

@@ -6,10 +6,10 @@ import { WhyChooseUs } from "~/components/home/why-choose-us/why-choose-us";
 import { connect } from "~/express/db.connection";
 import { get_new_arrivals_products } from "~/express/services/product.service";
 import type { ProductModel } from "~/models/product.model";
-import { Hero } from "~/components/home/hero/hero";
 import { UserContext } from "~/context/user.context";
 import { CurContext } from "~/context/cur.context";
 import { Categories } from "~/components/home/categories/categories";
+import HeroImage from "~/media/offer20.jpg?jsx";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();
@@ -94,7 +94,7 @@ export default component$(() => {
     <>
       {/* {status === "1" && ( */}
       <div class="flex flex-col gap-3 md:gap-6 lg:gap-10">
-        <Hero />
+        <HeroImage class="w-full h-[200px] md:h-[500px] lg:h-[600px] object-contain lg:object-cover" />
 
         <Categories />
         <FeatureProducts
