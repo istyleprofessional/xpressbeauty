@@ -1084,9 +1084,47 @@ async function updateCategoryAndBrands() {
   await connection.close();
 }
 
+async function getGkHairProducts() {
+  const products = require("./gk-hair-products.json");
+  for (const product of products) {
+    const oldImages = product.imgs;
+    product.imgs = [];
+    for (const img of oldImages) {
+      const imageUrl = await downloadImagesAndUploadToS3(
+        img.trim(),
+        product.product_name
+          .replace(/[^a-zA-Z0-9]/g, "")
+          .replace(/\s+/g, " ")
+          .replace(/ /g, "-"),
+        "xpressbeauty"
+      );
+      product.imgs.push(imageUrl);
+    }
+  }
+  fs.writeFileSync("gk-hair-products-updated.json", JSON.stringify(products));
+}
+
+async function addGkHairProductsToDb() {
+  const products = require("./gk-hair-products-updated.json");
+  await connect(mongoUrl);
+  for (const product of products) {
+    await Product.findOneAndUpdate(
+      { product_name: product.product_name },
+      product,
+      { upsert: true }
+    );
+    await Brand.findOneAndUpdate(
+      { name: product.companyName.name },
+      { name: product.companyName.name },
+      { upsert: true }
+    );
+  }
+  console.log("done");
+  await connection.close();
+}
+
 async function main() {
-  // await addProductsToGoogleSheet();
-  await dumpAllUnkownCartAndUsers();
+  await addGkHairProductsToDb();
 }
 
 main();

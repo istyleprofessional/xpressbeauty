@@ -87,18 +87,21 @@ export const Variations = component$((props: VariationsProps) => {
 
         <div class="flex flex-row gap-5 w-full items-center">
           {/* {variation_type === "Color" && ( */}
-          <Image
-            src={variation.variation_image}
-            onError$={(e: any) => {
-              const src = product_name?.replace(/[^A-Za-z0-9]+/g, "");
-              const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;
-              e.target.src = folder;
-            }}
-            class="rounded-full"
-            alt={variation.variation_name}
-            width="60"
-            height="60"
-          />
+          {variation.variation_image && (
+            <Image
+              src={variation.variation_image}
+              onError$={(e: any) => {
+                const src = product_name?.replace(/[^A-Za-z0-9]+/g, "");
+                const folder = `https://xpressbeauty.s3.ca-central-1.amazonaws.com/products-images-2/${src}/variation/variation-image-${index}.webp`;
+                e.target.src = folder;
+              }}
+              class="rounded-full"
+              alt={variation.variation_name}
+              width="60"
+              height="60"
+            />
+          )}
+
           {/* )} */}
 
           <p class="text-black w-full justify-self-end text-sm">
