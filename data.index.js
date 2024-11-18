@@ -842,6 +842,7 @@ async function addProductsToGoogleSheet() {
               .replace(/ /g, "-")
               .toLowerCase() ?? ""
           )}-pid-${product._id}/`;
+          oldRow.price = `${typeof (product?.price) === 'number' ? parseFloat(product?.price?.toString()).toFixed(2) : parseFloat(product?.price?.regular?.toString()).toFixed(2)} CAD` ?? "0";
           newArray.push(oldRow);
         } else {
           const newRow = {
@@ -1124,7 +1125,7 @@ async function addGkHairProductsToDb() {
 }
 
 async function main() {
-  await addGkHairProductsToDb();
+  await addProductsToGoogleSheet();
 }
 
 main();
