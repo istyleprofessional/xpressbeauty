@@ -78,7 +78,12 @@ app.get("/sitemap.xml", async (req, res) => {
     const pages = await productSchema.find({ isHidden: { $ne: true } });
     const dynamic_urls = pages.map((project: any) => {
       return {
-        url: `products/${project.perfix}/`,
+        url: `/products/${encodeURIComponent(
+          project.product_name
+            ?.replace(/[^a-zA-Z0-9 ]/g, "") // Exclude numbers from removal
+            .replace(/ /g, "-")
+            .toLowerCase() ?? ""
+        )}-pid-${project._id}/`,
         changefreq: "hourly" as EnumChangefreq,
         lastmod: project?.updatedAt
           ? new Date(project.updatedAt).toISOString()
