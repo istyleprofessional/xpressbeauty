@@ -338,11 +338,11 @@ export default component$(() => {
           });
           cartContextObject.cart.products.forEach((element: any) => {
             totalPrice += element.price * element.quantity;
-            if (totalPrice > 50) {
-              shipping = 0;
-            } else {
-              shipping = 15;
-            }
+            // if (totalPrice > 50) {
+            //   shipping = 0;
+            // } else {
+            shipping = 15;
+            // }
           });
         } else if (
           curContextObject.cur === "1" &&
@@ -358,11 +358,11 @@ export default component$(() => {
           cartContextObject.cart.products.forEach((element: any) => {
             element.price = Math.round(element.price * 100) / 100;
             totalPrice += element.price * element.quantity;
-            if (totalPrice > 50) {
-              shipping = 0;
-            } else {
-              shipping = 15;
-            }
+            // if (totalPrice > 50) {
+            //   shipping = 0;
+            // } else {
+            shipping = 15;
+            // }
           });
         } else {
           await updateCartCurrency(
@@ -373,11 +373,11 @@ export default component$(() => {
             // make sure the price is 2 decimal using math
             element.price = Math.round(element.price * 100) / 100;
             totalPrice += element.price * element.quantity;
-            if (totalPrice > 50) {
-              shipping = 0;
-            } else {
-              shipping = 15;
-            }
+            // if (totalPrice > 50) {
+            //   shipping = 0;
+            // } else {
+            shipping = 15;
+            // }
           });
         }
 
