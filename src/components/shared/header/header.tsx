@@ -33,7 +33,7 @@ export const Header = component$((props: HeaderProps) => {
         <p class="text-xs lg:text-sm text-center lg:text-left text-white">
           <span class=" text-white font-semibold">
             If shipping within Canada, Please expect delays as other couriers
-            are busier due to the Canada Post strike.
+            are busier due to the Canada Post strike.
           </span>
         </p>
         <div class="flex w-full justify-center lg:justify-end flex-1 px-2">
