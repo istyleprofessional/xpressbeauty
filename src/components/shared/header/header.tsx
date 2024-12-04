@@ -30,6 +30,12 @@ export const Header = component$((props: HeaderProps) => {
   return (
     <div class="flex flex-col">
       <div class=" bg-black navbar flex flex-col lg:flex-row justify-center gap-3 items-center lg:h-6">
+        <p class="text-xs lg:text-sm text-center lg:text-left text-white">
+          <span class=" text-white font-semibold">
+            If shipping within Canada, Please expect delays as other couriers
+            are busier due to the Canada Post strike.
+          </span>
+        </p>
         <div class="flex w-full justify-center lg:justify-end flex-1 px-2">
           <div class="flex items-stretch">
             <button

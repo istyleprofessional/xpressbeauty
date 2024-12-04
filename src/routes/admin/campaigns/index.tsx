@@ -47,7 +47,11 @@ export const sendTextSer = server$(async function (body: string) {
   }
 });
 
-export const sendEmailSer = server$(async function (fromName: string, subject: string, body: string) {
+export const sendEmailSer = server$(async function (
+  fromName: string,
+  subject: string,
+  body: string
+) {
   const transporter = nodemailer.createTransport({
     host: "smtp.zoho.com",
     port: 465,
@@ -60,8 +64,7 @@ export const sendEmailSer = server$(async function (fromName: string, subject: s
   const getGesutsUsersHasEmail = await dummyUsers.find({
     email: { $ne: null },
   });
-  const users
-    = await User.find({ email: { $ne: null } });
+  const users = await User.find({ email: { $ne: null } });
   const allUsers = [...getGesutsUsersHasEmail, ...users];
   const uniqueUsers = allUsers.filter(
     (v, i, a) =>
@@ -83,7 +86,6 @@ export const sendEmailSer = server$(async function (fromName: string, subject: s
   }
 });
 export default component$(() => {
-
   const handleOpenTextDialog = $(() => {
     (document as any).getElementById("my_modal_1")?.showModal();
   });
@@ -108,8 +110,6 @@ export default component$(() => {
 
   // template code
 
-
-
   return (
     <div class="flex flex-col items-center justify-center h-screen">
       <h1 class="text-4xl font-bold">Admin Campaigns</h1>
@@ -130,7 +130,6 @@ export default component$(() => {
             </label>
             <textarea
               id="body-text"
-
               class="input h-32 resize-none border-2 border-gray-300 rounded-md w-full p-2 focus:outline-none focus:border-black"
               placeholder="Enter Body"
             ></textarea>
@@ -167,7 +166,6 @@ export default component$(() => {
               class="input border-2 border-gray-300 rounded-md w-full p-2 focus:outline-none focus:border-black"
               placeholder="Enter From Name"
             />
-
           </div>
           <div class="form-control">
             <label for="subject" class="label">
@@ -186,7 +184,6 @@ export default component$(() => {
             </label>
             <textarea
               id="body"
-
               class="input h-32 resize-none border-2 border-gray-300 rounded-md w-full p-2 focus:outline-none focus:border-black"
               placeholder="Enter Body"
             ></textarea>
