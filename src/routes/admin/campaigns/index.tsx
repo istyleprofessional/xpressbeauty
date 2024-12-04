@@ -85,9 +85,36 @@ export const sendEmailSer = server$(async function (
     }
   }
 });
+
+export const sendTestTextSer = server$(async function (
+  body: string,
+  phone: string
+) {
+  try {
+    const client = new (Twilio as any).Twilio(
+      this.env.get("VITE_TWILIO_ACCOUNT_SID") ?? "",
+      this.env.get("VITE_TWILIO_AUTH_TOKEN") ?? ""
+    );
+
+    await client.messages.create({
+      body: body,
+      from: "+12134014667",
+      to: `+1${phone}`,
+    });
+    return { status: "success" };
+  } catch (err) {
+    console.log(err);
+    return { status: "failed", err: err };
+  }
+});
+
 export default component$(() => {
   const handleOpenTextDialog = $(() => {
     (document as any).getElementById("my_modal_1")?.showModal();
+  });
+
+  const handleOpenTestTextMsg = $(() => {
+    (document as any).getElementById("my_modal_4")?.showModal();
   });
 
   const handleOpenEmailDialog = $(() => {
@@ -102,10 +129,18 @@ export default component$(() => {
     alert("Sending Email To All Users");
   });
 
-  const handleSendText = $(() => {
+  const handleSendText = $(async () => {
     const body = (document as any).getElementById("body-text")?.value;
-    sendTextSer(body);
     alert("Sending Text To All Users");
+    await sendTextSer(body);
+  });
+
+  const handleSendTestText = $(async () => {
+    const body = (document as any).getElementById("body-text")?.value;
+    const phone = (document as any).getElementById("test-phone")?.value;
+    console.log(phone);
+    alert("Sending Text To Test Phone");
+    await sendTestTextSer(body, phone);
   });
 
   // template code
@@ -114,6 +149,47 @@ export default component$(() => {
     <div class="flex flex-col items-center justify-center h-screen">
       <h1 class="text-4xl font-bold">Admin Campaigns</h1>
       <p class="text-lg mt-4">Welcome to the admin campaigns page</p>
+
+      <button
+        class="btn bg-black text-white font-['Inter'] w-fit rounded-sm mt-8"
+        aria-label="See More Products"
+        onClick$={handleOpenTestTextMsg}
+      >
+        Send Phone Text Test
+      </button>
+      <dialog id="my_modal_4" class="modal">
+        <div class="modal-box">
+          <div class="form-control">
+            <label for="test-phone" class="label">
+              Phone Number
+            </label>
+            <input
+              type="text"
+              id="test-phone"
+              class="input border-2 border-gray-300 rounded-md w-full p-2 focus:outline-none focus:border-black"
+              placeholder="Enter Phone Number"
+            />
+            <label for="body-text" class="label">
+              Body
+            </label>
+            <textarea
+              id="body-text"
+              class="input h-32 resize-none border-2 border-gray-300 rounded-md w-full p-2 focus:outline-none focus:border-black"
+              placeholder="Enter Body"
+            ></textarea>
+          </div>
+          <div class="modal-action">
+            <button class="btn" onClick$={handleSendTestText}>
+              Send Test Phone Text
+            </button>
+          </div>
+          <div class="modal-action">
+            <form method="dialog">
+              <button class="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
 
       <button
         class="btn bg-black text-white font-['Inter'] w-fit rounded-sm mt-8"
