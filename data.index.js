@@ -1124,8 +1124,30 @@ async function addGkHairProductsToDb() {
   await connection.close();
 }
 
+async function updateCosmoProduct() {
+  let products = require("./xpressbeauty.cosmoprof_products_details.json");
+  await connect(mongoUrl);
+  products = products.map((product) => {
+    // remove _id from the product
+    delete product._id;
+    return product;
+  });
+  for (const prod of products) {
+    const product = await Product.findOneAndUpdate(
+      { product_name: prod.product_name },
+      { quantity_on_hand: prod.quantity_on_hand, variations: prod.variations },
+      { new: true }
+    );
+    if (!product) {
+      await Product.create(prod);
+    }
+  }
+  await connection.close();
+}
+
 async function main() {
-  await addProductsToGoogleSheet();
+  await updateCosmoProduct();
+  // await addProductsToGoogleSheet();
 }
 
 main();
