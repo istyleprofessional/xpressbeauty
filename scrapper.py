@@ -393,6 +393,7 @@ def get_product_id_details(product_id, driver=None, conn=None):
         # make api request to localhost 5173/api/update-product
         # with the product as the body
         try:
+            product["secret"] = "P@ssword0"
             serverResSalonClub = requests.post(
                 'https://salonclub.ca/api/update-products', json=product)
             print(serverResSalonClub.json())
