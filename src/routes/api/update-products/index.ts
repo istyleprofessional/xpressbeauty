@@ -7,13 +7,13 @@ export const onPost: RequestHandler = async ({ json, parseBody }) => {
     // get product from body and update the product
     const product: any = await parseBody();
     if (product.secret == "P@ssword0") {
-        if (product.variations && product.variations.length > 0) {
-            for (const variant of product.variations) {
-                variant.price = {
-                    "regular": variant.price,
-                }
-            }
-        }
+        // if (product.variations && product.variations.length > 0) {
+        //     for (const variant of product.variations) {
+        //         variant.price = {
+        //             "regular": variant.price,
+        //         }
+        //     }
+        // }
         await connect();
         const update: any = await update_product_service_api(product);
         if (!update?.err) {
