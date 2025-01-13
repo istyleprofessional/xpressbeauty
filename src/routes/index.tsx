@@ -10,10 +10,10 @@ import { UserContext } from "~/context/user.context";
 import { CurContext } from "~/context/cur.context";
 import { Categories } from "~/components/home/categories/categories";
 import HeroImage from "~/media/HOLIDAY.jpg?jsx";
-import FirstInStockImage from "~/media/1.jpg?jsx";
-import SecondInStockImage from "~/media/2.jpg?jsx";
-import ThirdInStockImage from "~/media/3.jpg?jsx";
-import FourthInStockImage from "~/media/4.jpg?jsx";
+// import FirstInStockImage from "~/media/1.jpg?jsx";
+// import SecondInStockImage from "~/media/2.jpg?jsx";
+// import ThirdInStockImage from "~/media/3.jpg?jsx";
+// import FourthInStockImage from "~/media/4.jpg?jsx";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();
@@ -104,7 +104,7 @@ export default component$(() => {
 
         {/* make beautifull design for the 4 in stock images using tailwind */}
 
-        <div class="flex flex-col md:flex-row gap-2 justify-center items-center w-full md:gap-6 lg:gap-10">
+        {/* <div class="flex flex-col md:flex-row gap-2 justify-center items-center w-full md:gap-6 lg:gap-10">
           <a href="/products/filterBrands/GK%20Hair/">
             <FirstInStockImage
               class={`
@@ -136,7 +136,7 @@ export default component$(() => {
             `}
             />
           </a>
-        </div>
+        </div> */}
 
         <Categories />
         <FeatureProducts

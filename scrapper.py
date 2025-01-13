@@ -385,12 +385,24 @@ def get_product_id_details(product_id, driver=None, conn=None):
             {'product_name': product['product_name']})
         if exisiting_product != None:
             product['categories'].append(exisiting_product['categories'][0])
-        products_collection.find_one_and_update(
-            {'product_name': product['product_name']},
-            {'$set': product},
-            upsert=True
-        )
-        return product
+        # products_collection.find_one_and_update(
+        #     {'product_name': product['product_name']},
+        #     {'$set': product},
+        #     upsert=True
+        # )
+        # make api request to localhost 5173/api/update-product
+        # with the product as the body
+        try:
+            serverResSalonClub = requests.post(
+                'https://salonclub.ca/api/update-products', json=product)
+            print(serverResSalonClub.json())
+            serverResXpressBeauty = requests.post(
+                'https://xpressbeauty.ca/api/update-products', json=product)
+            print(serverResXpressBeauty.json())
+        except:
+            pass
+        # requests.post(
+        #     'http://localhost:5173/api/update-products', json=product)
     except WebDriverException as e:
         driver.quit()
         driver = None
@@ -537,11 +549,9 @@ def get_cosmoprof_products():
                         for product in products:
                             try:
                                 json_data = product['data-ga4tile']
-                                # "{'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':0,'affiliation':'Cosmoprof','item_category':'Bleach & Lighteners','item_sub_brand':'Blondor','item_id':'CAN-M-813010','item_name':'Blondor Multi Blonde Powder','item_brand':'Wella','item_list_name':'plp','item_variant':'CAN-M-813010'}]}}"
                                 cleaned_json_data = json_data.replace("'", '"')
                                 parsed_json = json.loads(cleaned_json_data)
                                 product_id = {}
-                                # {'event':'view_item','event_location':'quickview','ecommerce':{'currency':'CAD','items':[{'price':8.78,'affiliation':'Cosmoprof','item_category':'Permanent','item_id':'CAN-M-635020','item_name':'CHI Ionic Permanent Shine Crème Hair Color','item_brand':'CHI','item_list_name':'plp','item_variant':'CAN-M-635020'}]}}
                                 product_id['cosmoprof_id'] = parsed_json['ecommerce']['items'][0]['item_id']
                                 product_id['categories'] = [
                                     {
@@ -549,22 +559,11 @@ def get_cosmoprof_products():
                                         'name': sub_category['name']
                                     }
                                 ]
-                                # categories_collection.find_one_and_update(
-                                #     {'name': sub_category['name']},
-                                #     {'$set': product_id['categories'][0]},
-                                #     upsert=True
-                                # )
                                 product_id['companyName'] = {
                                     'name':
                                     parsed_json['ecommerce']['items'][0]['item_brand'][0].replace('#', '').upper(
                                     ) + parsed_json['ecommerce']['items'][0]['item_brand'][1:].replace('#', '').lower()
                                 }
-                                # brands_collection.find_one_and_update(
-                                #     {'name': product_id['companyName']['name']},
-                                #     {'$set': product_id['companyName']},
-                                #     upsert=True
-                                # )
-                                # product_id = check_brand_name(product_id)
                                 products_ids.append(product_id)
                                 products_ids_collection.find_one_and_update(
                                     {'cosmoprof_id': product_id['cosmoprof_id']},
@@ -588,8 +587,8 @@ def get_cosmoprof_products():
                         driver.get(catUrl)
                         continue
                     page += 1
-                # for product_id in products_ids:
-                #     get_product_id_details(product_id, driver, conn)
+                for product_id in products_ids:
+                    get_product_id_details(product_id, driver, conn)
 
     print('Done')
     driver.quit()
@@ -840,9 +839,9 @@ def update_db():
 if __name__ == '__main__':
     print('============ Starting =============')
 
-    # print('============ Getting cosmoprof products ids =============')
-    # get_cosmoprof_products()
-    # print('============ Got cosmoprof products ids =============')
+    print('============ Getting cosmoprof products ids =============')
+    get_cosmoprof_products()
+    print('============ Got cosmoprof products ids =============')
 
     # print('============ Checking duplicates =============')
     # check_duplicates()
@@ -855,9 +854,5 @@ if __name__ == '__main__':
     # print('============ Mapping the cosmoprof categories =============')
     # map_cosmoprof_categories()
     # print('============ Mapped the cosmoprof categories =============')
-
-    print('============ Adding the products to the db =============')
-    update_db()
-    print('============ Added the products to the db =============')
 
     print('============ Done ============')

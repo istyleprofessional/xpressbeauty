@@ -543,6 +543,37 @@ export const get_products_data = async (
   }
 };
 
+export const update_product_service_api = async (product: any) => {
+  try {
+    const check = await Product.findOne({ product_name: product?.product_name });
+    let updateCategories = false;
+    if (check) {
+      for (const category of product.categories) {
+        if (!check.categories.find((c: any) => c.name === category.name)) {
+          updateCategories = true;
+          break;
+        }
+      }
+    }
+
+    if (updateCategories) {
+      if (check) {
+        product.categories = [...check.categories, ...product.categories];
+      }
+    }
+
+    const result = await Product.findOneAndUpdate(
+      // if not isPriceChangeManual, then update the price
+      { product_name: product?.product_name },
+      product,
+      { upsert: true, new: true, runValidators: true },
+    );
+    return result;
+  } catch (err) {
+    return { err: err };
+  }
+};
+
 export const update_product_quantity = async (products: any) => {
   try {
     for (const product of products) {
