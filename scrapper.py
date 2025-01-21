@@ -385,13 +385,6 @@ def get_product_id_details(product_id, driver=None, conn=None):
             {'product_name': product['product_name']})
         if exisiting_product != None:
             product['categories'].append(exisiting_product['categories'][0])
-        # products_collection.find_one_and_update(
-        #     {'product_name': product['product_name']},
-        #     {'$set': product},
-        #     upsert=True
-        # )
-        # make api request to localhost 5173/api/update-product
-        # with the product as the body
         try:
             product["secret"] = "P@ssword0"
             serverResSalonClub = requests.post(
@@ -400,10 +393,9 @@ def get_product_id_details(product_id, driver=None, conn=None):
             serverResXpressBeauty = requests.post(
                 'https://xpressbeauty.ca/api/update-products', json=product)
             print(serverResXpressBeauty.json())
-        except:
-            pass
-        # requests.post(
-        #     'http://localhost:5173/api/update-products', json=product)
+        except Exception as e:
+            print(e)
+        return product
     except WebDriverException as e:
         driver.quit()
         driver = None

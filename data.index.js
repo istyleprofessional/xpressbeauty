@@ -1146,7 +1146,7 @@ async function updateCosmoProduct() {
 }
 
 async function main() {
-  await updateCosmoProduct();
+  await dumpAllUnkownCartAndUsers();
   // await addProductsToGoogleSheet();
 }
 
