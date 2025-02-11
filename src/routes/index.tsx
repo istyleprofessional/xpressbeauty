@@ -9,7 +9,7 @@ import type { ProductModel } from "~/models/product.model";
 import { UserContext } from "~/context/user.context";
 import { CurContext } from "~/context/cur.context";
 import { Categories } from "~/components/home/categories/categories";
-import HeroImage from "~/media/HOLIDAY.jpg?jsx";
+import HeroImage2 from "~/media/hero-2.jpg?jsx";
 // import FirstInStockImage from "~/media/1.jpg?jsx";
 // import SecondInStockImage from "~/media/2.jpg?jsx";
 // import ThirdInStockImage from "~/media/3.jpg?jsx";
@@ -96,49 +96,11 @@ export default component$(() => {
     <>
       {/* {status === "1" && ( */}
       <div class="flex flex-col gap-3 md:gap-6 lg:gap-10">
-        <HeroImage
-          class={`
-            w-full object-contain
-        `}
-        />
-
-        {/* make beautifull design for the 4 in stock images using tailwind */}
-
-        {/* <div class="flex flex-col md:flex-row gap-2 justify-center items-center w-full md:gap-6 lg:gap-10">
-          <a href="/products/filterBrands/GK%20Hair/">
-            <FirstInStockImage
-              class={`
-         w-full md:h-[30rem] object-contain h-96 rounded-md
-            `}
-            />
-          </a>
-          <a href="/products/filterBrands/Matrix/">
-            <SecondInStockImage
-              class={`
-                   w-full md:h-[30rem] object-contain h-96 rounded-md
-            `}
-            />
-          </a>
-        </div>
-
-        <div class="flex flex-col md:flex-row gap-2 justify-center items-center w-full md:gap-6 lg:gap-10">
-          <a href="/products/filterBrands/Olaplex/">
-            <ThirdInStockImage
-              class={`
-              w-full md:h-[30rem] object-contain h-96 rounded-md
-            `}
-            />
-          </a>
-          <a href="/products/filterBrands/Moroccanoil/">
-            <FourthInStockImage
-              class={`
-              w-full md:h-[30rem] object-contain h-96 rounded-md
-            `}
-            />
-          </a>
-        </div> */}
+        {/* create a slider for two images and take the */}
+        <HeroImage2 id="slide1" class="w-full h-full object-cover p-2" />
 
         <Categories />
+
         <FeatureProducts
           bestSellerProducts={bestSellerProducts2}
           type="Top Selling Products"

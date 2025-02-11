@@ -554,7 +554,8 @@ async function dumpAllUnkownCartAndUsers() {
           dummyUser.firstName &&
           dummyUser.lastName &&
           dummyUser.phoneNumber &&
-          dummyUser.email
+          dummyUser.email &&
+          dummyUser.address
         )
       ) {
         await DummyUser.findByIdAndDelete(dummyUser._id);
