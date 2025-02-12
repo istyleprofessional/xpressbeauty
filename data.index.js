@@ -551,18 +551,22 @@ async function dumpAllUnkownCartAndUsers() {
     for (const dummyUser of dummyUsers) {
       if (
         !(
-          dummyUser.firstName &&
-          dummyUser.lastName &&
-          dummyUser.phoneNumber &&
-          dummyUser.email &&
-          dummyUser.address
+          dummyUser.firstName ||
+          dummyUser.lastName ||
+          dummyUser.phoneNumber ||
+          dummyUser.email
         )
       ) {
-        await DummyUser.findByIdAndDelete(dummyUser._id);
+        const order_checker = await Order.findOne({
+          user_id: dummyUser._id,
+        });
+        if (!order_checker) {
+          await DummyUser.findByIdAndDelete(dummyUser._id);
+        }
+
       }
     }
   }
-
   console.log("done");
   await connection.close();
 }

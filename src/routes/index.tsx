@@ -10,10 +10,6 @@ import { UserContext } from "~/context/user.context";
 import { CurContext } from "~/context/cur.context";
 import { Categories } from "~/components/home/categories/categories";
 import HeroImage2 from "~/media/hero-2.jpg?jsx";
-// import FirstInStockImage from "~/media/1.jpg?jsx";
-// import SecondInStockImage from "~/media/2.jpg?jsx";
-// import ThirdInStockImage from "~/media/3.jpg?jsx";
-// import FourthInStockImage from "~/media/4.jpg?jsx";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();
