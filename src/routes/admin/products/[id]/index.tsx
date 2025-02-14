@@ -443,18 +443,18 @@ export default component$(() => {
                 </div>
               </>
             )}
-            {product.priceType === "single" ||
-              (!product.priceType && (
-                <>
-                  <p class="col-span-1">Price</p>
-                  <input
-                    type="text"
-                    name="price.regular"
-                    class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
-                    value={product.price?.regular}
-                  />
-                </>
-              ))}
+            {/* {product.priceType === "single" ||
+              (!product.priceType && ( */}
+            <>
+              <p class="col-span-1">Price</p>
+              <input
+                type="text"
+                name="price.regular"
+                class="input input-md col-span-3 w-full border-[1px] border-[#D1D5DB]"
+                value={product.price?.regular}
+              />
+            </>
+            {/* ))} */}
           </div>
 
           <div class="grid grid-cols-4">

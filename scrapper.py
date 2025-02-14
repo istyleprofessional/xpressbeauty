@@ -387,12 +387,14 @@ def get_product_id_details(product_id, driver=None, conn=None):
             product['categories'].append(exisiting_product['categories'][0])
         try:
             product["secret"] = "P@ssword0"
-            serverResSalonClub = requests.post(
-                'https://salonclub.ca/api/update-products', json=product)
-            print(serverResSalonClub.json())
-            serverResXpressBeauty = requests.post(
-                'https://xpressbeauty.ca/api/update-products', json=product)
-            print(serverResXpressBeauty.json())
+            # serverResSalonClub = requests.post(
+            #     'https://salonclub.ca/api/update-products', json=product)
+            # print(serverResSalonClub.json())
+            # serverResXpressBeauty = requests.post(
+            #     'https://xpressbeauty.ca/api/update-products', json=product)
+            # print(serverResXpressBeauty.json())
+
+            print(product)
         except Exception as e:
             print(e)
         return product
@@ -411,49 +413,6 @@ def get_product_id_details(product_id, driver=None, conn=None):
     except Exception as e:
         print(e)
         return None
-
-
-def check_brand_name(product):
-    openai = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
-    conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressbeauty']
-    brands_collection = db['cleaned_brands']
-    message = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": f'''
-            **** if the brand name {product['companyName']['name']} is not in the {brands_collection.find().to_list()} generate a new name otherwise choose the best match.
-            **** Just choose the best match from the brands in the db.
-            **** Only if you don't find a match in the db, you can generate a new name.
-            '''},
-        {"role": "assistant",
-            "content": "I think the best match for this product is:"}
-    ]
-
-    completion = openai.beta.chat.completions.parse(
-        model="gpt-4o-2024-08-06",
-        messages=message,
-        response_format=BrandModel
-
-    )
-    brand = completion.choices[0].message.parsed
-    finalBrand = {
-        'name':
-            # First letter to uppercase
-            brand.name[0].upper(
-            ) + brand.name[1:].lower()
-    }
-    brands_collection.find_one_and_update(
-        {'name': finalBrand['name']},
-        {'$set': finalBrand},
-        upsert=True
-    )
-    product['companyName'] = {
-        'name':
-        # first letter to uppercase
-        finalBrand['name'][0].upper(
-        ) + finalBrand['name'][1:].lower()
-    }
-    return product
 
 
 def get_cosmoprof_products():
@@ -588,245 +547,288 @@ def get_cosmoprof_products():
     conn.close()
 
 
-def check_duplicates():
-    conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressbeauty']
-    products_collection = db['cosmoprof_products_details']
-    products = products_collection.find({}).to_list()
+# def check_brand_name(product):
+#     openai = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+#     conn = pymongo.MongoClient('mongodb://localhost:27017')
+#     db = conn['xpressbeauty']
+#     brands_collection = db['cleaned_brands']
+#     message = [
+#         {"role": "system", "content": "You are a helpful assistant."},
+#         {"role": "user", "content": f'''
+#             **** if the brand name {product['companyName']['name']} is not in the {brands_collection.find().to_list()} generate a new name otherwise choose the best match.
+#             **** Just choose the best match from the brands in the db.
+#             **** Only if you don't find a match in the db, you can generate a new name.
+#             '''},
+#         {"role": "assistant",
+#             "content": "I think the best match for this product is:"}
+#     ]
 
-    seen = set()
-    duplicates = []
-    for product in products:
-        if product['product_name'] in seen:
-            duplicates.append(product)
-        else:
-            seen.add(product['product_name'])
+#     completion = openai.beta.chat.completions.parse(
+#         model="gpt-4o-2024-08-06",
+#         messages=message,
+#         response_format=BrandModel
 
-        if 'category' in product:
-            product['categories'] = []
-            product['categories'].append(product['category'])
-            del product['category']
-
-    # merge the duplicates into one product and append the categories to the categories array
-    for duplicate in duplicates:
-        for product in products:
-            if product['product_name'] == duplicate['product_name']:
-                product['categories'].append(duplicate['categories'][0])
-        products.remove(duplicate)
-    for product in products:
-        products_collection.find_one_and_update(
-            {'product_name': product['product_name']},
-            {'$set': product},
-            upsert=True
-        )
-    conn.close()
-
-
-def get_canard_products():
-    mainCatUrl = "https://canrad.com/categories"
-    response = requests.get(mainCatUrl, headers={
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    })
-    categories = response.json()['Categories']
-    conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressbeauty']
-    canard_collection = db['canrad_products']
-    brand_collection = db['cleaned_brands']
-
-    canard_collection.delete_many({})
-    total = 0
-    for category in categories:
-        if 'SubCategories' in category and len(category['SubCategories']) > 0:
-            subCategories = category['SubCategories']
-            for subCategory in subCategories:
-
-                productsToSave = []
-                if 'Deal' in subCategory['Name']:
-                    continue
-                subUrl = f'''https://canrad.com/categories/{subCategory['CategoryID']}/ccrd/products'''
-                response = requests.get(subUrl, headers={
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                })
-                canradProducts = response.json()
-                canradProducts = canradProducts['Products'] if 'Products' in canradProducts else [
-                ]
-                if not canradProducts or len(canradProducts) == 0:
-                    continue
-                for canradProduct in canradProducts:
-                    product = {
-                        'product_name': canradProduct['ItemName'],
-                        'description': canradProduct['Description'].replace('<[^>]*>', ''),
-                        'companyName': {
-                            'name':
-                            # first letter to uppercase
-                            category['Name'][0].upper(
-                            ) + category['Name'][1:].lower()
-                        },
-                        'price': {
-                            'regular': canradProduct['Price']
-                        },
-                        'sale_price': {
-                            'sale': canradProduct['SpecialPriceDiscount']
-                        },
-                        'quantity_on_hand': int(canradProduct['OnHandQuantity']),
-                        'upc': canradProduct['UPC'],
-                        'item_id': canradProduct['ItemID'],
-
-                    }
-                    brand_collection.find_one_and_update(
-                        {'name': product['companyName']['name']},
-                        {'$set': product['companyName']},
-                        upsert=True
-                    )
-                    # product = check_brand_name(product)
-                    if 'ImageURL' in canradProduct:
-                        product["imgs"] = []
-                        product["imgs"].append(canradProduct['ImageURL'])
-                    product = ai_model_to_well_categories(product)
-                    productsToSave.append(product)
-                    #  print number of products scraped out of the total
-                    print(f'''{len(productsToSave) + total} Saved''')
-                total += 15
-                canard_collection.insert_many(productsToSave)
-                time.sleep(2)
+#     )
+#     brand = completion.choices[0].message.parsed
+#     finalBrand = {
+#         'name':
+#             # First letter to uppercase
+#             brand.name[0].upper(
+#             ) + brand.name[1:].lower()
+#     }
+#     brands_collection.find_one_and_update(
+#         {'name': finalBrand['name']},
+#         {'$set': finalBrand},
+#         upsert=True
+#     )
+#     product['companyName'] = {
+#         'name':
+#         # first letter to uppercase
+#         finalBrand['name'][0].upper(
+#         ) + finalBrand['name'][1:].lower()
+#     }
+#     return product
 
 
-def ai_model_to_well_categories(product):
-    openai = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
-    conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressbeauty']
-    categories_collection = db['cleaned_categories']
-    message = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": f'''
-            **** from those categories {categories_collection.find().to_list()} which one is the best match for the product {product}?
-            **** The category main can't be same as category name.
-            **** Only if you don't find a match in the db, you can generate a new name but not the main category.
-            **** Just choose the best match from the categories in the db. 
-            '''},
-        {"role": "assistant",
-            "content": "I think the best match for this product is:"}
-    ]
+# def check_duplicates():
+#     conn = pymongo.MongoClient('mongodb://localhost:27017')
+#     db = conn['xpressbeauty']
+#     products_collection = db['cosmoprof_products_details']
+#     products = products_collection.find({}).to_list()
 
-    completion = openai.beta.chat.completions.parse(
-        model="gpt-4o-2024-08-06",
-        messages=message,
-        response_format=CategoryModel,
+#     seen = set()
+#     duplicates = []
+#     for product in products:
+#         if product['product_name'] in seen:
+#             duplicates.append(product)
+#         else:
+#             seen.add(product['product_name'])
 
-    )
-    category = completion.choices[0].message.parsed
-    finalCategory = {
-        'main': category.main,
-        'name': category.name
-    }
-    categories_collection.find_one_and_update(
-        {'name': finalCategory['name']},
-        {'$set': finalCategory},
-        upsert=True
-    )
-    # check if the categories has holiday or no
-    if 'category' in product and 'name' in product['category'] and 'Holiday' in product['category']['name']:
-        product['categories'] = []
-        product['categories'].append(product['category'])
-        product['categories'].append(finalCategory)
-    else:
-        product['categories'] = []
-        product['categories'].append(finalCategory)
-    if 'category' in product:
-        del product['category']
-    # clean the product name
-    product['product_name'] = product['product_name'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
-        '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"', '').replace('*', '').split('-')[0].strip()
-    if 'product_image' in product:
-        product['imgs'] = []
-        product['imgs'].append(product['product_image'])
-        del product['product_image']
+#         if 'category' in product:
+#             product['categories'] = []
+#             product['categories'].append(product['category'])
+#             del product['category']
 
-    image_uploaded_url = upload_image(product['imgs'][0], product['product_name'].replace('@', '').replace(' ', '_').replace('"', '').replace('/', '_').replace(
-        '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'), product['product_name'])
-    for img in product['imgs']:
-        product['imgs'].remove(img)
-        product['imgs'].append(image_uploaded_url)
-
-    # clean the description
-    product['description'] = product['description'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
-        '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('*', '').replace('"', '').replace('!', '').strip()
-    # add the product to the db
-
-    return product
+#     # merge the duplicates into one product and append the categories to the categories array
+#     for duplicate in duplicates:
+#         for product in products:
+#             if product['product_name'] == duplicate['product_name']:
+#                 product['categories'].append(duplicate['categories'][0])
+#         products.remove(duplicate)
+#     for product in products:
+#         products_collection.find_one_and_update(
+#             {'product_name': product['product_name']},
+#             {'$set': product},
+#             upsert=True
+#         )
+#     conn.close()
 
 
-def map_cosmoprof_categories():
-    conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressbeauty']
-    products_ids = db['cosmoprof_products_ids'].find({}).to_list()
-    products_details = db['cosmoprof_products_details']
-    products_details.update_many({}, {'$unset': {'categories': []}})
-    products_details.update_many({}, {'$set': {'categories': []}})
-    for product_id in products_ids:
+# def get_canard_products():
+#     mainCatUrl = "https://canrad.com/categories"
+#     response = requests.get(mainCatUrl, headers={
+#         'Content-Type': 'application/json',
+#         'Accept': 'application/json'
+#     })
+#     categories = response.json()['Categories']
+#     conn = pymongo.MongoClient('mongodb://localhost:27017')
+#     db = conn['xpressbeauty']
+#     canard_collection = db['canrad_products']
+#     brand_collection = db['cleaned_brands']
 
-        exist_prod_details = db['cosmoprof_products_details'].find_one(
-            {'cosmoprof_id': product_id['cosmoprof_id']})
+#     canard_collection.delete_many({})
+#     total = 0
+#     for category in categories:
+#         if 'SubCategories' in category and len(category['SubCategories']) > 0:
+#             subCategories = category['SubCategories']
+#             for subCategory in subCategories:
 
-        if exist_prod_details:
-            exist_prod_details['categories'].append(
-                product_id['categories'][0])
-            products_details.find_one_and_update(
-                {'cosmoprof_id': product_id['cosmoprof_id']},
-                {'$set': exist_prod_details}
-            )
+#                 productsToSave = []
+#                 if 'Deal' in subCategory['Name']:
+#                     continue
+#                 subUrl = f'''https://canrad.com/categories/{subCategory['CategoryID']}/ccrd/products'''
+#                 response = requests.get(subUrl, headers={
+#                     'Content-Type': 'application/json',
+#                     'Accept': 'application/json'
+#                 })
+#                 canradProducts = response.json()
+#                 canradProducts = canradProducts['Products'] if 'Products' in canradProducts else [
+#                 ]
+#                 if not canradProducts or len(canradProducts) == 0:
+#                     continue
+#                 for canradProduct in canradProducts:
+#                     product = {
+#                         'product_name': canradProduct['ItemName'],
+#                         'description': canradProduct['Description'].replace('<[^>]*>', ''),
+#                         'companyName': {
+#                             'name':
+#                             # first letter to uppercase
+#                             category['Name'][0].upper(
+#                             ) + category['Name'][1:].lower()
+#                         },
+#                         'price': {
+#                             'regular': canradProduct['Price']
+#                         },
+#                         'sale_price': {
+#                             'sale': canradProduct['SpecialPriceDiscount']
+#                         },
+#                         'quantity_on_hand': int(canradProduct['OnHandQuantity']),
+#                         'upc': canradProduct['UPC'],
+#                         'item_id': canradProduct['ItemID'],
+
+#                     }
+#                     brand_collection.find_one_and_update(
+#                         {'name': product['companyName']['name']},
+#                         {'$set': product['companyName']},
+#                         upsert=True
+#                     )
+#                     # product = check_brand_name(product)
+#                     if 'ImageURL' in canradProduct:
+#                         product["imgs"] = []
+#                         product["imgs"].append(canradProduct['ImageURL'])
+#                     product = ai_model_to_well_categories(product)
+#                     productsToSave.append(product)
+#                     #  print number of products scraped out of the total
+#                     print(f'''{len(productsToSave) + total} Saved''')
+#                 total += 15
+#                 canard_collection.insert_many(productsToSave)
+#                 time.sleep(2)
 
 
-def update_db():
-    conn = pymongo.MongoClient('mongodb://localhost:27017')
-    db = conn['xpressbeauty']
-    product_collection = db['products']
-    categories_collection = db['categories']
-    cosmo_products = db['cosmoprof_products_details'].find({}).to_list()
-    canrad_products = db['canrad_products'].find({}).to_list()
-    clean_brands_collection = db['cleaned_brands']
-    brands_collection = db['brands']
-    brands_collection.delete_many({})
-    for brand in clean_brands_collection.find({}):
-        brands_collection.find_one_and_update(
-            {'name': brand['name']},
-            {'$set': brand},
-            upsert=True
-        )
+# def ai_model_to_well_categories(product):
+#     openai = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+#     conn = pymongo.MongoClient('mongodb://localhost:27017')
+#     db = conn['xpressbeauty']
+#     categories_collection = db['cleaned_categories']
+#     message = [
+#         {"role": "system", "content": "You are a helpful assistant."},
+#         {"role": "user", "content": f'''
+#             **** from those categories {categories_collection.find().to_list()} which one is the best match for the product {product}?
+#             **** The category main can't be same as category name.
+#             **** Only if you don't find a match in the db, you can generate a new name but not the main category.
+#             **** Just choose the best match from the categories in the db.
+#             '''},
+#         {"role": "assistant",
+#             "content": "I think the best match for this product is:"}
+#     ]
 
-    product_collection.delete_many({})
+#     completion = openai.beta.chat.completions.parse(
+#         model="gpt-4o-2024-08-06",
+#         messages=message,
+#         response_format=CategoryModel,
 
-    for product in cosmo_products:
-        # delete the product _id
-        del product['_id']
-        product_collection.find_one_and_update(
-            {'product_name': product['product_name']},
-            {'$set': product},
-            upsert=True
-        )
+#     )
+#     category = completion.choices[0].message.parsed
+#     finalCategory = {
+#         'main': category.main,
+#         'name': category.name
+#     }
+#     categories_collection.find_one_and_update(
+#         {'name': finalCategory['name']},
+#         {'$set': finalCategory},
+#         upsert=True
+#     )
+#     # check if the categories has holiday or no
+#     if 'category' in product and 'name' in product['category'] and 'Holiday' in product['category']['name']:
+#         product['categories'] = []
+#         product['categories'].append(product['category'])
+#         product['categories'].append(finalCategory)
+#     else:
+#         product['categories'] = []
+#         product['categories'].append(finalCategory)
+#     if 'category' in product:
+#         del product['category']
+#     # clean the product name
+#     product['product_name'] = product['product_name'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
+#         '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('!', '').replace('"', '').replace('*', '').split('-')[0].strip()
+#     if 'product_image' in product:
+#         product['imgs'] = []
+#         product['imgs'].append(product['product_image'])
+#         del product['product_image']
 
-    for product in canrad_products:
-        # delete the product _id
-        del product['_id']
-        product_collection.find_one_and_update(
-            {'product_name': product['product_name']},
-            {'$set': product},
-            upsert=True
-        )
+#     image_uploaded_url = upload_image(product['imgs'][0], product['product_name'].replace('@', '').replace(' ', '_').replace('"', '').replace('/', '_').replace(
+#         '\\', '_').replace('?', '_').replace('&', '_').replace('=', '_').replace('+', '_').replace('%', '_'), product['product_name'])
+#     for img in product['imgs']:
+#         product['imgs'].remove(img)
+#         product['imgs'].append(image_uploaded_url)
 
-    categories_collection.delete_many({})
-    clean_categories = db['cleaned_categories']
-    for category in clean_categories.find({}):
-        categories_collection.find_one_and_update(
-            {'name': category['name']},
-            {'$set': category},
-            upsert=True
-        )
+#     # clean the description
+#     product['description'] = product['description'].replace('@', '').replace('<[^>]*>', '').replace('?', '').replace('&', '').replace(
+#         '=', '').replace('+', '').replace('%', '').replace('/', '').replace('\\', '').replace('*', '').replace('"', '').replace('!', '').strip()
+#     # add the product to the db
 
-    conn.close()
-    print('Done')
+#     return product
+
+
+# def map_cosmoprof_categories():
+#     conn = pymongo.MongoClient('mongodb://localhost:27017')
+#     db = conn['xpressbeauty']
+#     products_ids = db['cosmoprof_products_ids'].find({}).to_list()
+#     products_details = db['cosmoprof_products_details']
+#     products_details.update_many({}, {'$unset': {'categories': []}})
+#     products_details.update_many({}, {'$set': {'categories': []}})
+#     for product_id in products_ids:
+
+#         exist_prod_details = db['cosmoprof_products_details'].find_one(
+#             {'cosmoprof_id': product_id['cosmoprof_id']})
+
+#         if exist_prod_details:
+#             exist_prod_details['categories'].append(
+#                 product_id['categories'][0])
+#             products_details.find_one_and_update(
+#                 {'cosmoprof_id': product_id['cosmoprof_id']},
+#                 {'$set': exist_prod_details}
+#             )
+
+
+# def update_db():
+#     conn = pymongo.MongoClient('mongodb://localhost:27017')
+#     db = conn['xpressbeauty']
+#     product_collection = db['products']
+#     categories_collection = db['categories']
+#     cosmo_products = db['cosmoprof_products_details'].find({}).to_list()
+#     canrad_products = db['canrad_products'].find({}).to_list()
+#     clean_brands_collection = db['cleaned_brands']
+#     brands_collection = db['brands']
+#     brands_collection.delete_many({})
+#     for brand in clean_brands_collection.find({}):
+#         brands_collection.find_one_and_update(
+#             {'name': brand['name']},
+#             {'$set': brand},
+#             upsert=True
+#         )
+
+#     product_collection.delete_many({})
+
+#     for product in cosmo_products:
+#         # delete the product _id
+#         del product['_id']
+#         product_collection.find_one_and_update(
+#             {'product_name': product['product_name']},
+#             {'$set': product},
+#             upsert=True
+#         )
+
+#     for product in canrad_products:
+#         # delete the product _id
+#         del product['_id']
+#         product_collection.find_one_and_update(
+#             {'product_name': product['product_name']},
+#             {'$set': product},
+#             upsert=True
+#         )
+
+#     categories_collection.delete_many({})
+#     clean_categories = db['cleaned_categories']
+#     for category in clean_categories.find({}):
+#         categories_collection.find_one_and_update(
+#             {'name': category['name']},
+#             {'$set': category},
+#             upsert=True
+#         )
+
+#     conn.close()
+#     print('Done')
 
 
 if __name__ == '__main__':
