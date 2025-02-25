@@ -3,10 +3,11 @@
 /lib
 /lib-types
 /server
+/google-merchant-feeder
 
 # Development
 node_modules
-google-merchant-feeder
+
 
 # Cache
 .cache
