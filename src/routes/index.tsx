@@ -9,7 +9,8 @@ import type { ProductModel } from "~/models/product.model";
 import { UserContext } from "~/context/user.context";
 import { CurContext } from "~/context/cur.context";
 import { Categories } from "~/components/home/categories/categories";
-import HeroImage2 from "~/media/hero-2.jpg?jsx";
+import { Hero } from "~/components/home/hero/hero";
+// import HeroImage2 from "~/media/hero-2.jpg?jsx";
 
 export const useHairProducts = routeLoader$(async () => {
   await connect();
@@ -90,10 +91,9 @@ export default component$(() => {
 
   return (
     <>
-      {/* {status === "1" && ( */}
       <div class="flex flex-col gap-3 md:gap-6 lg:gap-10">
-        {/* create a slider for two images and take the */}
-        <HeroImage2 id="slide1" class="w-full h-full object-cover p-2" />
+        {/* <HeroImage2 id="slide1" class="w-full h-full object-cover p-2" /> */}
+        <Hero />
 
         <Categories />
 
@@ -147,7 +147,6 @@ export default component$(() => {
           <WhyChooseUs />
         </div>
       </div>
-      {/* )} */}
     </>
   );
 });

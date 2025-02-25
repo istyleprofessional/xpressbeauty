@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "cogent-quarter-361323",
+  "private_key_id": "b7e862f0600acee40c39a388f5cc4e5769670053",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDAyIzgb+J0gM1/\nZX0fqnkww6wONMGdhdWlZhmHns6qMU6RopLZ7DZwXalPkSwnmjGso4F9RDRjcfys\n+s4xWV9BJ1jQ8iD7MXCamigNJl8xHc3ci79H8jWKMum/8qTDnZmAix0Zoed/pzjq\nKi6wFctyKwzaHUt66GIi2MDWGeAWOAZ63kqgE8DMHGVuuOLp/VQxhd2RJbGLbeWV\nkvSzF2uOYiNzOn1SLDJo/5VQU7noHeFfhtFqMHLa3cfYUEdYmO5w3AlBqmiaj+fL\nbWyEJj2Ua57FFaiISaSO2gxhFYVepI5f40bmzM7miLbrsE1HqSD5aZJfnEqCIqJX\nT06HNH2TAgMBAAECggEAIX3V55nYbCgCS2scwTcTBdNAnVkx98VL+AeUUNjYi320\nah2lyIE+def3pZCRbLHfhmADe3kxZsNjQ8PwtWcS4tVMm0QtUaZlqx4z7hDoAbbt\nUC7hBMVB4uf0bvnfAPLsu4WvgQf9GVK6UwgQA1xN82AiQ/RJ7CjZ/7bLTYbCROma\nmbO1jZTMop9PcGSI3uYufMA2SvVg6acoxHs6oqr1XXOOxBrsBvAntKpk+lA9zvDj\nhmaUMjO8NQbXHCnAzx6EzafDljvPg+0Kpjk9YfJqfHTEutb+MtcbI3ZYXc2Rmix0\n1JSr2ti0JvVkvatWjF3mgziQyWhbA0IRS1iof8sV3QKBgQDfoRmEJBAiCCD/8cSW\nGPCfJKmPmT+glm9udJwoNqjyOk90YZnbfm/aDDQNIEv0qCf/UJ7qXl5UT39EQUXz\nG0teDBhA1WaA51XWnPwphstsFc1x0NqI1k39lU6q9EFvTbJkpz5ZfzL8DugFbOu9\nl9eKRYKo3Ys///MT63nUZdWFHwKBgQDcsGmJqvzy1nc38NGZpgBdm82FFfq7jErN\nhfFu/E+2zcA6OSbDCkp07BDIISm7IKslAAHkiGYmTpeFYKFe9NDpDuqhjt8fdPn+\nwqzx7ZBSgPB3L1l9E/+WacnkWbTm6QXhyrAuszF40iyT4aGmGXbjURdPdFkBV+yE\nU9f/s7jlDQKBgQDLtkE8Mm3P0n/dJyvhX06yaf9cJEnly6QuhmNJ7qDwJ1YBunch\nj4fspXk1C9qlQBlPZu2cqeJcAx732k4SKyb4wSPGy57YheOX4OGEIppkF2hS6eJp\nDG93NO+4o1CIR8reDcuqU0jqe9m4N4R37T4XY0Km+UnEPy/7UWJlrW5YGQKBgBZV\nI9jynLZWTaozjIJn8hGG+r1FBCKGh+tUaqI4ljiBibpanjmOiQpb+TbHZFmzbJ5J\n6ecehnfJ7DtrE+lwDNQI1mWS97FPPR0yxh2VVM2EjtEA0aV+qJaoDe41xcC4RAgd\nYsbXC2KWojw00Q7l9Mn8Ise/lmI0a5LYiTsvDL7hAoGBAK3ih1hsMg5+TPYPcnvq\nFGSlN6TXlHzCMMbXWX5cogK0ibcITUWq7iAus+6+ICtQTCa+C4o/7jGuxjZkN7K1\n8hBuz3KsutHoL2yZ6rHsW6r40IGduQTL1xiQgsseR7XNYmzY4vqNhEMlT0nil48s\nvFL7CbMYN3l7M+PvUsnslbbQ\n-----END PRIVATE KEY-----\n",
+  "client_email": "xpressbeautyproductfeed@cogent-quarter-361323.iam.gserviceaccount.com",
+  "client_id": "114528522658911903578",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/xpressbeautyproductfeed%40cogent-quarter-361323.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
