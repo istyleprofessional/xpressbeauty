@@ -421,37 +421,38 @@ export default component$(() => {
 
   return (
     <div class="page flex flex-col gap-6 h-screen">
-      {loc.url.pathname.includes("admin") && ( 
-    <main>
-        {url !== "/login/" &&
-          url !== "/register/" &&
-          !url.includes("admin") &&
-          !url.includes("Verify") && (
-            <>
-              <Header countryProp={curContextObject.cur} />
-              <ToolBar
-                handleLogout={handleLogout}
-                user={userData?.cart}
-                handleOnCartClick={handleOnCartClick}
-                categories={JSON.parse(categories)}
-              />
-              <NavBar categories={JSON.parse(categories)} />
-            </>
-          )}
+      {loc.url.pathname.includes("admin") && (
+        <>
+          <main>
+            {url !== "/login/" &&
+              url !== "/register/" &&
+              !url.includes("admin") &&
+              !url.includes("Verify") && (
+                <>
+                  <Header countryProp={curContextObject.cur} />
+                  <ToolBar
+                    handleLogout={handleLogout}
+                    user={userData?.cart}
+                    handleOnCartClick={handleOnCartClick}
+                    categories={JSON.parse(categories)}
+                  />
+                  <NavBar categories={JSON.parse(categories)} />
+                </>
+              )}
 
-        <Slot />
-        {/* Create Whatsapp button on the left bottom of the screen always */}
+            <Slot />
+            {/* Create Whatsapp button on the left bottom of the screen always */}
 
-        {url !== "/login/" &&
-          url !== "/register/" &&
-          !url.includes("admin") &&
-          !url.includes("Verify") && <Footer />}
-      </main>
-      <div class="section dark">
-        <div class="container"></div>
-      </div>
+            {url !== "/login/" &&
+              url !== "/register/" &&
+              !url.includes("admin") &&
+              !url.includes("Verify") && <Footer />}
+          </main>
+          <div class="section dark">
+            <div class="container"></div>
+          </div>
+        </>
       )}
-  
     </div>
   );
 });
