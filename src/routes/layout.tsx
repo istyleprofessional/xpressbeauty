@@ -421,7 +421,8 @@ export default component$(() => {
 
   return (
     <div class="page flex flex-col gap-6 h-screen">
-      <main>
+      {loc.url.pathname.includes("admin") && ( 
+    <main>
         {url !== "/login/" &&
           url !== "/register/" &&
           !url.includes("admin") &&
@@ -449,6 +450,8 @@ export default component$(() => {
       <div class="section dark">
         <div class="container"></div>
       </div>
+      )}
+  
     </div>
   );
 });

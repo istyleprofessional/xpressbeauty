@@ -27,4 +27,5 @@ export interface ProductModel {
   currency?: string;
   ingredients?: string;
   directions?: string;
+  gtin?: string;
 }

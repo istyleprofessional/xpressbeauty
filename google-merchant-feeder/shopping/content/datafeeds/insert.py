@@ -18,26 +18,26 @@
 from __future__ import print_function
 import sys
 
-from shopping.content import common
-from shopping.content.datafeeds import sample
+from content import common
+from content.datafeeds import sample
 
 
 def main(argv):
-  # Authenticate and construct service.
-  service, config, _ = common.init(argv, __doc__)
-  merchant_id = config['merchantId']
+    # Authenticate and construct service.
+    service, config, _ = common.init(argv, __doc__)
+    merchant_id = config['merchantId']
 
-  name = 'feed%s' % common.get_unique_id()
-  datafeed = sample.create_datafeed_sample(config, name)
+    name = 'feed%s' % common.get_unique_id()
+    datafeed = sample.create_datafeed_sample(config, name)
 
-  # Add datafeed.
-  request = service.datafeeds().insert(merchantId=merchant_id, body=datafeed)
+    # Add datafeed.
+    request = service.datafeeds().insert(merchantId=merchant_id, body=datafeed)
 
-  result = request.execute()
+    result = request.execute()
 
-  print('Datafeed with name "%s" and ID %s was created.' %
-        (result['name'], result['id']))
+    print('Datafeed with name "%s" and ID %s was created.' %
+          (result['name'], result['id']))
 
 
 if __name__ == '__main__':
-  main(sys.argv)
+    main(sys.argv)
