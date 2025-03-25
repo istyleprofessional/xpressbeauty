@@ -8,7 +8,8 @@
 # Development
 node_modules
 
-product-data-feed-453020-293c420233af.json
+.product-data-feed-453020-293c420233af.json
+.google-credentials.json
 # Cache
 .cache
 .mf
