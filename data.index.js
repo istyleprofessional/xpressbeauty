@@ -1185,16 +1185,22 @@ async function deleteCanradProducts() {
   await connect(mongoUrl);
   let i = 0;
   for (const product of products) {
-    await Product.findOneAndDelete({
-      product_name: {
-        $regex: new RegExp(product.product_name, "i"),
-      }
-    });
+    try {
+      await Product.findOneAndDelete({
+        product_name: {
+          $regex: new RegExp(product?.product_name, "i"),
+        }
+      });
 
-    i++;
-    console.log(
-      `Product ${i} deleted successfully and brand added to db`
-    );
+      i++;
+      console.log(
+        `Product ${i} deleted successfully and brand added to db`
+      );
+    } catch (error) {
+      console.log(error.message);
+      continue;
+    }
+
   }
   console.log("done");
   await connection.close();
