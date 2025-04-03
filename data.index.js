@@ -1053,25 +1053,40 @@ async function updateCategoryAndBrands() {
   // await Category.deleteMany({});
   await Brand.deleteMany({});
   for (const product of products) {
-    if (!product.companyName) continue;
-    products.forEach(async (p) => {
-      if (product.companyName?.name?.toLowerCase(p.companyName?.name?.toLowerCase())) {
-        p.companyName.name = product.companyName?.name;
-        await Product.findByIdAndUpdate(p._id, p, { new: true });
-      }
-    });
-    if (product.companyName.name) {
-      const brandFound = await Brand.findOne({
-        name: product.companyName?.name,
+    try {
+      if (!product.companyName) continue;
+      if (!product.companyName?.name) continue;
+      products.forEach(async (p) => {
+        try {
+          if (product.companyName?.name?.toLowerCase(p.companyName?.name?.toLowerCase())) {
+            p.companyName.name = product.companyName?.name;
+            await Product.findByIdAndUpdate(p._id, p, { new: true });
+            console.log(`Product ${p.product_name} updated successfully`);
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+        console.log(`Product ${product.product_name} updated successfully`);
       });
-      if (!brandFound) {
-        await Brand.findOneAndUpdate(
-          { name: product.companyName?.name },
-          { name: product.companyName?.name },
-          { upsert: true }
-        );
+      if (product.companyName.name) {
+        const brandFound = await Brand.findOne({
+          name: product.companyName?.name,
+        });
+        if (!brandFound) {
+          await Brand.findOneAndUpdate(
+            { name: product.companyName?.name },
+            { name: product.companyName?.name },
+            { upsert: true }
+          );
+        }
       }
+    } catch (error) {
+      console.log(error.message);
+      continue;
     }
+    console.log(
+      `Product ${product.product_name} updated successfully and brand added to db`
+    );
   }
 
   const orginalCategories = products.map((product) => {
