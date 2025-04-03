@@ -1056,18 +1056,6 @@ async function updateCategoryAndBrands() {
     try {
       if (!product.companyName) continue;
       if (!product.companyName?.name) continue;
-      products.forEach(async (p) => {
-        try {
-          if (product.companyName?.name?.toLowerCase(p.companyName?.name?.toLowerCase())) {
-            p.companyName.name = product.companyName?.name;
-            await Product.findByIdAndUpdate(p._id, p, { new: true });
-            console.log(`Product ${p.product_name} updated successfully`);
-          }
-        } catch (error) {
-          console.log(error.message);
-        }
-        console.log(`Product ${product.product_name} updated successfully`);
-      });
       if (product.companyName.name) {
         const brandFound = await Brand.findOne({
           name: product.companyName?.name,
