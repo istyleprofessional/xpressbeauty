@@ -1062,7 +1062,7 @@ async function updateCategoryAndBrands() {
     });
     if (product.companyName.name) {
       const brandFound = await Brand.findOne({
-        name: product.companyName.name,
+        name: product.companyName?.name,
       });
       if (!brandFound) {
         await Brand.findOneAndUpdate(
