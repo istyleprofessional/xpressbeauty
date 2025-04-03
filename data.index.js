@@ -1150,8 +1150,29 @@ async function updateCosmoProduct() {
   await connection.close();
 }
 
+async function deleteCanradProducts() {
+  const products = require("./canrad_products-2.json");
+  await connect(mongoUrl);
+  let i = 0;
+  for (const product of products) {
+    await Product.findOneAndDelete({
+      product_name: product.product_name,
+    });
+
+    i++;
+    if (i % 100 === 0) {
+      console.log(`${i} products deleted`);
+    }
+    if (i === products.length) {
+      console.log("all products deleted");
+    }
+  }
+  console.log("done");
+  await connection.close();
+}
+
 async function main() {
-  await dumpAllUnkownCartAndUsers();
+  await deleteCanradProducts();
   // await addProductsToGoogleSheet();
 }
 
