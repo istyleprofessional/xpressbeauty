@@ -1172,7 +1172,7 @@ async function deleteCanradProducts() {
 }
 
 async function main() {
-  await deleteCanradProducts();
+  await updateCategoryAndBrands();
   // await addProductsToGoogleSheet();
 }
 
