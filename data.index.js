@@ -1077,8 +1077,8 @@ async function updateCategoryAndBrands() {
   const orginalCategories = products.map((product) => {
     return product.categories.map((category) => {
       return {
-        name: category.name,
-        main: category.main,
+        name: category?.name,
+        main: category?.main,
       };
     });
   });
