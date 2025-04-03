@@ -1186,22 +1186,22 @@ async function deleteCanradProducts() {
   let i = 0;
   for (const product of products) {
     await Product.findOneAndDelete({
-      product_name: product.product_name,
+      product_name: {
+        $regex: new RegExp(product.product_name, "i"),
+      }
     });
 
     i++;
-    if (i % 100 === 0) {
-      console.log(`${i} products deleted`);
-    }
-    if (i === products.length) {
-      console.log("all products deleted");
-    }
+    console.log(
+      `Product ${i} deleted successfully and brand added to db`
+    );
   }
   console.log("done");
   await connection.close();
 }
 
 async function main() {
+  await deleteCanradProducts();
   await updateCategoryAndBrands();
   // await addProductsToGoogleSheet();
 }
