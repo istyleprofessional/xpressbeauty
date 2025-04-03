@@ -1066,8 +1066,8 @@ async function updateCategoryAndBrands() {
       });
       if (!brandFound) {
         await Brand.findOneAndUpdate(
-          { name: product.companyName.name },
-          { name: product.companyName.name },
+          { name: product.companyName?.name },
+          { name: product.companyName?.name },
           { upsert: true }
         );
       }
