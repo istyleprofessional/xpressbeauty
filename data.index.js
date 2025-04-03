@@ -1186,16 +1186,19 @@ async function deleteCanradProducts() {
   let i = 0;
   for (const product of products) {
     try {
-      await Product.findOneAndDelete({
+      const deleteReq = await Product.findOneAndDelete({
         product_name: {
-          $regex: new RegExp(product?.product_name, "i"),
+          $in: [
+            product.product_name,
+            product.product_name.replace(/CR.*/, ""),
+          ]
         }
       });
 
-      i++;
-      console.log(
-        `Product ${i} deleted successfully and brand added to db`
-      );
+      if (deleteReq) {
+        i++;
+        console.log(`Product ${i} deleted successfully`);
+      }
     } catch (error) {
       console.log(error.message);
       continue;
