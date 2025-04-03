@@ -1055,7 +1055,7 @@ async function updateCategoryAndBrands() {
   for (const product of products) {
     if (!product.companyName) continue;
     products.forEach(async (p) => {
-      if (product.companyName?.name.toLowerCase(p.companyName?.name.toLowerCase())) {
+      if (product.companyName?.name?.toLowerCase(p.companyName?.name?.toLowerCase())) {
         p.companyName.name = product.companyName?.name;
         await Product.findByIdAndUpdate(p._id, p, { new: true });
       }
