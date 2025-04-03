@@ -1072,9 +1072,9 @@ async function updateCategoryAndBrands() {
       console.log(error.message);
       continue;
     }
-    console.log(
-      `Product ${product.product_name} updated successfully and brand added to db`
-    );
+    // console.log(
+    //   `Product ${product.product_name} updated successfully and brand added to db`
+    // );
   }
 
   const orginalCategories = products.map((product) => {
