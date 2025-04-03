@@ -1085,7 +1085,7 @@ async function updateCategoryAndBrands() {
   const uniqueCategories = [];
   orginalCategories.forEach((category) => {
     category.forEach((cat) => {
-      if (!uniqueCategories.find((c) => c.name === cat.name)) {
+      if (!uniqueCategories.find((c) => c?.name === cat?.name)) {
         uniqueCategories.push(cat);
       }
     });
