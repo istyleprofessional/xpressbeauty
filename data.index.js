@@ -1055,7 +1055,7 @@ async function updateCategoryAndBrands() {
   for (const product of products) {
     if (!product.companyName) continue;
     products.forEach(async (p) => {
-      if (product.companyName.name.toLowerCase(p.companyName.name.toLowerCase())) {
+      if (product.companyName?.name.toLowerCase(p.companyName?.name.toLowerCase())) {
         p.companyName.name = product.companyName.name;
         await Product.findByIdAndUpdate(p._id, p, { new: true });
       }
@@ -1073,6 +1073,33 @@ async function updateCategoryAndBrands() {
       }
     }
   }
+
+  const orginalCategories = products.map((product) => {
+    return product.categories.map((category) => {
+      return {
+        name: category.name,
+        main: category.main,
+      };
+    });
+  });
+  const uniqueCategories = [];
+  orginalCategories.forEach((category) => {
+    category.forEach((cat) => {
+      if (!uniqueCategories.find((c) => c.name === cat.name)) {
+        uniqueCategories.push(cat);
+      }
+    });
+  });
+  // add the unique categories to the database
+  await Category.deleteMany({});
+  for (const category of uniqueCategories) {
+    try {
+      await Category.create(category);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
 
   // check categories names against the  brand names
   const categories = await Category.find({});
