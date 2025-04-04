@@ -1183,6 +1183,12 @@ async function adjustBrand() {
   const oldProducts = require("./productsFinal6.json");
   await connect(mongoUrl);
   for (const product of oldProducts) {
+    const checkProduct = await Product.findOne({
+      product_name: product.product_name,
+    });
+    if (!checkProduct) {
+      continue;
+    }
     if (product?.companyName?.name) {
       const brand = await Brand.findOneAndUpdate(
         { name: product.companyName.name },
@@ -1207,7 +1213,7 @@ async function adjustBrand() {
 }
 
 async function main() {
-  // await deleteCanradProducts();
+  await deleteCanradProducts();
   await adjustBrand();
   await updateCategoryAndBrands();
   // await addProductsToGoogleSheet();
