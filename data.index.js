@@ -1181,6 +1181,7 @@ async function deleteCanradProducts() {
 
 async function adjustBrand() {
   const oldProducts = require("./productsFinal6.json");
+  await connect(mongoUrl);
   for (const product of oldProducts) {
     if (product?.companyName?.name) {
       const brand = await Brand.findOneAndUpdate(
