@@ -1052,22 +1052,30 @@ async function updateCategoryAndBrands() {
 
   // await Category.deleteMany({});
   await Brand.deleteMany({});
+  await Category.deleteMany({});
   for (const product of products) {
     try {
-      if (!product.companyName) continue;
-      if (!product.companyName?.name) continue;
-      if (product.companyName.name) {
-        const brandFound = await Brand.findOne({
-          name: product.companyName?.name,
-        });
-        if (!brandFound) {
-          await Brand.findOneAndUpdate(
-            { name: product.companyName?.name },
-            { name: product.companyName?.name },
+      if (product.companyName?.name) {
+        await Brand.findOneAndUpdate(
+          { name: product.companyName?.name },
+          { name: product.companyName?.name },
+          { upsert: true }
+        );
+      }
+
+      if (product.categories && product.categories.length > 0) {
+        for (const category of product.categories) {
+          if (category.name === "" || category.main === "") {
+            continue;
+          }
+          await Category.findOneAndUpdate(
+            { name: category.name },
+            { name: category.name, main: category.main },
             { upsert: true }
           );
         }
       }
+
     } catch (error) {
       console.log(error.message);
       continue;
@@ -1077,45 +1085,7 @@ async function updateCategoryAndBrands() {
     // );
   }
 
-  const orginalCategories = products.map((product) => {
-    return product.categories.map((category) => {
-      return {
-        name: category?.name,
-        main: category?.main,
-      };
-    });
-  });
-  const uniqueCategories = [];
-  orginalCategories.forEach((category) => {
-    category.forEach((cat) => {
-      if (!uniqueCategories.find((c) => c?.name === cat?.name)) {
-        uniqueCategories.push(cat);
-      }
-    });
-  });
-  // add the unique categories to the database
-  await Category.deleteMany({});
-  for (const category of uniqueCategories) {
-    try {
-      await Category.create(category);
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
 
-
-  // check categories names against the  brand names
-  const categories = await Category.find({});
-  const brands = await Brand.find({});
-  for (const category of categories) {
-    if (
-      brands.find(
-        (brand) => brand.name.toLowerCase().includes(category.name.toLowerCase())
-      )
-    ) {
-      await Category.findByIdAndDelete(category._id);
-    }
-  }
   console.log("done");
   await connection.close();
 }
@@ -1210,7 +1180,7 @@ async function deleteCanradProducts() {
 }
 
 async function main() {
-  await deleteCanradProducts();
+  // await deleteCanradProducts();
   await updateCategoryAndBrands();
   // await addProductsToGoogleSheet();
 }

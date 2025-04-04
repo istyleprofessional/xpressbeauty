@@ -390,11 +390,16 @@ def get_product_id_details(product_id, driver=None, conn=None):
             # serverResSalonClub = requests.post(
             #     'https://salonclub.ca/api/update-products', json=product)
             # print(serverResSalonClub.json())
-            # serverResXpressBeauty = requests.post(
-            #     'https://xpressbeauty.ca/api/update-products', json=product)
-            # print(serverResXpressBeauty.json())
+            serverResXpressBeauty = requests.post(
+                'https://xpressbeauty.ca/api/update-products', json=product)
+            print(serverResXpressBeauty.json())
 
-            print(product)
+            # write it in json file
+    #  append the product to the json file
+            with open('new-products-file.json', 'a') as f:
+                json.dump(product, f)
+                f.write(',')
+
         except Exception as e:
             print(e)
         return product
