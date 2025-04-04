@@ -1179,7 +1179,7 @@ async function deleteCanradProducts() {
   await connection.close();
 }
 
-async function adjustBrand = async () => {
+async function adjustBrand() {
   const oldProducts = require("./productsFinal6.json");
   for (const product of oldProducts) {
     if (product?.companyName?.name) {
