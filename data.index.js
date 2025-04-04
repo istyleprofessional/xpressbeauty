@@ -1179,8 +1179,35 @@ async function deleteCanradProducts() {
   await connection.close();
 }
 
+async function adjustBrand = async () => {
+  const oldProducts = require("./productsFinal6.json");
+  for (const product of oldProducts) {
+    if (product?.companyName?.name) {
+      const brand = await Brand.findOneAndUpdate(
+        { name: product.companyName.name },
+        { name: product.companyName.name },
+        { upsert: true }
+      );
+      const productToUpdate = await Product.findOneAndUpdate(
+        { product_name: product.product_name },
+        { companyName: product.companyName.name },
+        { new: true }
+      );
+      if (brand) {
+        console.log(`Brand ${brand.name} updated successfully`);
+      }
+      if (productToUpdate) {
+        console.log(
+          `Product ${productToUpdate.product_name} updated successfully`
+        );
+      }
+    }
+  }
+}
+
 async function main() {
   // await deleteCanradProducts();
+  await adjustBrand();
   await updateCategoryAndBrands();
   // await addProductsToGoogleSheet();
 }
