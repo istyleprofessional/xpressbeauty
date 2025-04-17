@@ -1,7 +1,7 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
 
-const images = ["../1.jpg", "../4.jpg", "../5.jpg", "../6.jpg", "../7.jpg"];
+const images = ["../1.jpg", "../4.jpg", "../7.jpg"];
 
 export const Hero = component$(() => {
   const currentIndex = useSignal(0);

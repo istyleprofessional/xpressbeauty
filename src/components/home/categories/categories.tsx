@@ -1,5 +1,5 @@
 import { component$ } from "@builder.io/qwik";
-import Cat1 from "~/media/cat-1.jpg?jsx";
+// import Cat1 from "~/media/cat-1.jpg?jsx";
 import Cat2 from "~/media/cat-2.jpg?jsx";
 import Cat3 from "~/media/cat-3.jpg?jsx";
 import Cat4 from "~/media/cat-5.jpg?jsx";
@@ -14,7 +14,7 @@ export const Categories = component$(() => {
       </h3>
       <div class="bg-base-100 w-full h-full rounded-lg md:max-w-7xl flex flex-col md:flex-row lg:flex-row gap-3 md:gap-6 lg:gap-10 justify-center items-center">
         <div class="flex flex-col md:grid md:grid-cols-2 gap-1 justify-center items-center md:max-w-96 w-full">
-          <a
+          {/* <a
             href="/products/filterCategories/Conditioner+Shampoo+Masks/"
             class="w-full h-fit lg:h-96 rounded-lg btn btn-ghost"
           >
@@ -22,7 +22,7 @@ export const Categories = component$(() => {
               class="w-full h-fit lg:h-96 rounded-lg object-contain p-2"
               alt="Litter Bottles"
             />
-          </a>
+          </a> */}
           <a
             href="/products/filter/Skin/"
             class="w-full h-fit lg:h-96 rounded-lg btn btn-ghost"
