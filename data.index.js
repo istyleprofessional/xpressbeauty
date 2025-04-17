@@ -1212,9 +1212,11 @@ async function adjustBrand() {
   }
 }
 
+
+
 async function main() {
-  await deleteCanradProducts();
-  await adjustBrand();
+  // await deleteCanradProducts();
+  // await adjustBrand();
   await updateCategoryAndBrands();
   // await addProductsToGoogleSheet();
 }

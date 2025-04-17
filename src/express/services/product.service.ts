@@ -155,6 +155,8 @@ export const get_all_products_with_item_no = async () => {
   try {
     const result = await Product.find({
       item_no: { $ne: "" },
+      isHidden: { $ne: true },
+      isDeleted: { $ne: true },
       $or: [
         { updateQuickBooks: { $exists: false } },
         { updateQuickBooks: true },
@@ -290,6 +292,8 @@ export const get_product_by_name = async (name: string) => {
         { oldPerfix: name },
         { _id: name.split("-pid-")[1] },
       ],
+      isHidden: { $ne: true },
+      isDeleted: { $ne: true },
     });
     return result;
   } catch (err) {
@@ -727,9 +731,10 @@ export const getProductBySearch = async (search: string, page: number) => {
         { description: { $regex: search, $options: "i" } },
         { companyName: { $regex: search, $options: "i" } },
         { lineName: { $regex: search, $options: "i" } },
-        { isHidden: { $ne: true } },
-        { isDeleted: { $ne: true } },
+
       ],
+      isHidden: { $ne: true },
+      isDeleted: { $ne: true },
     })
       .skip(skip)
       .limit(perPage);
