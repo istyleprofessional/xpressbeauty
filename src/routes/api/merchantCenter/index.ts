@@ -3,7 +3,9 @@ import productSchema from '~/express/schemas/product.schema';
 import type { RequestHandler } from '@builder.io/qwik-city';
 
 export const onPost: RequestHandler = async ({ json }) => {
-    const dbProducts = await productSchema.find();
+    const dbProducts = await productSchema.find({
+        isHidden: { $ne: true },
+    });
     const oauth2Client = new google.auth.OAuth2();
 
     const token = {}; // Use persistent storage for token

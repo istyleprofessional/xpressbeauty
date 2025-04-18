@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 // import Cat1 from "~/media/cat-1.jpg?jsx";
-import Cat2 from "~/media/cat-2.jpg?jsx";
+// import Cat2 from "~/media/cat-2.jpg?jsx";
 import Cat3 from "~/media/cat-3.jpg?jsx";
 import Cat4 from "~/media/cat-5.jpg?jsx";
 import Cat5 from "~/media/cat-6.jpg?jsx";
@@ -23,7 +23,7 @@ export const Categories = component$(() => {
               alt="Litter Bottles"
             />
           </a> */}
-          <a
+          {/* <a
             href="/products/filter/Skin/"
             class="w-full h-fit lg:h-96 rounded-lg btn btn-ghost"
           >
@@ -31,7 +31,7 @@ export const Categories = component$(() => {
               class="w-full h-fit lg:h-96 rounded-lg object-contain p-2"
               alt="Skin Care"
             />
-          </a>
+          </a> */}
           <a
             href="/products/filter/Hair Colour/"
             class="w-full h-fit lg:h-96 rounded-lg btn btn-ghost"
